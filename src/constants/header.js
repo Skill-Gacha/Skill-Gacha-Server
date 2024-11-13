@@ -1,0 +1,34 @@
+// src/constants/header.js
+
+export const PacketType = {
+  // 클라이언트 → 서버 패킷
+  C_ENTER: 0,
+  C_LEAVE: 3,
+  C_MOVE: 6,
+  C_ANIMATION: 8,
+  C_CHANGE_COSTUME: 10,
+  C_CHAT: 12,
+  C_ENTER_DUNGEON: 14,
+  C_PLAYER_RESPONSE: 15,
+
+  // 서버 → 클라이언트 패킷
+  S_ENTER: 1,
+  S_SPAWN: 2,
+  S_LEAVE: 4,
+  S_DESPAWN: 5,
+  S_MOVE: 7,
+  S_ANIMATION: 9,
+  S_CHANGE_COSTUME: 11,
+  S_CHAT: 13,
+  S_ENTER_DUNGEON: 16,
+  S_LEAVE_DUNGEON: 17,
+  S_SCREEN_TEXT: 18,
+  S_SCREEN_DONE: 19,
+  S_BATTLE_LOG: 20,
+  S_SET_PLAYER_HP: 21,
+  S_SET_PLAYER_MP: 22,
+  S_SET_MONSTER_HP: 23,
+  S_PLAYER_ACTION: 24,
+  S_MONSTER_ACTION: 25,
+};
+

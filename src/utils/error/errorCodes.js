@@ -1,0 +1,26 @@
+// src/utils/error/errorCodes.js
+
+export const ErrorCodes = {
+  SOCKET_ERROR: 10000,
+  CLIENT_VERSION_MISMATCH: 10001,
+  UNKNOWN_HANDLER_ID: 10002,
+  PACKET_DECODE_ERROR: 10003,
+  PACKET_STRUCTURE_MISMATCH: 10004,
+  MISSING_FIELDS: 10005,
+  USER_NOT_FOUND: 10006,
+  INVALID_PACKET: 10007,
+  INVALID_SEQUENCE: 10008,
+  GAME_NOT_FOUND: 10009,
+  ALREADY_INIT_USER: 10010,
+  GAME_FULL_USERS: 10011,
+  INVALID_ROLE: 10012,
+  MAX_TOWERS: 10013,
+  FAIL_TO_SEND_NOTY: 10014,
+  DB_UPDATE_FAILED: 10015,
+  PACKET_ENCODE_ERROR: 10016,
+  // 추가적인 에러 코드들
+};
+
+export const ErrorNames = Object.fromEntries(
+  Object.entries(ErrorCodes).map(([key, value]) => [value, key]),
+);
