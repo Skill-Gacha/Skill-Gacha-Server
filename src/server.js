@@ -7,12 +7,18 @@ import { onConnection } from './events/onConnection.js';
 
 const server = net.createServer(onConnection);
 
-initServer().then(() => {
+const startServer = async () => {
+  try {
+    await initServer();
     server.listen(PORT, HOST, () => {
-        console.log(`서버가 ${HOST}:${PORT}에서 실행 중입니다.`);
+      console.log(`서버가 ${HOST}:${PORT}에서 실행 중입니다.`);
     });
-}).catch((e) => {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     process.exit(1);
-});
+  }
+};
+
+startServer();
+
 
