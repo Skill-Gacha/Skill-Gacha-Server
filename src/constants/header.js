@@ -1,34 +1,31 @@
 // src/constants/header.js
 
+// src/constants/header.js
+
 export const PacketType = {
   // 클라이언트 → 서버 패킷
-  C_ENTER: 0,
-  C_LEAVE: 3,
-  C_MOVE: 6,
-  C_ANIMATION: 8,
-  C_CHANGE_COSTUME: 10,
-  C_CHAT: 12,
-  C_ENTER_DUNGEON: 14,
-  C_PLAYER_RESPONSE: 15,
+  C_Enter: 0,
+  C_Move: 6,
+  C_Animation: 8,
+  C_Chat: 12,
+  C_EnterDungeon: 14,
+  C_PlayerResponse: 15,
 
   // 서버 → 클라이언트 패킷
-  S_ENTER: 1,
-  S_SPAWN: 2,
-  S_LEAVE: 4,
-  S_DESPAWN: 5,
-  S_MOVE: 7,
-  S_ANIMATION: 9,
-  S_CHANGE_COSTUME: 11,
-  S_CHAT: 13,
-  S_ENTER_DUNGEON: 16,
-  S_LEAVE_DUNGEON: 17,
-  S_SCREEN_TEXT: 18,
-  S_SCREEN_DONE: 19,
-  S_BATTLE_LOG: 20,
-  S_SET_PLAYER_HP: 21,
-  S_SET_PLAYER_MP: 22,
-  S_SET_MONSTER_HP: 23,
-  S_PLAYER_ACTION: 24,
-  S_MONSTER_ACTION: 25,
+  S_Enter: 1,
+  S_Spawn: 2,
+  S_Despawn: 5,
+  S_Move: 7,
+  S_Animation: 9,
+  S_Chat: 13,
+  S_EnterDungeon: 16,
+  S_LeaveDungeon: 17,
+  S_ScreenText: 18,
+  S_ScreenDone: 19,
+  S_BattleLog: 20,
+  S_SetPlayerHp: 21,
+  S_SetPlayerMp: 22,
+  S_SetMonsterHp: 23,
+  S_PlayerAction: 24,
+  S_MonsterAction: 25,
 };
-

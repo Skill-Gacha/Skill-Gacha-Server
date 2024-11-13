@@ -1,10 +1,12 @@
 // src/utils/response/createResponse.js
 
-import { getProtoMessages } from '../../init/loadProto.js';
-import {PACKET_ID_LENGTH, PACKET_SIZE_LENGTH} from "../../constants/constants.js";
+import { PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../../constants/constants.js';
+import { getProtoMessagesById } from '../../init/loadProto.js';
+
 
 export const createResponse = (packetId, data = null) => {
-  const messageType = protoMessagesById(packetId);
+  // 패킷 ID로 메시지 타입 가져오기
+  const messageType = getProtoMessagesById(packetId);
 
   if (!messageType) {
     throw new Error(`지원되지 않는 PacketId입니다: ${packetId}`);
@@ -22,11 +24,11 @@ export const createResponse = (packetId, data = null) => {
   // PacketSize 계산 (PacketId 포함)
   const packetSize = packetData.length + PACKET_ID_LENGTH; // PacketId(1 byte) + PacketData
 
-  // PacketSize를 빅 엔디안으로 쓴다
+  // PacketSize를 빅 엔디안으로 씀
   const packetSizeBuffer = Buffer.alloc(PACKET_SIZE_LENGTH);
   packetSizeBuffer.writeUInt32BE(packetSize, 0); // 빅 엔디안
 
-  // PacketId를 쓴다
+  // PacketId 씀
   const packetIdBuffer = Buffer.alloc(PACKET_ID_LENGTH);
   packetIdBuffer.writeUInt8(packetId, 0);
 
@@ -34,17 +36,4 @@ export const createResponse = (packetId, data = null) => {
   const responseBuffer = Buffer.concat([packetSizeBuffer, packetIdBuffer, packetData]);
 
   return responseBuffer;
-};
-
-// packetId를 기반으로 프로토 메시지 타입을 가져오는 함수
-const protoMessagesById = (packetId) => {
-  const protoMessages = getProtoMessages();
-  const MsgIdEnum = protoMessages.MsgId;
-
-  for (const [messageName, id] of Object.entries(MsgIdEnum)) {
-    if (id === packetId) {
-      return protoMessages[messageName];
-    }
-  }
-  return null;
 };

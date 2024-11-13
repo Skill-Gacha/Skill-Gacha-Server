@@ -3,7 +3,7 @@
 import { getHandlerByPacketType } from '../handler/index.js';
 import { packetParser } from '../utils/parser/packetParser.js';
 import { handleError } from '../utils/error/errorHandler.js';
-import {PACKET_HEADER_LENGTH, PACKET_ID_LENGTH, PACKET_SIZE_LENGTH} from "../constants/constants.js";
+import { PACKET_HEADER_LENGTH, PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../constants/constants.js';
 
 export const onData = (socket) => (data) => {
   // 소켓 버퍼 초기화
