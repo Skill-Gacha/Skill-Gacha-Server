@@ -18,7 +18,7 @@ export const sEnterDungeonHandler = async ({ socket, payload }) => {
   console.log(`유저가 입장하려는 던전 코드: ${dungeonCode}`);
 
   // 던전 정보 가져오기
-  const dungeonInfo = await getDungeonInfo(dungeonCode);
+  const dungeonInfo = getDungeonInfo(dungeonCode);
   if (!dungeonInfo) {
     console.error('던전 정보를 가져오는 데 실패했습니다.');
     return;
