@@ -178,7 +178,7 @@
       "hp": 250,
       "attackPower": 30,
       "defense": 28,
-      "DungoenCode": 5003,
+      "DungoenCode": 5004,
       "gold": 4,
       "speed": 1
     },
@@ -187,7 +187,7 @@
       "hp": 350,
       "attackPower": 38,
       "defense": 30,
-      "DungoenCode": 5003,
+      "DungoenCode": 5004,
       "gold": 4,
       "speed": 1
     },
@@ -196,7 +196,7 @@
       "hp": 450,
       "attackPower": 35,
       "defense": 21,
-      "DungoenCode": 5003,
+      "DungoenCode": 5004,
       "gold": 4,
       "speed": 1
     },
@@ -205,7 +205,7 @@
       "hp": 550,
       "attackPower": 40,
       "defense": 34,
-      "DungoenCode": 5003,
+      "DungoenCode": 5004,
       "gold": 4,
       "speed": 1
     },
@@ -214,7 +214,7 @@
       "hp": 650,
       "attackPower": 45,
       "defense": 25,
-      "DungoenCode": 5003,
+      "DungoenCode": 5004,
       "gold": 4,
       "speed": 1
     },
@@ -223,7 +223,7 @@
       "hp": 750,
       "attackPower": 50,
       "defense": 28,
-      "DungoenCode": 5003,
+      "DungoenCode": 5005,
       "gold": 4,
       "speed": 1
     },
@@ -232,7 +232,7 @@
       "hp": 800,
       "attackPower": 55,
       "defense": 33,
-      "DungoenCode": 5003,
+      "DungoenCode": 5005,
       "gold": 4,
       "speed": 1
     },
@@ -241,7 +241,7 @@
       "hp": 850,
       "attackPower": 60,
       "defense": 22,
-      "DungoenCode": 5003,
+      "DungoenCode": 5005,
       "gold": 4,
       "speed": 1
     },
