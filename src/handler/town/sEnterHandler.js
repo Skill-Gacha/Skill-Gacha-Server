@@ -1,8 +1,11 @@
 import { PacketType } from '../../constants/header.js';
 import { createUser, findUserNickname } from '../../db/user/user.db.js';
 import { getJobById } from '../../init/loadAssets.js';
+import { addUser } from '../../sessions/userSession.js';
 import { createResponse } from '../../utils/response/createResponse.js';
+import User from '../../classes/models/userClass.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
+import { addUserAtTown } from '../../sessions/townSession.js';
 
 export const sEnterHandler = async ({ socket, payload }) => {
   const { nickname } = payload;
@@ -11,7 +14,6 @@ export const sEnterHandler = async ({ socket, payload }) => {
   const player = await findUserNickname(nickname);
   //   const { playerCharacter } = getGameAssets();
   const chosenJob = getJobById(job);
-  console.log(chosenJob);
   if (!chosenJob) {
     console.error('존재하지 않는 직업군입니다.');
     return;
@@ -37,26 +39,30 @@ export const sEnterHandler = async ({ socket, payload }) => {
       nickname: registedUser.nickname,
       class: registedUser.job,
       transform: {
-        posX: registUser.posX,
-        posY: registUser.posY,
-        posZ: registUser.posZ,
-        rot: registUser.rot,
+        posX: registedUser.posX,
+        posY: registedUser.posY,
+        posZ: registedUser.posZ,
+        rot: registedUser.rot,
       },
       statInfo: {
-        level: registUser.level,
-        hp: registUser.maxHp,
-        maxHp: registUser.maxHp,
-        mp: registUser.maxMp,
-        maxMp: registUser.maxMp,
-        atk: registUser.atk,
-        def: registUser.def,
-        magic: registUser.magic,
-        speed: registUser.speed,
+        level: registedUser.level,
+        hp: registedUser.maxHp,
+        maxHp: registedUser.maxHp,
+        mp: registedUser.maxMp,
+        maxMp: registedUser.maxMp,
+        atk: registedUser.atk,
+        def: registedUser.def,
+        magic: registedUser.magic,
+        speed: registedUser.speed,
       },
     };
     const enterResponse = createResponse(PacketType.C_Enter, enterData);
+    const user = new User(socket, registedUser.id, nickname);
+    addUser(user);
+    addUserAtTown(user);
+    console.log(`유저?`, user);
 
     socket.write(enterResponse);
-    sSpawnHandler(socket, enterData);
+    await sSpawnHandler(registedUser.id, enterData);
   }
 };

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `characterInfo` (
     `id`        INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `nickname`  VARCHAR(50) NOT NULL UNIQUE,
-    `class`     INT NOT NULL,
+    `job`     INT NOT NULL,
     `level`     INT NOT NULL,
     `maxHp`     FLOAT NOT NULL,
     `maxMp`     FLOAT NOT NULL,

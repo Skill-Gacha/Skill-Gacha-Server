@@ -1,10 +1,11 @@
 import { PacketType } from '../../constants/header.js';
 import { townSession } from '../../sessions/sessions.js';
-import { getUserBySocket } from '../../sessions/userSession.js';
+import { getUserByUserId } from '../../sessions/userSession.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 
-export const sSpawnHandler = async ({ socket, enterData }) => {
-  const user = await getUserBySocket(socket);
+export const sSpawnHandler = async ({ id, enterData }) => {
+  const user = await getUserByUserId(id);
+
   if (!user) {
     console.error('유저를 찾을 수 없습니다.');
     return;

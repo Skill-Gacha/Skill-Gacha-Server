@@ -18,7 +18,6 @@ export const packetParser = (packetId, data) => {
     console.error(`PacketId ${packetId} 디코딩 오류:`, e);
     throw e;
   }
-  console.log(messageData);
 
   return messageData;
 };

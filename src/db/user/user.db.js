@@ -13,9 +13,19 @@ export const findUserNickname = async (nickname) => {
   return toCamelCase(rows[0]);
 };
 
-export const createUser = async (nickname, job) => {
-  await dbPool.query(USER_QUERIES.CREATE_USER, [nickname, job]);
-  return { nickname, job };
+export const createUser = async (nickname, job, level, maxHp, maxMp, atk, def, magic, speed) => {
+  await dbPool.query(USER_QUERIES.CREATE_USER, [
+    nickname,
+    job,
+    level,
+    maxHp,
+    maxMp,
+    atk,
+    def,
+    magic,
+    speed,
+  ]);
+  return { nickname, job, level, maxHp, maxMp, atk, def, magic, speed };
 };
 
 export const updateUserLogin = async (id) => {
