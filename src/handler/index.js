@@ -3,6 +3,7 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
+import { sChatHandler } from './town/sChatHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -18,7 +19,7 @@ const handlers = {
     protoType: 'C_Animation',
   },
   [PacketType.C_Chat]: {
-    handler: undefined,
+    handler: sChatHandler,
     protoType: 'C_Chat',
   },
   [PacketType.C_EnterDungeon]: {
