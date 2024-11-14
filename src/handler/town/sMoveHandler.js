@@ -24,6 +24,7 @@ export const sMoveHandler = async ({ socket, payload }) => {
 
     if (!townSession) {
         console.error('타운세션을 찾을 수 없습니다.')
+        return;
     }
 
     // 타운 내 자신을 제외한 모든 유저에게 패킷 전송
