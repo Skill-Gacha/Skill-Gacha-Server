@@ -1,16 +1,16 @@
 ﻿// src/classes/models/userClass.js
 
 class Stat {
-  
-  constructor() {
-    this.level = 0;
-    this.float = 0;
-    this.hp = 0;
-    this.maxHp = 0;
-    this.atk = 0;
-    this.def = 0;
-    this.magic = 0;
-    this.speed = 0;
+  constructor(level, hp, maxHp, mp, maxMp, atk, def, magic, speed) {
+    this.level = level;
+    this.hp = hp;
+    this.maxHp = maxHp;
+    this.mp = mp;
+    this.maxMP = maxMp;
+    this.atk = atk;
+    this.def = def;
+    this.magic = magic;
+    this.speed = speed;
   }
 }
 
