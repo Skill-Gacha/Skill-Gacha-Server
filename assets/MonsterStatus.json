@@ -9,7 +9,8 @@
       "defense": 5,
       "DungoenCode": 5001,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3001
     },
     {
       "id": 2002,
@@ -18,7 +19,8 @@
       "defense": 5,
       "DungoenCode": 5001,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3001
     },
     {
       "id": 2003,
@@ -27,7 +29,8 @@
       "defense": 18,
       "DungoenCode": 5001,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3001
     },
     {
       "id": 2004,
@@ -36,7 +39,8 @@
       "defense": 18,
       "DungoenCode": 5001,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3002
     },
     {
       "id": 2005,
@@ -45,7 +49,8 @@
       "defense": 12,
       "DungoenCode": 5001,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3002
     },
     {
       "id": 2006,
@@ -54,7 +59,8 @@
       "defense": 15,
       "DungoenCode": 5001,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3002
     },
     {
       "id": 2007,
@@ -63,7 +69,8 @@
       "defense": 15,
       "DungoenCode": 5002,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3003
     },
     {
       "id": 2008,
@@ -72,7 +79,8 @@
       "defense": 15,
       "DungoenCode": 5002,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3003
     },
     {
       "id": 2009,
@@ -81,7 +89,8 @@
       "defense": 20,
       "DungoenCode": 5002,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3003
     },
     {
       "id": 2010,
@@ -90,7 +99,8 @@
       "defense": 18,
       "DungoenCode": 5002,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3004
     },
     {
       "id": 2011,
@@ -99,7 +109,8 @@
       "defense": 22,
       "DungoenCode": 5002,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3005
     },
     {
       "id": 2012,
@@ -108,7 +119,8 @@
       "defense": 20,
       "DungoenCode": 5002,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3006
     },
     {
       "id": 2013,
@@ -117,7 +129,8 @@
       "defense": 25,
       "DungoenCode": 5003,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3007
     },
     {
       "id": 2014,
@@ -126,7 +139,8 @@
       "defense": 18,
       "DungoenCode": 5003,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3008
     },
     {
       "id": 2015,
@@ -135,7 +149,8 @@
       "defense": 22,
       "DungoenCode": 5003,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3009
     },
     {
       "id": 2016,
@@ -144,7 +159,8 @@
       "defense": 25,
       "DungoenCode": 5003,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3010
     },
     {
       "id": 2017,
@@ -153,7 +169,8 @@
       "defense": 22,
       "DungoenCode": 5003,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3011
     },
     {
       "id": 2018,
@@ -162,7 +179,8 @@
       "defense": 28,
       "DungoenCode": 5003,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3012
     },
     {
       "id": 2019,
@@ -171,7 +189,8 @@
       "defense": 25,
       "DungoenCode": 5004,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3013
     },
     {
       "id": 2020,
@@ -180,7 +199,8 @@
       "defense": 28,
       "DungoenCode": 5004,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3014
     },
     {
       "id": 2021,
@@ -189,7 +209,8 @@
       "defense": 30,
       "DungoenCode": 5004,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3015
     },
     {
       "id": 2022,
@@ -198,7 +219,8 @@
       "defense": 21,
       "DungoenCode": 5004,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3016
     },
     {
       "id": 2023,
@@ -207,7 +229,8 @@
       "defense": 34,
       "DungoenCode": 5004,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3017
     },
     {
       "id": 2024,
@@ -216,7 +239,8 @@
       "defense": 25,
       "DungoenCode": 5004,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3018
     },
     {
       "id": 2025,
@@ -225,7 +249,8 @@
       "defense": 28,
       "DungoenCode": 5005,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3019
     },
     {
       "id": 2026,
@@ -234,7 +259,8 @@
       "defense": 33,
       "DungoenCode": 5005,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3020
     },
     {
       "id": 2027,
@@ -243,7 +269,8 @@
       "defense": 22,
       "DungoenCode": 5005,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3021
     },
     {
       "id": 2028,
@@ -252,7 +279,8 @@
       "defense": 40,
       "DungoenCode": 5006,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3022
     },
     {
       "id": 2029,
@@ -261,7 +289,8 @@
       "defense": 40,
       "DungoenCode": 5006,
       "gold": 4,
-      "speed": 1
+      "speed": 1,
+      "effectcode": 3027
     }
   ]
 }
