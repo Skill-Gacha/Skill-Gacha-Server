@@ -27,3 +27,10 @@ export const getDungeonSessionById = (sessionId) => {
   }
   return dungeonSession;
 };
+
+export const getDungeonSessionByUser = (user) => {
+  return dungeonSessions.find((session) => {
+    const findUser = session.users.find((player) => player === user);
+    if (findUser) return session;
+  });
+};

@@ -1,4 +1,4 @@
-import Game from './BaseSessionClass.js';
+import BaseSession from './BaseSessionClass.js';
 
 class Dungeon extends BaseSession {
   constructor(dungeonId, dungeonCode) {
