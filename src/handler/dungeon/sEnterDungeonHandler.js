@@ -19,7 +19,6 @@ export const sEnterDungeonHandler = async ({ socket, payload }) => {
 
   // 던전 정보 가져오기
   const dungeonInfo = await getDungeonInfo(dungeonCode);
-  console.log('가져온 던전 정보:', dungeonInfo);
   if (!dungeonInfo) {
     console.error('던전 정보를 가져오는 데 실패했습니다.');
     return;
@@ -30,7 +29,7 @@ export const sEnterDungeonHandler = async ({ socket, payload }) => {
   console.log(`유저 ${user.nickname}가 ${dungeonCode} 던전에 입장함`);
 
   // 데이터 구성
-  const data = {
+  const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
     dungeonInfo: dungeonInfo,
     player: {
       playerClass: user.class,
@@ -41,24 +40,31 @@ export const sEnterDungeonHandler = async ({ socket, payload }) => {
       playerCurHp: user.statInfo.hp,
       playerCurMp: user.statInfo.mp,
     },
-    screenText: payload.screenText || '',
-    battleLog: user.battleLog || [],
-  };
+    screenText: {
+      msg: payload.screenText?.msg || '던전에 입장했습니다!', // 기본 메시지 설정
+      typingAnimation: payload.screenText?.typingAnimation || false,
+      alignment: {
+        x: payload.screenText?.alignment?.x || 0,
+        y: payload.screenText?.alignment?.y || 0,
+      },
+      textColor: payload.screenText?.textColor || null,
+      screenColor: payload.screenText?.screenColor || null,
+    },
+    battleLog: user.battleLog || [], // 유저의 배틀 로그
+  });
 
   // 던전 세션 존재 여부 확인
-  const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, data);
-  if (!dungeonSessions) {
+  if (!dungeonSessions || dungeonSessions.length === 0) {
     console.error('던전 세션을 찾을 수 없습니다.');
     return;
   }
 
   // 던전 내 모든 유저에게 패킷 전송
-  console.log('던전 내 모든 유저에게 패킷 전송 중...'); // 패킷 전송 시작 알림
   dungeonSessions.forEach((targetSession) => {
     targetSession.users.forEach((targetUser) => {
       try {
         targetUser.socket.write(enterDungeonPayload);
-        console.log(`패킷을 ${targetUser.nickname}에게 전송함`); // 패킷 전송 확인
+        console.log(`패킷을 ${targetUser.nickname}에게 전송함`);
       } catch (error) {
         console.error('S_EnterDungeon 패킷 전송중 오류 발생', error);
       }
