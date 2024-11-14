@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 
 // path.dirname() 함수는 파일 경로에서 디렉토리 경로만 추출 (파일 이름을 제외한 디렉토리의 전체 경로)
 const __dirname = path.dirname(__filename);
-const basePath = path.join(__dirname, '../assets');
+const basePath = path.join(__dirname, '../../assets');
 let gameAssets = {}; // 전역함수로 선언
 
 const readFileAsync = (filename) => {
@@ -24,7 +24,13 @@ const readFileAsync = (filename) => {
         reject(err);
         return;
       }
-      resolve(JSON.parse(data));
+      // BOM 제거
+      const cleanData = data.replace(/^\uFEFF/, '');
+      try {
+        resolve(JSON.parse(cleanData));
+      } catch (jsonErr) {
+        reject(new Error(`Invalid JSON format in file: ${filename}`));
+      }
     });
   });
 };
@@ -32,15 +38,13 @@ const readFileAsync = (filename) => {
 export const loadGameAssets = async () => {
   try {
     const [playerCharacter, monsterStatus] = await Promise.all([
+      // 이런 형태로 필요한 파일 로드
+
       readFileAsync('playerCharacter.json'),
       readFileAsync('MonsterStatus.json'), // 몬스터 상태 파일 추가
     ]);
 
-    gameAssets = { playerCharacter, monsterStatus }; // 게임 자산 객체에 추가
-    const playerIds = playerCharacter.map((character) => character.id);
-    console.log('Loaded Player IDs:', playerIds); // 플레이어 ID 출력
-    const monsterIds = monsterStatus.data.map((monster) => monster.id); // 몬스터 ID 추출
-    console.log('Loaded Monster IDs:', monsterIds); // 몬스터 ID 출력
+    gameAssets = { playerCharacter, monsterStatus };
 
     return gameAssets;
   } catch (error) {
@@ -51,6 +55,7 @@ export const loadGameAssets = async () => {
 export const getGameAssets = () => {
   return gameAssets;
 };
+
 export const getDungeonInfo = (dungeonCode) => {
   if (!gameAssets.monsterStatus) {
     throw new Error('Monster status data is not loaded.');
@@ -69,4 +74,9 @@ export const getDungeonInfo = (dungeonCode) => {
     dungeonCode: dungeonCode,
     monsters: monsters,
   };
+};
+
+export const getJobById = (jobId) => {
+  const index = gameAssets.playerCharacter.data.findIndex((job) => job.id === jobId);
+  return gameAssets.playerCharacter.data[index];
 };
