@@ -16,7 +16,7 @@ class Stat {
     this.hp = hp;
     this.maxHp = maxHp;
     this.mp = mp;
-    this.maxMP = maxMp;
+    this.maxMp = maxMp;
     this.atk = atk;
     this.def = def;
     this.magic = magic;
