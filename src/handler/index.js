@@ -3,7 +3,7 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
-import { cEnterDungeonHandler } from '../handler/dungeon/cEnterDungeonHandler.js';
+import { sEnterDungeonHandler } from './dungeon/sEnterDungeonHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -23,7 +23,7 @@ const handlers = {
     protoType: 'C_Chat',
   },
   [PacketType.C_EnterDungeon]: {
-    handler: cEnterDungeonHandler,
+    handler: sEnterDungeonHandler,
     protoType: 'C_EnterDungeon',
   },
   [PacketType.C_PlayerResponse]: {
