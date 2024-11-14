@@ -448,3 +448,8 @@ hs_err_pid*
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
+/.idea/.gitignore
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/indexLayout.xml
+/.idea/material_theme_project_new.xml
+/.idea/codeStyles/Project.xml
