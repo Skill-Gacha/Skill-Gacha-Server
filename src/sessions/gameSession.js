@@ -1,7 +1,7 @@
 // src/sessions/game.session.js
 
 import Game from '../classes/models/gameClass.js';
-import { dungeonSessions } from './sessions.js';
+import { dungeonSessions, townSession } from './sessions.js';
 
 export const addGameSession = (id) => {
   const session = new Game(id);
@@ -18,6 +18,10 @@ export const removeGameSession = (id) => {
 
 export const getGameSession = () => {
   return dungeonSessions;
+};
+
+export const getTownSession = () => {
+  return townSession;
 };
 
 export const getGameSessionById = (id) => {

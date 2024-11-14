@@ -8,14 +8,14 @@ export const updateUserLocation = async (x, y, deviceId) => {
   await dbPool.query(USER_QUERIES.UPDATE_USER_LOCATION, [x, y, deviceId]);
 };
 
-export const findUserId = async (id) => {
-  const [rows] = await dbPool.query(USER_QUERIES.FIND_USER_BY_ID, [id]);
+export const findUserNickname = async (nickname) => {
+  const [rows] = await dbPool.query(USER_QUERIES.FIND_USER_BY_NICKNAME, [nickname]);
   return toCamelCase(rows[0]);
 };
 
-export const createUser = async (id, email, password) => {
-  await dbPool.query(USER_QUERIES.CREATE_USER, [id, email, password]);
-  return { id, email, password };
+export const createUser = async (nickname, job) => {
+  await dbPool.query(USER_QUERIES.CREATE_USER, [nickname, job]);
+  return { nickname, job };
 };
 
 export const updateUserLogin = async (id) => {

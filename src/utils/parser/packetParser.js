@@ -10,7 +10,6 @@ export const packetParser = (packetId, data) => {
     throw new Error(`지원되지 않는 PacketId입니다: ${packetId}`);
   }
 
-
   // 메시지 디코딩
   let messageData;
   try {
@@ -19,6 +18,7 @@ export const packetParser = (packetId, data) => {
     console.error(`PacketId ${packetId} 디코딩 오류:`, e);
     throw e;
   }
+  console.log(messageData);
 
   return messageData;
 };
