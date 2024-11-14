@@ -31,14 +31,16 @@ const readFileAsync = (filename) => {
 
 export const loadGameAssets = async () => {
   try {
-    const [MonsterStatus] = await Promise.all([
-      // 이런 형태로 필요한 파일 로드
+    const [playerCharacter, monsterStatus] = await Promise.all([
       readFileAsync('playerCharacter.json'),
-      // readFileAsync('monster.json'),
+      readFileAsync('MonsterStatus.json'), // 몬스터 상태 파일 추가
     ]);
-    gameAssets = { MonsterStatus };
-    const ids = MonsterStatus.map((character) => character.id);
-    console.log('Loaded IDs:', ids); // id 값을 콘솔에 출력
+
+    gameAssets = { playerCharacter, monsterStatus }; // 게임 자산 객체에 추가
+    const playerIds = playerCharacter.map((character) => character.id);
+    console.log('Loaded Player IDs:', playerIds); // 플레이어 ID 출력
+    const monsterIds = monsterStatus.data.map((monster) => monster.id); // 몬스터 ID 추출
+    console.log('Loaded Monster IDs:', monsterIds); // 몬스터 ID 출력
 
     return gameAssets;
   } catch (error) {
@@ -48,4 +50,23 @@ export const loadGameAssets = async () => {
 
 export const getGameAssets = () => {
   return gameAssets;
+};
+export const getDungeonInfo = (dungeonCode) => {
+  if (!gameAssets.monsterStatus) {
+    throw new Error('Monster status data is not loaded.');
+  }
+
+  const monsters = gameAssets.monsterStatus.data
+    .filter((monster) => monster.DungoenCode === dungeonCode)
+    .map((monster) => ({
+      monsterIdx: monster.id,
+      monsterModel: monster.effectcode,
+      monsterName: `Monster_${monster.id}`,
+      monsterHp: monster.hp,
+    }));
+
+  return {
+    dungeonCode: dungeonCode,
+    monsters: monsters,
+  };
 };
