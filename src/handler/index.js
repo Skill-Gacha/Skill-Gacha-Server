@@ -3,6 +3,7 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
+import { sMoveHandler } from './town/sMoveHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -10,7 +11,7 @@ const handlers = {
     protoType: 'C_Enter',
   },
   [PacketType.C_Move]: {
-    handler: undefined,
+    handler: sMoveHandler,
     protoType: 'C_Move',
   },
   [PacketType.C_Animation]: {
