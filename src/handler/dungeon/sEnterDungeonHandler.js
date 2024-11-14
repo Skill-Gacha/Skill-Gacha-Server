@@ -2,10 +2,12 @@ import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { getUserBySocket } from '../../sessions/userSession.js';
 import { dungeonSessions } from '../../sessions/sessions.js';
-import { getGameAssets, getDungeonInfo } from '../../init/loadAssets.js';
+import { getDungeonInfo } from '../../init/loadAssets.js';
 
 export const sEnterDungeonHandler = async ({ socket, payload }) => {
   console.log('sEnterDungeonHandler 호출됨');
+
+  // 유저 정보 가져오기
   const user = await getUserBySocket(socket);
   if (!user) {
     console.error('유저를 찾을 수 없습니다.');
@@ -15,15 +17,19 @@ export const sEnterDungeonHandler = async ({ socket, payload }) => {
   const dungeonCode = payload.dungeonCode;
   console.log(`유저가 입장하려는 던전 코드: ${dungeonCode}`);
 
+  // 던전 정보 가져오기
   const dungeonInfo = await getDungeonInfo(dungeonCode);
   console.log('가져온 던전 정보:', dungeonInfo);
   if (!dungeonInfo) {
     console.error('던전 정보를 가져오는 데 실패했습니다.');
     return;
   }
+
+  // 유저 던전 입장 처리
   user.enterDungeon(dungeonCode);
   console.log(`유저 ${user.nickname}가 ${dungeonCode} 던전에 입장함`);
 
+  // 데이터 구성
   const data = {
     dungeonInfo: dungeonInfo,
     player: {
@@ -35,10 +41,11 @@ export const sEnterDungeonHandler = async ({ socket, payload }) => {
       playerCurHp: user.statInfo.hp,
       playerCurMp: user.statInfo.mp,
     },
-    screenText: payload.screenText || null,
+    screenText: payload.screenText || '',
     battleLog: user.battleLog || [],
   };
 
+  // 던전 세션 존재 여부 확인
   const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, data);
   if (!dungeonSessions) {
     console.error('던전 세션을 찾을 수 없습니다.');
