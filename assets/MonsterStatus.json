@@ -1,0 +1,267 @@
+{
+  "name": "MonsterClass",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 2001,
+      "hp": 10,
+      "attackPower": 10,
+      "defense": 5,
+      "DungoenCode": 5001,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2002,
+      "hp": 30,
+      "attackPower": 15,
+      "defense": 5,
+      "DungoenCode": 5001,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2003,
+      "hp": 25,
+      "attackPower": 8,
+      "defense": 18,
+      "DungoenCode": 5001,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2004,
+      "hp": 30,
+      "attackPower": 10,
+      "defense": 18,
+      "DungoenCode": 5001,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2005,
+      "hp": 50,
+      "attackPower": 22,
+      "defense": 12,
+      "DungoenCode": 5001,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2006,
+      "hp": 55,
+      "attackPower": 25,
+      "defense": 15,
+      "DungoenCode": 5001,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2007,
+      "hp": 60,
+      "attackPower": 25,
+      "defense": 15,
+      "DungoenCode": 5002,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2008,
+      "hp": 65,
+      "attackPower": 25,
+      "defense": 15,
+      "DungoenCode": 5002,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2009,
+      "hp": 70,
+      "attackPower": 30,
+      "defense": 20,
+      "DungoenCode": 5002,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2010,
+      "hp": 70,
+      "attackPower": 28,
+      "defense": 18,
+      "DungoenCode": 5002,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2011,
+      "hp": 70,
+      "attackPower": 32,
+      "defense": 22,
+      "DungoenCode": 5002,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2012,
+      "hp": 75,
+      "attackPower": 30,
+      "defense": 20,
+      "DungoenCode": 5002,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2013,
+      "hp": 80,
+      "attackPower": 35,
+      "defense": 25,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2014,
+      "hp": 90,
+      "attackPower": 30,
+      "defense": 18,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2015,
+      "hp": 100,
+      "attackPower": 38,
+      "defense": 22,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2016,
+      "hp": 130,
+      "attackPower": 40,
+      "defense": 25,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2017,
+      "hp": 150,
+      "attackPower": 35,
+      "defense": 22,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2018,
+      "hp": 180,
+      "attackPower": 45,
+      "defense": 28,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2019,
+      "hp": 200,
+      "attackPower": 42,
+      "defense": 25,
+      "DungoenCode": 5004,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2020,
+      "hp": 250,
+      "attackPower": 30,
+      "defense": 28,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2021,
+      "hp": 350,
+      "attackPower": 38,
+      "defense": 30,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2022,
+      "hp": 450,
+      "attackPower": 35,
+      "defense": 21,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2023,
+      "hp": 550,
+      "attackPower": 40,
+      "defense": 34,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2024,
+      "hp": 650,
+      "attackPower": 45,
+      "defense": 25,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2025,
+      "hp": 750,
+      "attackPower": 50,
+      "defense": 28,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2026,
+      "hp": 800,
+      "attackPower": 55,
+      "defense": 33,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2027,
+      "hp": 850,
+      "attackPower": 60,
+      "defense": 22,
+      "DungoenCode": 5003,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2028,
+      "hp": 880,
+      "attackPower": 75,
+      "defense": 40,
+      "DungoenCode": 5006,
+      "gold": 4,
+      "speed": 1
+    },
+    {
+      "id": 2029,
+      "hp": 1000,
+      "attackPower": 80,
+      "defense": 40,
+      "DungoenCode": 5006,
+      "gold": 4,
+      "speed": 1
+    }
+  ]
+}
