@@ -1,10 +1,10 @@
 // src/sessions/game.session.js
 
-import Game from '../classes/models/gameClass.js';
 import { dungeonSessions, townSession } from './sessions.js';
+import BaseSession from '../classes/models/baseClass.js';
 
 export const addGameSession = (id) => {
-  const session = new Game(id);
+  const session = new BaseSession(id);
   dungeonSessions.push(session);
   return session;
 };

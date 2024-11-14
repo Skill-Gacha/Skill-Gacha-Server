@@ -4,7 +4,6 @@ import { townSession } from './sessions.js';
 
 export const addUserAtTown = async (user) => {
   townSession.addUser(user);
-  return user;
 };
 
 export const getUserByUserId = (userId) => {
