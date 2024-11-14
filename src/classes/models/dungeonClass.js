@@ -1,0 +1,20 @@
+import Game from './BaseSessionClass.js';
+
+class Dungeon extends BaseSession {
+  constructor(dungeonId, dungeonCode) {
+    super(dungeonId);
+    this.battleLog = [];
+    this.monsters = [];
+    this.dungeonCode = dungeonCode;
+  }
+
+  addUser(user) {
+    this.users.push(user);
+  }
+
+  addMonster(monster) {
+    this.monsters.push(monster);
+  }
+}
+
+export default Dungeon;
