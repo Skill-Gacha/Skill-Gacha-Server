@@ -5,11 +5,13 @@ import { createResponse } from '../../utils/response/createResponse.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
 
 export const sEnterHandler = async ({ socket, payload }) => {
-  const { nickname, job } = payload;
+  const { nickname } = payload;
+  const job = payload.class;
 
   const player = await findUserNickname(nickname);
   //   const { playerCharacter } = getGameAssets();
   const chosenJob = getJobById(job);
+  console.log(chosenJob);
   if (!chosenJob) {
     console.error('존재하지 않는 직업군입니다.');
     return;
