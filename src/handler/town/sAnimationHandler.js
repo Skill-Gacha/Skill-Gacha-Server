@@ -19,6 +19,7 @@ export const sAnimationHandler = async ({ socket, payload }) => {
     const animationPayload = createResponse(PacketType.S_Animation, data)
     if (!townSession) {
         console.error('타운세션을 찾을 수 없습니다.')
+        return;
     }
     // 타운 내 자신을 제외한 모든 유저에게 패킷 전송
     townSession.users.forEach((targetUser) => {
@@ -26,7 +27,7 @@ export const sAnimationHandler = async ({ socket, payload }) => {
             try {
                 targetUser.socket.write(animationPayload);
             } catch (error) {
-                console.error('Smove 패킷 전송중 오류 발생', error)
+                console.error('S_Animation 패킷 전송중 오류 발생', error)
             }
         }
     });
