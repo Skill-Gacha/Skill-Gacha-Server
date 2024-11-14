@@ -11,16 +11,17 @@ class User {
     this.socket = socket;
     this.id = idCounter++;
     this.nickname = nickname;
-    
+
     // PlayerInfo
     this.playerInfo = {};
-    
+
     // 위치 정보
     this.position = new Position();
-    
+
     // 스탯 정보
     this.stat = new Stat();
   }
+
 }
 
 export default User;
