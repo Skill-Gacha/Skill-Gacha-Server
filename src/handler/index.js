@@ -3,16 +3,31 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
-import sAnimationHandler from './game/sAnimationHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
     handler: undefined,
     protoType: 'C_Enter',
   },
-  [PacketType.S_Animation]: { // 예시
-    handler: sAnimationHandler,
-    protoType: 'S_Animation',
+  [PacketType.C_Move]: {
+    handler: undefined,
+    protoType: 'C_Move',
+  },
+  [PacketType.C_Animation]: {
+    handler: undefined,
+    protoType: 'C_Animation',
+  },
+  [PacketType.C_Chat]: {
+    handler: undefined,
+    protoType: 'C_Chat',
+  },
+  [PacketType.C_EnterDungeon]: {
+    handler: undefined,
+    protoType: 'C_EnterDungeon',
+  },
+  [PacketType.C_PlayerResponse]: {
+    handler: undefined,
+    protoType: 'C_PlayerResponse',
   },
   // 다른 패킷 정의 추가...
 };
