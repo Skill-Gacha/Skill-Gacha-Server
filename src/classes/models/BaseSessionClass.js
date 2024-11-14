@@ -1,8 +1,8 @@
 // src/classes/models/gameClass.js
 
-class Game {
-  constructor(gameSessionId) {
-    this.gameSessionId = gameSessionId;
+class BaseSession {
+  constructor(sessionId) {
+    this.sessionId = sessionId;
     this.users = [];
   }
 }
