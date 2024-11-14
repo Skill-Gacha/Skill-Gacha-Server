@@ -22,7 +22,7 @@ export const createResponse = (packetId, data = null) => {
   }
 
   // PacketSize 계산 (PacketId 포함)
-  const packetSize = packetData.length + PACKET_ID_LENGTH; // PacketId(1 byte) + PacketData
+  const packetSize = PACKET_SIZE_LENGTH + PACKET_ID_LENGTH + packetData.length; // PacketSize(4 byte) + PacketId(1 byte) + PacketData
 
   // PacketSize를 빅 엔디안으로 씀
   const packetSizeBuffer = Buffer.alloc(PACKET_SIZE_LENGTH);

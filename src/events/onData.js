@@ -35,9 +35,7 @@ export const onData = (socket) => (data) => {
       continue;
     }
 
-    // 전체 패킷이 도착했는지 확인
-    const totalPacketLength = PACKET_SIZE_LENGTH + packetSize; // PacketSize(4 bytes) + packetSize
-    if (socket.buffer.length < totalPacketLength) {
+    if (socket.buffer.length < packetSize) {
       // 아직 전체 패킷이 도착하지 않음
       break;
     }
@@ -47,11 +45,12 @@ export const onData = (socket) => (data) => {
     offset += PACKET_ID_LENGTH;
 
     // PacketData 추출
-    const dataLength = packetSize - PACKET_ID_LENGTH; // PacketId 제외한 데이터 길이
+    const dataLength = packetSize - (PACKET_SIZE_LENGTH + PACKET_ID_LENGTH); // 헤더 제외한 데이터 길이
     const packetData = socket.buffer.slice(offset, offset + dataLength);
 
     // 다음 패킷을 위해 버퍼 업데이트
-    socket.buffer = socket.buffer.slice(totalPacketLength);
+    socket.buffer = socket.buffer.slice(packetSize);
+    
 
     try {
       // PacketData를 파싱
