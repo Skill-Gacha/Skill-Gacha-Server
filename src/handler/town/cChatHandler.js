@@ -3,7 +3,7 @@ import { createResponse } from "../../utils/response/createResponse.js";
 import { getUserBySocket } from "../../sessions/userSession.js";
 import { townSession } from "../../sessions/sessions.js";
 
-export const sChatHandler = async ({ socket, payload }) => {
+export const cChatHandler = async ({ socket, payload }) => {
     const { playerId, senderName, chatMsg } = payload;
 
     const user = await getUserBySocket(socket);
@@ -24,12 +24,10 @@ export const sChatHandler = async ({ socket, payload }) => {
     }
     // 타운 내 자신을 제외한 모든 유저에게 패킷 전송
     townSession.users.forEach((targetUser) => {
-        if (targetUser.id !== user.id) {
-            try {
-                targetUser.socket.write(chatPayload);
-            } catch (error) {
-                console.error('S_Chat 패킷 전송중 오류 발생', error)
-            }
+        try {
+            targetUser.socket.write(chatPayload);
+        } catch (error) {
+            console.error('S_Chat 패킷 전송중 오류 발생', error)
         }
     });
 }
