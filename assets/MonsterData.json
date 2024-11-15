@@ -1,0 +1,31 @@
+{
+  "name": "MonsterClass",
+  "version": "1.0.0",
+  "data": [
+    {
+      "monsterModel": 2001,
+      "monsterName": "버섯",
+      "monsterHp": 50
+    },
+    {
+      "monsterModel": 2002,
+      "monsterName": "슬라임",
+      "monsterHp": 100
+    },
+    {
+      "monsterModel": 2003,
+      "monsterName": "고숨도치",
+      "monsterHp": 120
+    },
+    {
+      "monsterModel": 2004,
+      "monsterName": "물고기",
+      "monsterHp": 150
+    },
+    {
+      "monsterModel": 2005,
+      "monsterName": "악어",
+      "monsterHp": 200
+    }
+  ]
+}
