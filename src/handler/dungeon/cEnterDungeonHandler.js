@@ -1,10 +1,11 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { getUserBySocket } from '../../sessions/userSession.js';
-import { dungeonSessions } from '../../sessions/sessions.js';
 import { addDungeonSession } from '../../sessions/dungeonSession.js';
 import monsterData from '../../../assets/MonsterData.json' with { type: 'json' };
 import { v4 as uuid } from 'uuid';
+import Monster from '../../classes/models/monsterClass.js';
+import { sDespawnHandler } from '../town/sDespawnHandler.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   // 유저 정보 가져오기
@@ -17,26 +18,45 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
 
   const num = Math.floor(Math.random() * 3) + 1;
   //  1 ~ 3
-  const btn = [];
+  const btns = [];
 
-  console.log(`몬스터 데이터 ${monsterData}`);
-
+  let monsterList = [];
   for (let i = 0; i < num; i++) {
     const monsterInfos = monsterData.data;
     const index = Math.floor(Math.random() * monsterInfos.length);
-    dungeon.addMonster(monsterInfos[index], i);
-    btn.push({ msg: monsterInfos.monsterName, enable: true });
+    const monster = monsterInfos[index];
+    dungeon.addMonster(
+      new Monster(
+        i,
+        monster.monsterModel,
+        monster.monsterName,
+        monster.monsterHp,
+        monster.monsterAtk,
+        monster.monsterEffectCode,
+      ),
+      i,
+    );
+    console.log('클래스 내 몬스터 정보 : ', dungeon.monsters);
+    monsterList.push(dungeon.monsters[i]);
+    btns.push({ msg: monsterInfos[index].monsterName, enable: true });
   }
+
+  for (let i = 0; i < monsterList.length; i++) {
+    delete monsterList[i].monsterAtk;
+    delete monsterList[i].monsterEffectCode;
+  }
+
+  await sDespawnHandler(socket);
 
   // 데이터 구성
   // TODO : 던전에 입장 후 실제 데이터가 잘 전송 됐는지 확인하기
   const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
     dungeonInfo: {
       dungeonCode,
-      monsters: dungeon.monsters,
+      monsters: monsterList,
     },
     player: {
-      playerClass: user.stat.class,
+      playerClass: user.job,
       playerLevel: user.stat.level,
       playerName: user.nickname,
       playerFullHp: user.stat.maxHp,
@@ -57,7 +77,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     battleLog: {
       msg: '몬스터를 모두 처치하세요',
       typingAnimation: true,
-      btn,
+      btns,
     },
   });
 

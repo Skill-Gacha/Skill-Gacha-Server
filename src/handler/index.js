@@ -3,6 +3,7 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
+import cPlayerResponseHandler from './dungeon/cPlayerResponseHandler.js';
 import { cChatHandler } from './town/cChatHandler.js';
 import { cAnimationHandler } from './town/cAnimationHandler.js';
 import { cEnterHandler } from './town/cEnterHandler.js';
@@ -31,7 +32,7 @@ const handlers = {
     protoType: 'C_EnterDungeon',
   },
   [PacketType.C_PlayerResponse]: {
-    handler: undefined,
+    handler: cPlayerResponseHandler,
     protoType: 'C_PlayerResponse',
   },
   // 다른 패킷 정의 추가...
