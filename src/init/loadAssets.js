@@ -41,7 +41,7 @@ export const loadGameAssets = async () => {
       // 이런 형태로 필요한 파일 로드
 
       readFileAsync('playerCharacter.json'),
-      readFileAsync('MonsterStatus.json'), // 몬스터 상태 파일 추가
+      readFileAsync('MonsterData.json'), // 몬스터 상태 파일 추가
     ]);
 
     gameAssets = { playerCharacter, monsterStatus };
@@ -54,26 +54,6 @@ export const loadGameAssets = async () => {
 
 export const getGameAssets = () => {
   return gameAssets;
-};
-
-export const getDungeonInfo = (dungeonCode) => {
-  if (!gameAssets.monsterStatus) {
-    throw new Error('Monster status data is not loaded.');
-  }
-
-  const monsters = gameAssets.monsterStatus.data
-    .filter((monster) => monster.DungoenCode === dungeonCode)
-    .map((monster) => ({
-      monsterIdx: monster.id,
-      monsterModel: monster.effectcode,
-      monsterName: `Monster_${monster.id}`,
-      monsterHp: monster.hp,
-    }));
-
-  return {
-    dungeonCode: dungeonCode,
-    monsters: monsters,
-  };
 };
 
 export const getJobById = (jobId) => {

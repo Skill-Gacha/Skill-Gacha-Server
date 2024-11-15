@@ -2,72 +2,64 @@ import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { getUserBySocket } from '../../sessions/userSession.js';
 import { dungeonSessions } from '../../sessions/sessions.js';
-import { getDungeonInfo } from '../../init/loadAssets.js';
+import { addDungeonSession } from '../../sessions/dungeonSession.js';
+import monsterData from '../../../assets/MonsterData.json' with { type: 'json' };
+import { v4 as uuid } from 'uuid';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
-  console.log('cEnterDungeonHandler 호출됨');
-
   // 유저 정보 가져오기
+  const { dungeonCode } = payload;
   const user = await getUserBySocket(socket);
-  if (!user) {
-    console.error('유저를 찾을 수 없습니다.');
-    return;
+
+  const dungeon = addDungeonSession(uuid(), dungeonCode);
+
+  dungeon.addUserAtDungeon(user);
+
+  const num = Math.floor(Math.random() * 3) + 1;
+  //  1 ~ 3
+  const btn = [];
+
+  console.log(`몬스터 데이터 ${monsterData}`);
+
+  for (let i = 0; i < num; i++) {
+    const monsterInfos = monsterData.data;
+    const index = Math.floor(Math.random() * monsterInfos.length);
+    dungeon.addMonster(monsterInfos[index], i);
+    btn.push({ msg: monsterInfos.monsterName, enable: true });
   }
-
-  const dungeonCode = payload.dungeonCode;
-  console.log(`유저가 입장하려는 던전 코드: ${dungeonCode}`);
-
-  // 던전 정보 가져오기
-  const dungeonInfo = getDungeonInfo(dungeonCode);
-  if (!dungeonInfo) {
-    console.error('던전 정보를 가져오는 데 실패했습니다.');
-    return;
-  }
-
-  // 유저 던전 입장 처리
-  user.enterDungeon(dungeonCode);
-  console.log(`유저 ${user.nickname}가 ${dungeonCode} 던전에 입장함`);
 
   // 데이터 구성
+  // TODO : 던전에 입장 후 실제 데이터가 잘 전송 됐는지 확인하기
   const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
-    dungeonInfo: dungeonInfo,
+    dungeonInfo: {
+      dungeonCode,
+      monsters: dungeon.monsters,
+    },
     player: {
-      playerClass: user.class,
-      playerLevel: user.level,
+      playerClass: user.stat.class,
+      playerLevel: user.stat.level,
       playerName: user.nickname,
-      playerFullHp: user.statInfo.maxHp,
-      playerFullMp: user.statInfo.maxMp,
-      playerCurHp: user.statInfo.hp,
-      playerCurMp: user.statInfo.mp,
+      playerFullHp: user.stat.maxHp,
+      playerFullMp: user.stat.maxMp,
+      playerCurHp: user.stat.hp,
+      playerCurMp: user.stat.mp,
     },
     screenText: {
-      msg: payload.screenText?.msg || '던전에 입장했습니다!', // 기본 메시지 설정
-      typingAnimation: payload.screenText?.typingAnimation || false,
-      alignment: {
-        x: payload.screenText?.alignment?.x || 0,
-        y: payload.screenText?.alignment?.y || 0,
-      },
-      textColor: payload.screenText?.textColor || null,
-      screenColor: payload.screenText?.screenColor || null,
+      msg: '던전에 입장했습니다!',
+      typingAnimation: true,
+      // alignment: {
+      //   x: payload.screenText?.alignment?.x || 0,
+      //   y: payload.screenText?.alignment?.y || 0,
+      // },
+      // textColor: payload.screenText?.textColor || null,
+      // screenColor: payload.screenText?.screenColor || null,
     },
-    battleLog: user.battleLog || [], // 유저의 배틀 로그
+    battleLog: {
+      msg: '몬스터를 모두 처치하세요',
+      typingAnimation: true,
+      btn,
+    },
   });
 
-  // 던전 세션 존재 여부 확인
-  if (!dungeonSessions || dungeonSessions.length === 0) {
-    console.error('던전 세션을 찾을 수 없습니다.');
-    return;
-  }
-
-  // 던전 내 모든 유저에게 패킷 전송
-  dungeonSessions.forEach((targetSession) => {
-    targetSession.users.forEach((targetUser) => {
-      try {
-        targetUser.socket.write(enterDungeonPayload);
-        console.log(`패킷을 ${targetUser.nickname}에게 전송함`);
-      } catch (error) {
-        console.error('S_EnterDungeon 패킷 전송중 오류 발생', error);
-      }
-    });
-  });
+  user.socket.write(enterDungeonPayload);
 };
