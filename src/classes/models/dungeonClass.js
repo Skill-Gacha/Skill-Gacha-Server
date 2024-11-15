@@ -8,12 +8,18 @@ class Dungeon extends BaseSession {
     this.dungeonCode = dungeonCode;
   }
 
-  addUser(user) {
+  addUserAtDungeon(user) {
     this.users.push(user);
   }
 
-  addMonster(monster) {
+  addMonster(monster, index) {
+    const fixMonster = { monsterIdx: index, ...monster };
     this.monsters.push(monster);
+  }
+
+  getDungeonAtUser(userId) {
+    console.log('유저 아이디 : ', userId);
+    return this.users.find((u) => u.id === userId);
   }
 }
 
