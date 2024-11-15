@@ -7,6 +7,7 @@ import { cChatHandler } from './town/cChatHandler.js';
 import { cAnimationHandler } from './town/cAnimationHandler.js';
 import { sEnterHandler } from './town/sEnterHandler.js';
 import { cMoveHandler } from './town/cMoveHandler.js';
+import { cEnterDungeonHandler } from './dungeon/cEnterDungeonHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -26,7 +27,7 @@ const handlers = {
     protoType: 'C_Chat',
   },
   [PacketType.C_EnterDungeon]: {
-    handler: undefined,
+    handler: cEnterDungeonHandler,
     protoType: 'C_EnterDungeon',
   },
   [PacketType.C_PlayerResponse]: {

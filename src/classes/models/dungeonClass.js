@@ -1,4 +1,4 @@
-import Game from './BaseSessionClass.js';
+import BaseSession from './BaseSessionClass.js';
 
 class Dungeon extends BaseSession {
   constructor(dungeonId, dungeonCode) {
@@ -8,11 +8,12 @@ class Dungeon extends BaseSession {
     this.dungeonCode = dungeonCode;
   }
 
-  addUser(user) {
+  addUserAtDungeon(user) {
     this.users.push(user);
   }
 
-  addMonster(monster) {
+  addMonster(monster, index) {
+    const fixMonster = { monsterIdx: index, ...monster };
     this.monsters.push(monster);
   }
 }

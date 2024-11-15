@@ -1,4 +1,4 @@
-// src/classes/models/gameClass.js
+// src/classes/models/BaseSessionClass.js
 
 class BaseSession {
   constructor(sessionId) {
@@ -7,4 +7,4 @@ class BaseSession {
   }
 }
 
-export default Game;
+export default BaseSession;

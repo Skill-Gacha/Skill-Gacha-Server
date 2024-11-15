@@ -16,7 +16,7 @@ export const sEnterHandler = async ({ socket, payload }) => {
     console.error('존재하지 않는 직업입니다.');
     return;
   }
-  
+
   // 닉네임 중복 확인
   const existingPlayer = await findUserNickname(nickname);
   if (existingPlayer) {
@@ -47,7 +47,7 @@ export const sEnterHandler = async ({ socket, payload }) => {
   user.position.posY = 0;
   user.position.posZ = 0;
   user.position.rot = 0;
-  
+
   // 스탯 정보 설정
   user.stat.hp = newUser.maxHp;
   user.stat.maxHp = newUser.maxHp;
