@@ -6,7 +6,6 @@ import Position from './positionClass.js';
 let idCounter = 1;
 
 class User {
-
   constructor(socket, id, nickname) {
     this.socket = socket;
     this.id = idCounter++;
@@ -21,7 +20,6 @@ class User {
     // 스탯 정보
     this.stat = new Stat();
   }
-
 }
 
 export default User;
