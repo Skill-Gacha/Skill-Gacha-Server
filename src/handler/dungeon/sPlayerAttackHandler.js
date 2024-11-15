@@ -1,11 +1,10 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 
-const sPlayerAttackHandler = (user, dungeon, responseCode) => {
+const sPlayerAttackHandler = async (user, dungeon, responseCode) => {
   const monster = dungeon.monsters.find((monster) => monster.monsterIdx === responseCode - 1);
 
   monster.monsterHp -= user.stat.atk;
-  if (monster.monsterHp <= 0) dungeon.monsters.splice(responseCode - 1, 1);
 
   user.socket.write(
     createResponse(PacketType.S_PlayerAction, {
@@ -18,12 +17,23 @@ const sPlayerAttackHandler = (user, dungeon, responseCode) => {
     }),
   );
 
-  user.socket.write(PacketType.S_SetMonsterHp, {
-    monsterIdx: monster.monsterIdx,
-    hp: monster.monsterHp,
-  });
+  user.socket.write(
+    createResponse(PacketType.S_SetMonsterHp, {
+      monsterIdx: monster.monsterIdx,
+      hp: monster.monsterHp,
+    }),
+  );
 
-  // TODO: 몬스터가 다 죽었는지 유무에 따라 던전 나갈 것인지, 혹은 더 깊게 들어갈 것인지 관련 코드 필요
+  user.socket.write(
+    createResponse(PacketType.S_BattleLog, {
+      msg: `몬스터 ${monster.monsterName}에게 ${user.atk}만큼의 데미지를 줬습니다.`,
+      typingAnimation: true,
+    }),
+  );
+
+  // TODO: 몬스터가 다 죽었는지 유무에 따라 던전 나갈 것인지, (진짜 향후 진행)혹은 더 깊게 들어갈 것인지 관련 코드 필요
+
+  //user.socket.write(PacketType.S_Spawn,{})
 };
 
 export default sPlayerAttackHandler;
