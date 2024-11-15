@@ -1,7 +1,7 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 
-const sPlayerAttackHandler = async (user, dungeon, responseCode) => {
+const sPlayerActionHandler = async (user, dungeon, responseCode) => {
   const monster = dungeon.monsters.find((monster) => monster.monsterIdx === responseCode - 1);
 
   monster.monsterHp -= user.stat.atk;
@@ -32,8 +32,6 @@ const sPlayerAttackHandler = async (user, dungeon, responseCode) => {
   );
 
   // TODO: 몬스터가 다 죽었는지 유무에 따라 던전 나갈 것인지, (진짜 향후 진행)혹은 더 깊게 들어갈 것인지 관련 코드 필요
-
-  //user.socket.write(PacketType.S_Spawn,{})
 };
 
-export default sPlayerAttackHandler;
+export default sPlayerActionHandler;

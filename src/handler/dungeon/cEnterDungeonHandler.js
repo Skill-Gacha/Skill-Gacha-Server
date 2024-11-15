@@ -19,6 +19,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   //  1 ~ 3
   const btns = [];
 
+  let monsterList = [];
   for (let i = 0; i < num; i++) {
     const monsterInfos = monsterData.data;
     const index = Math.floor(Math.random() * monsterInfos.length);
@@ -35,9 +36,13 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
       i,
     );
     console.log('클래스 내 몬스터 정보 : ', dungeon.monsters);
-    delete dungeon.monsters[i].atk;
-    delete dungeon.monsters[i].effectCode;
+    monsterList.push(dungeon.monsters[i]);
     btns.push({ msg: monsterInfos[index].monsterName, enable: true });
+  }
+
+  for (let i = 0; i < monsterList.length; i++) {
+    delete monsterList[i].monsterAtk;
+    delete monsterList[i].monsterEffectCode;
   }
 
   console.log('패킷으로 보낼 몬스터 정보 : ', dungeon.monsters);
@@ -46,7 +51,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
     dungeonInfo: {
       dungeonCode,
-      monsters: dungeon.monsters,
+      monsters: monsterList,
     },
     player: {
       playerClass: user.job,
