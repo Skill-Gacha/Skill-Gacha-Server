@@ -3,12 +3,10 @@
 import Stat from './statClass.js';
 import Position from './positionClass.js';
 
-let idCounter = 1;
-
 class User {
   constructor(socket, id, nickname) {
     this.socket = socket;
-    this.id = idCounter++;
+    this.id = id;
     this.nickname = nickname;
     // PlayerInfo
     this.playerInfo = {};
