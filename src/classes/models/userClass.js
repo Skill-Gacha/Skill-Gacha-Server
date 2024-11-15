@@ -3,23 +3,21 @@
 import Stat from './statClass.js';
 import Position from './positionClass.js';
 
+let idCounter = 1;
+
 class User {
-  constructor(socket, id, nickname, job, animCode) {
+  constructor(socket, id, nickname) {
     this.socket = socket;
-    this.id = id;
+    this.id = idCounter++;
     this.nickname = nickname;
 
-    // 클래스 정보
-    // 속성 구분을 위해 사용
-    this.job = job;
-
-    // 이모트용 감정표현 코드
-    this.animCode = animCode;
+    // PlayerInfo
+    this.playerInfo = {};
 
     // 위치 정보
     this.position = new Position();
 
-    //스탯 정보
+    // 스탯 정보
     this.stat = new Stat();
   }
 

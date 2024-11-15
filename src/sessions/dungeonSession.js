@@ -1,4 +1,4 @@
-// src/sessions/game.session.js
+// src/sessions/dungeonSession.js
 
 import Dungeon from '../classes/models/dungeonClass.js';
 import { dungeonSessions } from './sessions.js';

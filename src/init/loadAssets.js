@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 
 // path.dirname() 함수는 파일 경로에서 디렉토리 경로만 추출 (파일 이름을 제외한 디렉토리의 전체 경로)
 const __dirname = path.dirname(__filename);
-const basePath = path.join(__dirname, '../assets');
+const basePath = path.join(__dirname, '../../assets');
 let gameAssets = {}; // 전역함수로 선언
 
 const readFileAsync = (filename) => {
@@ -24,19 +24,28 @@ const readFileAsync = (filename) => {
         reject(err);
         return;
       }
-      resolve(JSON.parse(data));
+      // BOM 제거
+      const cleanData = data.replace(/^\uFEFF/, '');
+      try {
+        resolve(JSON.parse(cleanData));
+      } catch (jsonErr) {
+        reject(new Error(`Invalid JSON format in file: ${filename}`));
+      }
     });
   });
 };
 
 export const loadGameAssets = async () => {
   try {
-    const [monster_unlock, monster, tower, wave, trap] = await Promise.all([
+    const [playerCharacter, monsterStatus] = await Promise.all([
       // 이런 형태로 필요한 파일 로드
+
       readFileAsync('playerCharacter.json'),
-      // readFileAsync('monster.json'),
+      readFileAsync('MonsterData.json'), // 몬스터 상태 파일 추가
     ]);
-    gameAssets = { monster_unlock, monster, tower, wave, trap };
+
+    gameAssets = { playerCharacter, monsterStatus };
+
     return gameAssets;
   } catch (error) {
     throw new Error('Failed to load game assets: ' + error.message);
@@ -45,4 +54,9 @@ export const loadGameAssets = async () => {
 
 export const getGameAssets = () => {
   return gameAssets;
+};
+
+export const getJobById = (jobId) => {
+  const index = gameAssets.playerCharacter.data.findIndex((job) => job.id === jobId);
+  return gameAssets.playerCharacter.data[index];
 };

@@ -1,4 +1,4 @@
-// src/classes/models/BaseSessionClass.js
+// src/classes/models/gameClass.js
 
 class BaseSession {
   constructor(sessionId) {

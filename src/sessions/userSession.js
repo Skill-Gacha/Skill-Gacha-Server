@@ -8,7 +8,7 @@ export const addUser = async (user) => {
 };
 
 export const getUserByUserId = (userId) => {
-  return userSessions.find((user) => user.userId === userId);
+  return userSessions.find((user) => user.id === userId);
 };
 
 export const removeUser = async (socket) => {
