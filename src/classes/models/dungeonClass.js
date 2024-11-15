@@ -16,6 +16,11 @@ class Dungeon extends BaseSession {
     const fixMonster = { monsterIdx: index, ...monster };
     this.monsters.push(monster);
   }
+
+  getDungeonAtUser(userId) {
+    console.log('유저 아이디 : ', userId);
+    return this.users.find((u) => u.id === userId);
+  }
 }
 
 export default Dungeon;

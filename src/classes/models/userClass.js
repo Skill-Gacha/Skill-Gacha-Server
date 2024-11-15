@@ -10,7 +10,6 @@ class User {
     this.socket = socket;
     this.id = idCounter++;
     this.nickname = nickname;
-
     // PlayerInfo
     this.playerInfo = {};
 

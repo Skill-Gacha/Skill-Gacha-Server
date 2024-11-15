@@ -27,3 +27,11 @@ export const getDungeonSessionById = (sessionId) => {
   }
   return dungeonSession;
 };
+
+export const getDungeonSessionByUser = (userId) => {
+  return dungeonSessions.find((session) => {
+    const findUser = session.getDungeonAtUser(userId);
+    console.log('유저 찾았다', findUser);
+    if (findUser) return session;
+  });
+};
