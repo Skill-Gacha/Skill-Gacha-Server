@@ -1,7 +1,6 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { getUserBySocket } from '../../sessions/userSession.js';
-import { dungeonSessions } from '../../sessions/sessions.js';
 import { addDungeonSession } from '../../sessions/dungeonSession.js';
 import monsterData from '../../../assets/MonsterData.json' with { type: 'json' };
 import { v4 as uuid } from 'uuid';
