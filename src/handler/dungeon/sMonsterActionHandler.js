@@ -44,9 +44,6 @@ export const sMonsterActionHandler = async (dungeon, user) => {
                     msg: '캐릭터가 사망하였습니다.',
                     typingAnimation: true
                 }));
-                // 던전 종료
-                user.socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
-                return;
             }
         } catch (error) {
             console.error('S_MonsterAction 패킷 전송 중 오류 발생:', error);
