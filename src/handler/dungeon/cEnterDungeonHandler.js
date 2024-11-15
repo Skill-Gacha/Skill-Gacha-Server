@@ -1,11 +1,11 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { getUserBySocket } from '../../sessions/userSession.js';
-import { dungeonSessions } from '../../sessions/sessions.js';
 import { addDungeonSession } from '../../sessions/dungeonSession.js';
 import monsterData from '../../../assets/MonsterData.json' with { type: 'json' };
 import { v4 as uuid } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';
+import { sDespawnHandler } from '../town/sDespawnHandler.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   // 유저 정보 가져오기
@@ -20,9 +20,10 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   //  1 ~ 3
   const btns = [];
 
+  let monsterList = [];
   for (let i = 0; i < num; i++) {
     const monsterInfos = monsterData.data;
-    const index = Math.floor(Math.random() * monsterInfos.length);
+    const index = Math.floor(3); //Math.random() * monsterInfos.length);
     const monster = monsterInfos[index];
     dungeon.addMonster(
       new Monster(
@@ -36,18 +37,23 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
       i,
     );
     console.log('클래스 내 몬스터 정보 : ', dungeon.monsters);
-    delete dungeon.monsters[i].atk;
-    delete dungeon.monsters[i].effectCode;
+    monsterList.push(dungeon.monsters[i]);
     btns.push({ msg: monsterInfos[index].monsterName, enable: true });
   }
 
-  console.log('패킷으로 보낼 몬스터 정보 : ', dungeon.monsters);
+  for (let i = 0; i < monsterList.length; i++) {
+    delete monsterList[i].monsterAtk;
+    delete monsterList[i].monsterEffectCode;
+  }
+
+  await sDespawnHandler(socket);
+
   // 데이터 구성
   // TODO : 던전에 입장 후 실제 데이터가 잘 전송 됐는지 확인하기
   const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
     dungeonInfo: {
       dungeonCode,
-      monsters: dungeon.monsters,
+      monsters: monsterList,
     },
     player: {
       playerClass: user.job,

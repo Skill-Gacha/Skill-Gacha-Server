@@ -1,5 +1,4 @@
 ﻿// src/classes/models/user.class.js
-
 import Stat from './statClass.js';
 //import Position from './positionClass.js';
 
