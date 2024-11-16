@@ -29,9 +29,11 @@ export const getDungeonSessionById = (sessionId) => {
 };
 
 export const removeDungeonSessionByUserId = (userId) => {
-  const findIndex = dungeonSessions.findIndex((session) => session.getDungeonAtUser(userId));
-  console.log('찾은 인덱스 : ', findIndex);
-  if (findIndex !== -1) dungeonSessions.splice(findIndex, 1);
+  const findIndex = dungeonSessions.findIndex((session) => {
+    const user = session.users.find((user) => user.id === userId);
+    return user ? true : false;
+  });
+  dungeonSessions.splice(findIndex, 1);
 };
 
 export const getDungeonSessionByUserId = (userId) => {

@@ -23,7 +23,7 @@ export const sMonsterActionHandler = async (user, dungeon) => {
 
     const actionBattleLog = {
       battleLog: {
-        msg: `${monster.monsterName}${lastKorean}에게 ${monster.atk} 만큼 피해를 줬습니다.`,
+        msg: `${monster.monsterName}에게 ${monster.atk} 만큼 피해를 줬습니다.`,
         typingAnimation: true,
       },
     };
