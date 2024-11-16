@@ -21,7 +21,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const btns = [];
 
   let monsterList = [];
-  for (let i = 0; i < num; i++) {
+  for (let i = 0; i < 3; i++) {
     const monsterInfos = monsterData.data;
     const index = Math.floor(Math.random() * monsterInfos.length);
     const monster = monsterInfos[index];

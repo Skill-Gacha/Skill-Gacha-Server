@@ -70,6 +70,8 @@ export const cEnterHandler = async ({ socket, payload }) => {
   const isUserInSession = userSessions.find((u) => u.id === user.id);
   if (!isUserInSession) {
     await addUser(user);
+  } else {
+    isUserInSession.resetUserHpMp();
   }
   // console.log('유저 세션: ', userSessions);
 
