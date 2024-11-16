@@ -30,7 +30,6 @@ const sPlayerActionHandler = async (user, dungeon, responseCode) => {
         actionMonsterIdx: monster.monsterIdx,
         actionSet: {
           animCode: 4, // 0이랑 1이 몬스터 공격 모션
-          effectCode: monster.effectCode,
         },
       }),
     );
