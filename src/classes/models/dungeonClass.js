@@ -1,4 +1,6 @@
-import BaseSession from './BaseSessionClass.js';
+// src/classes/models/dungeonClass.js
+
+import BaseSession from './BaseSession.js';
 
 class Dungeon extends BaseSession {
   constructor(dungeonId, dungeonCode) {
@@ -7,18 +9,11 @@ class Dungeon extends BaseSession {
     this.dungeonCode = dungeonCode;
   }
 
-  addUserAtDungeon(user) {
-    this.users.push(user);
-  }
-
-  addMonster(monster, index) {
-    const fixMonster = { monsterIdx: index, ...monster };
+  addMonster(monster) {
     this.monsters.push(monster);
   }
 
-  getDungeonAtUser(userId) {
-    return this.users.find((u) => u.id === userId);
-  }
+  // 필요에 따라 추가적인 던전 관련 메서드
 }
 
 export default Dungeon;

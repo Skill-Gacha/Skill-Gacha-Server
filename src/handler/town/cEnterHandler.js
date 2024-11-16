@@ -1,16 +1,15 @@
+// src/handlers/cEnterHandler.js
+
 import { PacketType } from '../../constants/header.js';
 import { createUser, findUserNickname } from '../../db/user/user.db.js';
 import { getJobById } from '../../init/loadAssets.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import User from '../../classes/models/userClass.js';
-import { addUserAtTown, getAllUserExceptMyself } from '../../sessions/townSession.js';
+import sessionManager from '../../managers/SessionManager.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
-import { addUser } from '../../sessions/userSession.js';
-import { userSessions } from '../../sessions/sessions.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
+import User from '../../classes/models/userClass.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
-  console.log('실형 횟수 테스트');
   const { nickname, class: jobClass } = payload;
 
   // 직업 유효성 검사
@@ -24,9 +23,6 @@ export const cEnterHandler = async ({ socket, payload }) => {
   // 닉네임 중복 확인
   const existingPlayer = await findUserNickname(nickname);
   if (existingPlayer) {
-    // console.error('이미 존재하는 닉네임입니다.');
-    // return;
-
     // 존재하는 유저일 경우, 기존 정보 불러오기
     newUser = existingPlayer;
   } else {
@@ -44,8 +40,8 @@ export const cEnterHandler = async ({ socket, payload }) => {
     );
     newUser = await findUserNickname(nickname);
   }
-  // User 클래스 인스턴스 생성
 
+  // User 클래스 인스턴스 생성
   const user = new User(
     socket,
     newUser.id,
@@ -61,32 +57,23 @@ export const cEnterHandler = async ({ socket, payload }) => {
   user.level = newUser.level;
 
   // 위치 정보 설정
-  user.position.posX = 0;
-  user.position.posY = 0;
-  user.position.posZ = 0;
-  user.position.rot = 0;
+  user.position = { posX: 0, posY: 0, posZ: 0, rot: 0 };
 
   // 스탯 정보 설정
-  user.stat.hp = newUser.maxHp;
-  user.stat.maxHp = newUser.maxHp;
-  user.stat.mp = newUser.maxMp;
-  user.stat.maxMp = newUser.maxMp;
-  user.stat.atk = newUser.atk;
-  user.stat.def = newUser.def;
-  user.stat.magic = newUser.magic;
-  user.stat.speed = newUser.speed;
+  user.stat = {
+    level: newUser.level,
+    hp: newUser.maxHp,
+    maxHp: newUser.maxHp,
+    mp: newUser.maxMp,
+    maxMp: newUser.maxMp,
+    atk: newUser.atk,
+    def: newUser.def,
+    magic: newUser.magic,
+    speed: newUser.speed,
+  };
 
-  // townSession에 사용자 추가
-  await addUserAtTown(user);
-
-  // userSession에 user가 없을 경우(로그인 시점), 사용자 추가
-  const isUserInSession = userSessions.find((u) => u.id === user.id);
-  if (!isUserInSession) {
-    await addUser(user);
-  } else {
-    isUserInSession.resetUserHpMp();
-  }
-  // console.log('유저 세션: ', userSessions);
+  // sessionManager를 통해 사용자 추가
+  sessionManager.addUser(user);
 
   // S_Enter 메시지 생성
   const enterData = playerData(user);
@@ -96,7 +83,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
   socket.write(enterResponse);
 
   // 다른 사용자 정보 가져오기
-  const otherUsers = await getAllUserExceptMyself(user.id);
+  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(u => u.id !== user.id);
 
   // 새로운 사용자에게 기존 사용자들의 정보를 S_Spawn 메시지로 전송
   if (otherUsers.length > 0) {
