@@ -2,7 +2,7 @@ import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { getUserBySocket } from '../../sessions/userSession.js';
 import { addDungeonSession } from '../../sessions/dungeonSession.js';
-import monsterData from '../../../assets/MonsterData.json' with { type: 'json' };
+import MonsterClass from '../../../assets/MonsterData.json' with { type: 'json' };
 import { v4 as uuid } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
@@ -12,33 +12,41 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const user = await getUserBySocket(socket);
 
-  const dungeon = addDungeonSession(uuid(), dungeonCode);
+  const btns = []; //버튼
 
+  const dungeon = addDungeonSession(uuid(), dungeonCode);
   dungeon.addUserAtDungeon(user);
 
-  const num = Math.floor(Math.random() * 3) + 1;
-  //  1 ~ 3
-  const btns = [];
+  const monsterCodes = [...Array(28).keys()].map((i) => 2002 + i); // 2002부터 2029까지의 몬스터 코드 배열
+  const monsterInfos = MonsterClass.data.filter((monster) =>
+    monsterCodes.includes(monster.monsterModel),
+  );
 
-  let monsterList = [];
-  for (let i = 0; i < 3; i++) {
-    const monsterInfos = monsterData.data;
-    const index = Math.floor(Math.random() * monsterInfos.length);
-    const monster = monsterInfos[index];
-    dungeon.addMonster(
-      new Monster(
-        i,
-        monster.monsterModel,
-        monster.monsterName,
-        monster.monsterHp,
-        monster.monsterAtk,
-        monster.monsterEffectCode,
-      ),
-      i,
+  // 던전 코드에 따라 몬스터 정보를 가져오기
+  const startIndex = dungeonCode * 5;
+  const endIndex = startIndex + 5;
+  const selectedMonsters = monsterInfos.splice(startIndex, endIndex - startIndex);
+  const monsterList = [];
+
+  const totalMonsters = Math.floor(Math.random() * 3) + 1; //던전에 1~3마리
+
+  for (let i = 0; i < totalMonsters; i++) {
+    const index = Math.floor(Math.random() * selectedMonsters.length);
+    const monster = selectedMonsters[index];
+
+    const monsterInstance = new Monster(
+      monsterList.length,
+      monster.monsterModel,
+      monster.monsterName,
+      monster.monsterHp,
+      monster.monsterAtk,
+      monster.monsterEffectCode,
     );
-    console.log('클래스 내 몬스터 정보 : ', dungeon.monsters);
-    monsterList.push(dungeon.monsters[i]);
-    btns.push({ msg: monsterInfos[index].monsterName, enable: true });
+
+    dungeon.addMonster(monsterInstance, monsterList.length);
+    monsterList.push(monsterInstance);
+
+    btns.push({ msg: monster.monsterName, enable: true });
   }
 
   for (let i = 0; i < monsterList.length; i++) {
@@ -67,12 +75,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     screenText: {
       msg: '던전에 입장했습니다!',
       typingAnimation: true,
-      // alignment: {
-      //   x: payload.screenText?.alignment?.x || 0,
-      //   y: payload.screenText?.alignment?.y || 0,
-      // },
-      // textColor: payload.screenText?.textColor || null,
-      // screenColor: payload.screenText?.screenColor || null,
     },
     battleLog: {
       msg: '몬스터를 모두 처치하세요',

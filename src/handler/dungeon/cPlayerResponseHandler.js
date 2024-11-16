@@ -20,15 +20,16 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
     user.socket.write(response);
   }
   if (responseCode === 0) {
+    if (user.stat.hp <= 0 || alive.length === 0) {
+      removeDungeonSessionByUserId(user.id);
+      const response = createResponse(PacketType.S_LeaveDungeon, {});
+      user.socket.write(response);
+      return;
+    }
     user.socket.write(createResponse(PacketType.S_ScreenDone, {}));
     return;
   } else {
     await sPlayerActionHandler(user, dungeon, responseCode);
-
-    // for(let i = 0; i < alive.length; i++)
-    // {
-
-    // }
     await sMonsterActionHandler(user, dungeon, responseCode);
   }
 };
