@@ -7,6 +7,7 @@ import sPlayerActionHandler from './sPlayerActionHandler.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
 import { sMonsterActionHandler } from './sMonsterActionHandler.js';
+import { delay } from './delay.js';
 
 // 던전에서 버튼을 클릭할 경우 그에 따른 동작
 export const cPlayerResponseHandler = async ({ socket, payload }) => {
@@ -30,6 +31,7 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
     return;
   } else {
     await sPlayerActionHandler(user, dungeon, responseCode);
+    await delay(1000);
     await sMonsterActionHandler(user, dungeon, responseCode);
   }
 };
