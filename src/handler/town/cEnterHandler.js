@@ -40,6 +40,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       chosenJob.magic,
       chosenJob.speed,
     );
+    newUser = await findUserNickname(nickname)
   }
   // User 클래스 인스턴스 생성
   const user = new User(socket, newUser.id, nickname);
