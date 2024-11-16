@@ -7,6 +7,7 @@ import { addUserAtTown, getAllUserExceptMyself } from '../../sessions/townSessio
 import { sSpawnHandler } from './sSpawnHandler.js';
 import { addUser } from '../../sessions/userSession.js';
 import { userSessions } from '../../sessions/sessions.js';
+import { playerData } from '../../utils/packet/playerPacket.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   console.log('실형 횟수 테스트');
@@ -88,33 +89,10 @@ export const cEnterHandler = async ({ socket, payload }) => {
   // console.log('유저 세션: ', userSessions);
 
   // S_Enter 메시지 생성
-  const enterData = {
-    player: {
-      playerId: user.id,
-      nickname: user.nickname,
-      class: user.job,
-      transform: {
-        posX: user.position.posX,
-        posY: user.position.posY,
-        posZ: user.position.posZ,
-        rot: user.position.rot,
-      },
-      statInfo: {
-        level: user.level,
-        hp: user.stat.hp,
-        maxHp: user.stat.maxHp,
-        mp: user.stat.mp,
-        maxMp: user.stat.maxMp,
-        atk: user.stat.atk,
-        def: user.stat.def,
-        magic: user.stat.magic,
-        speed: user.stat.speed,
-      },
-    },
-  };
+  const enterData = playerData(user);
 
   // S_Enter 응답 전송
-  const enterResponse = createResponse(PacketType.S_Enter, enterData);
+  const enterResponse = createResponse(PacketType.S_Enter, { player: enterData });
   socket.write(enterResponse);
 
   // 다른 사용자 정보 가져오기
@@ -122,28 +100,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
 
   // 새로운 사용자에게 기존 사용자들의 정보를 S_Spawn 메시지로 전송
   if (otherUsers.length > 0) {
-    const otherPlayersData = otherUsers.map((u) => ({
-      playerId: u.id,
-      nickname: u.nickname,
-      class: u.job,
-      transform: {
-        posX: u.position.posX,
-        posY: u.position.posY,
-        posZ: u.position.posZ,
-        rot: u.position.rot,
-      },
-      statInfo: {
-        level: u.level,
-        hp: u.stat.hp,
-        maxHp: u.stat.maxHp,
-        mp: u.stat.mp,
-        maxMp: u.stat.maxMp,
-        atk: u.stat.atk,
-        def: u.stat.def,
-        magic: u.stat.magic,
-        speed: u.stat.speed,
-      },
-    }));
+    const otherPlayersData = otherUsers.map((u) => playerData(u));
 
     const spawnResponse = createResponse(PacketType.S_Spawn, { players: otherPlayersData });
     socket.write(spawnResponse);
