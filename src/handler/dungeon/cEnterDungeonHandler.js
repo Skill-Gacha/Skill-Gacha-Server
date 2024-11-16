@@ -34,8 +34,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const index = Math.floor(Math.random() * selectedMonsters.length);
     const monster = selectedMonsters[index];
 
-    //const quantity = Math.floor(Math.random() * 3) + 1; //특정 몬스터 같은몬스터 1~3마리까지 가능
-    //for (let j = 0; j < quantity; j++) {
     const monsterInstance = new Monster(
       monsterList.length,
       monster.monsterModel,
@@ -49,7 +47,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     monsterList.push(monsterInstance);
 
     btns.push({ msg: monster.monsterName, enable: true });
-    //}
   }
 
   for (let i = 0; i < monsterList.length; i++) {
