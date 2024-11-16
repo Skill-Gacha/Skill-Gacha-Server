@@ -22,7 +22,7 @@ export const cAnimationHandler = async ({ socket, payload }) => {
     return;
   }
 
-  // 타운 내 모든 유저에게 패킷 전송 (자신 포함)
+  // 타운 내 모든 유저에게 패킷 전송
   town.users.forEach((targetUser) => {
     try {
       targetUser.socket.write(animationPayload);

@@ -28,7 +28,7 @@ export const sDespawnHandler = async (user) => {
     // 타운 내 다른 사용자들에게 디스펜스 패킷 전송
     sessionManager.broadcastToSession(town, despawnPayload, user.id);
 
-    console.log(`유저 ${user.id}의 디스펜스 패킷을 타운 세션에 전송하였습니다.`);
+    console.log(`유저 ${user.id}의 Despawn 패킷을 타운 세션에 전송하였습니다.`);
   } catch (error) {
     console.error('sDespawnHandler 처리 중 오류 발생:', error);
     handleError(user.socket, error);

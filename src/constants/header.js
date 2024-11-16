@@ -1,7 +1,5 @@
 // src/constants/header.js
 
-// src/constants/header.js
-
 export const PacketType = {
   // 클라이언트 → 서버 패킷
   C_Enter: 0,

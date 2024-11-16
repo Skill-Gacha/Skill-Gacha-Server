@@ -98,6 +98,5 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     console.log(`유저 ${user.id}가 던전 ${dungeonCode}에 입장하였습니다.`);
   } catch (error) {
     console.error('cEnterDungeonHandler 처리 중 오류 발생:', error);
-    // 추가적인 에러 핸들링 필요 시 추가
   }
 };

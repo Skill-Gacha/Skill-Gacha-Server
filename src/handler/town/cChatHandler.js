@@ -24,7 +24,7 @@ export const cChatHandler = async ({ socket, payload }) => {
     return;
   }
 
-  // 타운 내 모든 유저에게 패킷 전송 (자신을 제외하려면 조건 추가)
+  // 타운 내 모든 유저에게 패킷 전송
   town.users.forEach((targetUser) => {
     try {
       targetUser.socket.write(chatPayload);

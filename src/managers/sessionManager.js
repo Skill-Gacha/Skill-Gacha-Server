@@ -7,13 +7,13 @@ import Dungeon from '../classes/models/dungeonClass.js';
 class SessionManager {
   constructor() {
     this.sessions = {
-      town: new Town(10000), // 기본 마을 세션 초기화
+      town: new Town(10000), // 기본 마을 세션 초기화 -> 마을은 하나만 유지
       dungeons: new Map(),
     };
     this.users = new Map();
   }
 
-  // 사용자 관리
+  // **사용자 관리**
   addUser(user) {
     this.users.set(user.id, user);
     this.sessions.town.addUser(user); // 기본적으로 마을 세션에 추가
@@ -39,7 +39,7 @@ class SessionManager {
     return null;
   }
 
-  // 던전 세션 관리
+  // **던전 세션 관리**
   createDungeon(sessionId, dungeonCode) {
     const dungeon = new Dungeon(sessionId, dungeonCode);
     this.sessions.dungeons.set(sessionId, dungeon);
@@ -54,12 +54,14 @@ class SessionManager {
     this.sessions.dungeons.delete(sessionId);
   }
 
-  // 마을 세션 관리
+  // **마을 세션 관리**
   getTown() {
     return this.sessions.town;
   }
 
   // 사용자 세션 조회 (마을 또는 던전)
+  // 사용자가 현재 속한 세션을 가져옴
+  // 마을에 있으면 타운 세션 정보, 던전에 있으면 던전 세션 정보 가져옴
   getSessionByUserId(userId) {
     if (this.sessions.town.getUser(userId)) {
       return this.sessions.town;
@@ -73,6 +75,7 @@ class SessionManager {
   }
 
   // 세션 내 사용자에게 패킷 브로드캐스트
+  // 세션에 따라 달라지므로 타운이 될 수도 있고 던전이 될 수도 있음
   broadcastToSession(session, packet, excludeUserId = null) {
     session.users.forEach((user) => {
       if (user.id !== excludeUserId) {

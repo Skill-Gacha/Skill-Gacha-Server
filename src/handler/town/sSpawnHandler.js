@@ -20,7 +20,7 @@ export const sSpawnHandler = async (newUser) => {
 
   // 기존 사용자들에게 전송 (자신을 제외)
   session.users.forEach((targetUser) => {
-    if (targetUser.id !== newUser.id) { // 자신을 제외하려면 조건 추가
+    if (targetUser.id !== newUser.id) {
       try {
         targetUser.socket.write(spawnResponse);
       } catch (error) {
