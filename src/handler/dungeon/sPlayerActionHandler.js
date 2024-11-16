@@ -22,7 +22,7 @@ const sPlayerActionHandler = async (user, dungeon, responseCode) => {
 
   const monster = dungeon.monsters.find((monster) => monster.monsterIdx === responseCode - 1);
   const damage = user.stat.atk;
-  monster.monsterHp -= damage;
+  monster.minusHp(damage);
 
   if (monster.monsterHp <= 0) {
     user.socket.write(
@@ -56,7 +56,7 @@ const sPlayerActionHandler = async (user, dungeon, responseCode) => {
   let battleLog = {
     battleLog: {
       msg: `몬스터 ${monster.monsterName}에게 ${damage}만큼의 데미지를 줬습니다.`,
-      typingAnimation: true,
+      typingAnimation: false,
     },
   };
   user.socket.write(createResponse(PacketType.S_BattleLog, battleLog));

@@ -23,7 +23,7 @@ export const sMonsterActionHandler = async (user, dungeon) => {
 
         const actionBattleLog = {
             battleLog: {
-                msg: `몬스터에게 공격받아 ${monster.atk}만큼 체력이 감소하였습니다.`,
+                msg: `${monster.monsterName}에게 공격받아 ${monster.atk}만큼 체력이 감소하였습니다.`,
                 typingAnimation: true,
             },
         };
@@ -68,6 +68,5 @@ export const sMonsterActionHandler = async (user, dungeon) => {
     };
     user.socket.write(createResponse(PacketType.S_BattleLog, endBattleLog));
 }
-
 
 

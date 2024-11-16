@@ -11,8 +11,9 @@ class Monster {
     this.effectCode = effectCode;
     this.atk = atk;
   }
+
   minusHp(damage) {
-    this.monsterHp -= damage;
+    this.monsterHp = Math.max(0, this.monsterHp - damage)
   }
 }
 
