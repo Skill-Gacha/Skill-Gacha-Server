@@ -17,28 +17,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const dungeon = addDungeonSession(uuid(), dungeonCode);
   dungeon.addUserAtDungeon(user);
 
-  /*
-  let monsterInfos;
-
-  switch (dungeonCode - 1) {
-    case 0:
-      monsterInfos = dungeonMonsters.slice(0, 6); // 2002~2006 5
-      break;
-    case 1:
-      monsterInfos = dungeonMonsters.slice(6, 16); // 2007~2015 6
-      break;
-    case 2:
-      monsterInfos = dungeonMonsters.slice(16, 25); // 2016~2024 7
-      break;
-    case 3:
-      monsterInfos = dungeonMonsters.slice(25, 30); // 2025~2029 4
-      break;
-    default:
-      console.error(`던전 코드가 맞지 않음: ${dungeonCode}`);
-      return;
-  }
-      */
-
   const monsterCodes = [...Array(28).keys()].map((i) => 2002 + i); // 2002부터 2029까지의 몬스터 코드 배열
   const monsterInfos = MonsterClass.data.filter((monster) =>
     monsterCodes.includes(monster.monsterModel),
