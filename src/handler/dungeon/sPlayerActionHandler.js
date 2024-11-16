@@ -1,25 +1,7 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 
-const sPlayerActionHandler = async (user, dungeon, responseCode) => {
-  // let btns = [];
-
-  // for (let monster of dungeon.monsters) {
-  //   const isAlive = monster.monsterHp > 0 ? true : false;
-  //   btns.push({ msg: monster.monsterName, enable: isAlive });
-  //   //console.log('버튼 내 생존 여부', btns);
-  // }
-
-  // const response = createResponse(PacketType.S_BattleLog, {
-  //   battleLog: {
-  //     msg: '공격할 대상을 선택해주세요!',
-  //     typingAnimation: true,
-  //     btns,
-  //   },
-  // });
-
-  //user.socket.write(response);
-
+export const sPlayerActionHandler = async (user, dungeon, responseCode) => {
   const monster = dungeon.monsters.find((monster) => monster.monsterIdx === responseCode - 1);
   const damage = user.stat.atk;
   monster.monsterHp -= damage;
@@ -61,6 +43,14 @@ const sPlayerActionHandler = async (user, dungeon, responseCode) => {
   };
   user.socket.write(createResponse(PacketType.S_BattleLog, battleLog));
   // TODO: 몬스터가 다 죽었는지 유무에 따라 던전 나갈 것인지, (진짜 향후 진행)혹은 더 깊게 들어갈 것인지 관련 코드 필요
+
+  const alive = dungeon.monsters.filter((monster) => monster.monsterHp > 0);
+  if (alive.length === 0) {
+    removeDungeonSessionByUserId(user.id);
+    const response = createResponse(PacketType.S_LeaveDungeon, {});
+    user.socket.write(response);
+    cEnterHandler({ socket, payload: { nickname: user.nickname, class: user.job } });
+  }
 };
 
 export default sPlayerActionHandler;

@@ -8,11 +8,12 @@ export const sMonsterActionHandler = async (user, dungeon) => {
 
   // 던전 세션 안에 몬스터 배열에서 인덱스를 돌아가면서 설정
   for (const monster of monsters) {
-    if (monster.monsterHp <= 0) {
-      btns.push({ msg: monster.monsterName, enable: false });
-      continue;
-    }
+    // if (monster.monsterHp <= 0) {
+    //   btns.push({ msg: monster.monsterName, enable: false });
+    //   continue;
+    // }
 
+    btns.push({ msg: monster.monsterName, enable: false });
     const actionSet = {
       animCode: Math.floor(Math.random() * 2), // 0이랑 1이 몬스터 공격 모션
       effectCode: monster.effectCode,
