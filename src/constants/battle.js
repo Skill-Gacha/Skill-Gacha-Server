@@ -8,3 +8,7 @@ export const PACKET_HEADER_LENGTH = 5;
 // export const PLAYER_DEF = 30;
 // export const PLAYER_MAGIC = 30;
 // export const PLAYER_SPEED = 30;
+
+export const D_STATE_END = 0;
+export const D_STATE_BATTLE = 1;
+export const D_STATE_PLAYER_DEAD = 2;

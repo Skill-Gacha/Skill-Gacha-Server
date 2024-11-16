@@ -18,6 +18,8 @@ export const sDespawnHandler = async (user) => {
     if (!town) {
       throw new Error('타운 세션을 찾을 수 없습니다.');
     }
+    
+    town.removeUser(user.id);
 
     const despawnPayload = createResponse(PacketType.S_Despawn, {
       playerIds: despawnedUserIds,
