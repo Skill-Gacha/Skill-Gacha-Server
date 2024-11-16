@@ -9,6 +9,7 @@ import { addUser } from '../../sessions/userSession.js';
 import { userSessions } from '../../sessions/sessions.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
+  console.log('실형 횟수 테스트');
   const { nickname, class: jobClass } = payload;
 
   // 직업 유효성 검사
@@ -43,7 +44,18 @@ export const cEnterHandler = async ({ socket, payload }) => {
     newUser = await findUserNickname(nickname);
   }
   // User 클래스 인스턴스 생성
-  const user = new User(socket, newUser.id, nickname);
+
+  const user = new User(
+    socket,
+    newUser.id,
+    nickname,
+    newUser.maxHp,
+    newUser.maxMp,
+    newUser.atk,
+    newUser.def,
+    newUser.magic,
+    newUser.speed,
+  );
   user.job = newUser.job;
   user.level = newUser.level;
 
