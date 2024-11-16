@@ -12,35 +12,47 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const user = await getUserBySocket(socket);
 
-  const dungeon = addDungeonSession(uuid(), dungeonCode);
+  const btns = []; //버튼
 
+  const dungeon = addDungeonSession(uuid(), dungeonCode);
   dungeon.addUserAtDungeon(user);
 
-  const num = Math.floor(Math.random() * 3) + 1;
-  //  1 ~ 3
-  const btns = [];
+  const dungeonMonsters = {
+    0: [2001, 2002, 2003, 2004, 2005, 2006, 2007],
+    1: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+    2: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024],
+    3: [2025, 2026, 2027, 2028, 2029],
+  };
 
-  let monsterList = [];
-  for (let i = 0; i < num; i++) {
-    const monsterInfos = monsterData.data;
+  const monsterInfos = monsterData.data.filter((monster) =>
+    dungeonMonsters[dungeonCode].includes(monster.monsterModel),
+  );
+  const monsterList = [];
+
+  const totalMonsters = Math.floor(Math.random() * 3) + 1; //던전에 1~3마리
+
+  for (let i = 0; i < totalMonsters; i++) {
     const index = Math.floor(Math.random() * monsterInfos.length);
     const monster = monsterInfos[index];
-    dungeon.addMonster(
-      new Monster(
-        i,
+    const quantity = Math.floor(Math.random() * 3) + 1; //특정 몬스터 같은몬스터 1~3마리까지 가능
+
+    for (let j = 0; j < quantity; j++) {
+      const monsterInstance = new Monster(
+        monsterList.length, // 몬스터 인덱스
         monster.monsterModel,
         monster.monsterName,
         monster.monsterHp,
         monster.monsterAtk,
         monster.monsterEffectCode,
-      ),
-      i,
-    );
-    console.log('클래스 내 몬스터 정보 : ', dungeon.monsters);
-    monsterList.push(dungeon.monsters[i]);
-    btns.push({ msg: monsterInfos[index].monsterName, enable: true });
-  }
+      );
 
+      dungeon.addMonster(monsterInstance, monsterList.length);
+      monsterList.push(monsterInstance);
+
+      // 각 몬스터 생성 시 버튼 추가
+      btns.push({ msg: monster.monsterName, enable: true });
+    }
+  }
   for (let i = 0; i < monsterList.length; i++) {
     delete monsterList[i].monsterAtk;
     delete monsterList[i].monsterEffectCode;
@@ -67,12 +79,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     screenText: {
       msg: '던전에 입장했습니다!',
       typingAnimation: true,
-      // alignment: {
-      //   x: payload.screenText?.alignment?.x || 0,
-      //   y: payload.screenText?.alignment?.y || 0,
-      // },
-      // textColor: payload.screenText?.textColor || null,
-      // screenColor: payload.screenText?.screenColor || null,
     },
     battleLog: {
       msg: '몬스터를 모두 처치하세요',
