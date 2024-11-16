@@ -22,7 +22,7 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
     await sPlayerActionHandler(user, dungeon, responseCode);
 
     setTimeout(async () => {
-      await sMonsterActionHandler(user, dungeon);
+      await sMonsterActionHandler(user, dungeon, responseCode);
     }, 1000);
   }
 };
