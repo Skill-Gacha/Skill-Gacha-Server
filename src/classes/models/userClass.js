@@ -21,6 +21,10 @@ class User {
   updateUserHp(damage) {
     this.stat.hp = Math.max(0, this.stat.hp - damage); // 체력이 0 이하로 떨어지지 않도록 처리
   }
+  resetUserHpMp() {
+    this.stat.hp = this.stat.maxHp;
+    this.stat.mp = this.stat.maxMp;
+  }
 }
 
 export default User;
