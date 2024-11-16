@@ -4,7 +4,7 @@ import Stat from './statClass.js';
 import Position from './positionClass.js';
 
 class User {
-  constructor(socket, id, nickname) {
+  constructor(socket, id, nickname, maxHp, maxMp, atk, def, magic, speed) {
     this.socket = socket;
     this.id = id;
     this.nickname = nickname;
@@ -15,7 +15,7 @@ class User {
     this.position = new Position();
 
     // 스탯 정보
-    this.stat = new Stat();
+    this.stat = new Stat(1, maxHp, maxHp, maxMp, maxMp, atk, def, magic, speed);
   }
 
   updateUserHp(damage) {

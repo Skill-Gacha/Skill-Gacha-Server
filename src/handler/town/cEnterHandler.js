@@ -10,6 +10,7 @@ import { userSessions } from '../../sessions/sessions.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
+  console.log('실형 횟수 테스트');
   const { nickname, class: jobClass } = payload;
 
   // 직업 유효성 검사
@@ -30,7 +31,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
     newUser = existingPlayer;
   } else {
     // 새로운 사용자 생성 및 DB에 저장
-    newUser = await createUser(
+    await createUser(
       nickname,
       jobClass,
       1, // 초기 레벨
@@ -41,9 +42,21 @@ export const cEnterHandler = async ({ socket, payload }) => {
       chosenJob.magic,
       chosenJob.speed,
     );
+    newUser = await findUserNickname(nickname);
   }
   // User 클래스 인스턴스 생성
-  const user = new User(socket, newUser.id, nickname);
+
+  const user = new User(
+    socket,
+    newUser.id,
+    nickname,
+    newUser.maxHp,
+    newUser.maxMp,
+    newUser.atk,
+    newUser.def,
+    newUser.magic,
+    newUser.speed,
+  );
   user.job = newUser.job;
   user.level = newUser.level;
 

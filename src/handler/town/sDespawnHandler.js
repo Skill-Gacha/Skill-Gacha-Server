@@ -6,25 +6,23 @@ import { getAllUserExceptMyself, removeUser } from '../../sessions/townSession.j
 import { handleError } from '../../utils/error/errorHandler.js';
 
 export const sDespawnHandler = async (socket) => {
-  
   const user = await getUserBySocket(socket);
-  
+
   const despawnedUser = [];
   despawnedUser.push(user.id);
-  
+
   try {
     const allTownSessions = await getAllUserExceptMyself(user.id);
     const despawnNoty = createResponse(PacketType.S_Despawn, {
       playerIds: despawnedUser,
     });
-    
-    for (const session of allTownSessions) {      
+
+    for (const session of allTownSessions) {
       session.socket.write(despawnNoty);
     }
-    
+
     await removeUser(user.id);
-  }
-  catch (error) {
+  } catch (error) {
     handleError(socket, error);
   }
 };

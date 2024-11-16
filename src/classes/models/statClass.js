@@ -1,17 +1,7 @@
 ﻿// src/classes/models/userClass.js
 
 class Stat {
-  constructor(
-    level = 1,
-    hp = 100,
-    maxHp = 100,
-    mp = 100,
-    maxMp = 100,
-    atk = 100,
-    def = 100,
-    magic = 100,
-    speed = 100,
-  ) {
+  constructor(level, hp, maxHp, mp, maxMp, atk, def, magic, speed) {
     this.level = level;
     this.hp = hp;
     this.maxHp = maxHp;
