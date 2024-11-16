@@ -34,7 +34,6 @@ export const sPlayerActionHandler = async (user, dungeon, responseCode) => {
       hp: monster.monsterHp,
     }),
   );
-
   let btns = [];
 
   for (let monster of dungeon.monsters) {

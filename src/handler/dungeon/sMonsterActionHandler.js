@@ -9,10 +9,21 @@ export const sMonsterActionHandler = async (user, dungeon) => {
 
   // 던전 세션 안에 몬스터 배열에서 인덱스를 돌아가면서 설정
   for (const monster of monsters) {
-    if (monster.monsterHp <= 0) {
-      btns.push({ msg: monster.monsterName, enable: false });
-      continue;
-    }
+      if (monster.monsterHp <= 0) {
+          btns.push({ msg: monster.monsterName, enable: false });
+          continue;
+      
+      const actionSet = {
+          animCode: Math.floor(Math.random() * 2), // 0이랑 1이 몬스터 공격 모션
+          effectCode: monster.effectCode,
+      }
+      user.updateUserHp(monster.atk)
+      const actionBattleLog = {
+          battleLog: {
+              msg: `${monster.monsterName}에게 공격받아 ${monster.atk}만큼 체력이 감소하였습니다.`,
+              typingAnimation: true,
+          },
+      };
 
     const actionSet = {
       animCode: Math.floor(Math.random() * 2), // 0이랑 1이 몬스터 공격 모션

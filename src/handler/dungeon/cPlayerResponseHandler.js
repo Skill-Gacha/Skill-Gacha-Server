@@ -30,10 +30,7 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
     return;
   } else {
     await sPlayerActionHandler(user, dungeon, responseCode);
-
-    setTimeout(async () => {
-      await sMonsterActionHandler(user, dungeon, responseCode);
-    }, 1000);
+    await sMonsterActionHandler(user, dungeon, responseCode);
   }
 };
 
