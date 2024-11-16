@@ -3,14 +3,11 @@
 import Stat from './statClass.js';
 import Position from './positionClass.js';
 
-let idCounter = 1;
-
 class User {
   constructor(socket, id, nickname) {
     this.socket = socket;
-    this.id = idCounter++;
+    this.id = id;
     this.nickname = nickname;
-
     // PlayerInfo
     this.playerInfo = {};
 
@@ -19,6 +16,15 @@ class User {
 
     // 스탯 정보
     this.stat = new Stat();
+  }
+
+  updateUserHp(damage) {
+    this.stat.hp = Math.max(0, this.stat.hp - damage); // 체력이 0 이하로 떨어지지 않도록 처리
+  }
+
+  resetUserHpMp() {
+    this.stat.hp = this.stat.maxHp;
+    this.stat.mp = this.stat.maxMp;
   }
 }
 

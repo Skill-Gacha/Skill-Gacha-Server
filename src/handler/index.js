@@ -3,15 +3,16 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
+import cPlayerResponseHandler from './dungeon/cPlayerResponseHandler.js';
 import { cChatHandler } from './town/cChatHandler.js';
 import { cAnimationHandler } from './town/cAnimationHandler.js';
-import { sEnterHandler } from './town/sEnterHandler.js';
+import { cEnterHandler } from './town/cEnterHandler.js';
 import { cMoveHandler } from './town/cMoveHandler.js';
 import { cEnterDungeonHandler } from './dungeon/cEnterDungeonHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
-    handler: sEnterHandler,
+    handler: cEnterHandler,
     protoType: 'C_Enter',
   },
   [PacketType.C_Move]: {
@@ -31,7 +32,7 @@ const handlers = {
     protoType: 'C_EnterDungeon',
   },
   [PacketType.C_PlayerResponse]: {
-    handler: undefined,
+    handler: cPlayerResponseHandler,
     protoType: 'C_PlayerResponse',
   },
   // 다른 패킷 정의 추가...

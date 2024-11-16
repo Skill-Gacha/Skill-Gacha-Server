@@ -6,8 +6,9 @@ import User from '../../classes/models/userClass.js';
 import { addUserAtTown, getAllUserExceptMyself } from '../../sessions/townSession.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
 import { addUser } from '../../sessions/userSession.js';
+import { userSessions } from '../../sessions/sessions.js';
 
-export const sEnterHandler = async ({ socket, payload }) => {
+export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: jobClass } = payload;
 
   // 직업 유효성 검사
@@ -17,26 +18,30 @@ export const sEnterHandler = async ({ socket, payload }) => {
     return;
   }
 
+  let newUser;
   // 닉네임 중복 확인
   const existingPlayer = await findUserNickname(nickname);
   if (existingPlayer) {
-    console.error('이미 존재하는 닉네임입니다.');
-    return;
+    // console.error('이미 존재하는 닉네임입니다.');
+    // return;
+
+    // 존재하는 유저일 경우, 기존 정보 불러오기
+    newUser = existingPlayer;
+  } else {
+    // 새로운 사용자 생성 및 DB에 저장
+    await createUser(
+      nickname,
+      jobClass,
+      1, // 초기 레벨
+      chosenJob.maxHp,
+      chosenJob.maxMp,
+      chosenJob.atk,
+      chosenJob.def,
+      chosenJob.magic,
+      chosenJob.speed,
+    );
+    newUser = await findUserNickname(nickname);
   }
-
-  // 새로운 사용자 생성 및 DB에 저장
-  const newUser = await createUser(
-    nickname,
-    jobClass,
-    1, // 초기 레벨
-    chosenJob.maxHp,
-    chosenJob.maxMp,
-    chosenJob.atk,
-    chosenJob.def,
-    chosenJob.magic,
-    chosenJob.speed,
-  );
-
   // User 클래스 인스턴스 생성
   const user = new User(socket, newUser.id, nickname);
   user.job = newUser.job;
@@ -60,7 +65,15 @@ export const sEnterHandler = async ({ socket, payload }) => {
 
   // townSession에 사용자 추가
   await addUserAtTown(user);
-  await addUser(user);
+
+  // userSession에 user가 없을 경우(로그인 시점), 사용자 추가
+  const isUserInSession = userSessions.find((u) => u.id === user.id);
+  if (!isUserInSession) {
+    await addUser(user);
+  } else {
+    isUserInSession.resetUserHpMp();
+  }
+  // console.log('유저 세션: ', userSessions);
 
   // S_Enter 메시지 생성
   const enterData = {
