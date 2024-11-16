@@ -1,19 +1,28 @@
+// src/classes/models/DungeonClass.js
+
 import BaseSession from './BaseSessionClass.js';
+import { STATE_MESSAGE_WINDOW } from '../../constants/constants.js';
 
 class Dungeon extends BaseSession {
-  constructor(dungeonId, dungeonCode) {
+  constructor(dungeonId, dungeonCode, mode = 0) {
     super(dungeonId);
+    this.dungeonCode = dungeonCode;
+    this.users = [];
     this.battleLog = [];
     this.monsters = [];
-    this.dungeonCode = dungeonCode;
+    this.currentBattleState = STATE_MESSAGE_WINDOW;
+    this.currentTurn = 0;
+    this.target = null;
+    this.targetIdx = null;
+    this.selectedItem = null;
+    this.mode = mode; // PvE = 0, PvP = 1
   }
-
-  addUserAtDungeon(user) {
+  
+  addUser(user) {
     this.users.push(user);
   }
-
-  addMonster(monster, index) {
-    const fixMonster = { monsterIdx: index, ...monster };
+  
+  addMonster(monster) {
     this.monsters.push(monster);
   }
 }

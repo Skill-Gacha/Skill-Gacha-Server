@@ -1,9 +1,11 @@
+// src/handler/dungeon/cEnterDungeonHandler.js
+
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { getUserBySocket } from '../../sessions/userSession.js';
-import { dungeonSessions } from '../../sessions/sessions.js';
 import { addDungeonSession } from '../../sessions/dungeonSession.js';
-import monsterData from '../../../assets/MonsterData.json' with { type: 'json' };
+import Monster from '../../classes/models/MonsterClass.js';
+import monsterData from '../../../assets/MonsterData.json' assert { type: 'json' };
 import { v4 as uuid } from 'uuid';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
@@ -11,55 +13,78 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const user = await getUserBySocket(socket);
 
-  const dungeon = addDungeonSession(uuid(), dungeonCode);
+  // 새로운 던전 세션 생성
+  const dungeonId = uuid();
+  const dungeon = addDungeonSession(dungeonId, dungeonCode);
 
-  dungeon.addUserAtDungeon(user);
+  // 유저를 던전에 추가
+  dungeon.addUser(user);
 
-  const num = Math.floor(Math.random() * 3) + 1;
-  //  1 ~ 3
-  const btn = [];
 
-  console.log(`몬스터 데이터 ${monsterData}`);
+  if (dungeon.mode === 0) {   // PvE
+    // 몬스터 수 결정 (1 ~ 3마리)
+    // const numMonsters = Math.floor(Math.random() * 3) + 1;
+    const numMonsters = 3;
+    const buttons = [];
 
-  for (let i = 0; i < num; i++) {
-    const monsterInfos = monsterData.data;
-    const index = Math.floor(Math.random() * monsterInfos.length);
-    dungeon.addMonster(monsterInfos[index], i);
-    btn.push({ msg: monsterInfos.monsterName, enable: true });
+    for (let i = 0; i < numMonsters; i++) {
+      const monsterInfos = monsterData.data;
+      const index = Math.floor(Math.random() * monsterInfos.length);
+      const monsterInfo = monsterInfos[index];
+
+      // 몬스터 인스턴스 생성
+      const monster = new Monster(
+        i, // monsterIdx
+        monsterInfos[i].monsterModel,
+        monsterInfos[i].monsterName,
+        monsterInfos[i].monsterHp,
+        monsterInfos[i].monsterEffectCode,
+        monsterInfos[i].monsterAtk,
+      );
+
+      // 던전에 몬스터 추가
+      dungeon.addMonster(monster);
+
+      // 버튼 정보에 몬스터 이름 추가
+      buttons.push({ msg: monster.monsterName, enable: true });
+    }
+
+    // 응답 페이로드 구성
+    const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
+      dungeonInfo: {
+        dungeonCode,
+        monsters: dungeon.monsters.map((monster) => ({
+          monsterIdx: monster.monsterIdx,
+          monsterModel: monster.monsterModel,
+          monsterName: monster.monsterName,
+          monsterHp: monster.stat.hp,
+        })),
+      },
+      player: {
+        playerClass: user.job,
+        playerLevel: user.stat.level,
+        playerName: user.nickname,
+        playerFullHp: user.stat.maxHp,
+        playerFullMp: user.stat.maxMp,
+        playerCurHp: user.stat.hp,
+        playerCurMp: user.stat.mp,
+      },
+      screenText: {
+        msg: '던전에 입장했습니다!',
+        typingAnimation: true,
+      },
+      battleLog: {
+        msg: '몬스터를 모두 처치하세요',
+        typingAnimation: true,
+        btns: buttons,
+      },
+    });
+
+    // 유저에게 응답 전송
+    user.socket.write(enterDungeonPayload);
   }
-
-  // 데이터 구성
-  // TODO : 던전에 입장 후 실제 데이터가 잘 전송 됐는지 확인하기
-  const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
-    dungeonInfo: {
-      dungeonCode,
-      monsters: dungeon.monsters,
-    },
-    player: {
-      playerClass: user.stat.class,
-      playerLevel: user.stat.level,
-      playerName: user.nickname,
-      playerFullHp: user.stat.maxHp,
-      playerFullMp: user.stat.maxMp,
-      playerCurHp: user.stat.hp,
-      playerCurMp: user.stat.mp,
-    },
-    screenText: {
-      msg: '던전에 입장했습니다!',
-      typingAnimation: true,
-      // alignment: {
-      //   x: payload.screenText?.alignment?.x || 0,
-      //   y: payload.screenText?.alignment?.y || 0,
-      // },
-      // textColor: payload.screenText?.textColor || null,
-      // screenColor: payload.screenText?.screenColor || null,
-    },
-    battleLog: {
-      msg: '몬스터를 모두 처치하세요',
-      typingAnimation: true,
-      btn,
-    },
-  });
-
-  user.socket.write(enterDungeonPayload);
+  else if (mode === 1) {   // PvP
+    // PvP 로직 작성
+    // 랭겜 대기 큐에서 상대 찾는 방식?
+  }
 };

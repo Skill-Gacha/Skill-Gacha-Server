@@ -1,29 +1,31 @@
 // src/sessions/dungeonSession.js
 
-import Dungeon from '../classes/models/dungeonClass.js';
-import { dungeonSessions } from './sessions.js';
+import Dungeon from '../classes/models/DungeonClass.js';
 
-export const addDungeonSession = (sessionId, dungeonCode) => {
-  const session = new Dungeon(sessionId, dungeonCode);
-  dungeonSessions.push(session);
-  return session;
+const dungeonSessions = new Map();
+
+export const addDungeonSession = (dungeonId, dungeonCode) => {
+  const dungeon = new Dungeon(dungeonId, dungeonCode);
+  dungeonSessions.set(dungeonId, dungeon);
+  return dungeon;
 };
 
-export const removeDungeonSession = (sessionId) => {
-  const index = dungeonSessions.findIndex((session) => session.sessionId === sessionId);
-  if (index !== -1) {
-    dungeonSessions.splice(index, 1);
+export const getDungeonSessionByUser = (userId) => {
+  for (const dungeon of dungeonSessions.values()) {
+    if (dungeon.users.find((user) => user.id === userId)) {
+      return dungeon;
+    }
+  }
+  return null;
+};
+
+export const removeDungeonSessionByUserId = (userId) => {
+  const dungeon = getDungeonSessionByUser(userId);
+  if (dungeon) {
+    dungeonSessions.delete(dungeon.sessionId); // Assuming sessionId is same as dungeonId
   }
 };
 
-export const getDungeonSession = () => {
-  return dungeonSessions;
-};
-
-export const getDungeonSessionById = (sessionId) => {
-  const dungeonSession = dungeonSessions.find((session) => session.sessionId === sessionId);
-  if (!game) {
-    console.error('dungeonSession not found');
-  }
-  return dungeonSession;
+export const removeDungeonSessionById = (dungeonId) => {
+  dungeonSessions.delete(dungeonId);
 };

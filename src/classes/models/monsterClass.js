@@ -1,17 +1,17 @@
-﻿// src/classes/models/user.class.js
-
-import Stat from './statClass.js';
-import Position from './positionClass.js';
+﻿// src/classes/models/MonsterClass.js
 
 class Monster {
-  constructor(monsterId, monsterIdx, monsterModel, monsterName, monsterHp, effectCode, atk) {
-    this.monsterId = monsterId;
+  constructor(monsterIdx, monsterModel, monsterName, monsterHp, effectCode, atk) {
     this.monsterIdx = monsterIdx;
     this.monsterModel = monsterModel;
     this.monsterName = monsterName;
-    this.monsterHp = monsterHp;
+    this.stat = {
+      hp: monsterHp,
+      maxHp: monsterHp,
+      atk: atk,
+    };
     this.effectCode = effectCode;
-    this.atk = atk;
+    this.isDead = false;
   }
 }
 
