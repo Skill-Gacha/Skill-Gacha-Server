@@ -17,7 +17,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const dungeon = addDungeonSession(uuid(), dungeonCode);
   dungeon.addUserAtDungeon(user);
 
-  const dungeonMonsters = MonsterClass.data;
   /*
   let monsterInfos;
 
@@ -41,7 +40,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
       */
 
   const monsterCodes = [...Array(28).keys()].map((i) => 2002 + i); // 2002부터 2029까지의 몬스터 코드 배열
-  const monsterInfos = dungeonMonsters.filter((monster) =>
+  const monsterInfos = MonsterClass.data.filter((monster) =>
     monsterCodes.includes(monster.monsterModel),
   );
 
