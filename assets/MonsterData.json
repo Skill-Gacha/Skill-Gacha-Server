@@ -5,7 +5,7 @@
     {
       "monsterModel": 2001,
       "monsterName": "버섯",
-      "monsterHp": 50,
+      "monsterHp": 20,
       "monsterAtk": 10,
       "monsterEffectCode": 3001
     },
