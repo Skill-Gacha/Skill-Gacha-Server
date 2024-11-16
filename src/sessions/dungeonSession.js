@@ -28,10 +28,15 @@ export const getDungeonSessionById = (sessionId) => {
   return dungeonSession;
 };
 
-export const getDungeonSessionByUser = (userId) => {
+export const removeDungeonSessionByUserId = (userId) => {
+  const findIndex = dungeonSessions.findIndex((session) => session.getDungeonAtUser(userId));
+  console.log('찾은 인덱스 : ', findIndex);
+  if (findIndex !== -1) dungeonSessions.splice(findIndex, 1);
+};
+
+export const getDungeonSessionByUserId = (userId) => {
   return dungeonSessions.find((session) => {
     const findUser = session.getDungeonAtUser(userId);
-    console.log('유저 찾았다', findUser);
     if (findUser) return session;
   });
 };
