@@ -3,13 +3,6 @@
   "version": "1.0.0",
   "data": [
     {
-      "monsterModel": 2001,
-      "monsterName": "버섯",
-      "monsterHp": 50,
-      "monsterAtk": 5,
-      "monsterEffectCode": 3001
-    },
-    {
       "monsterModel": 2002,
       "monsterName": "슬라임",
       "monsterHp": 100,
@@ -18,7 +11,7 @@
     },
     {
       "monsterModel": 2003,
-      "monsterName": "고숨도치",
+      "monsterName": "고슴도치",
       "monsterHp": 120,
       "monsterAtk": 5,
       "monsterEffectCode": 3001
@@ -102,7 +95,7 @@
     },
     {
       "monsterModel": 2015,
-      "monsterName": "고블린",
+      "monsterName": "트롤",
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001
@@ -200,7 +193,7 @@
     },
     {
       "monsterModel": 2029,
-      "monsterName": "보스",
+      "monsterName": "혹시 상점주인?",
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001
