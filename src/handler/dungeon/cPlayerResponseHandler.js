@@ -14,6 +14,11 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
   const user = await getUserBySocket(socket);
   const dungeon = getDungeonSessionByUserId(user.id);
   const alive = dungeon.monsters.filter((monster) => monster.monsterHp > 0);
+  if (user.stat.hp <= 0 || alive.length === 0) {
+    removeDungeonSessionByUserId(user.id);
+    const response = createResponse(PacketType.S_LeaveDungeon, {});
+    user.socket.write(response);
+  }
   if (responseCode === 0) {
     if (user.stat.hp <= 0 || alive.length === 0) {
       removeDungeonSessionByUserId(user.id);
