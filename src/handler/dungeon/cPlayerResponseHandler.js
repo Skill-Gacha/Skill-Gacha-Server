@@ -14,8 +14,15 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
   const { responseCode } = payload;
   const user = await getUserBySocket(socket);
   const dungeon = getDungeonSessionByUserId(user.id);
-
+  const alive = dungeon.monsters.filter((monster) => monster.monsterHp > 0);
   if (responseCode === 0) {
+    if (user.stat.hp <= 0 || alive.length === 0) {
+      removeDungeonSessionByUserId(user.id);
+      const response = createResponse(PacketType.S_LeaveDungeon, {});
+      user.socket.write(response);
+      cEnterHandler({ socket, payload: { nickname: user.nickname, class: user.job } });
+      return;
+    }
     user.socket.write(createResponse(PacketType.S_ScreenDone, {}));
     return;
   } else {
