@@ -19,7 +19,6 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
     removeDungeonSessionByUserId(user.id);
     const response = createResponse(PacketType.S_LeaveDungeon, {});
     user.socket.write(response);
-    cEnterHandler({ socket, payload: { nickname: user.nickname, class: user.job } });
   }
   if (responseCode === 0) {
     user.socket.write(createResponse(PacketType.S_ScreenDone, {}));
