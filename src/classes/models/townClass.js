@@ -1,22 +1,14 @@
 ﻿// src/classes/models/townClass.js
 
-// Game 클래스 상속 받음
-import BaseSession from './baseClass.js';
+import BaseSession from './BaseSession.js';
 
 class Town extends BaseSession {
   constructor(townSessionId) {
     super(townSessionId);
-
-    // 마을에 필요한 데이터들 추가
-
-    // 추후 NPC 추가
-    // this.npcs = [];
+    // 마을 고유의 속성 초기화 가능
   }
 
-  // Town에 User가 참가
-  addUser(user) {
-    this.users.push(user);
-  }
+  // 필요에 따라 추가적인 마을 관련 메서드
 }
 
 export default Town;
