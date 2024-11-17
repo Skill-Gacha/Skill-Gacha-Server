@@ -1,54 +1,66 @@
-// src/handlers/cPlayerResponseHandler.js
+// src/handler/dungeon/cPlayerResponseHandler.js
 
-import { PacketType } from '../../constants/header.js';
-import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
-import sPlayerActionHandler from './sPlayerActionHandler.js';
-import { sMonsterActionHandler } from './sMonsterActionHandler.js';
-import { delay } from './delay.js';
-import { D_STATE_BATTLE, D_STATE_END, D_STATE_PLAYER_DEAD } from '../../constants/battle.js';
+import { DUNGEON_STATUS } from '../../constants/battle.js';
+import handleMessageState from './battleFlows/handleMessageState.js';
+import handleActionState from './battleFlows/handleActionState.js';
+import handleTargetState from './battleFlows/handleTargetState.js';
+import handlePlayerAttackState from './battleFlows/handlePlayerAttackState.js';
+import handleEnemyAttackState from './battleFlows/handleEnemyAttackState.js';
+import handleMonsterDeadState from './battleFlows/handleMonsterDeadState.js';
+import handleGameOverWinState from './battleFlows/handleGameOverWinState.js';
+import handleGameOverLoseState from './battleFlows/handleGameOverLoseState.js';
+import handleConfirmState from './battleFlows/handleConfirmState.js';
+import sessionManager from '#managers/SessionManager.js';
+// import handleItemSelectionState from './battleFlows/handleItemSelectionState.js';
+// import handleItemUsageState from './battleFlows/handleItemUsageState.js';
 
 export const cPlayerResponseHandler = async ({ socket, payload }) => {
-  const { responseCode } = payload;
   const user = sessionManager.getUserBySocket(socket);
+  const dungeon = sessionManager.getDungeonByUser(user);
+  const responseCode = payload.responseCode || 0;
+  console.log(responseCode);
 
-  if (!user) {
-    console.error('cPlayerResponseHandler: 유저를 찾을 수 없습니다.');
+  if (!user || !dungeon) {
+    console.error('cPlayerResponseHandler: 유저 또는 던전 세션을 찾을 수 없습니다.');
     return;
   }
 
-  const dungeon = sessionManager.getSessionByUserId(user.id);
-
-  if (!dungeon) {
-    console.error('cPlayerResponseHandler: 던전 세션을 찾을 수 없습니다.');
-    return;
-  }
-
-  const aliveMonsters = dungeon.monsters.filter((monster) => monster.monsterHp > 0);
-
-  if (user.stat.hp <= 0 || aliveMonsters.length === 0) {
-    sessionManager.removeDungeon(dungeon.sessionId);
-    const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
-    user.socket.write(leaveResponse);
-    console.log(`유저 ${user.id}가 던전 ${dungeon.sessionId}에서 나갔습니다.`);
-    return;
-  }
-
-  if (responseCode === 0) {
-    if (user.stat.hp <= 0 || aliveMonsters.length === 0) {
-      sessionManager.removeDungeon(dungeon.sessionId);
-      const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
-      user.socket.write(leaveResponse);
-      console.log(`유저 ${user.id}가 던전 ${dungeon.sessionId}에서 나갔습니다.`);
-      return;
-    }
-    const screenDoneResponse = createResponse(PacketType.S_ScreenDone, {});
-    user.socket.write(screenDoneResponse);
-  } else {
-    await sPlayerActionHandler(user, dungeon, responseCode);
-    await delay(1000);
-    await sMonsterActionHandler(user, dungeon, responseCode);
+  switch (dungeon.dungeonStatus) {
+    case DUNGEON_STATUS.MESSAGE:
+      await handleMessageState(responseCode, dungeon, user, socket);
+      break;
+    case DUNGEON_STATUS.ACTION:
+      await handleActionState(responseCode, dungeon, user, socket);
+      break;
+    case DUNGEON_STATUS.TARGET:
+      await handleTargetState(responseCode, dungeon, user, socket);
+      break;
+    case DUNGEON_STATUS.PLAYER_ATTACK:
+      await handlePlayerAttackState(dungeon, user, socket);
+      break;
+    case DUNGEON_STATUS.ENEMY_ATTACK:
+      await handleEnemyAttackState(responseCode, dungeon, user, socket);
+      break;
+    case DUNGEON_STATUS.MONSTER_DEAD:
+      await handleMonsterDeadState(responseCode, dungeon, user, socket);
+      break;
+    case DUNGEON_STATUS.GAME_OVER_WIN:
+      await handleGameOverWinState(responseCode, dungeon, user, socket);
+      break;
+    case DUNGEON_STATUS.GAME_OVER_LOSE:
+      await handleGameOverLoseState(dungeon, user);
+      break;
+    case DUNGEON_STATUS.CONFIRM:
+      await handleConfirmState(responseCode, dungeon, user, socket);
+      break;
+    // case DUNGEON_STATUS.ITEM_SELECTION:
+    //   await handleItemSelectionState(responseCode, dungeon, user, socket);
+    //   break;
+    // case DUNGEON_STATUS.ITEM_USAGE:
+    //   await handleItemUsageState(responseCode, dungeon, user, socket);
+    //   break;
+    default:
+      console.error(`알 수 없는 던전 상태: ${dungeon.dungeonStatus}`);
+      break;
   }
 };
-
-export default cPlayerResponseHandler;

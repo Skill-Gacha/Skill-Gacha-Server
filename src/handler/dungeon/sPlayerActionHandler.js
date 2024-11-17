@@ -2,8 +2,6 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
-import { delay } from './delay.js';
 
 export const sPlayerActionHandler = async (user, dungeon, responseCode) => {
   if (!user || !dungeon) {
@@ -77,7 +75,7 @@ export const sPlayerActionHandler = async (user, dungeon, responseCode) => {
         }),
       );
       // TODO: 버튼 추가 (예: "더 깊게 들어가기", "던전 나가기")
-      return;
+
     }
   } catch (error) {
     console.error('sPlayerActionHandler 처리 중 오류 발생:', error);

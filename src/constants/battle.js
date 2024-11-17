@@ -2,6 +2,20 @@ export const PACKET_SIZE_LENGTH = 4;
 export const PACKET_ID_LENGTH = 1;
 export const PACKET_HEADER_LENGTH = 5;
 
-export const D_STATE_END = 0;
-export const D_STATE_BATTLE = 1;
-export const D_STATE_PLAYER_DEAD = 2;
+export const DUNGEON_STATUS = {
+  MESSAGE: 0,
+  ACTION: 1,
+  TARGET: 2,
+  SKILL_SELECTION: 3,
+  PLAYER_ATTACK: 4,
+  ENEMY_ATTACK: 5,
+  MONSTER_DEAD: 6,
+  GAME_OVER_WIN: 7,
+  GAME_OVER_LOSE: 8,
+  CONFIRM: 9,
+  ITEM_SELECTION: 10,
+  ITEM_USAGE: 11,
+  GET_EXP: 12,
+  GO_TO_TOWN: 13,
+  ITEM_CHOICE: 14,
+};

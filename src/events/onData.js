@@ -50,7 +50,7 @@ export const onData = (socket) => (data) => {
 
     // 다음 패킷을 위해 버퍼 업데이트
     socket.buffer = socket.buffer.slice(packetSize);
-    
+
 
     try {
       // PacketData를 파싱

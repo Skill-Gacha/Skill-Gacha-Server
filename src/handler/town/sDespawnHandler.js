@@ -2,7 +2,7 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
+import sessionManager from '#managers/SessionManager.js';
 import { handleError } from '../../utils/error/errorHandler.js';
 
 export const sDespawnHandler = async (user) => {
@@ -18,7 +18,7 @@ export const sDespawnHandler = async (user) => {
     if (!town) {
       throw new Error('타운 세션을 찾을 수 없습니다.');
     }
-    
+
     town.removeUser(user.id);
 
     const despawnPayload = createResponse(PacketType.S_Despawn, {

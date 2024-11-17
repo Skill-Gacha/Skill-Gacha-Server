@@ -1,8 +1,8 @@
-// src/handlers/cEnterDungeonHandler.js
+// src/handler/dungeon/cEnterDungeonHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
+import sessionManager from '#managers/SessionManager.js';
 import MonsterClass from '../../../assets/MonsterData.json' assert { type: 'json' };
 import { v4 as uuid } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';
@@ -35,12 +35,9 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
 
     const totalMonsters = Math.floor(Math.random() * 3) + 1; // 던전에 1~3마리
 
-    const btns = []; // 버튼
-
     for (let i = 0; i < totalMonsters; i++) {
       const index = Math.floor(Math.random() * selectedMonsters.length);
       const monster = selectedMonsters[index];
-      console.log(monster);
 
       const monsterInstance = new Monster(
         monsterList.length,
@@ -51,18 +48,9 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
         monster.monsterEffectCode,
       );
 
-      dungeon.addMonster(monsterInstance, monsterList.length);
+      dungeon.addMonster(monsterInstance);
       monsterList.push(monsterInstance);
-
-      btns.push({ msg: monster.monsterName, enable: true });
     }
-
-    const monsterListForSend = monsterList;
-    // 몬스터 인스턴스에서 공격력과 이펙트 코드를 제거
-    monsterListForSend.forEach((monster) => {
-      delete monster.monsterAtk;
-      delete monster.monsterEffectCode;
-    });
 
     // 타운 세션에 있는 다른 사용자들에게 디스펜스 패킷 전송 (자신 포함)
     await sDespawnHandler(user);
@@ -71,7 +59,12 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
       dungeonInfo: {
         dungeonCode,
-        monsters: monsterListForSend,
+        monsters: monsterList.map((monster) => ({
+          monsterIdx: monster.monsterIdx,
+          monsterModel: monster.monsterModel,
+          monsterName: monster.monsterName,
+          monsterHp: monster.monsterHp,
+        })),
       },
       player: {
         playerClass: user.job,
@@ -86,14 +79,24 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
         msg: '던전에 입장했습니다!',
         typingAnimation: true,
       },
-      battleLog: {
-        msg: '몬스터를 모두 처치하세요',
-        typingAnimation: true,
-        btns,
-      },
     });
 
-    user.socket.write(enterDungeonPayload);
+    socket.write(enterDungeonPayload);
+
+    // 던전 입장 메시지 전송
+    // const enterDungeonMessage = createResponse(PacketType.S_ScreenText, {
+    //   screenText: {
+    //     msg: '던전에 입장했습니다!',
+    //     typingAnimation: true,
+    //     alignment: { x: 0, y: 0 },           // 기본값 설정
+    //     textColor: { r: 255, g: 255, b: 255 }, // 기본값 설정
+    //     screenColor: { r: 0, g: 0, b: 0 },     // 기본값 설정
+    //   },
+    // });
+    // socket.write(enterDungeonMessage);
+
+    // 행동 선택 메시지 전송
+    // await switchToActionState(dungeon, socket);
 
     console.log(`유저 ${user.id}가 던전 ${dungeonCode}에 입장하였습니다.`);
   } catch (error) {
