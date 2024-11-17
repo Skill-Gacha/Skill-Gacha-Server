@@ -1,24 +1,21 @@
-import BaseSession from './BaseSessionClass.js';
+// src/classes/models/dungeonClass.js
+
+import BaseSession from './BaseSession.js';
+import { D_STATE_BATTLE } from '../../constants/battle.js';
 
 class Dungeon extends BaseSession {
   constructor(dungeonId, dungeonCode) {
     super(dungeonId);
     this.monsters = [];
     this.dungeonCode = dungeonCode;
+    this.dungeonStatus = D_STATE_BATTLE;
   }
 
-  addUserAtDungeon(user) {
-    this.users.push(user);
-  }
-
-  addMonster(monster, index) {
-    const fixMonster = { monsterIdx: index, ...monster };
+  addMonster(monster) {
     this.monsters.push(monster);
   }
 
-  getDungeonAtUser(userId) {
-    return this.users.find((u) => u.id === userId);
-  }
+  // 필요에 따라 함수 추가
 }
 
 export default Dungeon;

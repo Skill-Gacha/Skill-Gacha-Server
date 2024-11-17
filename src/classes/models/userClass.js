@@ -1,25 +1,20 @@
-// src/classes/models/user.class.js
+// src/classes/models/userClass.js
 
-import Stat from './statClass.js';
+
 import Position from './positionClass.js';
+import Stat from './statClass.js';
 
 class User {
   constructor(socket, id, nickname, maxHp, maxMp, atk, def, magic, speed) {
     this.socket = socket;
     this.id = id;
     this.nickname = nickname;
-    // PlayerInfo
-    this.playerInfo = {};
-
-    // 위치 정보
-    this.position = new Position();
-
-    // 스탯 정보
+    this.position = new Position(0, 0, 0, 0);
     this.stat = new Stat(1, maxHp, maxHp, maxMp, maxMp, atk, def, magic, speed);
   }
 
   updateUserHp(damage) {
-    this.stat.hp = Math.max(0, this.stat.hp - damage); // 체력이 0 이하로 떨어지지 않도록 처리
+    this.stat.hp = Math.max(0, this.stat.hp - damage);
   }
 
   resetUserHpMp() {
