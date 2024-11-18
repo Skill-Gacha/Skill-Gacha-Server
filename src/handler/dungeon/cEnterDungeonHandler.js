@@ -3,14 +3,15 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
-import MonsterData from '../../../assets/MonsterData.json' assert { type: 'json' };
 import { v4 as uuidv4 } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
+import { getGameAssets } from '../../init/loadAssets.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const user = sessionManager.getUserBySocket(socket);
+  const monsterData = getGameAssets().MonsterData;
 
   if (!user) {
     console.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
@@ -22,8 +23,8 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const dungeon = sessionManager.createDungeon(dungeonId, dungeonCode);
     dungeon.addUser(user);
 
-    const monsterCodes = MonsterData.data.map((monster) => monster.monsterModel);
-    const selectedMonsters = MonsterData.data.filter((monster) =>
+    const monsterCodes = monsterData.data.map((monster) => monster.monsterModel);
+    const selectedMonsters = monsterData.data.filter((monster) =>
       monsterCodes.includes(monster.monsterModel),
     );
 
