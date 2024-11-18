@@ -19,8 +19,8 @@ export default async function handleMonsterDeadState(responseCode, dungeon, user
   const aliveMonsters = dungeon.monsters.filter((m) => m.monsterHp > 0);
 
   if (aliveMonsters.length === 0) {
-    await switchToGameOverWinState(dungeon, user);
+    await switchToGameOverWinState(responseCode, dungeon, user, socket);
   } else {
-    await switchToEnemyAttackState(dungeon, user, socket);
+    await switchToEnemyAttackState(responseCode, dungeon, user, socket);
   }
 }

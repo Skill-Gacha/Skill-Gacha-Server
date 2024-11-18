@@ -3,7 +3,7 @@
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import handleMonsterDeadState from '../battleFlows/handleMonsterDeadState.js';
 
-export default async function switchToMonsterDeadState(dungeon, user, socket) {
+export default async function switchToMonsterDeadState(responseCode, dungeon, user, socket) {
   dungeon.dungeonStatus = DUNGEON_STATUS.MONSTER_DEAD;
   await handleMonsterDeadState(0, dungeon, user, socket);
 }

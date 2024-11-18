@@ -16,11 +16,19 @@ export default async function handleActionState(responseCode, dungeon, user, soc
     // case 2: // 스킬 사용
     //   await switchToSkillSelectionState(dungeon, user, socket);
     //   break;
-    // case 3: // 아이템 사용
-    //   await switchToItemSelectionState(dungeon, user, socket);
+    // case 3:
+    //   // 아이템 사용 선택
+    //   await switchToConfirmState(
+    //     dungeon,
+    //     user,
+    //     socket,
+    //     '아이템을 사용하시겠습니까?',
+    //     'USE_ITEM',
+    //     { /* 필요한 추가 데이터 */ } // 필요하다면 사용
+    //   );
     //   break;
     case 4: // 도망치기
-      await switchToConfirmState(dungeon, user, socket, '정말 도망치시겠습니까?');
+      await switchToConfirmState(dungeon, user, socket, '정말로 도망치시겠습니까?', 'FLEE');
       break;
     default:
       // 유효하지 않은 입력 처리

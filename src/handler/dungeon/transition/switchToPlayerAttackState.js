@@ -5,5 +5,5 @@ import handlePlayerAttackState from '../battleFlows/handlePlayerAttackState.js';
 
 export default async function switchToPlayerAttackState(dungeon, user, socket) {
   dungeon.dungeonStatus = DUNGEON_STATUS.PLAYER_ATTACK;
-  await handlePlayerAttackState(dungeon, user, socket);
+  await handlePlayerAttackState(0, dungeon, user, socket);
 }

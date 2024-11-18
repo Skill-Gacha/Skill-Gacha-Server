@@ -5,7 +5,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import switchToEnemyAttackState from '../transition/switchToEnemyAttackState.js';
 import switchToMonsterDeadState from '../transition/switchToMonsterDeadState.js';
 
-export default async function handlePlayerAttackState(dungeon, user, socket) {
+export default async function handlePlayerAttackState(responseCode, dungeon, user, socket) {
   const monster = dungeon.selectedMonster;
 
   const damage = user.stat.atk;
@@ -42,8 +42,8 @@ export default async function handlePlayerAttackState(dungeon, user, socket) {
   );
 
   if (monster.monsterHp <= 0) {
-    await switchToMonsterDeadState(dungeon, user, socket);
+    await switchToMonsterDeadState(0, dungeon, user, socket);
   } else {
-    await switchToEnemyAttackState(dungeon, user, socket);
+    await switchToEnemyAttackState(0, dungeon, user, socket);
   }
 }
