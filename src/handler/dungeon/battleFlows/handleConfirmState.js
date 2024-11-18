@@ -7,7 +7,7 @@ import switchToActionState from '../transition/switchToActionState.js';
 
 export default async function handleConfirmState(responseCode, dungeon, user, socket) {
   // responseCode: 0 - 예, 1 - 아니오
-  if (responseCode === 0) {
+  if (responseCode === 1) {
     // 플레이어가 '예'를 선택한 경우, 던전을 떠납니다.
     socket.write(
       createResponse(PacketType.S_ScreenText, {
@@ -26,7 +26,7 @@ export default async function handleConfirmState(responseCode, dungeon, user, so
     sessionManager.removeDungeon(dungeon.sessionId);
 
     console.log(`유저 ${user.id}가 던전 ${dungeon.dungeonCode}에서 도망쳤습니다.`);
-  } else if (responseCode === 1) {
+  } else if (responseCode === 2) {
     // 플레이어가 '아니오'를 선택한 경우, 행동 선택 상태로 돌아갑니다.
     await switchToActionState(dungeon, user, socket);
   } else {
