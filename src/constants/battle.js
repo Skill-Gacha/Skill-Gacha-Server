@@ -14,3 +14,8 @@ export const DUNGEON_STATUS = {
   USE_ITEM: 10,
   FLEE_MESSAGE: 11,
 };
+
+export const CONFIRM_TYPE = {
+  DEFAULT: 0,
+  FLEE: 1,
+}

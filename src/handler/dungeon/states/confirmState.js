@@ -5,12 +5,12 @@ import ActionState from './actionState.js';
 import FleeMessageState from './fleeMessageState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class ConfirmState extends DungeonState {
   constructor(dungeon, user, socket) {
     super(dungeon, user, socket);
-    this.confirmType = 'DEFAULT';
+    this.confirmType = CONFIRM_TYPE.DEFAULT;
     this.message = '확인';
   }
 
@@ -32,16 +32,17 @@ export default class ConfirmState extends DungeonState {
       typingAnimation: false,
       btns: buttons,
     };
-
-    this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
+    
+    const confirmBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
+    this.socket.write(confirmBattlelogResponse);
   }
 
   async handleInput(responseCode) {
     switch (this.confirmType) {
-      case 'FLEE':
-        if (responseCode === 1) {
+      case CONFIRM_TYPE.FLEE:
+        if (responseCode === 1) { // 도망감
           this.changeState(FleeMessageState);
-        } else if (responseCode === 2) {
+        } else if (responseCode === 2) {  // 도망 취소
           this.changeState(ActionState);
         } else {
           // 잘못된 입력 처리
