@@ -25,7 +25,8 @@ export default class GameOverLoseState extends DungeonState {
     if (responseCode === 0) {
       // 던전 종료 및 세션 제거
       sessionManager.removeDungeon(this.dungeon.sessionId);
-      this.socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
+      const sLeaveDungeonResponse = createResponse(PacketType.S_LeaveDungeon, {});
+      this.socket.write(sLeaveDungeonResponse);
     } else {
       // 잘못된 입력 처리
     }

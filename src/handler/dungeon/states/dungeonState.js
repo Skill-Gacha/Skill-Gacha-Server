@@ -1,7 +1,13 @@
 ﻿// src/handler/dungeon/states/dungeonState.js
 
+// DungeonState 클래스는 단독으로 사용 불가능
+// 모든 상태는 이 클래스를 상속받아 구현되어야 함
 export default class DungeonState {
   constructor(dungeon, user, socket) {
+    if (new.target === DungeonState) {
+      throw new Error('DungeonState는 추상 클래스입니다. 인스턴스를 생성할 수 없습니다.');
+    }
+    
     this.dungeon = dungeon;
     this.user = user;
     this.socket = socket;

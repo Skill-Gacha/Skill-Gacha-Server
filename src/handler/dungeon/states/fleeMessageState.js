@@ -15,8 +15,7 @@ export default class FleeMessageState extends DungeonState {
       createResponse(PacketType.S_ScreenText, {
         screenText: {
           msg: '전투에서 도망쳤습니다.',
-          typingAnimation: true,
-          btns: [{ msg: '확인', enable: true }],
+          typingAnimation: true
         },
       }),
     );
@@ -26,7 +25,8 @@ export default class FleeMessageState extends DungeonState {
     if (responseCode === 0) {
       // 던전 종료 및 세션 제거
       sessionManager.removeDungeon(this.dungeon.sessionId);
-      this.socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
+      const sLeaveDungeonResponse = createResponse(PacketType.S_LeaveDungeon, {});
+      this.socket.write(sLeaveDungeonResponse);
     } else {
       // 잘못된 입력 처리
     }

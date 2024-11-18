@@ -5,6 +5,7 @@ import Dungeon from '../classes/models/dungeonClass.js';
 
 let instance;
 
+// 싱글톤 클래스
 class SessionManager {
   constructor() {
     if (instance) {

@@ -6,6 +6,8 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
+// 공격할 대상을 고르는 상태
+// '공격'을 누르고 공격할 몬스터를 선택하기 위한 상태
 export default class TargetState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.TARGET;
