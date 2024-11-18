@@ -3,7 +3,7 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '../../managers/SessionManager.js';
-import MonsterClass from '../../../assets/MonsterData.json' assert { type: 'json' };
+import MonsterData from '../../../assets/MonsterData.json' assert { type: 'json' };
 import { v4 as uuid } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
@@ -22,15 +22,14 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const dungeon = sessionManager.createDungeon(dungeonId, dungeonCode);
     dungeon.addUser(user);
 
-    const monsterCodes = [...Array(28).keys()].map((i) => 2002 + i); // 2002부터 2029까지의 몬스터 코드 배열
-    const monsterInfos = MonsterClass.data.filter((monster) =>
-      monsterCodes.includes(monster.monsterModel),
-    );
-
+    console.log('던전 코드 확인 ', dungeonCode);
     // 던전 코드에 따라 몬스터 정보를 가져오기
-    const startIndex = dungeonCode * 5;
-    const endIndex = startIndex + 5;
-    const selectedMonsters = monsterInfos.slice(startIndex, endIndex);
+    const startIndex = (dungeonCode - 1) * 7;
+    const endIndex = startIndex + 6;
+    const selectedMonsters = MonsterData.data.slice(startIndex, endIndex);
+
+    console.log('선택된 몬스터 출력 : ', selectedMonsters);
+
     const monsterList = [];
 
     const totalMonsters = Math.floor(Math.random() * 3) + 1; // 던전에 1~3마리
@@ -40,15 +39,14 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     for (let i = 0; i < totalMonsters; i++) {
       const index = Math.floor(Math.random() * selectedMonsters.length);
       const monster = selectedMonsters[index];
-      console.log(monster);
-
       const monsterInstance = new Monster(
-        monsterList.length,
+        i,
         monster.monsterModel,
         monster.monsterName,
         monster.monsterHp,
         monster.monsterAtk,
         monster.monsterEffectCode,
+        monster.providedMoney,
       );
 
       dungeon.addMonster(monsterInstance, monsterList.length);

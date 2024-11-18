@@ -5,4 +5,6 @@ export const USER_QUERIES = {
   CREATE_USER:
     'INSERT INTO CharacterInfo (nickname, job, level, maxHp, maxMp, atk, def, magic, speed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
   UPDATE_USER_LOGIN: 'UPDATE CharacterInfo SET updateAt = CURRENT_TIMESTAMP WHERE username = ?',
+  FIND_USER_MONEY: 'SELECT money FROM CharacterInfo WHERE id = ?',
+  UPDATE_USER_MONEY: 'UPDATE CharacterInfo SET money = ? WHERE id = ?',
 };

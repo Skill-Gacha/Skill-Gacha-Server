@@ -7,6 +7,7 @@ import sPlayerActionHandler from './sPlayerActionHandler.js';
 import { sMonsterActionHandler } from './sMonsterActionHandler.js';
 import { delay } from './delay.js';
 import { D_STATE_BATTLE, D_STATE_END, D_STATE_PLAYER_DEAD } from '../../constants/battle.js';
+import { findUserMoney } from '../../db/user/user.db.js';
 
 export const cPlayerResponseHandler = async ({ socket, payload }) => {
   const { responseCode } = payload;
@@ -25,14 +26,6 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
   }
 
   const aliveMonsters = dungeon.monsters.filter((monster) => monster.monsterHp > 0);
-
-  if (user.stat.hp <= 0 || aliveMonsters.length === 0) {
-    sessionManager.removeDungeon(dungeon.sessionId);
-    const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
-    user.socket.write(leaveResponse);
-    console.log(`유저 ${user.id}가 던전 ${dungeon.sessionId}에서 나갔습니다.`);
-    return;
-  }
 
   if (responseCode === 0) {
     if (user.stat.hp <= 0 || aliveMonsters.length === 0) {

@@ -159,6 +159,10 @@ message S_MonsterAction {
   ActionSet actionSet = 2;
 }
 
+//Me
+message S_Reward {
+  int32 money = 1;
+}
 
 // 정보 구조체
 

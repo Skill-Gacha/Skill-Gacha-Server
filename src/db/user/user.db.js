@@ -28,6 +28,17 @@ export const createUser = async (nickname, job, level, maxHp, maxMp, atk, def, m
   return { nickname, job, level, maxHp, maxMp, atk, def, magic, speed };
 };
 
+// 유저가 보유한 금액 가져오기
+export const findUserMoney = async (id) => {
+  const [rows] = await dbPool.query(USER_QUERIES.FIND_USER_MONEY, [id]);
+  return toCamelCase(rows[0]);
+};
+
+//유저가 보유한 금액 변경 시키는 구문
+export const updateUserMoney = async (id, changedMoney) => {
+  await dbPool.query(USER_QUERIES.UPDATE_USER_MONEY, [changedMoney, id]);
+};
+
 export const updateUserLogin = async (id) => {
   await dbPool.query(USER_QUERIES.UPDATE_USER_LOGIN, [id]);
 };

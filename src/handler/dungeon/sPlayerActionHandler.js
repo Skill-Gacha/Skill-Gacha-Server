@@ -2,8 +2,7 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
-import { delay } from './delay.js';
+import { findUserMoney, updateUserMoney } from '../../db/user/user.db.js';
 
 export const sPlayerActionHandler = async (user, dungeon, responseCode) => {
   if (!user || !dungeon) {
@@ -14,7 +13,9 @@ export const sPlayerActionHandler = async (user, dungeon, responseCode) => {
   const monster = dungeon.monsters.find((m) => m.monsterIdx === responseCode - 1);
 
   if (!monster) {
-    console.error(`sPlayerActionHandler: 몬스터를 찾을 수 없습니다. monsterIdx=${responseCode - 1}`);
+    console.error(
+      `sPlayerActionHandler: 몬스터를 찾을 수 없습니다. monsterIdx=${responseCode - 1}`,
+    );
     return;
   }
 
@@ -68,15 +69,22 @@ export const sPlayerActionHandler = async (user, dungeon, responseCode) => {
 
     const aliveMonsters = dungeon.monsters.filter((m) => m.monsterHp > 0);
     if (aliveMonsters.length === 0) {
+      const { money } = await findUserMoney(user.id);
+
+      let addMoney = dungeon.monsters.reduce((acc, monster) => acc + monster.providedMoney, 0);
+      await updateUserMoney(user.id, money + addMoney);
+
+      //user.socket.write(PacketType.S_Reward, { money: money + addMoney });
+
       user.socket.write(
         createResponse(PacketType.S_ScreenText, {
           screenText: {
-            msg: '던전을 클리어 하셨습니다.',
+            msg: `던전을 클리어 하셨습니다.\n 금화 ${addMoney}을 획득했습니다.`,
             typingAnimation: true,
           },
         }),
       );
-      // TODO: 버튼 추가 (예: "더 깊게 들어가기", "던전 나가기")
+      // TODO: 버튼 추가 (예: "더 깊게 들어가기", "던전 나가기") + 배틀로그로 금액 출력
       return;
     }
   } catch (error) {

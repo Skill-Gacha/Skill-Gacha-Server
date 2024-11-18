@@ -3,13 +3,14 @@ import Stat from './statClass.js';
 //import Position from './positionClass.js';
 
 class Monster {
-  constructor(monsterIdx, monsterModel, monsterName, monsterHp, atk, effectCode) {
+  constructor(monsterIdx, monsterModel, monsterName, monsterHp, atk, effectCode, providedMoney) {
     this.monsterIdx = monsterIdx;
     this.monsterModel = monsterModel;
     this.monsterName = monsterName;
     this.monsterHp = monsterHp;
-    this.effectCode = effectCode;
     this.atk = atk;
+    this.effectCode = effectCode;
+    this.providedMoney = providedMoney;
   }
 
   minusHp(damage) {

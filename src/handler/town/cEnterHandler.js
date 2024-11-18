@@ -83,7 +83,9 @@ export const cEnterHandler = async ({ socket, payload }) => {
   socket.write(enterResponse);
 
   // 다른 사용자 정보 가져오기
-  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(u => u.id !== user.id);
+  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(
+    (u) => u.id !== user.id,
+  );
 
   // 새로운 사용자에게 기존 사용자들의 정보를 S_Spawn 메시지로 전송
   if (otherUsers.length > 0) {

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `characterInfo` (
+CREATE TABLE IF NOT EXISTS `CharacterInfo` (
     `id`        INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `nickname`  VARCHAR(50) NOT NULL UNIQUE,
     `job`     INT NOT NULL,
@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS `characterInfo` (
     `def`       FLOAT NOT NULL,
     `magic`     FLOAT NOT NULL,
     `speed`     FLOAT NOT NULL,
+    `money`     INT NOT NULL DEFAULT 0,
     `posX`      FLOAT NOT NULL DEFAULT -4,
     `posY`      FLOAT NOT NULL DEFAULT 0.7,
     `posZ`      FLOAT NOT NULL DEFAULT 137,
-    `rot`       FLOAT NOT NULL DEFAULT 0,
+    `rot`       FLOAT NOT NULL DEFAULT 0
 );
 
 -- CREATE TABLE `gameLogs`
