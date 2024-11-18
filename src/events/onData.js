@@ -64,8 +64,9 @@ export const onData = (socket) => (data) => {
       } else {
         console.error(`핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
       }
-    } catch (e) {
-      handleError(socket, e);
+    } catch (error) {
+      console.error('패킷 파싱 중 오류 발생:');
+      handleError(error);
     }
   }
 };
