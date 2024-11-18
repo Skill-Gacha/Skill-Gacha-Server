@@ -1,4 +1,4 @@
-﻿// src/handlers/dungeon/states/FleeMessageState.js
+﻿// src/handler/dungeon/states/fleeMessageState.js
 
 import DungeonState from './dungeonState.js';
 import sessionManager from '#managers/sessionManager.js';

@@ -1,4 +1,4 @@
-﻿// src/managers/SessionManager.js
+﻿// src/managers/sessionManager.js
 
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';

@@ -1,7 +1,5 @@
 ﻿// src/init/loadAssets.js
 
-// src/init/assets.js
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

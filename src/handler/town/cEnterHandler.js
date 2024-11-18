@@ -1,4 +1,4 @@
-// src/handlers/cEnterHandler.js
+// src/handler/town/cEnterHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';

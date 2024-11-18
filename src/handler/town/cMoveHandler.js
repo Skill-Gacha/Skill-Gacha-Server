@@ -1,4 +1,4 @@
-﻿// src/handlers/cMoveHandler.js
+﻿// src/handler/town/cMoveHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';

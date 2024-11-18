@@ -1,3 +1,5 @@
+// src/utils/korean/checkBatchim.js
+
 function checkBatchim(word) {
   if (typeof word !== 'string') return null;
   return (word[word.length - 1].charCodeAt(0) - 44032) % 28 !== 0;

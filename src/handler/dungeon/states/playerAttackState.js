@@ -1,4 +1,4 @@
-﻿// src/handlers/dungeon/states/PlayerAttackState.js
+﻿// src/handler/dungeon/states/playerAttackState.js
 
 import DungeonState from './dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';

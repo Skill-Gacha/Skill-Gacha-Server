@@ -1,4 +1,4 @@
-// src/handlers/cAnimationHandler.js
+// src/handler/town/cAnimationHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';

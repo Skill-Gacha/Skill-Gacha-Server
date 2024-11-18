@@ -1,4 +1,4 @@
-﻿// src/handlers/dungeon/states/ConfirmState.js
+﻿// src/handler/dungeon/states/confirmState.js
 
 import DungeonState from './dungeonState.js';
 import ActionState from './actionState.js';

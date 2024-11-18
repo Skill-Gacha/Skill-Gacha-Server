@@ -1,4 +1,4 @@
-﻿// src/handlers/dungeon/states/GameOverLoseState.js
+﻿// src/handler/dungeon/states/gameOverLoseState.js
 
 import DungeonState from './dungeonState.js';
 import sessionManager from '#managers/sessionManager.js';

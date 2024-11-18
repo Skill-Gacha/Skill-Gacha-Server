@@ -1,4 +1,4 @@
-﻿// src/handlers/dungeon/states/DungeonState.js
+﻿// src/handler/dungeon/states/dungeonState.js
 
 export default class DungeonState {
   constructor(dungeon, user, socket) {

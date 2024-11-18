@@ -1,4 +1,4 @@
-// src/handlers/sDespawnHandler.js
+// src/handler/town/sDespawnHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';

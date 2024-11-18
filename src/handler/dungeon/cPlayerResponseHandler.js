@@ -1,4 +1,4 @@
-﻿// src/handlers/dungeon/cPlayerResponseHandler.js
+﻿// src/handler/dungeon/cPlayerResponseHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
 import { handleError } from '../../utils/error/errorHandler.js';
