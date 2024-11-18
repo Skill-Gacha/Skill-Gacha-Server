@@ -22,7 +22,7 @@ export default class GameOverLoseState extends DungeonState {
   }
 
   async handleInput(responseCode) {
-    if (responseCode === 0) {
+    if (responseCode === 0) { // ScreenText기 때문에 0을 받아야 함
       // 던전 종료 및 세션 제거
       sessionManager.removeDungeon(this.dungeon.sessionId);
       const sLeaveDungeonResponse = createResponse(PacketType.S_LeaveDungeon, {});

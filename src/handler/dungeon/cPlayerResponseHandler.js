@@ -18,6 +18,7 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
     // 던전 입장 시 스크린 텍스트부터 표시되므로
     // 메세지 상태 핸들링이 필요하다
     // 따라서 상태 지정이 없을 때 messageState.js부터 로드
+    // 다르게 로드할 수 있는지는 찾아봐야 할 듯
 
     // messageState.js을 동적으로 임포트하고
     // 모듈의 기본 내보내기(Default Export)를 가져옴
@@ -29,6 +30,8 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
   }
 
   // 초기 상황이 아니면 클라이언트 응답 처리로 넘어감
+  // 이 파일에선 응답 코드에 대한 어떤 처리도 하지 않기 때문에
+  // 스테이트에서 확실히 넘겨주는 작업이 필요
   try {
     await dungeon.currentState.handleInput(responseCode);
   } catch (error) {

@@ -18,4 +18,4 @@ export const DUNGEON_STATUS = {
 export const CONFIRM_TYPE = {
   DEFAULT: 0,
   FLEE: 1,
-}
+};

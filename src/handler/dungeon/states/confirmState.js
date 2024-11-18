@@ -7,6 +7,7 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
 
+// 확인 버튼 출력을 위한 부분
 export default class ConfirmState extends DungeonState {
   constructor(dungeon, user, socket) {
     super(dungeon, user, socket);
@@ -32,7 +33,7 @@ export default class ConfirmState extends DungeonState {
       typingAnimation: false,
       btns: buttons,
     };
-    
+
     const confirmBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
     this.socket.write(confirmBattlelogResponse);
   }

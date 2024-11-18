@@ -14,7 +14,7 @@ export default class GameOverWinState extends DungeonState {
     this.socket.write(
       createResponse(PacketType.S_ScreenText, {
         screenText: {
-          msg: '던전을 클리어 하였습니다!',
+          msg: '던전 클리어!',
           typingAnimation: true,
         },
       }),

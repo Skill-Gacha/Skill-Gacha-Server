@@ -11,7 +11,7 @@ export default class ActionState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.ACTION;
     const buttons = [
-      { msg: '공격', enable: true },
+      { msg: '공격', enable: true },  // 평타는 나중에 제거
       { msg: '스킬 사용', enable: false }, // 향후 구현 예정
       { msg: '아이템 사용', enable: false }, // 향후 구현 예정
       { msg: '도망치기', enable: true },

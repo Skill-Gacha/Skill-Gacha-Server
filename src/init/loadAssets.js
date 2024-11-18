@@ -43,8 +43,8 @@ export const loadGameAssets = async () => {
     ]);
 
     gameAssets = { playerCharacter, MonsterData };
-    
-    console.log("게임 애샛 로드 완료");
+
+    console.log('게임 애샛 로드 완료');
   } catch (error) {
     throw new Error('Failed to load game assets: ' + error.message);
   }

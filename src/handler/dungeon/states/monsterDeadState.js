@@ -6,6 +6,7 @@ import GameOverWinState from './gameOverWinState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 
+// 몬스터 사망 처리
 export default class MonsterDeadState extends DungeonState {
   async enter() {
     const monster = this.dungeon.selectedMonster;
