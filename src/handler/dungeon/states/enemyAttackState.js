@@ -1,16 +1,23 @@
 ﻿// src/handlers/dungeon/states/EnemyAttackState.js
 
-import DungeonState from './DungeonState.js';
-import ActionState from './ActionState.js';
-import GameOverLoseState from './GameOverLoseState.js';
+import DungeonState from './dungeonState.js';
+import ActionState from './actionState.js';
+import GameOverLoseState from './gameOverLoseState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
+import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class EnemyAttackState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = 'ENEMY_ATTACK';
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.ENEMY_ATTACK;
     const aliveMonsters = this.dungeon.monsters.filter((monster) => monster.monsterHp > 0);
+
+    // 몬스터가 플레이어 공격 시 의도되지 않은 조작 방지 위한 버튼 비활성화
+    const buttons = this.dungeon.monsters.map((monster) => ({
+      msg: monster.monsterName,
+      enable: false,
+    }));
 
     for (const monster of aliveMonsters) {
       const damage = monster.monsterAtk;
@@ -40,7 +47,7 @@ export default class EnemyAttackState extends DungeonState {
           battleLog: {
             msg: `${monster.monsterName}이(가) 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
             typingAnimation: false,
-            btns: [],
+            btns: buttons,
           },
         }),
       );
