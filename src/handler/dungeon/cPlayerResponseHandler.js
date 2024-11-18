@@ -1,50 +1,31 @@
-// src/handler/dungeon/cPlayerResponseHandler.js
+﻿// src/handlers/dungeon/cPlayerResponseHandler.js
 
-import { DUNGEON_STATUS } from '../../constants/battle.js';
-import handleMessageState from './battleFlows/handleMessageState.js';
-import handleActionState from './battleFlows/handleActionState.js';
-import handleTargetState from './battleFlows/handleTargetState.js';
-import handlePlayerAttackState from './battleFlows/handlePlayerAttackState.js';
-import handleEnemyAttackState from './battleFlows/handleEnemyAttackState.js';
-import handleMonsterDeadState from './battleFlows/handleMonsterDeadState.js';
-import handleConfirmState from './battleFlows/handleConfirmState.js';
-import handleGameOverWinResponse from './battleFlows/handleGameOverWinResponse.js';
-import handleGameOverLoseResponse from './battleFlows/handleGameOverLoseResponse.js';
-import handleUseItemState from './battleFlows/handleUseItemState.js'; // 아이템 사용 핸들러 추가
 import sessionManager from '#managers/SessionManager.js';
-import handleFleeMessage from './battleFlows/handleFleeMessage.js';
+import { PacketType } from '../../constants/header.js';
+import CustomError from '../../utils/error/customError.js';
+import { ErrorCodes } from '../../utils/error/errorCodes.js';
 
 export const cPlayerResponseHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
   const dungeon = sessionManager.getDungeonByUser(user);
   const responseCode = payload.responseCode || 0;
-  console.log(`Response Code: ${responseCode}`);
 
   if (!user || !dungeon) {
     console.error('cPlayerResponseHandler: 유저 또는 던전 세션을 찾을 수 없습니다.');
     return;
   }
 
-  // 상태별 핸들러 매핑
-  const stateHandlers = {
-    [DUNGEON_STATUS.MESSAGE]: handleMessageState,
-    [DUNGEON_STATUS.ACTION]: handleActionState,
-    [DUNGEON_STATUS.TARGET]: handleTargetState,
-    [DUNGEON_STATUS.PLAYER_ATTACK]: handlePlayerAttackState,
-    [DUNGEON_STATUS.ENEMY_ATTACK]: handleEnemyAttackState,
-    [DUNGEON_STATUS.MONSTER_DEAD]: handleMonsterDeadState,
-    [DUNGEON_STATUS.GAME_OVER_WIN]: handleGameOverWinResponse,
-    [DUNGEON_STATUS.GAME_OVER_LOSE]: handleGameOverLoseResponse,
-    [DUNGEON_STATUS.CONFIRM]: handleConfirmState,
-    [DUNGEON_STATUS.USE_ITEM]: handleUseItemState,
-    [DUNGEON_STATUS.FLEE_MESSAGE]: handleFleeMessage,
-  };
+  if (!dungeon.currentState) {
+    // 초기 상태 설정
+    const MessageState = (await import('./states/messageState.js')).default;
+    dungeon.currentState = new MessageState(dungeon, user, socket);
+    await dungeon.currentState.enter();
+  }
 
-  const handler = stateHandlers[dungeon.dungeonStatus];
-
-  if (handler) {
-    await handler(responseCode, dungeon, user, socket);
-  } else {
-    console.error(`알 수 없는 던전 상태: ${dungeon.dungeonStatus}`);
+  try {
+    await dungeon.currentState.handleInput(responseCode);
+  } catch (error) {
+    console.error('cPlayerResponseHandler 처리 중 오류 발생:', error);
+    throw new CustomError(ErrorCodes.INVALID_PACKET, '패킷 처리 중 오류가 발생했습니다.');
   }
 };

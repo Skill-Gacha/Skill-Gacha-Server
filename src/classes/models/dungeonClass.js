@@ -8,8 +8,10 @@ class Dungeon extends BaseSession {
     super(dungeonId);
     this.monsters = [];
     this.dungeonCode = dungeonCode;
-    this.dungeonStatus = DUNGEON_STATUS.MESSAGE; // 초기 상태 설정
-    this.selectedMonster = null;
+    this.dungeonStatus = null; // 초기 상태 설정
+    this.currentState = null;
+    
+    // this.selectedMonster = null;
   }
 
   addMonster(monster) {

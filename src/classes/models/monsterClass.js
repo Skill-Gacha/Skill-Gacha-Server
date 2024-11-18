@@ -10,7 +10,7 @@ class Monster {
     this.effectCode = monsterEffectCode;
   }
 
-  minusHp(amount) {
+  reduceHp(amount) {
     this.monsterHp = Math.max(this.monsterHp - amount, 0);
   }
 }
