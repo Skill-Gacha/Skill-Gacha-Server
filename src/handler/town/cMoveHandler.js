@@ -1,6 +1,6 @@
 ﻿// src/handlers/cMoveHandler.js
 
-import sessionManager from '#managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 

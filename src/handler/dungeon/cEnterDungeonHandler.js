@@ -2,7 +2,7 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '#managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 import MonsterData from '../../../assets/MonsterData.json' assert { type: 'json' };
 import { v4 as uuidv4 } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';

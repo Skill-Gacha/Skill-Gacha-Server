@@ -1,7 +1,7 @@
 // src/events/onError.js
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
-import sessionManager from '../managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 
 export const onError = (socket) => async (err) => {
   console.error('소켓 에러 발생:', err);

@@ -1,6 +1,6 @@
 // src/handlers/cEnterHandler.js
 
-import sessionManager from '#managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createUser, findUserNickname } from '../../db/user/user.db.js';
 import { getJobById } from '../../init/loadAssets.js';

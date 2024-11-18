@@ -1,8 +1,8 @@
 ﻿// src/handlers/dungeon/states/MonsterDeadState.js
 
-import DungeonState from './DungeonState.js';
-import EnemyAttackState from './EnemyAttackState.js';
-import GameOverWinState from './GameOverWinState.js';
+import DungeonState from './dungeonState.js';
+import EnemyAttackState from './enemyAttackState.js';
+import GameOverWinState from './gameOverWinState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 

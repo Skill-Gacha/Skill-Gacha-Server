@@ -2,7 +2,7 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '#managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
 
 export const sSpawnHandler = async (newUser) => {

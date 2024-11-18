@@ -1,13 +1,14 @@
 ﻿// src/handlers/dungeon/states/GameOverWinState.js
 
-import DungeonState from './DungeonState.js';
-import sessionManager from '#managers/SessionManager.js';
+import DungeonState from './dungeonState.js';
+import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class GameOverWinState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = 'GAME_OVER_WIN';
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.GAME_OVER_WIN;
 
     // 승리 메시지 전송
     this.socket.write(
@@ -15,7 +16,6 @@ export default class GameOverWinState extends DungeonState {
         screenText: {
           msg: '던전을 클리어 하였습니다!',
           typingAnimation: true,
-          btns: [{ msg: '확인', enable: true }],
         },
       }),
     );

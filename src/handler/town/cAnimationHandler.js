@@ -2,7 +2,7 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '#managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 
 export const cAnimationHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);

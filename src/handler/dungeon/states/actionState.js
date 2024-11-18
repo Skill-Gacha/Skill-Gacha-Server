@@ -1,14 +1,15 @@
 ﻿// src/handlers/dungeon/states/ActionState.js
 
-import DungeonState from './DungeonState.js';
-import TargetState from './TargetState.js';
-import ConfirmState from './ConfirmState.js';
+import DungeonState from './dungeonState.js';
+import TargetState from './targetState.js';
+import ConfirmState from './confirmState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class ActionState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = 'ACTION';
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.ACTION;
     const buttons = [
       { msg: '공격', enable: true },
       { msg: '스킬 사용', enable: false }, // 향후 구현 예정

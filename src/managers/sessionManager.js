@@ -1,22 +1,17 @@
 ﻿// src/managers/SessionManager.js
 
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 let instance;
 
 class SessionManager {
   constructor() {
     if (instance) {
-      console.log(`기존 세션 관리자 인스턴스 반환 (파일: ${__dirname})`);
+      console.log(`기존 세션 관리자 인스턴스 반환`);
       return instance;
     }
-    console.log(`세션 관리자 생성 (파일: ${__dirname})`);
+    console.log(`세션 관리자 생성`);
     this.sessions = {
       town: new Town(10000),
       dungeons: new Map(),

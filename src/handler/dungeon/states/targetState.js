@@ -1,17 +1,17 @@
 ﻿// src/handlers/dungeon/states/TargetState.js
 
-import DungeonState from './DungeonState.js';
-import PlayerAttackState from './PlayerAttackState.js';
+import DungeonState from './dungeonState.js';
+import PlayerAttackState from './playerAttackState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class TargetState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = 'TARGET';
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.TARGET;
     const buttons = this.dungeon.monsters.map((monster) => ({
       msg: monster.monsterName,
       enable: monster.monsterHp > 0,
-      code: monster.monsterIdx + 1,
     }));
 
     const battleLog = {

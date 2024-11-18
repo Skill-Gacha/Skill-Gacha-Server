@@ -1,9 +1,10 @@
 ﻿// src/handlers/dungeon/states/MessageState.js
 
-import DungeonState from './DungeonState.js';
-import ActionState from './ActionState.js';
+import DungeonState from './dungeonState.js';
+import ActionState from './actionState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class MessageState extends DungeonState {
   constructor(dungeon, user, socket, message) {
@@ -12,7 +13,7 @@ export default class MessageState extends DungeonState {
   }
 
   async enter() {
-    this.dungeon.dungeonStatus = 'MESSAGE';
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.MESSAGE;
   }
 
   async handleInput(responseCode) {

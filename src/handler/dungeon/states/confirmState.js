@@ -1,10 +1,11 @@
 ﻿// src/handlers/dungeon/states/ConfirmState.js
 
-import DungeonState from './DungeonState.js';
-import ActionState from './ActionState.js';
-import FleeMessageState from './FleeMessageState.js';
+import DungeonState from './dungeonState.js';
+import ActionState from './actionState.js';
+import FleeMessageState from './fleeMessageState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class ConfirmState extends DungeonState {
   constructor(dungeon, user, socket) {
@@ -20,7 +21,7 @@ export default class ConfirmState extends DungeonState {
   }
 
   async enter() {
-    this.dungeon.dungeonStatus = 'CONFIRM';
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.CONFIRM;
     const buttons = [
       { msg: '예', enable: true },
       { msg: '아니오', enable: true },
