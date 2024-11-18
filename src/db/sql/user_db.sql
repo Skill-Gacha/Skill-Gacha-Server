@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `characterInfo`
+CREATE TABLE IF NOT EXISTS `CharacterInfo`
 (
     `id`
     INT
