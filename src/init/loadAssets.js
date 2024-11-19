@@ -54,7 +54,7 @@ export const getGameAssets = () => {
   return gameAssets;
 };
 
-export const getJobById = (jobId) => {
-  const index = gameAssets.playerCharacter.data.findIndex((job) => job.id === jobId);
+export const getElementById = (elementId) => {
+  const index = gameAssets.playerCharacter.data.findIndex((element) => element.id === elementId);
   return gameAssets.playerCharacter.data[index];
 };
