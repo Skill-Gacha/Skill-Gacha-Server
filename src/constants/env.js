@@ -16,10 +16,8 @@ export const DB_PASSWORD = process.env.DB_PASSWORD;
 export const DB_HOST = process.env.DB_HOST;
 export const DB_PORT = process.env.DB_PORT;
 
-
 // REDIS
 export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
 export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = process.env.REDIS_PORT;
 export const REDIS_USERNAME = process.env.REDIS_USERNAME;
-export const REDIS_USERPASS = process.env.REDIS_USERPASS;
