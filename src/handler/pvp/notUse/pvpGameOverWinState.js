@@ -1,8 +1,8 @@
 ﻿import sessionManager from '#managers/sessionManager.js';
+import PvpState from '../states/pvpState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
-import PvpState from './pvpState.js';
 
 export default class PvpGameOverWinState extends PvpState {
   async enter() {
@@ -12,7 +12,7 @@ export default class PvpGameOverWinState extends PvpState {
     this.socket.write(
       createResponse(PacketType.S_ScreenText, {
         screenText: {
-          msg: '던전 클리어!',
+          msg: '당신은 승리하였습니다',
           typingAnimation: true,
         },
       }),
@@ -22,10 +22,13 @@ export default class PvpGameOverWinState extends PvpState {
   async handleInput(responseCode) {
     if (responseCode === 0) {
       // ScreenText기 때문에 0을 받아야 함
+      // 예시) 점수 증가 로직 ?
+      // this.pvp.score += 100;
+
       // 던전 종료 및 세션 제거
-      //sessionManager.removeDungeon(this.dungeon.sessionId);
-      //const sLeaveDungeonResponse = createResponse(PacketType.S_LeaveDungeon, {});
-      //this.socket.write(sLeaveDungeonResponse);
+      sessionManager.removePvpRoom(this.pvp.sessionId);
+      const sLeavePvpResponse = createResponse(PacketType.S_LeaveDungeon, {});
+      this.socket.write(sLeavePvpResponse);
     } else {
       // 잘못된 입력 처리
     }

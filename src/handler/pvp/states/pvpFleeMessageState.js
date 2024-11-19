@@ -6,7 +6,7 @@ import PvpState from './pvpState.js';
 
 export default class PvpFleeMessageState extends PvpState {
   async enter() {
-    this.pvp.pvpStatus = PVP_STATUS.FLEE_MESSAGE;
+    this.pvpRoom.pvpStatus = PVP_STATUS.ABSTENTION_MESSAGE;
 
     // 도망 메시지 전송
     this.socket.write(
@@ -22,8 +22,8 @@ export default class PvpFleeMessageState extends PvpState {
   async handleInput(responseCode) {
     if (responseCode === 0) {
       // 던전 종료 및 세션 제거
-      //sessionManager.removeDungeon(this.pvp.sessionId);
-      //const sLeavePvpResponse = createResponse(PacketType.S_LeaveDungeon, {});
+      sessionManager.removePvpRoom(this.pvp.sessionId);
+      const sLeavePvpResponse = createResponse(PacketType.S_LeaveDungeon, {});
       this.socket.write(sLeavePvpResponse);
     } else {
       // 잘못된 입력 처리

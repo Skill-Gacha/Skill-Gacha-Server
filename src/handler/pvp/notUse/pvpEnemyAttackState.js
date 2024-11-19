@@ -1,15 +1,15 @@
-﻿import ActionState from './pvpActionState.js';
-import GameOverLoseState from './pvpGameOverLoseState.js';
-import { PacketType } from '../../../constants/header.js';
+﻿import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
-import PvpState from './pvpState.js';
+import PvpState from '../states/pvpState.js';
+import PvpGameOverLoseState from './pvpGameOverLoseState.js';
+import PvpActionState from '../states/pvpActionState.js';
 
 // 몬스터가 플레이어를 공격하는 상태
 export default class PvpEnemyAttackState extends PvpState {
   async enter() {
-    this.pvp.pvpStatus = PVP_STATUS.ENEMY_ATTACK;
+    this.pvpRoom.pvpStatus = PVP_STATUS.ENEMY_ATTACK;
     const aliveMonsters = this.pvp.monsters.filter((monster) => monster.monsterHp > 0);
 
     // 몬스터가 플레이어 공격 시 의도되지 않은 조작 방지 위한 버튼 비활성화
@@ -51,7 +51,7 @@ export default class PvpEnemyAttackState extends PvpState {
 
       // 플레이어 사망 여부 확인
       if (this.user.stat.hp <= 0) {
-        this.changeState(GameOverLoseState);
+        this.changeState(PvpGameOverLoseState);
         return;
       }
 
@@ -60,7 +60,7 @@ export default class PvpEnemyAttackState extends PvpState {
     }
 
     // 행동 선택 상태로 전환
-    this.changeState(ActionState);
+    this.changeState(PvpActionState);
   }
 
   async handleInput(responseCode) {

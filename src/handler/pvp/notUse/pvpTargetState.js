@@ -1,7 +1,7 @@
 ﻿// src/handler/pvp/states/pvpTargetState.js
 
-import PvpState from './pvpState.js';
-import PvpPlayerAttackState from './pvpPlayerAttackState.js';
+import PvpState from '../states/pvpState.js';
+import PvpPlayerAttackState from '../states/pvpPlayerAttackState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
@@ -11,9 +11,9 @@ import { PVP_STATUS } from '../../../constants/battle.js';
 export default class PvpTargetState extends PvpState {
   async enter() {
     this.pvp.pvpStatus = PVP_STATUS.TARGET;
-    const buttons = this.pvp.monsters.map((monster) => ({
-      msg: monster.monsterName,
-      enable: monster.monsterHp > 0,
+    const buttons = this.pvp.getOpponentUsers().map((user) => ({
+      msg: user.nickname,
+      enable: user.stats.hp > 0,
     }));
 
     const battleLog = {
@@ -26,7 +26,7 @@ export default class PvpTargetState extends PvpState {
   }
 
   async handleInput(responseCode) {
-    const monster = this.pvp.monsters.find((m) => m.monsterIdx === responseCode - 1);
+    const monster = this.pvp.getOpponentUsers().find((user) => m.monsterIdx === responseCode - 1);
     if (monster && monster.monsterHp > 0) {
       this.pvp.selectedMonster = monster;
       this.changeState(PvpPlayerAttackState);

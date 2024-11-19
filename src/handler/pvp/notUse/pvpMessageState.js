@@ -1,17 +1,12 @@
-﻿import PvpState from './pvpState.js';
+﻿import PvpState from '../states/pvpState.js';
+import PvpActionState from '../states/pvpActionState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
-import PvpActionState from './pvpActionState.js';
 
 export default class PvpMessageState extends PvpState {
-  constructor(pvp, user, socket, message) {
-    super(pvp, user, socket);
-    this.message = message || '메시지를 표시합니다.';
-  }
-
   async enter() {
-    this.pvp.pvpStatus = PVP_STATUS.MESSAGE;
+    this.pvpRoom.pvpStatus = PVP_STATUS.MESSAGE;
   }
 
   async handleInput(responseCode) {

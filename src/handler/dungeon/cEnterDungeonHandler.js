@@ -12,7 +12,7 @@ import { MyStatus } from '../../utils/battle/battle.js';
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const user = sessionManager.getUserBySocket(socket);
-  const monsterData = getGameAssets().MonsterData;
+  const monsterData = getGameAssets().MonsterData.data;
 
   if (!user) {
     console.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
@@ -24,29 +24,24 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const dungeon = sessionManager.createDungeon(dungeonId, dungeonCode);
     dungeon.addUser(user);
 
-    const monsterCodes = monsterData.data.map((monster) => monster.monsterModel);
-    const selectedMonsters = monsterData.data.filter((monster) =>
-      monsterCodes.includes(monster.monsterModel),
-    );
-
     // 던전 코드에 따라 몬스터를 선택
-    const startIndex = dungeonCode * 5;
-    const endIndex = startIndex + 5;
-    const dungeonMonsters = selectedMonsters.slice(startIndex, endIndex);
+    const startIndex = (dungeonCode - 1) * 7;
+    const endIndex = startIndex + 6;
+    const dungeonMonsters = monsterData.slice(startIndex, endIndex);
 
     const totalMonsters = Math.floor(Math.random() * 3) + 1; // 1~3마리 랜덤 생성
 
     for (let i = 0; i < totalMonsters; i++) {
       const index = Math.floor(Math.random() * dungeonMonsters.length);
-      const monsterData = dungeonMonsters[index];
+      const findMonster = dungeonMonsters[index];
 
       const monsterInstance = new Monster(
-        dungeon.monsters.length,
-        monsterData.monsterModel,
-        monsterData.monsterName,
-        monsterData.monsterHp,
-        monsterData.monsterAtk,
-        monsterData.monsterEffectCode,
+        i,
+        findMonster.monsterModel,
+        findMonster.monsterName,
+        findMonster.monsterHp,
+        findMonster.monsterAtk,
+        findMonster.monsterEffectCode,
       );
 
       dungeon.addMonster(monsterInstance);

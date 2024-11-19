@@ -8,6 +8,8 @@ export const PacketType = {
   C_Chat: 12,
   C_EnterDungeon: 14,
   C_PlayerResponse: 15,
+  C_ViewRankPoint: 26,
+  C_PlayerMatch: 30,
 
   // 서버 → 클라이언트 패킷
   S_Enter: 1,
@@ -26,6 +28,13 @@ export const PacketType = {
   S_SetMonsterHp: 23,
   S_PlayerAction: 24,
   S_MonsterAction: 25,
-  S_PlayerMatch: 30,
-  S_PlayerMatchNotification: 31,
+  S_ViewRankPoint: 27,
+  S_PlayerStrikeFirstNotification: 28,
+  S_PlayerCurrencyNotification: 29,
+  S_PlayerMatch: 31,
+  S_PlayerMatchNotification: 32,
+  S_UserTurn: 33,
+  S_EnemyActionNotification: 34,
+  S_GameOverNotification: 35,
+  S_EnemyHpNotification: 36,
 };

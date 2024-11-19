@@ -1,14 +1,47 @@
-// src/handler/dungeon/cPlayerResponseHandler.js
+// src/handler/pvp/cPlayerPvpHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
+import { PacketType } from '../../constants/header.js';
 import { handleError } from '../../utils/error/errorHandler.js';
+import { createResponse } from '../../utils/response/createResponse.js';
 
 export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
+  const responseCode = payload.responseCode || 0;
+  /* 
+  TODO: 향후 user를 찾지 않고 socket만 사용해서 socket에 해당하는 pvpRoom(pvpSession) 찾기
+  */
   const user = sessionManager.getUserBySocket(socket);
   const pvpRoom = sessionManager.getPvpByUser(user);
-  const responseCode = payload.responseCode || 0;
 
-  if (!user || !pvpRoom) {
+  const [playerA, playerB] = pvpRoom.getUsers();
+
+  // 행동을 할 사람
+  let mover = null;
+  // 행동이 아닌 사람
+  let stopper = null;
+
+  if (pvpRoom.getUserTurn()) {
+    //TODO: 본인의 턴인지 클라이언트가 수신할 수 있도록 만들기
+    playerA.socket.write(
+      createResponse(PacketType.S_UserTurn, { userTurn: pvpRoom.getUserTurn() }),
+    );
+    playerB.socket.write(
+      createResponse(PacketType.S_UserTurn, { userTurn: !pvpRoom.getUserTurn() }),
+    );
+    mover = playerA;
+    stopper = playerB;
+  } else {
+    playerA.socket.write(
+      createResponse(PacketType.S_UserTurn, { userTurn: !pvpRoom.getUserTurn() }),
+    );
+    playerB.socket.write(
+      createResponse(PacketType.S_UserTurn, { userTurn: pvpRoom.getUserTurn() }),
+    );
+    mover = playerB;
+    stopper = playerA;
+  }
+
+  if (!playerA || !playerB || !pvpRoom) {
     console.error('cPlayerPvpResponseHandler: 유저 또는 PVP 세션을 찾을 수 없습니다.');
     return;
   }
@@ -24,8 +57,8 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     // 모듈의 기본 내보내기(Default Export)를 가져옴
     // 동적 임포트는 모듈의 전체 네임스페이스를 반환하므로
     // default를 통해 필요한 것만 가져오게 함
-    const messageState = (await import('./states/messageState.js')).default;
-    pvpRoom.currentState = new messageState(pvpRoom, user, socket);
+    const PvpActionState = (await import('./states/pvpActionState.js')).default;
+    pvpRoom.currentState = new PvpActionState(pvpRoom, mover, stopper);
     await pvpRoom.currentState.enter();
   }
 
