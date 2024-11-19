@@ -1,6 +1,5 @@
 // src/classes/models/userClass.js
 
-
 import Position from './positionClass.js';
 import Stat from './statClass.js';
 
@@ -13,11 +12,11 @@ class User {
     this.stat = new Stat(1, maxHp, maxHp, maxMp, maxMp, atk, def, magic, speed);
   }
 
-  updateUserHp(damage) {
+  reduceHp(damage) {
     this.stat.hp = Math.max(0, this.stat.hp - damage);
   }
 
-  resetUserHpMp() {
+  resetHpMp() {
     this.stat.hp = this.stat.maxHp;
     this.stat.mp = this.stat.maxMp;
   }

@@ -1,7 +1,7 @@
 // src/events/onEnd.js
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
-import sessionManager from '../managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 
 export const onEnd = (socket) => async () => {
   console.log('클라이언트 연결이 종료되었습니다.');

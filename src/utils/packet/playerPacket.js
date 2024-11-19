@@ -1,3 +1,5 @@
+// src/utils/packet/playerPacket.js
+
 export const playerData = (user) => {
   const playerInfo = {
     playerId: user.id,

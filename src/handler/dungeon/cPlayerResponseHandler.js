@@ -1,54 +1,41 @@
-// src/handlers/cPlayerResponseHandler.js
+﻿// src/handler/dungeon/cPlayerResponseHandler.js
 
-import { PacketType } from '../../constants/header.js';
-import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
-import sPlayerActionHandler from './sPlayerActionHandler.js';
-import { sMonsterActionHandler } from './sMonsterActionHandler.js';
-import { delay } from './delay.js';
-import { D_STATE_BATTLE, D_STATE_END, D_STATE_PLAYER_DEAD } from '../../constants/battle.js';
+import sessionManager from '#managers/sessionManager.js';
+import { handleError } from '../../utils/error/errorHandler.js';
 
 export const cPlayerResponseHandler = async ({ socket, payload }) => {
-  const { responseCode } = payload;
   const user = sessionManager.getUserBySocket(socket);
+  const dungeon = sessionManager.getDungeonByUser(user);
+  const responseCode = payload.responseCode || 0;
 
-  if (!user) {
-    console.error('cPlayerResponseHandler: 유저를 찾을 수 없습니다.');
+  if (!user || !dungeon) {
+    console.error('cPlayerResponseHandler: 유저 또는 던전 세션을 찾을 수 없습니다.');
     return;
   }
 
-  const dungeon = sessionManager.getSessionByUserId(user.id);
+  if (!dungeon.currentState) {
+    // 초기 상태 설정
+    // 던전 입장 시 스크린 텍스트부터 표시되므로
+    // 메세지 상태 핸들링이 필요하다
+    // 따라서 상태 지정이 없을 때 messageState.js부터 로드
+    // 다르게 로드할 수 있는지는 찾아봐야 할 듯
 
-  if (!dungeon) {
-    console.error('cPlayerResponseHandler: 던전 세션을 찾을 수 없습니다.');
-    return;
+    // messageState.js을 동적으로 임포트하고
+    // 모듈의 기본 내보내기(Default Export)를 가져옴
+    // 동적 임포트는 모듈의 전체 네임스페이스를 반환하므로
+    // default를 통해 필요한 것만 가져오게 함
+    const messageState = (await import('./states/messageState.js')).default;
+    dungeon.currentState = new messageState(dungeon, user, socket);
+    await dungeon.currentState.enter();
   }
 
-  const aliveMonsters = dungeon.monsters.filter((monster) => monster.monsterHp > 0);
-
-  if (user.stat.hp <= 0 || aliveMonsters.length === 0) {
-    sessionManager.removeDungeon(dungeon.sessionId);
-    const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
-    user.socket.write(leaveResponse);
-    console.log(`유저 ${user.id}가 던전 ${dungeon.sessionId}에서 나갔습니다.`);
-    return;
-  }
-
-  if (responseCode === 0) {
-    if (user.stat.hp <= 0 || aliveMonsters.length === 0) {
-      sessionManager.removeDungeon(dungeon.sessionId);
-      const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
-      user.socket.write(leaveResponse);
-      console.log(`유저 ${user.id}가 던전 ${dungeon.sessionId}에서 나갔습니다.`);
-      return;
-    }
-    const screenDoneResponse = createResponse(PacketType.S_ScreenDone, {});
-    user.socket.write(screenDoneResponse);
-  } else {
-    await sPlayerActionHandler(user, dungeon, responseCode);
-    await delay(1000);
-    await sMonsterActionHandler(user, dungeon, responseCode);
+  // 초기 상황이 아니면 클라이언트 응답 처리로 넘어감
+  // 이 파일에선 응답 코드에 대한 어떤 처리도 하지 않기 때문에
+  // 스테이트에서 확실히 넘겨주는 작업이 필요
+  try {
+    await dungeon.currentState.handleInput(responseCode);
+  } catch (error) {
+    console.error('cPlayerResponseHandler 처리 중 오류 발생:', error);
+    handleError(error);
   }
 };
-
-export default cPlayerResponseHandler;

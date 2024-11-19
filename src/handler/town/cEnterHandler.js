@@ -1,10 +1,10 @@
-// src/handlers/cEnterHandler.js
+// src/handler/town/cEnterHandler.js
 
+import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createUser, findUserNickname } from '../../db/user/user.db.js';
 import { getJobById } from '../../init/loadAssets.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
 import User from '../../classes/models/userClass.js';

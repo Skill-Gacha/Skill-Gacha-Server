@@ -1,8 +1,8 @@
-// src/handlers/sDespawnHandler.js
+// src/handler/town/sDespawnHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 import { handleError } from '../../utils/error/errorHandler.js';
 
 export const sDespawnHandler = async (user) => {
@@ -18,7 +18,7 @@ export const sDespawnHandler = async (user) => {
     if (!town) {
       throw new Error('타운 세션을 찾을 수 없습니다.');
     }
-    
+
     town.removeUser(user.id);
 
     const despawnPayload = createResponse(PacketType.S_Despawn, {
@@ -31,6 +31,6 @@ export const sDespawnHandler = async (user) => {
     console.log(`유저 ${user.id}의 Despawn 패킷을 타운 세션에 전송하였습니다.`);
   } catch (error) {
     console.error('sDespawnHandler 처리 중 오류 발생:', error);
-    handleError(user.socket, error);
+    handleError(error);
   }
 };

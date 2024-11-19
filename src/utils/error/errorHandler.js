@@ -2,7 +2,7 @@
 
 import { ErrorCodes } from './errorCodes.js';
 
-export const handleError = (socket, error) => {
+export const handleError = (error) => {
   let responseCode;
   let message;
   console.error(error);

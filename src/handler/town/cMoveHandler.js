@@ -1,8 +1,8 @@
-﻿// src/handlers/cMoveHandler.js
+﻿// src/handler/town/cMoveHandler.js
 
+import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
 
 export const cMoveHandler = async ({ socket, payload }) => {
   // 클라이언트로부터 받은 TransformInfo 추출

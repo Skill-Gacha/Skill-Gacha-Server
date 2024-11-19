@@ -1,8 +1,8 @@
-// src/handlers/cChatHandler.js
+// src/handler/town/cChatHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 
 export const cChatHandler = async ({ socket, payload }) => {
   const { playerId, senderName, chatMsg } = payload;

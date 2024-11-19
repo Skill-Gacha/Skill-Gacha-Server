@@ -3,7 +3,6 @@
 import { PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../../constants/constants.js';
 import { getProtoMessagesById } from '../../init/loadProto.js';
 
-
 export const createResponse = (packetId, data = null) => {
   // 패킷 ID로 메시지 타입 가져오기
   const messageType = getProtoMessagesById(packetId);

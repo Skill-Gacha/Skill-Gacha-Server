@@ -1,8 +1,8 @@
-// src/handlers/cAnimationHandler.js
+// src/handler/town/cAnimationHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '../../managers/SessionManager.js';
+import sessionManager from '#managers/sessionManager.js';
 
 export const cAnimationHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
@@ -29,6 +29,6 @@ export const cAnimationHandler = async ({ socket, payload }) => {
     } catch (error) {
       console.error('S_Animation 패킷 전송중 오류 발생', error);
     }
-        
+
   });
 };

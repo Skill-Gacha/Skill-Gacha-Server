@@ -1,4 +1,4 @@
-// src/classes/models/BaseSession.js
+// src/classes/models/baseSession.js
 
 class BaseSession {
   constructor(sessionId) {

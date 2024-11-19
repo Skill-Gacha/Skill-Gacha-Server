@@ -1,7 +1,5 @@
 ﻿// src/init/loadAssets.js
 
-// src/init/assets.js
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -37,16 +35,16 @@ const readFileAsync = (filename) => {
 
 export const loadGameAssets = async () => {
   try {
-    const [playerCharacter, MonsterClass] = await Promise.all([
+    const [playerCharacter, MonsterData] = await Promise.all([
       // 이런 형태로 필요한 파일 로드
 
       readFileAsync('playerCharacter.json'),
       readFileAsync('MonsterData.json'), // 몬스터 상태 파일 추가
     ]);
 
-    gameAssets = { playerCharacter, MonsterClass };
+    gameAssets = { playerCharacter, MonsterData };
 
-    return gameAssets;
+    console.log('게임 애샛 로드 완료');
   } catch (error) {
     throw new Error('Failed to load game assets: ' + error.message);
   }

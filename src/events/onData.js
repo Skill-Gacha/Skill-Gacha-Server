@@ -50,7 +50,7 @@ export const onData = (socket) => (data) => {
 
     // 다음 패킷을 위해 버퍼 업데이트
     socket.buffer = socket.buffer.slice(packetSize);
-    
+
 
     try {
       // PacketData를 파싱
@@ -64,8 +64,9 @@ export const onData = (socket) => (data) => {
       } else {
         console.error(`핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
       }
-    } catch (e) {
-      handleError(socket, e);
+    } catch (error) {
+      console.error('패킷 파싱 중 오류 발생:');
+      handleError(error);
     }
   }
 };

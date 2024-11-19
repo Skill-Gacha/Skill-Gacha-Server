@@ -1,20 +1,30 @@
-﻿// src/managers/SessionManager.js
-
+﻿// src/managers/sessionManager.js
 
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
 
+let instance;
+
+// 싱글톤 클래스
 class SessionManager {
   constructor() {
+    if (instance) {
+      console.log(`기존 세션 관리자 인스턴스 반환`);
+      return instance;
+    }
+    console.log(`세션 관리자 생성`);
     this.sessions = {
-      town: new Town(10000), // 기본 마을 세션 초기화 -> 마을은 하나만 유지
+      town: new Town(10000),
       dungeons: new Map(),
     };
     this.users = new Map();
+    SessionManager.instance = this;
+    Object.freeze(this);
   }
 
   // **사용자 관리**
   addUser(user) {
+    console.log(`유저 ${user.id}가 세션에 추가되었습니다.`);
     this.users.set(user.id, user);
     this.sessions.town.addUser(user); // 기본적으로 마을 세션에 추가
   }
@@ -36,6 +46,8 @@ class SessionManager {
         return user;
       }
     }
+
+    console.error('소켓을 찾을 수 없음');
     return null;
   }
 
@@ -48,6 +60,10 @@ class SessionManager {
 
   getDungeon(sessionId) {
     return this.sessions.dungeons.get(sessionId);
+  }
+
+  getDungeonByUser(user) {
+    return this.getSessionByUserId(user.id);
   }
 
   removeDungeon(sessionId) {
