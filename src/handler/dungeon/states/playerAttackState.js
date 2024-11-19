@@ -13,8 +13,16 @@ export default class PlayerAttackState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.PLAYER_ATTACK;
     const targetMonster = this.dungeon.selectedMonster;
-    const playerDamage = this.user.stat.atk;
-    targetMonster.reduceHp(playerDamage);
+    const selectedSkill = this.dungeon.selectedSkill;
+    const userSkillInfo = this.user.userSkills[selectedSkill];
+    targetMonster.reduceHp(userSkillInfo.damage);
+    this.user.reduceMp(userSkillInfo.mana);
+
+    // 유저 MP 업데이트
+    const setPlayerMpResponse = createResponse(PacketType.S_SetPlayerMp, {
+      mp: this.user.stat.mp,
+    });
+    this.socket.write(setPlayerMpResponse);
 
     // 공격 시 의도되지 않은 조작 방지 위한 버튼 비활성화
     const disableButtons = this.dungeon.monsters.map((monster) => ({
@@ -34,7 +42,7 @@ export default class PlayerAttackState extends DungeonState {
       targetMonsterIdx: targetMonster.monsterIdx,
       actionSet: {
         animCode: 0, // 공격 애니메이션 코드
-        effectCode: 3001, // 이펙트 코드
+        effectCode: userSkillInfo.effectCode, // 이펙트 코드
       },
     });
     this.socket.write(playerActionResponse);
@@ -42,7 +50,7 @@ export default class PlayerAttackState extends DungeonState {
     // 공격 결과 메시지 전송
     const battleLogResponse = createResponse(PacketType.S_BattleLog, {
       battleLog: {
-        msg: `${targetMonster.monsterName}에게 ${playerDamage}의 피해를 입혔습니다.`,
+        msg: `${targetMonster.monsterName}에게 ${userSkillInfo.damage}의 피해를 입혔습니다.`,
         typingAnimation: false,
         btns: disableButtons,
       },

@@ -5,6 +5,7 @@ import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
+import { invalidResponseCode } from '../../../utils/error/responseErrorHandler.js';
 
 export default class FleeMessageState extends DungeonState {
   async enter() {
@@ -28,7 +29,8 @@ export default class FleeMessageState extends DungeonState {
       const sLeaveDungeonResponse = createResponse(PacketType.S_LeaveDungeon, {});
       this.socket.write(sLeaveDungeonResponse);
     } else {
-      // 잘못된 입력 처리
+      // responseCode 유효성 검사
+      invalidResponseCode(this.socket);
     }
   }
 }

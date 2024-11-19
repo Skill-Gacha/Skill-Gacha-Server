@@ -1,6 +1,6 @@
 // src/classes/models/dungeonClass.js
 
-import { getRandomSkills } from '../../init/loadAssets.js';
+import { getRandomRewardSkills } from '../../init/loadAssets.js';
 import BaseSession from './baseSession.js';
 import Reward from './rewardClass.js';
 
@@ -11,6 +11,8 @@ class Dungeon extends BaseSession {
     this.dungeonCode = dungeonCode;
     this.currentState = null;
     this.reward = this.initReward();
+    this.selectedSkill;
+    this.newSkill;
 
     this.dungeonStatus = null;
     // this.selectedMonster = null;
@@ -24,9 +26,10 @@ class Dungeon extends BaseSession {
   initReward() {
     const gold = this.dungeonCode * 100;
     const stone = this.dungeonCode * 1;
-    const skills = getRandomSkills(this.dungeonCode);
+    console.log(this.dungeonCode);
+    const rewardSkills = getRandomRewardSkills(this.dungeonCode);
 
-    return new Reward(gold, stone, skills);
+    return new Reward(gold, stone, rewardSkills);
   }
 }
 

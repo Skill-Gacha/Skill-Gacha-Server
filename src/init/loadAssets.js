@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { SKILL_RANK } from '../constants/battle.js';
+import { MAX_SKILL_REWARD, SKILL_RANK } from '../constants/battle.js';
 import CustomError from '../utils/error/customError.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 
@@ -63,8 +63,13 @@ export const getJobById = (jobId) => {
   return gameAssets.playerCharacter.data[index];
 };
 
+export const getSkillById = (skillId) => {
+  const index = gameAssets.skillData.data.findIndex((skill) => skill.id === skillId);
+  return gameAssets.skillData.data[index];
+};
+
 // 랜덤으로 스킬 가져오기
-export const getRandomSkills = (dungeonCode) => {
+export const getRandomRewardSkills = (dungeonCode) => {
   // 2가지 랭크를 담아야 함
   let ranks = [];
   // 던전 코드에 따라 등급 구분하기
@@ -87,18 +92,18 @@ export const getRandomSkills = (dungeonCode) => {
 
   // 3번 반복하여 랜덤 스킬 3개 빼오기
   const rewardSkills = [];
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < MAX_SKILL_REWARD; i++) {
     // 90% 확률로 첫번째 rank를 10% 확률로 2번째 rank를
     const randomRank = Math.random() < 0.9 ? ranks[0] : ranks[1];
     // 결정된 랭크를 토대로 스킬 랜덤으로 가져오기
     const randomSkills = gameAssets.skillData.data.filter((skill) => skill.rank === randomRank);
     // 걸러진 스킬 5개중 랜덤으로 스킬 선택
     const randomSkillIdx = Math.floor(Math.random() * randomSkills.length);
-    const skill = randomSkills[randomSkillIdx];
+    const randomskill = randomSkills[randomSkillIdx];
     rewardSkills.push({
-      id: skill.id,
-      rank: skill.rank,
-      skillName: skill.skillName,
+      id: randomskill.id,
+      rank: randomskill.rank,
+      skillName: randomskill.skillName,
     });
   }
 

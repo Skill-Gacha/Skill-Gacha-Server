@@ -10,7 +10,7 @@ class User {
     this.nickname = nickname;
     this.position = new Position(0, 0, 0, 0);
     this.stat = new Stat(1, maxHp, maxHp, maxMp, maxMp, atk, def, magic, speed);
-    this.skills = []; // 스킬 id만 가지고 있다(레디스를 통해 실시간으로 가져와서 사용할 예정)
+    this.userSkills = []; // 생성될 때는 빈 배열로 초기화 레디스를 통해 디비에서 유저의 스킬 정보를 가져온다(스킬 전체 정보를 가지고 있다)
     this.gold = 0;
     this.stone = 0;
   }
@@ -19,13 +19,25 @@ class User {
     this.stat.hp = Math.max(0, this.stat.hp - damage);
   }
 
+  reduceMp(mana) {
+    this.stat.mp -= mana;
+  }
+
   resetHpMp() {
     this.stat.hp = this.stat.maxHp;
     this.stat.mp = this.stat.maxMp;
   }
 
-  reduceReward(damage) {
-    this.stat.hp = Math.max(0, this.stat.hp - damage);
+  increaseGold(gold) {
+    this.gold += gold;
+  }
+
+  increaseStone(stone) {
+    this.stone += stone;
+  }
+
+  addSkill(rewardskill) {
+    this.userSkills.push(rewardskill);
   }
 }
 

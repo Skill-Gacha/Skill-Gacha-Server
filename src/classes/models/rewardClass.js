@@ -1,6 +1,8 @@
 class Reward {
-  constructor(gold, stone, sklls) {
-    (this.gold = gold), (this.stone = stone), (this.sklls = sklls);
+  constructor(gold, stone, rewardSkills) {
+    this.gold = gold;
+    this.stone = stone;
+    this.rewardSkills = rewardSkills;
   }
 }
 
