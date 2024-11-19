@@ -4,23 +4,23 @@ export const playerData = (user) => {
   const playerInfo = {
     playerId: user.id,
     nickname: user.nickname,
-    class: user.job,
+    class: user.element,
     transform: {
-      posX: user.position.posX,
-      posY: user.position.posY,
-      posZ: user.position.posZ,
-      rot: user.position.rot,
+      posX: 0,
+      posY: 0,
+      posZ: 0,
+      rot: 0,
     },
     statInfo: {
-      level: user.level,
+      level: 0,
       hp: user.stat.hp,
       maxHp: user.stat.maxHp,
       mp: user.stat.mp,
       maxMp: user.stat.maxMp,
-      atk: user.stat.atk,
-      def: user.stat.def,
-      magic: user.stat.magic,
-      speed: user.stat.speed,
+      atk: 0,
+      def: 0,
+      magic: 0,
+      speed: 0,
     },
   };
 
