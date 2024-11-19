@@ -1,0 +1,231 @@
+{
+  "name": "SkillClass",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 1,
+      "rank": 100,
+      "elemental": 1000,
+      "skillName": "전기 충격",
+      "damage": 10,
+      "mana": 5,
+      "effectCode": 3007
+    },
+    {
+      "id": 2,
+      "rank": 100,
+      "elemental": 1001,
+      "skillName": "돌 던지기",
+      "damage": 10,
+      "mana": 5,
+      "effectCode": 3006
+    },
+    {
+      "id": 3,
+      "rank": 100,
+      "elemental": 1002,
+      "skillName": "덩쿨 채찍",
+      "damage": 10,
+      "mana": 5,
+      "effectCode": 3003
+    },
+    {
+      "id": 4,
+      "rank": 100,
+      "elemental": 1003,
+      "skillName": "화염구",
+      "damage": 10,
+      "mana": 5,
+      "effectCode": 3005
+    },
+    {
+      "id": 5,
+      "rank": 100,
+      "elemental": 1004,
+      "skillName": "물폭탄",
+      "damage": 10,
+      "mana": 5,
+      "effectCode": 3004
+    },
+    {
+      "id": 6,
+      "rank": 101,
+      "elemental": 1000,
+      "skillName": "뇌격",
+      "damage": 20,
+      "mana": 20,
+      "effectCode": 3009
+    },
+    {
+      "id": 7,
+      "rank": 101,
+      "elemental": 1001,
+      "skillName": "돌 화살",
+      "damage": 20,
+      "mana": 20,
+      "effectCode": 3014
+    },
+    {
+      "id": 8,
+      "rank": 101,
+      "elemental": 1002,
+      "skillName": "포자 폭발",
+      "damage": 20,
+      "mana": 20,
+      "effectCode": 3013
+    },
+    {
+      "id": 9,
+      "rank": 101,
+      "elemental": 1003,
+      "skillName": "불 화살",
+      "damage": 20,
+      "mana": 20,
+      "effectCode": 3012
+    },
+    {
+      "id": 10,
+      "rank": 101,
+      "elemental": 1004,
+      "skillName": "물대포",
+      "damage": 20,
+      "mana": 20,
+      "effectCode": 3010
+    },
+    {
+      "id": 11,
+      "rank": 102,
+      "elemental": 1000,
+      "skillName": "플라즈마 폭발",
+      "damage": 30,
+      "mana": 30,
+      "effectCode": 3016
+    },
+    {
+      "id": 12,
+      "rank": 102,
+      "elemental": 1001,
+      "skillName": "암석 폭발",
+      "damage": 30,
+      "mana": 30,
+      "effectCode": 3015
+    },
+    {
+      "id": 13,
+      "rank": 102,
+      "elemental": 1002,
+      "skillName": "가시 감옥",
+      "damage": 30,
+      "mana": 30,
+      "effectCode": 3011
+    },
+    {
+      "id": 14,
+      "rank": 102,
+      "elemental": 1003,
+      "skillName": "불의 장벽",
+      "damage": 30,
+      "mana": 30,
+      "effectCode": 3019
+    },
+    {
+      "id": 15,
+      "rank": 102,
+      "elemental": 1004,
+      "skillName": "물의 감옥",
+      "damage": 30,
+      "mana": 30,
+      "effectCode": 3008
+    },
+    {
+      "id": 16,
+      "rank": 103,
+      "elemental": 1000,
+      "skillName": "전기 폭풍",
+      "damage": 40,
+      "mana": 40,
+      "effectCode": 3023
+    },
+    {
+      "id": 17,
+      "rank": 103,
+      "elemental": 1001,
+      "skillName": "암석 폭풍",
+      "damage": 40,
+      "mana": 40,
+      "effectCode": 3021
+    },
+    {
+      "id": 18,
+      "rank": 103,
+      "elemental": 1002,
+      "skillName": "덩굴 폭풍",
+      "damage": 40,
+      "mana": 40,
+      "effectCode": 3020
+    },
+    {
+      "id": 19,
+      "rank": 103,
+      "elemental": 1003,
+      "skillName": "화염 폭풍",
+      "damage": 40,
+      "mana": 40,
+      "effectCode": 3019
+    },
+    {
+      "id": 20,
+      "rank": 103,
+      "elemental": 1004,
+      "skillName": "파도 폭풍",
+      "damage": 40,
+      "mana": 40,
+      "effectCode": 3018
+    },
+    {
+      "id": 21,
+      "rank": 104,
+      "elemental": 1000,
+      "skillName": "뇌신의 분노",
+      "damage": 50,
+      "mana": 50,
+      "effectCode": 3024
+    },
+    {
+      "id": 22,
+      "rank": 104,
+      "elemental": 1001,
+      "skillName": "대지의 분노",
+      "damage": 50,
+      "mana": 50,
+      "effectCode": 3025
+    },
+    {
+      "id": 23,
+      "rank": 104,
+      "elemental": 1002,
+      "skillName": "자연의 분노",
+      "damage": 50,
+      "mana": 50,
+      "effectCode": 3027
+    },
+    {
+      "id": 24,
+      "rank": 104,
+      "elemental": 1003,
+      "skillName": "화염의 분노",
+      "damage": 50,
+      "mana": 50,
+      "effectCode": 3022
+    },
+    {
+      "id": 25,
+      "rank": 104,
+      "elemental": 1004,
+      "skillName": "바다의 분노",
+      "damage": 50,
+      "mana": 50,
+      "effectCode": 3026
+    }
+  ]
+}
