@@ -4,13 +4,13 @@ import Stat from './statClass.js';
 import Position from './positionClass.js';
 
 class User {
-  constructor(socket, id, element, nickname, maxHp, maxMp) {
+  constructor(socket, id, element, nickname, maxHp, maxMp, resists) {
     this.socket = socket;
     this.id = id;
     this.element = element;
     this.nickname = nickname;
     this.skills = [];
-    this.stat = new Stat(maxHp, maxHp, maxMp, maxMp);
+    this.stat = new Stat(maxHp, maxHp, maxMp, maxMp, resists);
 
     this.position = new Position(0, 0, 0, 0);
   }

@@ -12,17 +12,25 @@ export const playerData = (user) => {
       rot: 0,
     },
     statInfo: {
-      level: 0,
       hp: user.stat.hp,
       maxHp: user.stat.maxHp,
       mp: user.stat.mp,
       maxMp: user.stat.maxMp,
-      atk: 0,
-      def: 0,
-      magic: 0,
-      speed: 0,
+      resistances: user.stat.resistances,
     },
   };
 
   return playerInfo;
+};
+
+export const elementResist = (chosenElement) => {
+  const resistInfo = {
+    electricResist: chosenElement.electricResist,
+    eartgResist: chosenElement.eartgResist,
+    grassResist: chosenElement.grassResist,
+    fireResist: chosenElement.fireResist,
+    waterResist: chosenElement.waterResist,
+  };
+
+  return resistInfo;
 };

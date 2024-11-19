@@ -6,46 +6,51 @@
       "id": 1001,
       "maxHp": 100,
       "maxMp": 100,
-      "atk": 30,
-      "def": 30,
-      "magic": 30,
-      "speed": 30
+      "electricResist": 70,
+      "eartgResist": 0,
+      "grassResist": 50,
+      "fireResist": 50,
+      "waterResist": 90
     },
     {
       "id": 1002,
-      "maxHp": 80,
-      "maxMp": 120,
-      "atk": 20,
-      "def": 40,
-      "magic": 20,
-      "speed": 40
+      "maxHp": 100,
+      "maxMp": 100,
+      "electricResist": 90,
+      "eartgResist": 70,
+      "grassResist": 0,
+      "fireResist": 50,
+      "waterResist": 50
     },
     {
       "id": 1003,
       "maxHp": 100,
       "maxMp": 100,
-      "atk": 30,
-      "def": 30,
-      "magic": 10,
-      "speed": 50
+      "electricResist": 50,
+      "eartgResist": 90,
+      "grassResist": 70,
+      "fireResist": 0,
+      "waterResist": 50
     },
     {
       "id": 1004,
-      "maxHp": 150,
-      "maxMp": 50,
-      "atk": 50,
-      "def": 10,
-      "magic": 50,
-      "speed": 10
+      "maxHp": 100,
+      "maxMp": 100,
+      "electricResist": 50,
+      "eartgResist": 50,
+      "grassResist": 90,
+      "fireResist": 70,
+      "waterResist": 0
     },
     {
       "id": 1005,
-      "maxHp": 80,
-      "maxMp": 120,
-      "atk": 40,
-      "def": 20,
-      "magic": 40,
-      "speed": 20
+      "maxHp": 100,
+      "maxMp": 100,
+      "electricResist": 0,
+      "eartgResist": 50,
+      "grassResist": 50,
+      "fireResist": 90,
+      "waterResist": 70
     }
   ]
 }
