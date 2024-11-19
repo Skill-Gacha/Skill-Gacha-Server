@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS `Characterinfo` (
     `id` INT NOT NULL PRIMARY KEY auto_increment,
     `nickname` VARCHAR (50) NOT NULL UNIQUE,
     `element` INT NOT NULL,
-    `maxhp` FLOAT NOT NULL,
-    `maxmp` FLOAT NOT NULL,
+    `maxHp` FLOAT NOT NULL,
+    `maxMp` FLOAT NOT NULL,
     `gold` INT NOT NULL DEFAULT 0,
     `stone` INT NOT NULL DEFAULT 0
 );
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `Skills` (
 CREATE TABLE IF NOT EXISTS `Ratings` (
     `nickname` varchar (50) NOT NULL,
     `rating` int NOT NULL,
-    `updatedat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON
+    `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON
     UPDATE
     CURRENT_TIMESTAMP,
     PRIMARY KEY (`nickname`),
