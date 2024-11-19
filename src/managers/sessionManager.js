@@ -2,9 +2,9 @@
 
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
+import { MAX_PLAYER } from '../constants/pvp.js';
 
 let instance;
-
 // 싱글톤 클래스
 class SessionManager {
   constructor() {
@@ -16,7 +16,9 @@ class SessionManager {
     this.sessions = {
       town: new Town(10000),
       dungeons: new Map(),
+      pvpRooms: new Map(),
     };
+    this.matchingQueue = [];
     this.users = new Map();
     SessionManager.instance = this;
     Object.freeze(this);
@@ -78,13 +80,24 @@ class SessionManager {
   // 사용자 세션 조회 (마을 또는 던전)
   // 사용자가 현재 속한 세션을 가져옴
   // 마을에 있으면 타운 세션 정보, 던전에 있으면 던전 세션 정보 가져옴
+
   getSessionByUserId(userId) {
+    // 유저가 Town에 있으면 Town 세션 반환
     if (this.sessions.town.getUser(userId)) {
       return this.sessions.town;
     }
+
+    // 유저가 Dungeon 있으면 Dungeon 세션 반환
     for (let dungeon of this.sessions.dungeons.values()) {
       if (dungeon.getUser(userId)) {
         return dungeon;
+      }
+    }
+
+    // 유저가 Town에 있으면 Pvp 세션 반환
+    for (let pvp of this.sessions.pvpRooms.values()) {
+      if (pvp.getUser(user)) {
+        return pvp;
       }
     }
     return null;
@@ -102,6 +115,19 @@ class SessionManager {
         }
       }
     });
+  }
+
+  // **pvp 매칭 관리**
+  addMatchingQueue(user) {
+    this.matchingQueue.push(user);
+    if (this.matchingQueue.length === MAX_PLAYER) {
+      const { playerA, playerB } = this.matchingQueue.slice(0, 2);
+    }
+    return null;
+  }
+
+  getPvpByUser(user) {
+    return this.getSessionByUserId(user.id);
   }
 }
 

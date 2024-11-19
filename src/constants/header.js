@@ -26,4 +26,6 @@ export const PacketType = {
   S_SetMonsterHp: 23,
   S_PlayerAction: 24,
   S_MonsterAction: 25,
+  S_PlayerMatch: 30,
+  S_PlayerMatchNotification: 31,
 };

@@ -9,7 +9,6 @@ class Dungeon extends BaseSession {
     this.dungeonCode = dungeonCode;
     this.currentState = null;
 
-
     this.dungeonStatus = null;
     // this.selectedMonster = null;
   }

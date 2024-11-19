@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import { getGameAssets } from '../../init/loadAssets.js';
+import { MyStatus } from '../../utils/battle/battle.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
@@ -65,15 +66,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
           monsterHp: monster.monsterHp,
         })),
       },
-      player: {
-        playerClass: user.job,
-        playerLevel: user.stat.level,
-        playerName: user.nickname,
-        playerFullHp: user.stat.maxHp,
-        playerFullMp: user.stat.maxMp,
-        playerCurHp: user.stat.hp,
-        playerCurMp: user.stat.mp,
-      },
+      player: MyStatus(user),
       screenText: {
         msg: '던전에 입장했습니다!',
         typingAnimation: true,
