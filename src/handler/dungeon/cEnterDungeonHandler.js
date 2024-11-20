@@ -35,7 +35,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
 
     const totalMonsters = Math.floor(Math.random() * 3) + 1; // 1~3마리 랜덤 생성
 
-    for (let i = 0; i < totalMonsters; i++) {
+    for (let i = 0; i < 1; i++) {
       const index = Math.floor(Math.random() * dungeonMonsters.length);
       const monsterData = dungeonMonsters[index];
 

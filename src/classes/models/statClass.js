@@ -1,18 +1,11 @@
-﻿// src/classes/models/userClass.js
+﻿// src/classes/models/statClass.js
 
 class Stat {
-  constructor(hp, maxHp, mp, maxMp, resists) {
+  constructor(hp, maxHp, mp, maxMp) {
     this.hp = hp;
     this.maxHp = maxHp;
     this.mp = mp;
     this.maxMp = maxMp;
-    this.resistances = {
-      electricResist: resists.electricResist,
-      eartgResist: resists.eartgResist,
-      grassResist: resists.grassResist,
-      fireResist: resists.fireResist,
-      waterResist: resists.waterResist,
-    };
 
     // this.resistances = {
     //   water: resistances.water || 0, // 물 저항

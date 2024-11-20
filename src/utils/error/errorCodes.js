@@ -18,6 +18,7 @@ export const ErrorCodes = {
   FAIL_TO_SEND_NOTY: 10014,
   DB_UPDATE_FAILED: 10015,
   PACKET_ENCODE_ERROR: 10016,
+  DUNGEON_CODE_NOT_FOUND: 10017,
   // 추가적인 에러 코드들
 };
 

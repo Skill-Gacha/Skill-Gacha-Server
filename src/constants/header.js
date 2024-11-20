@@ -37,4 +37,6 @@ export const PacketType = {
   S_EnemyActionNotification: 34,
   S_GameOverNotification: 35,
   S_EnemyHpNotification: 36,
+  S_BeatenAnimationNotification: 37,
+  S_HitAnimationNotification: 38,
 };

@@ -1,6 +1,6 @@
 ﻿// src/classes/models/townClass.js
 
-import BaseSession from './BaseSession.js';
+import BaseSession from './baseSession.js';
 
 class Town extends BaseSession {
   constructor(townSessionId) {

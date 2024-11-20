@@ -13,9 +13,32 @@ export const DUNGEON_STATUS = {
   CONFIRM: 9,
   USE_ITEM: 10,
   FLEE_MESSAGE: 11,
+  REWARD: 12,
+  SKILL_CHANGE: 13,
 };
 
 export const CONFIRM_TYPE = {
   DEFAULT: 0,
   FLEE: 1,
+  STONE: 2,
+  SKILLCHANGE: 3,
 };
+
+export const SKILL_RANK = {
+  NORMAL: 100,
+  RARE: 101,
+  EPIC: 102,
+  UNIQUE: 103,
+  LEGENDARY: 104,
+};
+
+export const SKILL_ELEMENTAL = {
+  ELECTRIC: 1000,
+  STONE: 1001,
+  PLANT: 1002,
+  FIRE: 1003,
+  WATER: 1004,
+};
+
+export const MAX_SKILL_REWARD = 3;
+export const MAX_SKILL_COUNT = 4;
