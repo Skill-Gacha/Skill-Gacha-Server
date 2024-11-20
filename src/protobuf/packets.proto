@@ -5,6 +5,7 @@ package Protocol;
 // import "google/protobuf/timestamp.proto";
 option csharp_namespace = "Google.Protobuf.Protocol";
 
+// Enum값
 enum MsgId {
   C_ENTER = 0;
   S_ENTER = 1;
@@ -47,6 +48,7 @@ enum MsgId {
   S_HIT_ANIMATION_NOTIFICATION = 38;
 }
 
+// 패킷 정의 목록
 message C_Enter {
   string nickname = 1;
   int32 class = 2;
@@ -182,8 +184,9 @@ message S_PlayerMatch {
 }
 
 message S_PlayerMatchNotification {
-  PlayerStatus playerData = 1;
-  PlayerStatus opponentData = 2;
+  DungeonInfo dungeonInfo = 1;
+  PlayerStatus playerData = 2;
+  PlayerStatus opponentData = 3;
 }
 
 message S_UserTurn {
@@ -204,14 +207,15 @@ message S_EnemyHpNotification {
 
 message S_BeatenAnimationNotification {
   int32 playerId = 1;
-  int32 animCode = 2;
+  ActionSet actionSet = 2;
 }
 
 message S_HitAnimationNotification {
   int32 playerId = 1;
-  int32 animCode = 2;
+  ActionSet actionSet = 2;
 }
 
+// 커스텀 메세지
 message PlayerInfo {
   int32 playerId = 1;
   string nickname = 2;
