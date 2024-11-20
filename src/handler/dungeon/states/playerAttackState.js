@@ -15,7 +15,15 @@ export default class PlayerAttackState extends DungeonState {
     const targetMonster = this.dungeon.selectedMonster;
     const selectedSkill = this.dungeon.selectedSkill;
     const userSkillInfo = this.user.userSkills[selectedSkill];
-    targetMonster.reduceHp(userSkillInfo.damage);
+    let skillDamage = userSkillInfo.damage;
+    // 속성 일치로 딜 2배 효과
+    let battleLogMessage = `${targetMonster.monsterName}에게 ${skillDamage}의 피해를 입혔습니다.`;
+
+    if (userSkillInfo.element === this.user.element) {
+      skillDamage = userSkillInfo.damage * 2;
+      battleLogMessage = `${targetMonster.monsterName}에게 ${skillDamage}의 피해를 입혔습니다.<br>스킬과 속성이 일치하여 효과는 굉장했다`;
+    }
+    targetMonster.reduceHp(skillDamage);
     this.user.reduceMp(userSkillInfo.mana);
 
     // 유저 MP 업데이트
@@ -50,7 +58,7 @@ export default class PlayerAttackState extends DungeonState {
     // 공격 결과 메시지 전송
     const battleLogResponse = createResponse(PacketType.S_BattleLog, {
       battleLog: {
-        msg: `${targetMonster.monsterName}에게 ${userSkillInfo.damage}의 피해를 입혔습니다.`,
+        msg: battleLogMessage,
         typingAnimation: false,
         btns: disableButtons,
       },
