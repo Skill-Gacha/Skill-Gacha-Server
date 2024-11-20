@@ -9,7 +9,7 @@ import { cEnterHandler } from './town/cEnterHandler.js';
 import { cMoveHandler } from './town/cMoveHandler.js';
 import { cEnterDungeonHandler } from './dungeon/cEnterDungeonHandler.js';
 import { cPlayerResponseHandler } from './dungeon/cPlayerResponseHandler.js';
-import { cPlayerMatchHandler } from './pvp/cEnterPvpHandler.js';
+import { cPlayerMatchHandler } from './pvp/cPlayerMatchHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
