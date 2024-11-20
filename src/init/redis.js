@@ -28,7 +28,7 @@ export const initRedisClient = async () => {
 
   await redisClient.connect();
 
-  console.log(' =init_RedisClient= ');
+  console.log('Redis 초기화 완료');
 };
 
 export default redisClient;
