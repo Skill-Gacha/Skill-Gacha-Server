@@ -12,7 +12,7 @@ export default class SkillChoiceState extends DungeonState {
   async enter() {
     // 버튼은 플레이어가 보유한 스킬들로 생성
     const buttons = this.user.userSkills.map((skill) => ({
-      msg: `${skill.skillName}(${skill.mana})`,
+      msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
       enable: this.user.stat.mp >= skill.mana,
     }));
 
