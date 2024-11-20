@@ -32,6 +32,19 @@ enum MsgId {
   S_SET_MONSTER_HP = 23;
   S_PLAYER_ACTION = 24;
   S_MONSTER_ACTION = 25;
+  C_VIEW_RANK_POINT = 26;
+  S_VIEW_RANK_POINT = 27;
+  S_PLAYER_STRIKE_FIRST_NOTIFICATION = 28;
+  S_PLAYER_CURRENCY_NOTIFICATION = 29;
+  C_PLAYER_MATCH = 30;
+  S_PLAYER_MATCH = 31;
+  S_PLAYER_MATCH_NOTIFICATION = 32;
+  S_USER_TURN = 33;
+  S_ENEMY_ACTION_NOTIFICATION = 34;
+  S_GAME_OVER_NOTIFICATION = 35;
+  S_ENEMY_HP_NOTIFICATION = 36;
+  S_BEATEN_ANIMATION_NOTIFICATION = 37;
+  S_HIT_ANIMATION_NOTIFICATION = 38;
 }
 
 message C_Enter {
@@ -187,6 +200,16 @@ message S_GameOverNotification {
 
 message S_EnemyHpNotification {
   int32 hp = 1;
+}
+
+message S_BeatenAnimationNotification {
+  int32 playerId = 1;
+  int32 animCode = 2;
+}
+
+message S_HitAnimationNotification {
+  int32 playerId = 1;
+  int32 animCode = 2;
 }
 
 message PlayerInfo {
