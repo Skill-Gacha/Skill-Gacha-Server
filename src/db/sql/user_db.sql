@@ -27,6 +27,17 @@ CREATE TABLE IF NOT EXISTS `CharacterInfo`
     `rot` FLOAT NOT NULL DEFAULT 0
     );
 
+    CREATE TABLE IF NOT EXISTS `Skills` (
+    `id` INT PRIMARY KEY NOT NULL auto_increment,
+    `nickname` VARCHAR (50) NOT NULL,
+    `skill1` INT DEFAULT NULL,
+    `skill2` INT DEFAULT NULL,
+    `skill3` INT DEFAULT NULL,
+    `skill4` INT DEFAULT NULL,
+    FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE,
+    UNIQUE KEY `unique_nickname` (`nickname`)
+);
+
 -- CREATE TABLE `gameLogs`
 -- (
 --     `id`        int PRIMARY KEY NOT NULL AUTO_INCREMENT,

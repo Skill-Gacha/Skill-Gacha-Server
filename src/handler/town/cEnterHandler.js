@@ -8,6 +8,7 @@ import { createResponse } from '../../utils/response/createResponse.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
 import User from '../../classes/models/userClass.js';
+import { getSkillsFromDB, saveSkillsToDB } from '../../db/skill/skillDb.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: jobClass } = payload;
@@ -39,6 +40,11 @@ export const cEnterHandler = async ({ socket, payload }) => {
       chosenJob.speed,
     );
     newUser = await findUserNickname(nickname);
+
+    // chosenElement(플레이어 속성 id) - 1000 = 기본 스킬 id
+    const basicSkillId = jobClass - 1000;
+    // 기본 스킬 DB에 삽입
+    await saveSkillsToDB(nickname, { skill1: basicSkillId, skill2: 0, skill3: 0, skill4: 0 });
   }
 
   // User 클래스 인스턴스 생성
@@ -53,8 +59,14 @@ export const cEnterHandler = async ({ socket, payload }) => {
     newUser.magic,
     newUser.speed,
   );
+
+  // 스킬 처리
+  const skills = await getSkillsFromDB(nickname);
+
   user.job = newUser.job;
   user.level = newUser.level;
+  // 유저 인스턴스에 스킬 할당
+  user.skills = [skills.skill1, skills.skill2, skills.skill3, skills.skill4];
 
   // 위치 정보 설정
   user.position = { posX: 0, posY: 0, posZ: 0, rot: 0 };
@@ -83,7 +95,9 @@ export const cEnterHandler = async ({ socket, payload }) => {
   socket.write(enterResponse);
 
   // 다른 사용자 정보 가져오기
-  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(u => u.id !== user.id);
+  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(
+    (u) => u.id !== user.id,
+  );
 
   // 새로운 사용자에게 기존 사용자들의 정보를 S_Spawn 메시지로 전송
   if (otherUsers.length > 0) {
