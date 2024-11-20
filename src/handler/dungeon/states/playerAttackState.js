@@ -17,6 +17,7 @@ export default class PlayerAttackState extends DungeonState {
     const selectedSkill = this.dungeon.selectedSkill;
     const userSkillInfo = this.user.userSkills[selectedSkill];
 
+    // 플레이어의 속성과 스킬의 속성이 일치하는지 검증 후, 배율 적용
     const playerElement = this.user.element;
     const skillElement = userSkillInfo.element;
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
