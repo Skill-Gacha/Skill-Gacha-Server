@@ -5,5 +5,6 @@ export const USER_QUERIES = {
   CREATE_USER:
     'INSERT INTO Characterinfo (nickname, element, maxhp, maxmp, gold, stone) VALUES (?, ?, ?, ?, ?, ?)',
   UPDATE_USER_LOGIN: 'UPDATE Characterinfo SET updateAt = CURRENT_TIMESTAMP WHERE nickname = ?',
+  UPDATE_USER_RESOURCE: 'UPDATE Characterinfo SET gold = ?, stone = ? WHERE nickname = ?',
   GET_ALL_USERNICKNAMES: 'SELECT nickname FROM Characterinfo',
 };

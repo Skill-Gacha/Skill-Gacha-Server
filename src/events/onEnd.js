@@ -3,8 +3,13 @@
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
 import sessionManager from '#managers/sessionManager.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
-import { deleteSkillsFromRedis, getPlayerRatingFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
+import {
+  deleteSkillsFromRedis,
+  getPlayerRatingFromRedis,
+  getSkillsFromRedis,
+} from '../db/redis/skillService.js';
 import { saveRatingToDB } from '../db/rating/ratingDb.js';
+import { updateUserResource } from '../db/user/user.db.js';
 
 export const onEnd = (socket) => async () => {
   console.log('클라이언트 연결이 종료되었습니다.');
@@ -14,8 +19,7 @@ export const onEnd = (socket) => async () => {
     console.error('onEnd: 유저를 찾을 수 없습니다.');
     return;
   }
-
-  const nickname = user.nickname;
+  const { nickname, gold, stone } = user;
 
   try {
     // DB에 스킬 저장
@@ -26,6 +30,10 @@ export const onEnd = (socket) => async () => {
     } else {
       console.warn(`No skills found in Redis for ${nickname}.`);
     }
+
+    // DB에 재화 저장
+    await updateUserResource(nickname, gold, stone);
+    console.log(`Resources for ${nickname} (gold: ${gold}, stone: ${stone}) saved to DB.`);
 
     // DB에 레이팅 저장
     const rating = await getPlayerRatingFromRedis(nickname);

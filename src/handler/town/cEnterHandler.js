@@ -35,8 +35,6 @@ export const cEnterHandler = async ({ socket, payload }) => {
       console.log(`유저 ${user.id}가 마을 세션으로 이동되었습니다.`);
     }
   } else {
-    console.log('첫 접속 유저');
-
     // 세션에 유저가 없을 경우, 새로 생성 또는 기존 데이터 로드
     let userRecord;
 
@@ -47,21 +45,19 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord = existingPlayer;
     } else {
       // 신규 유저: 캐릭터 정보 생성
-      await createUser(
-        nickname,
-        elementId,
-        chosenElement.maxHp,
-        chosenElement.maxMp,
-      );
+      await createUser(nickname, elementId, chosenElement.maxHp, chosenElement.maxMp);
+
+      // chosenElement(플레이어 속성 id) - 1000 = 기본 스킬 id
+      const basicSkillId = elementId - 1000;
 
       // 기본 스킬 삽입
-      await saveSkillsToDB(nickname, { skill1: 1, skill2: 2, skill3: 0, skill4: 0 });
+      await saveSkillsToDB(nickname, { skill1: basicSkillId, skill2: 0, skill3: 0, skill4: 0 });
 
       // 기본 레이팅 삽입
       await saveRatingToDB(nickname, 1000);
 
       // 기본 스킬을 Redis에 저장
-      await saveSkillsToRedis(nickname, { skill1: 1, skill2: 2, skill3: 0, skill4: 0 });
+      await saveSkillsToRedis(nickname, { skill1: basicSkillId, skill2: 0, skill3: 0, skill4: 0 });
 
       // 기본 레이팅을 Redis에 저장
       await saveRatingToRedis(nickname, 1000);
@@ -78,17 +74,19 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord.nickname,
       userRecord.maxHp,
       userRecord.maxMp,
+      userRecord.gold,
+      userRecord.stone,
     );
 
     // 스킬 처리
     const skills = await getSkillsFromDB(nickname);
     await saveSkillsToRedis(nickname, skills);
 
-// 유저 인스턴스에 스킬 할당
+    // 유저 인스턴스에 스킬 할당
     user.userSkills = Object.keys(skills)
-      .filter(key => key.startsWith('skill'))
-      .map(key => getSkillById(skills[key])) // 스킬 ID로 매핑
-      .filter(skill => skill != null); // getSkillById의 결과가 null인 경우 필터링
+      .filter((key) => key.startsWith('skill'))
+      .map((key) => getSkillById(skills[key])) // 스킬 ID로 매핑
+      .filter((skill) => skill != null); // getSkillById의 결과가 null인 경우 필터링
 
     console.log(user.userSkills);
 
@@ -104,7 +102,9 @@ export const cEnterHandler = async ({ socket, payload }) => {
   socket.write(enterResponse);
 
   // 다른 유저 정보 가져오기
-  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(u => u.id !== user.id);
+  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(
+    (u) => u.id !== user.id,
+  );
 
   // 신규 유저에게 기존 유저 정보 전송
   if (otherUsers.length > 0) {

@@ -11,13 +11,10 @@ export const findUserNickname = async (nickname) => {
 };
 
 export const createUser = async (nickname, element, maxhp, maxmp, gold = 0, stone = 0) => {
-  await dbPool.query(USER_QUERIES.CREATE_USER, [
-    nickname,
-    element,
-    maxhp,
-    maxmp,
-    gold,
-    stone,
-  ]);
+  await dbPool.query(USER_QUERIES.CREATE_USER, [nickname, element, maxhp, maxmp, gold, stone]);
   return { nickname, element, maxhp, maxmp, gold, stone };
+};
+
+export const updateUserResource = async (nickname, gold, stone) => {
+  await dbPool.query(USER_QUERIES.UPDATE_USER_RESOURCE, [gold, stone, nickname]);
 };
