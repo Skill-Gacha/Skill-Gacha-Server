@@ -8,7 +8,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
 import RewardState from './rewardState.js';
 import GameOverWinState from './gameOverWinState.js';
-import { invalidResponseCode } from '../../../utils/error/responseErrorHandler.js';
+import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
 // 확인 버튼 출력을 위한 부분
 export default class ConfirmState extends DungeonState {

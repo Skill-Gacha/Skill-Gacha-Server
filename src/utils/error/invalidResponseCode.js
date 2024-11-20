@@ -1,3 +1,5 @@
+// src/utils/error/invalidResponseCode.js
+
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../response/createResponse.js';
 

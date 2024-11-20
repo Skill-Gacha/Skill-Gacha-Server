@@ -1,11 +1,11 @@
-// src/handler/dungeon/states/monsterDeadState.js
+// src/handler/dungeon/states/skillChangeState.js
 
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import ConfirmState from './confirmState.js';
 import { CONFIRM_TYPE } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/responseErrorHandler.js';
+import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
 // 스킬 교체 처리
 export default class SkillChangeState extends DungeonState {

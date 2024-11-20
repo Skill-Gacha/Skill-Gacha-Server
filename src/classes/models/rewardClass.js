@@ -1,3 +1,5 @@
+// src/classes/models/rewardClass.js
+
 class Reward {
   constructor(gold, stone, rewardSkills) {
     this.gold = gold;

@@ -1,9 +1,9 @@
-// src/handler/dungeon/states/monsterDeadState.js
+// src/handler/dungeon/states/rewardState.js
 
 import { MAX_SKILL_COUNT } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { getSkillById } from '../../../init/loadAssets.js';
-import { invalidResponseCode } from '../../../utils/error/responseErrorHandler.js';
+import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { getRankName } from '../../../utils/skill/getRankName.js';
 import { setConfirmForDuplicateSkill } from '../../../utils/skill/skillDuplication.js';

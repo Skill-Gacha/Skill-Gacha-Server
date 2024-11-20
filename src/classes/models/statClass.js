@@ -1,4 +1,4 @@
-﻿// src/classes/models/userClass.js
+﻿// src/classes/models/statClass.js
 
 class Stat {
   constructor(level, hp, maxHp, mp, maxMp, atk, def, magic, speed) {

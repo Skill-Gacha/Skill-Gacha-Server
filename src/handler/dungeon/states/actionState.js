@@ -6,7 +6,7 @@ import ConfirmState from './confirmState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/responseErrorHandler.js';
+import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
 export default class ActionState extends DungeonState {
   async enter() {
