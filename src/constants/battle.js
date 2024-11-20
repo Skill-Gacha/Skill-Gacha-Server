@@ -22,6 +22,7 @@ export const CONFIRM_TYPE = {
   FLEE: 1,
   STONE: 2,
   SKILLCHANGE: 3,
+  GIVEUP: 4,
 };
 
 export const SKILL_RANK = {
@@ -42,3 +43,4 @@ export const SKILL_ELEMENTAL = {
 
 export const MAX_SKILL_REWARD = 3;
 export const MAX_SKILL_COUNT = 4;
+export const MAX_REWARD_BUTTON = 4;

@@ -83,6 +83,15 @@ export default class ConfirmState extends DungeonState {
           this.changeState(RewardState); // 다시 보상 선택으로 돌아가기
         }
         break;
+      case CONFIRM_TYPE.GIVEUP: // 스킬 보상 포기
+        if (responseCode === 1) {
+          // 포기
+          this.changeState(GameOverWinState);
+        } else if (responseCode === 2) {
+          // 도망 취소
+          this.changeState(RewardState);
+        }
+        break;
       default:
         // responseCode 유효성 검사
         invalidResponseCode(this.socket);
