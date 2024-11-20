@@ -57,14 +57,25 @@ export default class PlayerAttackState extends DungeonState {
     this.socket.write(playerActionResponse);
 
     // 공격 결과 메시지 전송
-    const battleLogResponse = createResponse(PacketType.S_BattleLog, {
-      battleLog: {
-        msg: `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
-        typingAnimation: false,
-        btns: disableButtons,
-      },
-    });
-    this.socket.write(battleLogResponse);
+    if (skillDamageRate > 1) {
+      const battleLogResponse = createResponse(PacketType.S_BattleLog, {
+        battleLog: {
+          msg: `효과는 굉장했다! ${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
+          typingAnimation: false,
+          btns: disableButtons,
+        },
+      });
+      this.socket.write(battleLogResponse);
+    } else {
+      const battleLogResponse = createResponse(PacketType.S_BattleLog, {
+        battleLog: {
+          msg: `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
+          typingAnimation: false,
+          btns: disableButtons,
+        },
+      });
+      this.socket.write(battleLogResponse);
+    }
 
     await delay(1000);
 
