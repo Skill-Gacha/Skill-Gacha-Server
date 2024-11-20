@@ -15,14 +15,14 @@ export default class SkillChoiceState extends DungeonState {
       msg: `${skill.skillName}(${skill.mana})`,
       enable: this.user.stat.mp >= skill.mana,
     }));
-
+    
     // 스킬 로그 데이터
     const battleLog = {
       msg: '스킬을 선택하여 몬스터를 공격하세요',
       typingAnimation: false,
       btns: buttons,
     };
-
+    
     const choiceSkillBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
     this.socket.write(choiceSkillBattlelogResponse);
   }
