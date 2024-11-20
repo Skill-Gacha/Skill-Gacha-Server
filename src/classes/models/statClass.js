@@ -1,16 +1,11 @@
 ﻿// src/classes/models/statClass.js
 
 class Stat {
-  constructor(level, hp, maxHp, mp, maxMp, atk, def, magic, speed) {
-    this.level = level;
+  constructor(hp, maxHp, mp, maxMp) {
     this.hp = hp;
     this.maxHp = maxHp;
     this.mp = mp;
     this.maxMp = maxMp;
-    this.atk = atk;
-    this.def = def;
-    this.magic = magic;
-    this.speed = speed;
 
     // this.resistances = {
     //   water: resistances.water || 0, // 물 저항
