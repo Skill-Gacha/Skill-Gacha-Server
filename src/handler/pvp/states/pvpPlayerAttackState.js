@@ -34,6 +34,29 @@ export default class PvpPlayerAttackState extends PvpState {
     //   }),
     // );
 
+    // TODO: mover는 공격 애니메이션 전송 만들어주기
+    // 이유 : 몬스터가 없어서 클라이언트의 몬스터 공격이 오류가 발생함.
+    // this.stopper.write(
+    //   createResponse(PacketType.S_PlayerAction, {
+    //     targetMonsterIdx: 0,
+    //     actionSet: {
+    //       animCode: 0, // 공격 애니메이션 코드
+    //       effectCode: 3001, // 이펙트 코드
+    //     },
+    //   }),
+    // );
+
+    // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
+    // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
+    // this.mover.write(
+    //   createResponse(PacketType.S_MonsterAction, {
+    //     actionMonsterIdx: 0,
+    //     actionSet: {
+    //       animCode: 1,
+    //     },
+    //   }),
+    // );
+
     // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
     // this.stopper.write(
@@ -51,6 +74,7 @@ export default class PvpPlayerAttackState extends PvpState {
         battleLog: {
           msg: `${this.stopper.nickname}에게 ${playerDamage}의 피해를 입혔습니다.`,
           typingAnimation: false,
+          // 공격 도중 여러 번 공격 못 하게 버튼 처리
           btns: [{ msg: this.stopper.nickname, enable: false }],
         },
       }),
@@ -68,6 +92,19 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // 턴이 아닌 유저 사망 유무 판별
     if (this.stopper.stats.hp <= 0) {
+      // this.mover.socket.write(
+      // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
+      // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
+      //   this.stopper.write(
+      //     createResponse(PacketType.S_MonsterAction, {
+      //       actionMonsterIdx: 0,
+      //       actionSet: {
+      //         animCode: 1,
+      //       },
+      //     }),
+      //   ),
+      // );
+
       // this.stopper.socket.write(
       // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
       // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
@@ -89,7 +126,6 @@ export default class PvpPlayerAttackState extends PvpState {
       );
 
       this.mover.socket(createResponse(PacketType.S_LeaveDungeon, {}));
-      sessionManager.removePvpRoom(this.pvpRoom.sessionId);
 
       //TODO: S_GameOverNotification을 수신하는 클라이언트 부분 만들기
       //TODO: 패자 rank 포인트 감소시켜주기
@@ -100,12 +136,13 @@ export default class PvpPlayerAttackState extends PvpState {
       );
 
       this.stopper.socket(createResponse(PacketType.S_LeaveDungeon, {}));
+
       sessionManager.removePvpRoom(this.pvpRoom.sessionId);
     } else {
       // 죽지 않았으면 턴 교체
-      this.changeState(PvpActionState);
       this.pvpRoom.setUserTurn(!this.pvpRoom.getUserTurn());
       [this.pvpRoom.stopper, this.pvpRoom.mover] = [this.pvpRoom.mover, this.pvpRoom.stopper];
+      this.changeState(PvpActionState);
     }
     await delay(1000);
   }

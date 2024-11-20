@@ -6,6 +6,7 @@ import { MyStatus, OpponentStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 
 export const cPlayerMatchHandler = async ({ socket }) => {
+  console.log('게임 매칭 동작 유무 확인');
   try {
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
@@ -16,7 +17,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     //TODO: 멀티 타워 디팬스에 사용하던 로딩화면이 적용되도록 클라이언트 제작
     user.socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
-    const isTwoPlayer = sessionManager.matchQueue.addMatchingQueue(user);
+    const isTwoPlayer = sessionManager.addMatchingQueue(user);
 
     if (!isTwoPlayer) return;
 

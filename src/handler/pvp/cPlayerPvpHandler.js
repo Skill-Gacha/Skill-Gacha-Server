@@ -41,7 +41,10 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     stopper = playerA;
   }
 
-  if (!playerA || !playerB || !pvpRoom) {
+  // 본인 턴인 사람만 행동 가능하게 설정
+  if (stopper.socket === socket) return;
+
+  if (!mover || !stopper || !pvpRoom) {
     console.error('cPlayerPvpResponseHandler: 유저 또는 PVP 세션을 찾을 수 없습니다.');
     return;
   }
