@@ -14,14 +14,14 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
   const currentSkillSet = await getSkillsFromRedis(nickname);
 
   if (!currentSkillSet) {
-    throw new Error("Skill set not found for the given nickname.");
+    throw new Error('Skill set not found for the given nickname.');
   }
 
   let targetIdx = null;
 
   if (replaceSkillIdx == null) {
     // 처음으로 등장하는 0 찾기
-    for (let i = 1; i <= 4 ; i++) {
+    for (let i = 1; i <= 4; i++) {
       if (currentSkillSet[`skill${i}`] === 0) {
         targetIdx = i;
         break;
@@ -32,12 +32,12 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
     if (replaceSkillIdx >= 1 && replaceSkillIdx <= 4) {
       targetIdx = replaceSkillIdx;
     } else {
-      throw new Error("replaceS의 범위는 1이상 4이하여야 합니다.");
+      throw new Error('replaceS의 범위는 1이상 4이하여야 합니다.');
     }
   }
-  
+
   if (targetIdx == null) {
-    throw new Error("인덱스를 찾지 못했습니다.");
+    throw new Error('인덱스를 찾지 못했습니다.');
   }
 
   // 스킬 교체 또는 추가
@@ -48,7 +48,7 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
   const updatedSkills = Object.entries(currentSkillSet).reduce((acc, [key, value]) => {
     // Ensure that the value is a valid number
     if (typeof value !== 'number' || isNaN(value)) {
-      acc[key] = "0"; // Default to "0" if invalid
+      acc[key] = '0'; // Default to "0" if invalid
     } else {
       acc[key] = value.toString(); // Convert number to string
     }

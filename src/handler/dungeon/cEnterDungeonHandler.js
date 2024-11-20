@@ -53,7 +53,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
 
     // 타운 세션에서 사용자 제거 및 디스폰 처리
     await sDespawnHandler(user);
-    
+
     // 던전 입장 패킷 생성 및 전송
     const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
       dungeonInfo: {

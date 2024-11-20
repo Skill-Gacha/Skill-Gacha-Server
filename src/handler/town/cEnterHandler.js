@@ -21,7 +21,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
     console.error('존재하지 않는 속성 ID 입니다.');
     return;
   }
-  
+
   // 세션에 이미 유저가 있는지 확인
   let user = sessionManager.getUserBySocket(socket);
   if (user) {
@@ -89,7 +89,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       .filter(key => key.startsWith('skill'))
       .map(key => getSkillById(skills[key])) // 스킬 ID로 매핑
       .filter(skill => skill != null); // getSkillById의 결과가 null인 경우 필터링
-    
+
     console.log(user.userSkills);
 
     // 세션에 유저 추가

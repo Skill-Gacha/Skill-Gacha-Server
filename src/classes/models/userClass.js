@@ -2,7 +2,7 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
-import { saveRewardSkillsToRedis, saveSkillsToRedis } from '../../db/redis/skillService.js';
+import { saveRewardSkillsToRedis } from '../../db/redis/skillService.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp) {
