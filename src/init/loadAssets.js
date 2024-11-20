@@ -58,14 +58,17 @@ export const getGameAssets = () => {
   return gameAssets;
 };
 
-export const getJobById = (jobId) => {
-  const index = gameAssets.playerCharacter.data.findIndex((job) => job.id === jobId);
+export const getElementById = (elementId) => {
+  const index = gameAssets.playerCharacter.data.findIndex((element) => element.id === elementId);
   return gameAssets.playerCharacter.data[index];
 };
 
 export const getSkillById = (skillId) => {
-  const index = gameAssets.skillData.data.findIndex((skill) => skill.id === skillId);
-  return gameAssets.skillData.data[index];
+  if (skillId >= 1) {
+    const index = gameAssets.skillData.data.findIndex((skill) => skill.id === skillId);
+    return gameAssets.skillData.data[index];
+  }
+  return null;
 };
 
 // 랜덤으로 스킬 가져오기
