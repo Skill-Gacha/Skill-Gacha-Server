@@ -10,6 +10,7 @@ import User from '../../classes/models/userClass.js';
 import { getSkillsFromDB, saveSkillsToDB } from '../../db/skill/skillDb.js';
 import { saveRatingToRedis, saveSkillsToRedis } from '../../db/redis/skillService.js';
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
+import { elementResist, playerData } from '../../utils/packet/playerPacket.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload; // 'class' 대신 'element' 사용
@@ -48,14 +49,17 @@ export const cEnterHandler = async ({ socket, payload }) => {
       // 신규 유저: 캐릭터 정보 생성
       await createUser(nickname, elementId, chosenElement.maxHp, chosenElement.maxMp);
 
+      // chosenElement(플레이어 속성 id) - 1000 = 기본 스킬 id
+      const basicSkillId = elementId - 1000;
+
       // 기본 스킬 삽입
-      await saveSkillsToDB(nickname, { skill1: 1, skill2: 2, skill3: 0, skill4: 0 });
+      await saveSkillsToDB(nickname, { skill1: basicSkillId, skill2: 0, skill3: 0, skill4: 0 });
 
       // 기본 레이팅 삽입
       await saveRatingToDB(nickname, 1000);
 
       // 기본 스킬을 Redis에 저장
-      await saveSkillsToRedis(nickname, { skill1: 1, skill2: 2, skill3: 0, skill4: 0 });
+      await saveSkillsToRedis(nickname, { skill1: basicSkillId, skill2: 0, skill3: 0, skill4: 0 });
 
       // 기본 레이팅을 Redis에 저장
       await saveRatingToRedis(nickname, 1000);
@@ -63,6 +67,9 @@ export const cEnterHandler = async ({ socket, payload }) => {
       // 새로 생성된 유저 데이터 로드
       userRecord = await findUserNickname(nickname);
     }
+
+    // elementClass 값으로 조회한 속성 관련 데이터에서 저항값만 추출
+    const resists = elementResist(chosenElement);
 
     // User 인스턴스 생성
     user = new User(
@@ -72,6 +79,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord.nickname,
       userRecord.maxHp,
       userRecord.maxMp,
+      resists,
     );
 
     // 스킬 처리

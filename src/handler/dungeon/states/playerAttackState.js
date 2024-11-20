@@ -7,6 +7,7 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
+import { skillEnhancement } from '../../../utils/battle/calculate.js';
 
 // 플레이어가 공격하는 상태
 export default class PlayerAttackState extends DungeonState {
@@ -15,7 +16,14 @@ export default class PlayerAttackState extends DungeonState {
     const targetMonster = this.dungeon.selectedMonster;
     const selectedSkill = this.dungeon.selectedSkill;
     const userSkillInfo = this.user.userSkills[selectedSkill];
-    targetMonster.reduceHp(userSkillInfo.damage);
+
+    const playerElement = this.user.element;
+    const skillElement = userSkillInfo.element;
+    const skillDamageRate = skillEnhancement(playerElement, skillElement);
+
+    const totalDamage = userSkillInfo.damage * skillDamageRate;
+
+    targetMonster.reduceHp(totalDamage);
     this.user.reduceMp(userSkillInfo.mana);
 
     // 유저 MP 업데이트
@@ -50,7 +58,7 @@ export default class PlayerAttackState extends DungeonState {
     // 공격 결과 메시지 전송
     const battleLogResponse = createResponse(PacketType.S_BattleLog, {
       battleLog: {
-        msg: `${targetMonster.monsterName}에게 ${userSkillInfo.damage}의 피해를 입혔습니다.`,
+        msg: `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
         typingAnimation: false,
         btns: disableButtons,
       },
