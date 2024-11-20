@@ -6,7 +6,6 @@ import { MyStatus, OpponentStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 
 export const cPlayerMatchHandler = async ({ socket }) => {
-  console.log('게임 매칭 동작 유무 확인');
   try {
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
@@ -18,13 +17,12 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     user.socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
     const isTwoPlayer = sessionManager.addMatchingQueue(user);
-
     if (!isTwoPlayer) return;
 
     try {
-      const { playerA, playerB } = isTwoPlayer;
+      const [playerA, playerB] = isTwoPlayer;
 
-      const pvpRoom = sessionManager.sessions.createPvpRoom(v4());
+      const pvpRoom = sessionManager.createPvpRoom(v4());
 
       pvpRoom.addUser(playerA);
       pvpRoom.addUser(playerB);
@@ -37,12 +35,14 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       }
 
       //TODO: 두 유저가 PVP SCENE으로 넘어갈 수 있도록 클라이언트에서 제작
+
       playerA.socket.write(
         createResponse(PacketType.S_PlayerMatchNotification, {
           playerData: MyStatus(playerA),
           opponentData: OpponentStatus(playerB),
         }),
       );
+
       playerB.socket.write(
         createResponse(PacketType.S_PlayerMatchNotification, {
           playerData: MyStatus(playerB),
@@ -51,6 +51,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       );
 
       const isFirstAttack = Math.random() > 0.5;
+      console.log('코인 결과 보기 : ', isFirstAttack);
 
       playerA.socket.write(
         createResponse(PacketType.S_PlayerStrikeFirstNotification, { check: isFirstAttack }),
@@ -62,7 +63,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       );
 
       pvpRoom.setUserTurn(isFirstAttack);
-
+      console.log('모두 정상 작동 확인 : ', isFirstAttack);
       // 0.5 이하인 경우 선공 얻었다 보내기, 0.5 크다인 경우 선공 아니다 보내기
     } catch (error) {
       // TODO: 남은 유저는 매칭 Queue에 다시 넣어주던가, 아니면 다시 매칭 버튼을 누리게 만들어줘야 함

@@ -96,7 +96,7 @@ class SessionManager {
       }
     }
 
-    // 유저가 Town에 있으면 Pvp 세션 반환
+    // 유저가 pvp에 있으면 Pvp 세션 반환
     for (let pvp of this.sessions.pvpRooms.values()) {
       if (pvp.getUser(user)) {
         return pvp;

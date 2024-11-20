@@ -11,6 +11,9 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
   TODO: 향후 user를 찾지 않고 socket만 사용해서 socket에 해당하는 pvpRoom(pvpSession) 찾기
   */
   const user = sessionManager.getUserBySocket(socket);
+
+  console.log('유저 확인 : ', user);
+
   const pvpRoom = sessionManager.getPvpByUser(user);
 
   const [playerA, playerB] = pvpRoom.getUsers();
