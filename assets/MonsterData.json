@@ -8,7 +8,12 @@
       "monsterHp": 20,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 100
+      "providedMoney": 100,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2002,
@@ -16,7 +21,12 @@
       "monsterHp": 100,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 150
+      "providedMoney": 150,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2003,
@@ -24,7 +34,12 @@
       "monsterHp": 120,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 200
+      "providedMoney": 200,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2004,
@@ -32,7 +47,12 @@
       "monsterHp": 150,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 250
+      "providedMoney": 250,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2005,
@@ -40,7 +60,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 300
+      "providedMoney": 300,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2006,
@@ -48,7 +73,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 350
+      "providedMoney": 350,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2007,
@@ -56,7 +86,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 400
+      "providedMoney": 400,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2008,
@@ -64,7 +99,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 450
+      "providedMoney": 450,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2009,
@@ -72,7 +112,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 500
+      "providedMoney": 500,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2010,
@@ -80,7 +125,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 550
+      "providedMoney": 550,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2011,
@@ -88,7 +138,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 600
+      "providedMoney": 600,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2012,
@@ -96,7 +151,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 650
+      "providedMoney": 650,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2013,
@@ -104,7 +164,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 700
+      "providedMoney": 700,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2014,
@@ -112,7 +177,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "addMoprovidedMoneyney": 750
+      "addMoprovidedMoneyney": 750,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2015,
@@ -120,7 +190,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 800
+      "providedMoney": 800,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2016,
@@ -128,7 +203,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 850
+      "providedMoney": 850,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2017,
@@ -136,7 +216,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 900
+      "providedMoney": 900,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2018,
@@ -144,7 +229,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1000
+      "providedMoney": 1000,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2019,
@@ -152,7 +242,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1050
+      "providedMoney": 1050,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2020,
@@ -160,7 +255,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1100
+      "providedMoney": 1100,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2021,
@@ -168,7 +268,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1150
+      "providedMoney": 1150,
+      "electricResist": 0,
+      "eartgResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2022,
@@ -176,7 +281,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1200
+      "providedMoney": 1200,
+      "electricResist": 10,
+      "eartgResist": 10,
+      "grassResist": 10,
+      "fireResist": 10,
+      "waterResist": 10
     },
     {
       "monsterModel": 2023,
@@ -184,7 +294,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1250
+      "providedMoney": 1250,
+      "electricResist": 20,
+      "eartgResist": 20,
+      "grassResist": 30,
+      "fireResist": 25,
+      "waterResist": 10
     },
     {
       "monsterModel": 2024,
@@ -192,7 +307,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1300
+      "providedMoney": 1300,
+      "electricResist": 20,
+      "eartgResist": 30,
+      "grassResist": 25,
+      "fireResist": 10,
+      "waterResist": 20
     },
     {
       "monsterModel": 2025,
@@ -200,7 +320,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1350
+      "providedMoney": 1350,
+      "electricResist": 25,
+      "eartgResist": 10,
+      "grassResist": 20,
+      "fireResist": 20,
+      "waterResist": 30
     },
     {
       "monsterModel": 2026,
@@ -208,7 +333,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1400
+      "providedMoney": 1400,
+      "electricResist": 30,
+      "eartgResist": 25,
+      "grassResist": 10,
+      "fireResist": 20,
+      "waterResist": 20
     },
     {
       "monsterModel": 2027,
@@ -216,7 +346,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1450
+      "providedMoney": 1450,
+      "electricResist": 10,
+      "eartgResist": 20,
+      "grassResist": 20,
+      "fireResist": 30,
+      "waterResist": 25
     },
     {
       "monsterModel": 2028,
@@ -224,7 +359,12 @@
       "monsterHp": 200,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
-      "providedMoney": 1500
+      "providedMoney": 1500,
+      "electricResist": 30,
+      "eartgResist": 30,
+      "grassResist": 30,
+      "fireResist": 30,
+      "waterResist": 30
     }
   ]
 }
