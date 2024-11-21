@@ -10,6 +10,7 @@ export const PacketType = {
   C_PlayerResponse: 15,
   C_ViewRankPoint: 26,
   C_PlayerMatch: 30,
+  C_PvpPlayerResponse: 39,
 
   // 서버 → 클라이언트 패킷
   S_Enter: 1,
@@ -39,4 +40,5 @@ export const PacketType = {
   S_EnemyHpNotification: 36,
   S_BeatenAnimationNotification: 37,
   S_HitAnimationNotification: 38,
+  S_PvpBattleLog: 40,
 };

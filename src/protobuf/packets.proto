@@ -5,6 +5,7 @@ package Protocol;
 // import "google/protobuf/timestamp.proto";
 option csharp_namespace = "Google.Protobuf.Protocol";
 
+// Enum값
 enum MsgId {
   C_ENTER = 0;
   S_ENTER = 1;
@@ -45,8 +46,11 @@ enum MsgId {
   S_ENEMY_HP_NOTIFICATION = 36;
   S_BEATEN_ANIMATION_NOTIFICATION = 37;
   S_HIT_ANIMATION_NOTIFICATION = 38;
+  C_PVP_PLAYER_RESPONSE = 39;
+  S_PVP_BATTLE_LOG = 40;  
 }
 
+// 패킷 정의 목록
 message C_Enter {
   string nickname = 1;
   int32 class = 2;
@@ -61,10 +65,13 @@ message S_Spawn {
 }
 
 message C_Leave {}
+message C_Leave {}
 
+message S_Leave {}
 message S_Leave {}
 
 message S_Despawn {
+  repeated int32 playerIds = 1;
   repeated int32 playerIds = 1;
 }
 
@@ -96,10 +103,21 @@ message S_ChangeCostume {
 }
 
 message S_Chat {
+message C_ChangeCostume {
+  CostumeInfo costume = 1;
+}
+
+message S_ChangeCostume {
+  int32 playerId = 1;
+  CostumeInfo costume = 2;
+}
+
+message S_Chat {
   int32 playerId = 1;
   string chatMsg = 2;
 }
 
+message C_Chat {
 message C_Chat {
   int32 playerId = 1;
   string senderName = 2;
@@ -107,13 +125,16 @@ message C_Chat {
 }
 
 message C_EnterDungeon {
+message C_EnterDungeon {
   int32 dungeonCode = 1;
 }
 
 message C_PlayerResponse {
+message C_PlayerResponse {
   int32 responseCode = 1;
 }
 
+message S_EnterDungeon {
 message S_EnterDungeon {
   DungeonInfo dungeonInfo = 1;
   PlayerStatus player = 2;
@@ -122,11 +143,14 @@ message S_EnterDungeon {
 }
 
 message S_LeaveDungeon {}
+message S_LeaveDungeon {}
 
+message S_ScreenText {
 message S_ScreenText {
   ScreenText screenText = 1;
 }
 
+message S_ScreenDone {}
 message S_ScreenDone {}
 
 message S_BattleLog {
@@ -212,7 +236,77 @@ message S_HitAnimationNotification {
   int32 animCode = 2;
 }
 
+message C_ViewRankPoint {
+
+}
+
+message S_ViewRankPoint {
+  Rank myRank = 1;
+  repeated Rank otherRanks = 2;
+}
+
+message S_PlayerStrikeFirstNotification {
+  bool check = 1;
+}
+
+message S_PlayerCurrencyNotification {
+  CurrencyInfo currencyInfo = 1;
+}
+
+message C_PlayerMatch {
+
+}
+
+message S_PlayerMatch {
+  bool check = 1;
+}
+
+message S_PlayerMatchNotification {
+  int32 dungeonCode = 1;
+  PlayerStatus playerData = 2;
+  PlayerStatus opponentData = 3;
+  BattleLog battleLog = 4;
+}
+
+message S_UserTurn {
+  bool userTurn = 1;
+}
+
+message S_EnemyActionNotification {
+  ActionSet actionSet = 1;
+}
+
+message S_GameOverNotification {
+  bool isWin = 1;
+}
+
+message S_EnemyHpNotification {
+  int32 hp = 1;
+}
+
+message S_BeatenAnimationNotification {
+  int32 playerId = 1;
+  ActionSet actionSet = 2;
+}
+
+message S_HitAnimationNotification {
+  int32 playerId = 1;
+  ActionSet actionSet = 2;
+}
+
+message C_PvpPlayerResponse {
+  int32 responseCode = 1;
+}
+
+message S_PvpBattleLog {
+  BattleLog battleLog = 1;
+}
+
+// 커스텀 메세지
 message PlayerInfo {
+  int32 playerId = 1;
+  string nickname = 2;
+  int32 class = 3;
   int32 playerId = 1;
   string nickname = 2;
   int32 class = 3;
@@ -221,6 +315,10 @@ message PlayerInfo {
 }
 
 message TransformInfo {
+  float posX = 1;
+  float posY = 2;
+  float posZ = 3;
+  float rot = 4;
   float posX = 1;
   float posY = 2;
   float posZ = 3;
@@ -237,6 +335,11 @@ message StatInfo {
   float def = 7;
   float magic = 8;
   float speed = 9;
+  CostumeInfo costume = 10;
+}
+
+message CostumeInfo {
+  repeated int32 costume = 1;
   CostumeInfo costume = 10;
 }
 
@@ -299,6 +402,17 @@ message BattleLog {
 message BtnInfo {
   string msg = 1;
   bool enable = 2;
+}
+
+message Rank {
+  string playerName = 1;
+  int32 playerRank = 2;
+  int32 playerScore = 3;
+}
+
+message CurrencyInfo {
+  int32 gold = 1;
+  int32 stone = 2;
 }
 
 message Rank {
