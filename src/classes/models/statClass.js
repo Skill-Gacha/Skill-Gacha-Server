@@ -6,14 +6,14 @@ class Stat {
     this.maxHp = maxHp;
     this.mp = mp;
     this.maxMp = maxMp;
-    
-    this.resistances = {
-      electricResist: resists.electricResist,
-      earthResist: resists.earthResist,
-      grassResist: resists.grassResist,
-      fireResist: resists.fireResist,
-      waterResist: resists.waterResist,
-    };
+
+    // this.resistances = {
+    //   electricResist: resists.electricResist,
+    //   earthResist: resists.earthResist,
+    //   grassResist: resists.grassResist,
+    //   fireResist: resists.fireResist,
+    //   waterResist: resists.waterResist,
+    // };
 
 
     // this.resistances = {
