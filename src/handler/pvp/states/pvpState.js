@@ -28,7 +28,7 @@ export default class PvpState {
   // 상태를 바꿀 때 호출되는 함수
   // 넘어가면 바로 enter()를 호출함
   changeState(StateClass) {
-    this.pvp.currentState = new StateClass(this.pvpRoom, this.mover, this.stopper);
-    this.pvp.currentState.enter();
+    this.pvpRoom.currentState = new StateClass(this.pvpRoom, this.mover, this.stopper);
+    this.pvpRoom.currentState.enter();
   }
 }
