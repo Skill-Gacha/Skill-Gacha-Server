@@ -4,6 +4,7 @@ import { createResponse } from '../../utils/response/createResponse.js';
 import { v4 } from 'uuid';
 import { MyStatus, OpponentStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
+import checkBatchim from '../../utils/korean/checkBatchim.js';
 
 export const cPlayerMatchHandler = async ({ socket }) => {
   try {
@@ -38,41 +39,55 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
       let dungeonCode = Math.floor(Math.random() * 3 + 1) + 5000;
 
+      const isFirstAttack = Math.random() > 0.5;
+
+      let btns = [
+        { msg: '공격', enable: true }, // 평타는 나중에 제거
+        { msg: '스킬 사용', enable: false }, // 향후 구현 예정
+        { msg: '아이템 사용', enable: false }, // 향후 구현 예정
+        { msg: '기권', enable: true },
+      ];
+
+      let lastKorean = checkBatchim(playerB.nickname) ? '과' : '와';
       let response = createResponse(PacketType.S_PlayerMatchNotification, {
         dungeonCode,
         playerData: MyStatus(playerA),
         opponentData: OpponentStatus(playerB),
+        battleLog: {
+          msg: `${playerB.nickname}${lastKorean} 싸워 이기세요!\n${isFirstAttack ? '선공입니다.' : '후공입니다'}`,
+          typingAnimation: true,
+          btns: [
+            { msg: '공격', enable: isFirstAttack }, // 평타는 나중에 제거
+            { msg: '스킬 사용', enable: isFirstAttack }, // 향후 구현 예정
+            { msg: '아이템 사용', enable: isFirstAttack }, // 향후 구현 예정
+            { msg: '기권', enable: isFirstAttack },
+          ],
+        },
       });
-
-      console.log('A pvp 패킷 : ', response);
 
       playerA.socket.write(response);
 
+      lastKorean = checkBatchim(playerB.nickname) ? '과' : '와';
       response = createResponse(PacketType.S_PlayerMatchNotification, {
         dungeonCode,
         playerData: MyStatus(playerB),
         opponentData: OpponentStatus(playerA),
+        battleLog: {
+          msg: `${playerA.nickname}${lastKorean} 싸워 이기세요!\n${isFirstAttack ? '후공입니다' : '선공입니다.'}`,
+          typingAnimation: true,
+          btns: [
+            { msg: '공격', enable: !isFirstAttack }, // 평타는 나중에 제거
+            { msg: '스킬 사용', enable: !isFirstAttack }, // 향후 구현 예정
+            { msg: '아이템 사용', enable: !isFirstAttack }, // 향후 구현 예정
+            { msg: '기권', enable: !isFirstAttack },
+          ],
+        },
       });
-
-      console.log('B pvp 패킷 : ', response);
 
       playerB.socket.write(response);
 
-      // const isFirstAttack = Math.random() > 0.5;
-      // console.log('코인 결과 보기 : ', isFirstAttack);
-
-      // playerA.socket.write(
-      //   createResponse(PacketType.S_PlayerStrikeFirstNotification, { check: isFirstAttack }),
-      // );
-      // // 0.5 크다인 경우 선공 얻었다 보내기, 0.5 이하인 경우 선공 아니다 보내기
-
-      // playerB.socket.write(
-      //   createResponse(PacketType.S_PlayerStrikeFirstNotification, { check: !isFirstAttack }),
-      // );
-
-      // pvpRoom.setUserTurn(isFirstAttack);
-      // console.log('모두 정상 작동 확인 : ', isFirstAttack);
-      // 0.5 이하인 경우 선공 얻었다 보내기, 0.5 크다인 경우 선공 아니다 보내기
+      pvpRoom.setUserTurn(isFirstAttack);
+      //0.5 이하인 경우 선공 얻었다 보내기, 0.5 크다인 경우 선공 아니다 보내기
     } catch (error) {
       // TODO: 남은 유저는 매칭 Queue에 다시 넣어주던가, 아니면 다시 매칭 버튼을 누리게 만들어줘야 함
       //playerA.socket.write(createResponse(PacketType.오류와 관련된 패킷 처리 핸들러 이름, { msg = "서버에서 오류가 발생했습니다."}))

@@ -7,6 +7,7 @@ import PvpPlayerAttackState from './pvpPlayerAttackState.js';
 
 export default class PvpActionState extends PvpState {
   constructor(pvpRoom, mover, stopper) {
+    console.log('생성자 동작 확인');
     super(pvpRoom, mover, stopper);
   }
 
@@ -26,10 +27,12 @@ export default class PvpActionState extends PvpState {
     };
 
     const actionChooseBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, { battleLog });
+
     this.mover.socket.write(actionChooseBattlelogResponse);
   }
 
   async handleInput(responseCode) {
+    console.log('responseCode : ', responseCode);
     switch (responseCode) {
       case 1: // 공격 < 나중에 스킬이 공격을 완전히 대체해야 함
         this.changeState(PvpPlayerAttackState);

@@ -15,25 +15,6 @@ export default class PvpState {
     this.stopper = stopper;
     //행동을 할 기회가 아닌 사람
   }
-
-  // 차례에 맞는 유저로 바꿔주는 setter 함수
-  set mover(value) {
-    this.mover = value;
-  }
-
-  // 차례에 맞는 유저를 가져오는 getter 함수
-  get mover() {
-    return this.mover;
-  }
-  // 멈춰 있는 사람의 차례에 맞는 유저로 바꿔주는 setter 함수
-  set stopper(value) {
-    this.stopper = value;
-  }
-  // 멈춰 있는 사람의 차례에 맞는 유저로 바꿔주는 getter 함수
-  get stopper() {
-    return this.stopper;
-  }
-
   // 상태 전환 시 첫 호출되는 함수
   async enter() {
     throw new Error('enter()는 상속을 받아 구현해야 합니다.');
