@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `Characterinfo` (
+CREATE TABLE IF NOT EXISTS `CharacterInfo` (
     `id` INT NOT NULL PRIMARY KEY auto_increment,
     `nickname` VARCHAR (50) NOT NULL UNIQUE,
     `element` INT NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `Skills` (
     `skill2` INT DEFAULT NULL,
     `skill3` INT DEFAULT NULL,
     `skill4` INT DEFAULT NULL,
-    FOREIGN KEY (`nickname`) REFERENCES `Characterinfo` (`nickname`) ON DELETE CASCADE,
+    FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE,
     UNIQUE KEY `unique_nickname` (`nickname`)
 );
 
@@ -26,5 +26,5 @@ CREATE TABLE IF NOT EXISTS `Ratings` (
     UPDATE
     CURRENT_TIMESTAMP,
     PRIMARY KEY (`nickname`),
-    FOREIGN KEY (`nickname`) REFERENCES `Characterinfo` (`nickname`) ON DELETE CASCADE
+    FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE
 );
