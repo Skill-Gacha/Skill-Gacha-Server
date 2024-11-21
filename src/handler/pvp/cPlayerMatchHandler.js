@@ -39,7 +39,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
       let dungeonCode = Math.floor(Math.random() * 3 + 1) + 5000;
 
-      const isFirstAttack = Math.random() > 0.5;
+      const isFirstAttack = true; //Math.random() > 0.5;
 
       let btns = [];
 

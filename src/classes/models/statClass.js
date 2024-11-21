@@ -8,6 +8,15 @@ class Stat {
     this.maxMp = maxMp;
 
     // this.resistances = {
+    //   electricResist: resists.electricResist,
+    //   earthResist: resists.earthResist,
+    //   grassResist: resists.grassResist,
+    //   fireResist: resists.fireResist,
+    //   waterResist: resists.waterResist,
+    // };
+
+
+    // this.resistances = {
     //   water: resistances.water || 0, // 물 저항
     //   fire: resistances.fire || 0, // 불 저항
     //   grass: resistances.grass || 0, // 풀 저항

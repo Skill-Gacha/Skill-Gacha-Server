@@ -11,7 +11,7 @@ export default class IncreaseManaState extends DungeonState {
     const randomHp = Math.floor(Math.random() * 3);
     const randomMp = Math.floor(Math.random() * 3);
 
-    this.user.increaseState(randomHp, randomMp);
+    this.user.increaseHpMp(randomHp, randomMp);
 
     this.socket.write(
       createResponse(PacketType.S_SetPlayerHp, {

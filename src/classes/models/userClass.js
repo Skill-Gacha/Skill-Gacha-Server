@@ -25,7 +25,7 @@ class User {
     this.stat.mp -= mana;
   }
 
-  increaseState(hp, mp) {
+  increaseHpMp(hp, mp) {
     this.stat.hp += hp;
     this.stat.mp += mp;
   }
