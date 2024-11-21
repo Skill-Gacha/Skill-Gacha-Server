@@ -41,12 +41,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
       const isFirstAttack = Math.random() > 0.5;
 
-      let btns = [
-        { msg: '공격', enable: true }, // 평타는 나중에 제거
-        { msg: '스킬 사용', enable: false }, // 향후 구현 예정
-        { msg: '아이템 사용', enable: false }, // 향후 구현 예정
-        { msg: '기권', enable: true },
-      ];
+      let btns = [];
 
       let lastKorean = checkBatchim(playerB.nickname) ? '과' : '와';
       let response = createResponse(PacketType.S_PlayerMatchNotification, {
@@ -57,7 +52,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
           msg: `${playerB.nickname}${lastKorean} 싸워 이기세요!\n${isFirstAttack ? '선공입니다.' : '후공입니다'}`,
           typingAnimation: true,
           btns: [
-            { msg: '공격', enable: isFirstAttack }, // 평타는 나중에 제거
             { msg: '스킬 사용', enable: isFirstAttack }, // 향후 구현 예정
             { msg: '아이템 사용', enable: isFirstAttack }, // 향후 구현 예정
             { msg: '기권', enable: isFirstAttack },
@@ -76,7 +70,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
           msg: `${playerA.nickname}${lastKorean} 싸워 이기세요!\n${isFirstAttack ? '후공입니다' : '선공입니다.'}`,
           typingAnimation: true,
           btns: [
-            { msg: '공격', enable: !isFirstAttack }, // 평타는 나중에 제거
             { msg: '스킬 사용', enable: !isFirstAttack }, // 향후 구현 예정
             { msg: '아이템 사용', enable: !isFirstAttack }, // 향후 구현 예정
             { msg: '기권', enable: !isFirstAttack },

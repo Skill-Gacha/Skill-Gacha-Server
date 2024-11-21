@@ -10,7 +10,7 @@ import { setConfirmForDuplicateSkill } from '../../../utils/skill/skillDuplicati
 import ConfirmState from './confirmState.js';
 import DungeonState from './dungeonState.js';
 import GameOverWinState from './gameOverWinState.js';
-import SkillChangeState from './skillchangeState.js';
+import SkillChangeState from './skillChangeState.js';
 
 // 보상 처리
 export default class RewardState extends DungeonState {

@@ -11,14 +11,8 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
   TODO: 향후 user를 찾지 않고 socket만 사용해서 socket에 해당하는 pvpRoom(pvpSession) 찾기
   */
   const user = sessionManager.getUserBySocket(socket);
-  console.log('유저 확인 : ', user);
-  console.log('동작 확인 : ', responseCode);
-
   const pvpRoom = sessionManager.getPvpByUser(user);
-
-  const [playerA, playerB] = pvpRoom.getUsers();
-
-  console.log('룸 확인', pvpRoom);
+  const [playerA, playerB] = Array.from(pvpRoom.users.values());
 
   // 행동을 할 사람
   let mover = null;
@@ -66,9 +60,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     // 동적 임포트는 모듈의 전체 네임스페이스를 반환하므로
     // default를 통해 필요한 것만 가져오게 함
     const PvpActionState = (await import('./states/pvpActionState.js')).default;
-    console.log('여기까지 동작 확인');
     pvpRoom.currentState = new PvpActionState(pvpRoom, mover, stopper);
-    console.log('currentState 동작 확인');
     await pvpRoom.currentState.enter();
   }
 

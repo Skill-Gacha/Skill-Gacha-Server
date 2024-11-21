@@ -9,7 +9,6 @@ import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import { getGameAssets } from '../../init/loadAssets.js';
 import { MyStatus } from '../../utils/battle/battle.js';
 import { DUNGEON_CODE } from '../../constants/battle.js';
-import { MyStatus } from '../../utils/battle/battle.js';
 import { elementResist } from '../../utils/packet/playerPacket.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
@@ -28,9 +27,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     dungeon.addUser(user);
 
     // 던전 코드에 따라 몬스터를 선택
-    const startIndex = (dungeonCode - 1) * 7;
-    const endIndex = startIndex + 6;
-    const dungeonMonsters = monsterData.slice(startIndex, endIndex);
     const startIndex = (dungeonCode - 1) * 7;
     const endIndex = startIndex + 6;
     const dungeonMonsters = monsterData.slice(startIndex, endIndex);

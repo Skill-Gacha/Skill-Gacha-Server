@@ -12,7 +12,7 @@ import User from '../../../classes/models/userClass.js';
 // 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
   async enter() {
-    console.log('여기까지 동작 확인');
+    console.log('어택 여기까지 동작 확인');
     this.pvpRoom.pvpState = PVP_STATUS.PLAYER_ATTACK;
     const playerDamage = this.mover.stat.atk;
     this.stopper.reduceHp(playerDamage);
