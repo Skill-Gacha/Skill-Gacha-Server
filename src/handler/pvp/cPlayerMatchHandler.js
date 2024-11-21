@@ -58,20 +58,20 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
       playerB.socket.write(response);
 
-      const isFirstAttack = Math.random() > 0.5;
-      console.log('코인 결과 보기 : ', isFirstAttack);
+      // const isFirstAttack = Math.random() > 0.5;
+      // console.log('코인 결과 보기 : ', isFirstAttack);
 
-      playerA.socket.write(
-        createResponse(PacketType.S_PlayerStrikeFirstNotification, { check: isFirstAttack }),
-      );
-      // 0.5 크다인 경우 선공 얻었다 보내기, 0.5 이하인 경우 선공 아니다 보내기
+      // playerA.socket.write(
+      //   createResponse(PacketType.S_PlayerStrikeFirstNotification, { check: isFirstAttack }),
+      // );
+      // // 0.5 크다인 경우 선공 얻었다 보내기, 0.5 이하인 경우 선공 아니다 보내기
 
-      playerB.socket.write(
-        createResponse(PacketType.S_PlayerStrikeFirstNotification, { check: !isFirstAttack }),
-      );
+      // playerB.socket.write(
+      //   createResponse(PacketType.S_PlayerStrikeFirstNotification, { check: !isFirstAttack }),
+      // );
 
-      pvpRoom.setUserTurn(isFirstAttack);
-      console.log('모두 정상 작동 확인 : ', isFirstAttack);
+      // pvpRoom.setUserTurn(isFirstAttack);
+      // console.log('모두 정상 작동 확인 : ', isFirstAttack);
       // 0.5 이하인 경우 선공 얻었다 보내기, 0.5 크다인 경우 선공 아니다 보내기
     } catch (error) {
       // TODO: 남은 유저는 매칭 Queue에 다시 넣어주던가, 아니면 다시 매칭 버튼을 누리게 만들어줘야 함
