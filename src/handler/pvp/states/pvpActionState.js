@@ -25,7 +25,7 @@ export default class PvpActionState extends PvpState {
       btns: buttons,
     };
 
-    const actionChooseBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
+    const actionChooseBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, { battleLog });
     this.mover.socket.write(actionChooseBattlelogResponse);
   }
 
@@ -44,7 +44,7 @@ export default class PvpActionState extends PvpState {
         break;
       default:
         // 잘못된 입력 처리
-        const invalidResponse = createResponse(PacketType.S_BattleLog, {
+        const invalidResponse = createResponse(PacketType.S_PvpBattleLog, {
           battleLog: {
             msg: '잘못된 선택입니다. 다시 선택해주세요.',
             typingAnimation: false,

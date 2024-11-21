@@ -71,8 +71,8 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // 공격 결과 메시지 전송
     this.mover.socket.write(
-      createResponse(PacketType.S_BattleLog, {
-        battleLog: {
+      createResponse(PacketType.S_PvpBattleLog, {
+        BattleLog: {
           msg: `${this.stopper.nickname}에게 ${playerDamage}의 피해를 입혔습니다.`,
           typingAnimation: false,
           // 공격 도중 여러 번 공격 못 하게 버튼 처리
@@ -83,7 +83,7 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // 공격 당했다 결과 전송
     this.stopper.socket.write(
-      createResponse(PacketType.S_BattleLog, {
+      createResponse(PacketType.S_PvpBattleLog, {
         battleLog: {
           msg: `${this.mover.nickname}에게 ${playerDamage}의 피해를 입었습니다.`,
           typingAnimation: false,

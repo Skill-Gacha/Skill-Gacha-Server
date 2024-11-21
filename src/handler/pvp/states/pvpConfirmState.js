@@ -33,7 +33,7 @@ export default class PvpConfirmState extends PvpState {
       btns: buttons,
     };
 
-    const confirmBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
+    const confirmBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, { battleLog });
     this.mover.write(confirmBattlelogResponse);
 
     //TODO: S_GameOverNotification 을 수신할 수 있도록 클라이언트 부분 만들기.
