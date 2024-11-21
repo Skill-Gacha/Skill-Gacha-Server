@@ -26,3 +26,15 @@ export const playerData = (user) => {
 
   return playerInfo;
 };
+
+export const elementResist = (chosenElement) => {
+  const resistInfo = {
+    electricResist: chosenElement.electricResist,
+    eartgResist: chosenElement.eartgResist,
+    grassResist: chosenElement.grassResist,
+    fireResist: chosenElement.fireResist,
+    waterResist: chosenElement.waterResist,
+  };
+
+  return resistInfo;
+};
