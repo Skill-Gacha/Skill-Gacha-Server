@@ -7,6 +7,7 @@ import { delay } from '../../../utils/delay.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpActionState from './pvpActionState.js';
 import sessionManager from '#managers/sessionManager.js';
+import User from '../../../classes/models/userClass.js';
 
 // 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
@@ -24,49 +25,49 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // TODO: mover는 공격 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트의 몬스터 공격이 오류가 발생함.
-    // this.mover.write(
-    //   createResponse(PacketType.S_PlayerAction, {
-    //     targetMonsterIdx: 0,
-    //     actionSet: {
-    //       animCode: 0, // 공격 애니메이션 코드
-    //       effectCode: 3001, // 이펙트 코드
-    //     },
-    //   }),
-    // );
+    this.mover.write(
+      createResponse(PacketType.S_HitAnimationNotification, {
+        playerId: mover.user.id,
+        actionSet: {
+          animCode: 0, // 공격 애니메이션 코드
+          effectCode: 3001, // 이펙트 코드
+        },
+      }),
+    );
 
     // TODO: mover는 공격 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트의 몬스터 공격이 오류가 발생함.
-    // this.stopper.write(
-    //   createResponse(PacketType.S_PlayerAction, {
-    //     targetMonsterIdx: 0,
-    //     actionSet: {
-    //       animCode: 0, // 공격 애니메이션 코드
-    //       effectCode: 3001, // 이펙트 코드
-    //     },
-    //   }),
-    // );
+    this.stopper.write(
+      createResponse(PacketType.S_HitAnimationNotification, {
+        playerId: stopper.user.id, 
+        actionSet: {
+          animCode: 0, // 공격 애니메이션 코드
+          effectCode: 3001, // 이펙트 코드
+        },
+      }),
+    );
 
     // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-    // this.mover.write(
-    //   createResponse(PacketType.S_MonsterAction, {
-    //     actionMonsterIdx: 0,
-    //     actionSet: {
-    //       animCode: 1,
-    //     },
-    //   }),
-    // );
+    this.mover.write(
+      createResponse(PacketType.S_BeatenAnimationNotification, {
+        playerId: mover.user.id,
+        actionSet: {
+          animCode: 1,
+        },
+      }),
+    );
 
     // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-    // this.stopper.write(
-    //   createResponse(PacketType.S_MonsterAction, {
-    //     actionMonsterIdx: 0,
-    //     actionSet: {
-    //       animCode: 1,
-    //     },
-    //   }),
-    // );
+    this.stopper.write(
+      createResponse(PacketType.S_BeatenAnimationNotification, {
+        playerId: stopper.user.id,
+        actionSet: {
+          animCode: 1,
+        },
+      }),
+    );
 
     // 공격 결과 메시지 전송
     this.mover.socket.write(
@@ -92,33 +93,33 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // 턴이 아닌 유저 사망 유무 판별
     if (this.stopper.stats.hp <= 0) {
-      // this.mover.socket.write(
+       this.mover.socket.write(
       // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
       // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-      //   this.stopper.write(
-      //     createResponse(PacketType.S_MonsterAction, {
-      //       actionMonsterIdx: 0,
-      //       actionSet: {
-      //         animCode: 1,
-      //       },
-      //     }),
-      //   ),
-      // );
+        this.stopper.write(
+          createResponse(PacketType.S_BeatenAnimationNotification, {
+            playerId: stopper.user.id,
+            actionSet: {
+              animCode: 1,
+            },
+          }),
+        ),
+      );
 
-      // this.stopper.socket.write(
+       this.stopper.socket.write(
       // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
       // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-      //   this.stopper.write(
-      //     createResponse(PacketType.S_MonsterAction, {
-      //       actionMonsterIdx: 0,
-      //       actionSet: {
-      //         animCode: 1,
-      //       },
-      //     }),
-      //   ),
-      // );
+        this.stopper.write(
+          createResponse(PacketType.S_BeatenAnimationNotification, {
+            playerId: stopper.user.id,
+            actionSet: {
+              animCode: 1,
+            },
+          }),
+        ),
+      );
 
-      //TODO: 승자 rank 포인트 증가 시켜주기
+      //TODO: 승자 rank 포인트 증가 시켜주기  S_ViewRankPoint
       this.mover.socket.write(
         createResponse(PacketType.S_GameOverNotification, {
           isWin: true,
