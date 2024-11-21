@@ -36,19 +36,27 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
       //TODO: 두 유저가 PVP SCENE으로 넘어갈 수 있도록 클라이언트에서 제작
 
-      playerA.socket.write(
-        createResponse(PacketType.S_PlayerMatchNotification, {
-          playerData: MyStatus(playerA),
-          opponentData: OpponentStatus(playerB),
-        }),
-      );
+      let dungeonCode = Math.floor(Math.random() * 3 + 1) + 5000;
 
-      playerB.socket.write(
-        createResponse(PacketType.S_PlayerMatchNotification, {
-          playerData: MyStatus(playerB),
-          opponentData: OpponentStatus(playerA),
-        }),
-      );
+      let response = createResponse(PacketType.S_PlayerMatchNotification, {
+        dungeonCode,
+        playerData: MyStatus(playerA),
+        opponentData: OpponentStatus(playerB),
+      });
+
+      console.log('A pvp 패킷 : ', response);
+
+      playerA.socket.write(response);
+
+      response = createResponse(PacketType.S_PlayerMatchNotification, {
+        dungeonCode,
+        playerData: MyStatus(playerB),
+        opponentData: OpponentStatus(playerA),
+      });
+
+      console.log('B pvp 패킷 : ', response);
+
+      playerB.socket.write(response);
 
       const isFirstAttack = Math.random() > 0.5;
       console.log('코인 결과 보기 : ', isFirstAttack);

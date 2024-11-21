@@ -10,7 +10,7 @@ import { getGameAssets } from '../../init/loadAssets.js';
 import { MyStatus } from '../../utils/battle/battle.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
-  const { dungeonCode } = payload;
+  let { dungeonCode } = payload;
   const user = sessionManager.getUserBySocket(socket);
   const monsterData = getGameAssets().MonsterData.data;
 
@@ -50,6 +50,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     // 타운 세션에서 사용자 제거 및 디스폰 처리
     await sDespawnHandler(user);
 
+    dungeonCode += 5000;
     // 던전 입장 패킷 생성 및 전송
     const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
       dungeonInfo: {
