@@ -27,7 +27,7 @@ export default class PvpPlayerAttackState extends PvpState {
     // 이유 : 몬스터가 없어서 클라이언트의 몬스터 공격이 오류가 발생함.
     this.mover.write(
       createResponse(PacketType.S_HitAnimationNotification, {
-        playerId: mover.user.id,
+        playerId: this.mover.id,
         actionSet: {
           animCode: 0, // 공격 애니메이션 코드
           effectCode: 3001, // 이펙트 코드
@@ -39,7 +39,7 @@ export default class PvpPlayerAttackState extends PvpState {
     // 이유 : 몬스터가 없어서 클라이언트의 몬스터 공격이 오류가 발생함.
     this.stopper.write(
       createResponse(PacketType.S_HitAnimationNotification, {
-        playerId: stopper.user.id, 
+        playerId: this.stopper.id,
         actionSet: {
           animCode: 0, // 공격 애니메이션 코드
           effectCode: 3001, // 이펙트 코드
@@ -51,7 +51,7 @@ export default class PvpPlayerAttackState extends PvpState {
     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
     this.mover.write(
       createResponse(PacketType.S_BeatenAnimationNotification, {
-        playerId: mover.user.id,
+        playerId: this.mover.id,
         actionSet: {
           animCode: 1,
         },
@@ -62,7 +62,7 @@ export default class PvpPlayerAttackState extends PvpState {
     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
     this.stopper.write(
       createResponse(PacketType.S_BeatenAnimationNotification, {
-        playerId: stopper.user.id,
+        playerId: this.stopper.id,
         actionSet: {
           animCode: 1,
         },
@@ -93,12 +93,12 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // 턴이 아닌 유저 사망 유무 판별
     if (this.stopper.stats.hp <= 0) {
-       this.mover.socket.write(
-      // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
-      // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
+      this.mover.socket.write(
+        // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
+        // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
         this.stopper.write(
           createResponse(PacketType.S_BeatenAnimationNotification, {
-            playerId: stopper.user.id,
+            playerId: this.stopper.id,
             actionSet: {
               animCode: 1,
             },
@@ -106,12 +106,12 @@ export default class PvpPlayerAttackState extends PvpState {
         ),
       );
 
-       this.stopper.socket.write(
-      // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
-      // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
+      this.stopper.socket.write(
+        // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
+        // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
         this.stopper.write(
           createResponse(PacketType.S_BeatenAnimationNotification, {
-            playerId: stopper.user.id,
+            playerId: this.stopper.id,
             actionSet: {
               animCode: 1,
             },
