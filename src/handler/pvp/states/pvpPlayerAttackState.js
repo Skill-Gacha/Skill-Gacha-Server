@@ -13,8 +13,8 @@ import User from '../../../classes/models/userClass.js';
 export default class PvpPlayerAttackState extends PvpState {
   async enter() {
     this.pvpRoom.pvpState = PVP_STATUS.PLAYER_ATTACK;
-    const playerDamage = this.mover.stat.atk;
-    this.stopper.reduceHp(playerDamage);
+    // const playerDamage = this.mover.stat.atk;
+    // this.stopper.reduceHp(playerDamage);
 
     // TODO: 클라이언트에서 수신하는 부분 구현 필요함
     this.mover.socket.write(
@@ -37,7 +37,7 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // TODO: mover는 공격 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트의 몬스터 공격이 오류가 발생함.
-    this.stopper.write(
+    this.stopper.socket.write(
       createResponse(PacketType.S_HitAnimationNotification, {
         playerId: this.stopper.id,
         actionSet: {
@@ -49,7 +49,7 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-    this.mover.write(
+    this.mover.socket.write(
       createResponse(PacketType.S_BeatenAnimationNotification, {
         playerId: this.mover.id,
         actionSet: {
@@ -60,7 +60,7 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-    this.stopper.write(
+    this.stopper.socket.write(
       createResponse(PacketType.S_BeatenAnimationNotification, {
         playerId: this.stopper.id,
         actionSet: {

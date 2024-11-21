@@ -3,6 +3,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import PvpState from './pvpState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PvpPlayerAttackState from './pvpPlayerAttackState.js';
+import { MAX_SKILL_COUNT } from '../../../constants/battle.js';
 
 export default class PvpSkillChoice extends PvpState {
   async enter() {
@@ -19,7 +20,9 @@ export default class PvpSkillChoice extends PvpState {
       btns: buttons,
     };
 
-    const choiceSkillBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, { battleLog });
+    const choiceSkillBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, {
+      battleLog,
+    });
     this.mover.socket.write(choiceSkillBattlelogResponse);
   }
 
