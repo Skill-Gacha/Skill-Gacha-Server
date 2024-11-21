@@ -10,7 +10,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 100,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -23,7 +23,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 150,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -36,7 +36,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 200,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -49,7 +49,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 250,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -62,7 +62,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 300,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -75,7 +75,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 350,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -88,7 +88,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 400,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -101,7 +101,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 450,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -114,7 +114,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 500,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -127,7 +127,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 550,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -140,7 +140,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 600,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -153,7 +153,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 650,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -166,7 +166,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 700,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -179,7 +179,7 @@
       "monsterEffectCode": 3001,
       "addMoprovidedMoneyney": 750,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -192,7 +192,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 800,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -205,7 +205,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 850,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -218,7 +218,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 900,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -231,7 +231,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1000,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -244,7 +244,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1050,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -257,7 +257,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1100,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -270,7 +270,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1150,
       "electricResist": 0,
-      "eartgResist": 0,
+      "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
       "waterResist": 0
@@ -283,7 +283,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1200,
       "electricResist": 10,
-      "eartgResist": 10,
+      "earthResist": 10,
       "grassResist": 10,
       "fireResist": 10,
       "waterResist": 10
@@ -296,7 +296,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1250,
       "electricResist": 20,
-      "eartgResist": 20,
+      "earthResist": 20,
       "grassResist": 30,
       "fireResist": 25,
       "waterResist": 10
@@ -309,7 +309,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1300,
       "electricResist": 20,
-      "eartgResist": 30,
+      "earthResist": 30,
       "grassResist": 25,
       "fireResist": 10,
       "waterResist": 20
@@ -322,7 +322,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1350,
       "electricResist": 25,
-      "eartgResist": 10,
+      "earthResist": 10,
       "grassResist": 20,
       "fireResist": 20,
       "waterResist": 30
@@ -335,7 +335,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1400,
       "electricResist": 30,
-      "eartgResist": 25,
+      "earthResist": 25,
       "grassResist": 10,
       "fireResist": 20,
       "waterResist": 20
@@ -348,7 +348,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1450,
       "electricResist": 10,
-      "eartgResist": 20,
+      "earthResist": 20,
       "grassResist": 20,
       "fireResist": 30,
       "waterResist": 25
@@ -361,7 +361,7 @@
       "monsterEffectCode": 3001,
       "providedMoney": 1500,
       "electricResist": 30,
-      "eartgResist": 30,
+      "earthResist": 30,
       "grassResist": 30,
       "fireResist": 30,
       "waterResist": 30

@@ -30,7 +30,7 @@ export const playerData = (user) => {
 export const elementResist = (chosenElement) => {
   const resistInfo = {
     electricResist: chosenElement.electricResist,
-    eartgResist: chosenElement.eartgResist,
+    earthResist: chosenElement.earthResist,
     grassResist: chosenElement.grassResist,
     fireResist: chosenElement.fireResist,
     waterResist: chosenElement.waterResist,
