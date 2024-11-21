@@ -5,6 +5,7 @@ import { CONFIRM_TYPE, PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
 import PvpPlayerAttackState from './pvpPlayerAttackState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import PvpSkillChoice from './pvpSkillChoiceState.js';
 
 export default class PvpActionState extends PvpState {
   constructor(pvpRoom, mover, stopper) {
@@ -17,7 +18,7 @@ export default class PvpActionState extends PvpState {
   async handleInput(responseCode) {
     switch (responseCode) {
       case 1: //스킬
-        this.changeState(PvpPlayerAttackState);
+        this.changeState(PvpSkillChoice);
         break;
       case 2: // 아이템
         break;
