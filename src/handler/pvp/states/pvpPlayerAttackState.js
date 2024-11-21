@@ -12,7 +12,6 @@ import User from '../../../classes/models/userClass.js';
 // 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
   async enter() {
-    console.log('어택 여기까지 동작 확인');
     this.pvpRoom.pvpState = PVP_STATUS.PLAYER_ATTACK;
     const playerDamage = this.mover.stat.atk;
     this.stopper.reduceHp(playerDamage);
@@ -26,7 +25,7 @@ export default class PvpPlayerAttackState extends PvpState {
 
     // TODO: mover는 공격 애니메이션 전송 만들어주기
     // 이유 : 몬스터가 없어서 클라이언트의 몬스터 공격이 오류가 발생함.
-    this.mover.write(
+    this.mover.socket.write(
       createResponse(PacketType.S_HitAnimationNotification, {
         playerId: this.mover.id,
         actionSet: {
