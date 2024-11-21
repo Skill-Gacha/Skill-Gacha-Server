@@ -6,7 +6,7 @@ import { createUser, findUserNickname } from '../../db/user/user.db.js';
 import { getElementById, getSkillById } from '../../init/loadAssets.js'; // job을 element로 변경
 import { createResponse } from '../../utils/response/createResponse.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
-import { playerData } from '../../utils/packet/playerPacket.js';
+import { elementResist, playerData } from '../../utils/packet/playerPacket.js';
 import User from '../../classes/models/userClass.js';
 import { getSkillsFromDB, saveSkillsToDB } from '../../db/skill/skillDb.js';
 import { saveRatingToRedis, saveSkillsToRedis } from '../../db/redis/skillService.js';
@@ -25,6 +25,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
   // 세션에 이미 유저가 있는지 확인
   let user = sessionManager.getUserBySocket(socket);
   if (user) {
+    user.resetHpMp();
     console.log(`유저 ${user.id}가 이미 세션에 존재합니다.`);
 
     // 유저가 현재 마을에 있지 않은 경우, 마을 세션으로 이동

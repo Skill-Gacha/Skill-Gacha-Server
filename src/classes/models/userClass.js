@@ -26,7 +26,7 @@ class User {
   }
 
   increaseState(hp, mp) {
-    this.stat.hp + -hp;
+    this.stat.hp += hp;
     this.stat.mp += mp;
   }
 
