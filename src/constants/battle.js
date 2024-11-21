@@ -1,4 +1,5 @@
 // src/constants/battle.js
+export const DUNGEON_CODE = 5000;
 
 export const DUNGEON_STATUS = {
   MESSAGE: 0,

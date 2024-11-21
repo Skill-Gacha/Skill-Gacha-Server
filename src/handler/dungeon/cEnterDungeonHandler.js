@@ -8,6 +8,7 @@ import Monster from '../../classes/models/monsterClass.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import { getGameAssets } from '../../init/loadAssets.js';
 import { MyStatus } from '../../utils/battle/battle.js';
+import { DUNGEON_CODE } from '../../constants/battle.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   let { dungeonCode } = payload;
@@ -50,7 +51,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     // 타운 세션에서 사용자 제거 및 디스폰 처리
     await sDespawnHandler(user);
 
-    dungeonCode += 5000;
+    dungeonCode += DUNGEON_CODE;
     // 던전 입장 패킷 생성 및 전송
     const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
       dungeonInfo: {
