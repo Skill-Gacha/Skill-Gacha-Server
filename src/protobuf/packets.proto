@@ -184,7 +184,7 @@ message S_PlayerMatch {
 }
 
 message S_PlayerMatchNotification {
-  DungeonInfo dungeonInfo = 1;
+  int32 dungeonCode = 1;
   PlayerStatus playerData = 2;
   PlayerStatus opponentData = 3;
 }
