@@ -1,12 +1,12 @@
 ﻿// src/handler/dungeon/states/enemyAttackState.js
 
 import DungeonState from './dungeonState.js';
-import ActionState from './actionState.js';
 import GameOverLoseState from './gameOverLoseState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
+import IncreaseManaState from './increaseManaState.js';
 
 // 몬스터가 플레이어를 공격하는 상태
 export default class EnemyAttackState extends DungeonState {
@@ -62,7 +62,7 @@ export default class EnemyAttackState extends DungeonState {
     }
 
     // 행동 선택 상태로 전환
-    this.changeState(ActionState);
+    this.changeState(IncreaseManaState);
   }
 
   async handleInput(responseCode) {
