@@ -46,6 +46,8 @@ enum MsgId {
   S_ENEMY_HP_NOTIFICATION = 36;
   S_BEATEN_ANIMATION_NOTIFICATION = 37;
   S_HIT_ANIMATION_NOTIFICATION = 38;
+  C_PVP_PLAYER_RESPONSE = 39;
+  S_PVP_BATTLE_LOG = 40;  
 }
 
 // 패킷 정의 목록
@@ -187,6 +189,7 @@ message S_PlayerMatchNotification {
   int32 dungeonCode = 1;
   PlayerStatus playerData = 2;
   PlayerStatus opponentData = 3;
+  BattleLog battleLog = 4;
 }
 
 message S_UserTurn {
@@ -213,6 +216,14 @@ message S_BeatenAnimationNotification {
 message S_HitAnimationNotification {
   int32 playerId = 1;
   ActionSet actionSet = 2;
+}
+
+message C_PvpPlayerResponse {
+  int32 responseCode = 1;
+}
+
+message S_PvpBattleLog {
+  BattleLog battleLog = 1;
 }
 
 // 커스텀 메세지
