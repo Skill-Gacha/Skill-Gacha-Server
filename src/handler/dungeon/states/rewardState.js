@@ -35,7 +35,7 @@ export default class RewardState extends DungeonState {
 
     // 보상로그 데이터
     const battleLog = {
-      msg: `Gold가 ${gold}만큼 증가하였습니다. <br>강화석 ${stone}개를 얻었습니다. <br>아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`,
+      msg: `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`,
       typingAnimation: false,
       btns: buttons,
     };

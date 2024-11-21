@@ -1,3 +1,5 @@
+// src/utils/skill/getRankName.js
+
 import { SKILL_RANK } from '../../constants/battle.js';
 
 export const getRankName = (rank) => {
