@@ -5,17 +5,18 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
+import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/ratingService.js';
 
 export default class PvpFleeMessageState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.PvpFleeMessageState;
     // 양쪽 유저 랭크 조회
-    const winnerRating = getPlayerRatingFromRedis(this.stopper.nickname);
-    const loserRating = getPlayerRatingFromRedis(this.mover.nickname);
+    const winnerRating = await getPlayerRatingFromRedis(this.stopper.nickname);
+    const loserRating = await getPlayerRatingFromRedis(this.mover.nickname);
 
     // 양쪽 유저 랭크 업데이트
-    updatePlayerRating(this.stopper.nickname, winnerRating);
-    updatePlayerRating(this.mover.nickname, loserRating);
+    updatePlayerRating(this.stopper.nickname, winnerRating + 10);
+    updatePlayerRating(this.mover.nickname, loserRating - 10);
 
     // 도망 메시지 전송
     this.mover.socket.write(
