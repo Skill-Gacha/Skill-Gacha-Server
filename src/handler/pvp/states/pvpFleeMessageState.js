@@ -6,7 +6,6 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/ratingService.js';
-import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/ratingService.js';
 
 export default class PvpFleeMessageState extends PvpState {
   async enter() {

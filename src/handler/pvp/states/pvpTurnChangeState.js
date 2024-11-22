@@ -66,7 +66,7 @@ export default class PvpTurnChangeState extends PvpState {
         break;
       case 3: // 도망치기
         this.changeState(PvpConfirmState);
-        await this.dungeon.currentState.setConfirm(CONFIRM_TYPE.FLEE, '추하게 빼실겁니까?');
+        await this.pvpRoom.currentState.setConfirm(CONFIRM_TYPE.FLEE, '추하게 빼실겁니까?');
         break;
       default:
         // responseCode 유효성 검사

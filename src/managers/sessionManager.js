@@ -130,7 +130,7 @@ class SessionManager {
 
     this.matchingQueue.push(user);
     if (this.matchingQueue.length === MAX_PLAYER) {
-      return this.matchingQueue.slice(0, 2);
+      return this.matchingQueue.splice(0, 2);
     }
     return null;
   }

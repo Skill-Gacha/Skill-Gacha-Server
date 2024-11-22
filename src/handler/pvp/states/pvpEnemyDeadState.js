@@ -27,7 +27,7 @@ export default class PvpEnemyDeadState extends PvpState {
         },
       }),
     );
-    await delay(1000);
+    await delay(4000);
     this.changeState(PvpGameOverState);
   }
 
