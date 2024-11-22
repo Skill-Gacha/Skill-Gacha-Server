@@ -9,8 +9,9 @@ import { sSpawnHandler } from './sSpawnHandler.js';
 import { elementResist, playerData } from '../../utils/packet/playerPacket.js';
 import User from '../../classes/models/userClass.js';
 import { getSkillsFromDB, saveSkillsToDB } from '../../db/skill/skillDb.js';
-import { saveRatingToRedis, saveSkillsToRedis } from '../../db/redis/skillService.js';
+import { saveSkillsToRedis } from '../../db/redis/skillService.js';
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
+import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload; // 'class' 대신 'element' 사용

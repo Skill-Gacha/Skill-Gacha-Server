@@ -81,16 +81,3 @@ export const deleteSkillsFromRedis = async (nickname) => {
   await redisClient.del(key);
 };
 
-// Fetch rating from Redis
-export const getPlayerRatingFromRedis = async (nickname) => {
-  const rating = await redisClient.zScore('pvp_rating', nickname);
-  return rating !== null ? parseInt(rating, 10) : null;
-};
-
-// Save rating to Redis
-export const saveRatingToRedis = async (nickname, rating) => {
-  await redisClient.zAdd('pvp_rating', {
-    score: rating,
-    value: nickname,
-  });
-};

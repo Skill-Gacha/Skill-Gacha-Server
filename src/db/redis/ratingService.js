@@ -12,6 +12,14 @@ export const updatePlayerRating = async (nickname, rating) => {
   });
 };
 
+// Save rating to Redis
+export const saveRatingToRedis = async (nickname, rating) => {
+  await redisClient.zAdd('pvp_rating', {
+    score: rating,
+    value: nickname,
+  });
+};
+
 // Redis에서 플레이어 레이팅 조회
 export const getPlayerRatingFromRedis = async (nickname) => {
   const rating = await redisClient.zScore(RATING_KEY, nickname);

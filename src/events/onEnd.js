@@ -3,13 +3,10 @@
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
 import sessionManager from '#managers/sessionManager.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
-import {
-  deleteSkillsFromRedis,
-  getPlayerRatingFromRedis,
-  getSkillsFromRedis,
-} from '../db/redis/skillService.js';
 import { saveRatingToDB } from '../db/rating/ratingDb.js';
 import { updateUserResource } from '../db/user/user.db.js';
+import { deleteSkillsFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
+import { getPlayerRatingFromRedis } from '../db/redis/ratingService.js';
 
 export const onEnd = (socket) => async () => {
   console.log('클라이언트 연결이 종료되었습니다.');
