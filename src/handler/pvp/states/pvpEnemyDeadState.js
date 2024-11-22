@@ -15,6 +15,7 @@ export default class PvpEnemyDeadState extends PvpState {
       createResponse(PacketType.S_PvpEnemyAction, {
         actionSet: {
           animCode: 1, // 사망 애니메이션 코드
+          effectCode: null,
         },
       }),
     );
@@ -22,6 +23,7 @@ export default class PvpEnemyDeadState extends PvpState {
       createResponse(PacketType.S_PvpPlayerAction, {
         actionSet: {
           animCode: 1, // 사망 애니메이션 코드
+          effectCode: null,
         },
       }),
     );

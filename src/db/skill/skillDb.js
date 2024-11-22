@@ -11,7 +11,7 @@ export const getSkillsFromDB = async (nickname) => {
     const { skill1, skill2, skill3, skill4 } = rows[0];
     return { skill1, skill2, skill3, skill4 };
   } catch (error) {
-    console.error('Error fetching skills from DB:', error);
+    console.error('DB에서 스킬 정보 가져오기 실패:', error);
     throw error;
   }
 };
@@ -28,7 +28,7 @@ export const saveSkillsToDB = async (nickname, skills) => {
       skill4,
     ]);
   } catch (error) {
-    console.error('Error saving skills to DB:', error);
+    console.error('DB에 스킬 저장 실패:', error);
     throw error;
   }
 };

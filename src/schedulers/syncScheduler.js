@@ -23,10 +23,10 @@ const syncSkillsToDBTask = async () => {
           skill4: skills.skill4 ? parseInt(skills.skill4, 10) : null,
         };
         await saveSkillsToDB(nickname, parsedSkills);
-        console.log(`${nickname} 스킬 정보가 성공적으로 DB에 저장되었습니다.`);
       }
     });
     await Promise.all(syncPromises);
+    console.log('스킬 정보가 성공적으로 DB에 저장되었습니다.');
   } catch (error) {
     console.error('스킬 동기화 중 에러 발생:', error);
   }

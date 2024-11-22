@@ -14,7 +14,7 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
   const currentSkillSet = await getSkillsFromRedis(nickname);
 
   if (!currentSkillSet) {
-    throw new Error('Skill set not found for the given nickname.');
+    throw new Error('닉네임에 해당하는 스킬셋을 찾을 수 없습니다.');
   }
 
   let targetIdx = null;
@@ -32,12 +32,12 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
     if (replaceSkillIdx >= 1 && replaceSkillIdx <= 4) {
       targetIdx = replaceSkillIdx;
     } else {
-      throw new Error('replaceS의 범위는 1이상 4이하여야 합니다.');
+      throw new Error('replaceSkillIdx의 범위는 1이상 4이하여야 합니다.');
     }
   }
 
   if (targetIdx == null) {
-    throw new Error('인덱스를 찾지 못했습니다.');
+    throw new Error('스킬 교체 타겟 인덱스를 찾지 못했습니다.');
   }
 
   // 스킬 교체 또는 추가
@@ -55,13 +55,11 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
     return acc;
   }, {});
 
-  console.log(`Saving updated skills for ${nickname}:`, updatedSkills);
-
   // Save updated skills back to Redis
   const key = `${SKILL_KEY}:${nickname}`;
   await redisClient.hSet(key, updatedSkills);
 
-  console.log(`Updated skills for ${nickname}:`, updatedSkills);
+  console.log(`${nickname}의 스킬 업데이트 완료:`, updatedSkills);
 };
 
 // Get skills from Redis
