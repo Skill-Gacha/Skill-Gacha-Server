@@ -69,7 +69,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
       player: MyStatus(user),
       screenText: {
         msg: '던전에 입장했습니다!',
-        typingAnimation: true,
+        typingAnimation: false,
       },
     });
 

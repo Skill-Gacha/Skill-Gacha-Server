@@ -1,3 +1,5 @@
+// src/handler/pvp/cPlayerMathHandler.js
+
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
@@ -50,11 +52,11 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         opponentData: OpponentStatus(playerB),
         battleLog: {
           msg: `${playerB.nickname}${lastKorean} 싸워 이기세요!\n${isFirstAttack ? '선공입니다.' : '후공입니다'}`,
-          typingAnimation: true,
+          typingAnimation: false,
           btns: [
             { msg: '스킬 사용', enable: isFirstAttack }, // 향후 구현 예정
             { msg: '아이템 사용', enable: isFirstAttack }, // 향후 구현 예정
-            { msg: '기권', enable: isFirstAttack },
+            { msg: '도망치기', enable: isFirstAttack },
           ],
         },
       });
@@ -68,11 +70,11 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         opponentData: OpponentStatus(playerA),
         battleLog: {
           msg: `${playerA.nickname}${lastKorean} 싸워 이기세요!\n${isFirstAttack ? '후공입니다' : '선공입니다.'}`,
-          typingAnimation: true,
+          typingAnimation: false,
           btns: [
             { msg: '스킬 사용', enable: !isFirstAttack }, // 향후 구현 예정
             { msg: '아이템 사용', enable: !isFirstAttack }, // 향후 구현 예정
-            { msg: '기권', enable: !isFirstAttack },
+            { msg: '도망치기', enable: !isFirstAttack },
           ],
         },
       });

@@ -16,7 +16,7 @@ export default class GameOverLoseState extends DungeonState {
       createResponse(PacketType.S_ScreenText, {
         screenText: {
           msg: '당신은 사망하였습니다...',
-          typingAnimation: true,
+          typingAnimation: false,
         },
       }),
     );

@@ -16,7 +16,7 @@ export default class FleeMessageState extends DungeonState {
       createResponse(PacketType.S_ScreenText, {
         screenText: {
           msg: '전투에서 도망쳤습니다.',
-          typingAnimation: true,
+          typingAnimation: false,
         },
       }),
     );

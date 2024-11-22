@@ -1,9 +1,8 @@
-﻿import PvpConfirmState from './pvpConfirmState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
+﻿// src/handler/pvp/states/pvpActionState.js
+
+import PvpConfirmState from './pvpConfirmState.js';
 import { CONFIRM_TYPE, PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
-import PvpPlayerAttackState from './pvpPlayerAttackState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PvpSkillChoice from './pvpSkillChoiceState.js';
 
@@ -22,7 +21,7 @@ export default class PvpActionState extends PvpState {
         break;
       case 2: // 아이템
         break;
-      case 3: // 기권
+      case 3: // 도망치기
         this.changeState(PvpConfirmState);
         await this.pvpRoom.currentState.setConfirm(CONFIRM_TYPE.FLEE, '추하게 빼실겁니까?');
         break;

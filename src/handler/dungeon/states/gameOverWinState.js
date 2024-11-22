@@ -16,7 +16,7 @@ export default class GameOverWinState extends DungeonState {
       createResponse(PacketType.S_ScreenText, {
         screenText: {
           msg: '던전 클리어!',
-          typingAnimation: true,
+          typingAnimation: false,
         },
       }),
     );
