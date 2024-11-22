@@ -5,6 +5,7 @@ import ActionState from './actionState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
+import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
 export default class MessageState extends DungeonState {
   constructor(dungeon, user, socket, message) {
@@ -24,6 +25,10 @@ export default class MessageState extends DungeonState {
 
       // 행동 선택 상태로 전환
       this.changeState(ActionState);
+    }
+    // responseCode 유효성 검사
+    else {
+      invalidResponseCode(this.socket);
     }
   }
 }

@@ -4,35 +4,17 @@ import { toCamelCase } from '../../utils/transformCase.js';
 import dbPool from '../database.js';
 import { USER_QUERIES } from './user.queries.js';
 
-export const updateUserLocation = async (x, y, deviceId) => {
-  await dbPool.query(USER_QUERIES.UPDATE_USER_LOCATION, [x, y, deviceId]);
-};
-
 export const findUserNickname = async (nickname) => {
   const [rows] = await dbPool.query(USER_QUERIES.FIND_USER_BY_NICKNAME, [nickname]);
+  if (rows.length === 0) return null;
   return toCamelCase(rows[0]);
 };
 
-export const createUser = async (nickname, job, level, maxHp, maxMp, atk, def, magic, speed) => {
-  await dbPool.query(USER_QUERIES.CREATE_USER, [
-    nickname,
-    job,
-    level,
-    maxHp,
-    maxMp,
-    atk,
-    def,
-    magic,
-    speed,
-  ]);
-  return { nickname, job, level, maxHp, maxMp, atk, def, magic, speed };
+export const createUser = async (nickname, element, maxhp, maxmp, gold = 0, stone = 0) => {
+  await dbPool.query(USER_QUERIES.CREATE_USER, [nickname, element, maxhp, maxmp, gold, stone]);
+  return { nickname, element, maxhp, maxmp, gold, stone };
 };
 
-export const updateUserLogin = async (id) => {
-  await dbPool.query(USER_QUERIES.UPDATE_USER_LOGIN, [id]);
-};
-
-export const findServerHighScore = async () => {
-  const highScore = await dbPool.query(USER_QUERIES.FIND_HIGH_SCORE);
-  return highScore[0][0].highScore;
+export const updateUserResource = async (nickname, gold, stone) => {
+  await dbPool.query(USER_QUERIES.UPDATE_USER_RESOURCE, [gold, stone, nickname]);
 };

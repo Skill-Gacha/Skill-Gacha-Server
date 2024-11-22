@@ -2,6 +2,11 @@
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
 import sessionManager from '#managers/sessionManager.js';
+import { saveSkillsToDB } from '../db/skill/skillDb.js';
+import { saveRatingToDB } from '../db/rating/ratingDb.js';
+import { updateUserResource } from '../db/user/user.db.js';
+import { deleteSkillsFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
+import { getPlayerRatingFromRedis } from '../db/redis/ratingService.js';
 
 export const onEnd = (socket) => async () => {
   console.log('클라이언트 연결이 종료되었습니다.');
@@ -10,6 +15,37 @@ export const onEnd = (socket) => async () => {
   if (!user) {
     console.error('onEnd: 유저를 찾을 수 없습니다.');
     return;
+  }
+  const { nickname, gold, stone } = user;
+
+  try {
+    // DB에 스킬 저장
+    const skills = await getSkillsFromRedis(nickname);
+    if (skills) {
+      await saveSkillsToDB(nickname, skills);
+      console.log(`Skills for ${nickname} saved to DB.`);
+    } else {
+      console.warn(`No skills found in Redis for ${nickname}.`);
+    }
+
+    // DB에 재화 저장
+    await updateUserResource(nickname, gold, stone);
+    console.log(`Resources for ${nickname} (gold: ${gold}, stone: ${stone}) saved to DB.`);
+
+    // DB에 레이팅 저장
+    const rating = await getPlayerRatingFromRedis(nickname);
+    if (rating !== null) {
+      await saveRatingToDB(nickname, rating);
+      console.log(`Rating for ${nickname} saved to DB.`);
+    } else {
+      console.warn(`No rating found in Redis for ${nickname}.`);
+    }
+
+    // DB에 저장이 완료되면 레디스에서도 제거
+    await deleteSkillsFromRedis(nickname);
+    console.log(`${nickname}'s skills and rating removed from Redis.`);
+  } catch (error) {
+    console.error(`Error during user logout for ${nickname}:`, error);
   }
 
   try {

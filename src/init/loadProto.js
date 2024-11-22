@@ -63,9 +63,9 @@ export const loadProtos = async () => {
       }
     }
 
-    console.log('All Protobuf files have been loaded.');
+    console.log('모든 프로토버프 파일 로드 완료');
   } catch (e) {
-    console.error('An error occurred while loading Protobuf files.', e);
+    console.error('프로토버프 파일 로딩 중 에러 발생', e);
   }
 };
 
