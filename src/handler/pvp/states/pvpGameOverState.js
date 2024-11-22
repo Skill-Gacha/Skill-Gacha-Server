@@ -10,13 +10,13 @@ import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/
 export default class PvpGameOverState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.GAME_OVER;
-    // // 양쪽 유저 랭크 조회
-    // const winnerRating = getPlayerRatingFromRedis(this.mover.nickname);
-    // const loserRating = getPlayerRatingFromRedis(this.stopper.nickname);
+    // 양쪽 유저 랭크 조회
+    const winnerRating = await getPlayerRatingFromRedis(this.mover.nickname);
+    const loserRating = await getPlayerRatingFromRedis(this.stopper.nickname);
 
-    // // 양쪽 유저 랭크 업데이트
-    // updatePlayerRating(this.mover.nickname, winnerRating);
-    // updatePlayerRating(this.stopper.nickname, loserRating);
+    // 양쪽 유저 랭크 업데이트
+    updatePlayerRating(this.mover.nickname, winnerRating + 10);
+    updatePlayerRating(this.stopper.nickname, loserRating - 10);
 
     // 승리 메시지 전송
     this.mover.socket.write(
@@ -43,10 +43,10 @@ export default class PvpGameOverState extends PvpState {
     // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
     if (responseCode === 0) {
       // PVP 종료 및 세션 제거
-      sessionManager.removePvpRoom(this.pvpRoom.sessionId);
       const sLeavePvpResponse = createResponse(PacketType.S_LeaveDungeon, {});
       this.mover.socket.write(sLeavePvpResponse);
       this.stopper.socket.write(sLeavePvpResponse);
+      sessionManager.removePvpRoom(this.pvpRoom.sessionId);
     } else {
       // 잘못된 입력 처리
     }
