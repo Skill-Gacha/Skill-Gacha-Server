@@ -26,6 +26,17 @@ export default class PvpState {
   // 상태를 바꿀 때 호출되는 함수
   // 넘어가면 바로 enter()를 호출함
   changeState(StateClass) {
+    // mover랑 stopper 비교를 위해 실행 userTurn이 0이면
+    const [playerA, playerB] = Array.from(this.pvpRoom.users.values());
+
+    if (this.pvpRoom.getUserTurn() === 0) {
+      this.mover = playerB;
+      this.stopper = playerA;
+    } else {
+      this.mover = playerA;
+      this.stopper = playerB;
+    }
+
     this.pvpRoom.currentState = new StateClass(this.pvpRoom, this.mover, this.stopper);
     this.pvpRoom.currentState.enter();
   }

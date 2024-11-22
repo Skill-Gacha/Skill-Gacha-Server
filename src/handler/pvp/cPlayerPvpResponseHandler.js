@@ -7,41 +7,37 @@ import { createResponse } from '../../utils/response/createResponse.js';
 
 export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
   const responseCode = payload.responseCode || 0;
-  /* 
-  TODO: 향후 user를 찾지 않고 socket만 사용해서 socket에 해당하는 pvpRoom(pvpSession) 찾기
-  */
   const user = sessionManager.getUserBySocket(socket);
   const pvpRoom = sessionManager.getPvpByUser(user);
   const [playerA, playerB] = Array.from(pvpRoom.users.values());
 
-  // 행동을 할 사람
+  // 공격 유저 맞는 유저
   let mover = null;
-  // 행동이 아닌 사람
   let stopper = null;
 
-  if (pvpRoom.getUserTurn()) {
-    //TODO: 본인의 턴인지 클라이언트가 수신할 수 있도록 만들기
-    playerA.socket.write(
-      createResponse(PacketType.S_UserTurn, { userTurn: pvpRoom.getUserTurn() }),
-    );
-    playerB.socket.write(
-      createResponse(PacketType.S_UserTurn, { userTurn: !pvpRoom.getUserTurn() }),
-    );
-    mover = playerA;
-    stopper = playerB;
-  } else {
-    playerA.socket.write(
-      createResponse(PacketType.S_UserTurn, { userTurn: !pvpRoom.getUserTurn() }),
-    );
-    playerB.socket.write(
-      createResponse(PacketType.S_UserTurn, { userTurn: pvpRoom.getUserTurn() }),
-    );
+  if (pvpRoom.getUserTurn() === 0) {
     mover = playerB;
     stopper = playerA;
+  } else {
+    mover = playerA;
+    stopper = playerB;
   }
 
   // 본인 턴인 사람만 행동 가능하게 설정
   if (stopper.socket === socket) return;
+
+  // 턴 정보 클라이언트에게도 전송
+  mover.socket.write(
+    createResponse(PacketType.S_UserTurn, {
+      userTurn: true,
+    }),
+  );
+
+  stopper.socket.write(
+    createResponse(PacketType.S_UserTurn, {
+      userTurn: false,
+    }),
+  );
 
   if (!mover || !stopper || !pvpRoom) {
     console.error('cPlayerPvpResponseHandler: 유저 또는 PVP 세션을 찾을 수 없습니다.');

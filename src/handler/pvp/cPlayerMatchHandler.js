@@ -15,8 +15,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       throw Error('유저가 존재하지 않습니다.');
     }
 
-    //TODO: S_PlayerMatch 클라이언트 수신 부분 만들기
-    //TODO: 멀티 타워 디팬스에 사용하던 로딩화면이 적용되도록 클라이언트 제작
     user.socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
     const isTwoPlayer = sessionManager.addMatchingQueue(user);
@@ -33,15 +31,13 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         sDespawnHandler(playerA);
         sDespawnHandler(playerB);
       } catch (error) {
-        //TODO: 에러 발생시 HandlerError로 서버가 죽지 않게 만들기
         console.error(error);
       }
 
-      //TODO: 두 유저가 PVP SCENE으로 넘어갈 수 있도록 클라이언트에서 제작
-
       let dungeonCode = Math.floor(Math.random() * 3 + 1) + 5000;
 
-      const isFirstAttack = true; //Math.random() > 0.5;
+      pvpRoom.setUserTurn();
+      const isFirstAttack = pvpRoom.getUserTurn();
 
       let btns = [];
 
@@ -80,9 +76,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       });
 
       playerB.socket.write(response);
-
-      pvpRoom.setUserTurn(isFirstAttack);
-      //0.5 이하인 경우 선공 얻었다 보내기, 0.5 크다인 경우 선공 아니다 보내기
     } catch (error) {
       // TODO: 남은 유저는 매칭 Queue에 다시 넣어주던가, 아니면 다시 매칭 버튼을 누리게 만들어줘야 함
       //playerA.socket.write(createResponse(PacketType.오류와 관련된 패킷 처리 핸들러 이름, { msg = "서버에서 오류가 발생했습니다."}))

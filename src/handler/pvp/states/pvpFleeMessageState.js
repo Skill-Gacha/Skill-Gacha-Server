@@ -38,7 +38,7 @@ export default class PvpFleeMessageState extends PvpState {
 
   async handleInput(responseCode) {
     if (responseCode === 0) {
-      // 던전 종료 및 세션 제거
+      // PVP 종료 및 세션 제거
       sessionManager.removePvpRoom(this.pvp.sessionId);
       const sLeavePvpResponse = createResponse(PacketType.S_LeaveDungeon, {});
       this.mover.socket.write(sLeavePvpResponse);

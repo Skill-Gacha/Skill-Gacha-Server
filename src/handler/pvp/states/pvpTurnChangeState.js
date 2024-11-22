@@ -7,7 +7,6 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import PvpSkillChoice from './pvpSkillChoiceState.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PacketType } from '../../../constants/header.js';
-import PvpActionState from './pvpActionState.js';
 
 export default class PvpTurnChangeState extends PvpState {
   async enter() {
@@ -52,10 +51,28 @@ export default class PvpTurnChangeState extends PvpState {
 
     this.stopper.socket.write(stopperBattleLogResponse);
     this.mover.socket.write(moverBattleLogResponse);
-    [this.pvpRoom.stopper, this.pvpRoom.mover] = [this.pvpRoom.mover, this.pvpRoom.stopper];
-    this.changeState(PvpActionState);
+
+    // 턴 전환
+    this.pvpRoom.setUserTurn();
   }
 
-  async handleInput(responseCode) {}
-  // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
+  async handleInput(responseCode) {
+    console.log(responseCode);
+    // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
+    switch (responseCode) {
+      case 1: // 스킬
+        this.changeState(PvpSkillChoice);
+        break;
+      case 2: // 아이템
+        break;
+      case 3: // 도망치기
+        this.changeState(PvpConfirmState);
+        await this.dungeon.currentState.setConfirm(CONFIRM_TYPE.FLEE, '추하게 빼실겁니까?');
+        break;
+      default:
+        // responseCode 유효성 검사
+        invalidResponseCode(this.socket);
+        break;
+    }
+  }
 }

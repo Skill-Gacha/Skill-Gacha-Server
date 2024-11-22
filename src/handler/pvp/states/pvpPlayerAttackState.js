@@ -69,7 +69,6 @@ export default class PvpPlayerAttackState extends PvpState {
         effectCode: userSkillInfo.effectCode, // 이펙트 코드
       },
     });
-
     this.stopper.socket.write(enemyActionResponse);
 
     // 공격 결과 메시지 전송(때리는 놈)
