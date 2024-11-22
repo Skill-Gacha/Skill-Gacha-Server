@@ -1,7 +1,7 @@
 ﻿// src/classes/models/statClass.js
 
 class Stat {
-  constructor(hp, maxHp, mp, maxMp) {
+  constructor(hp, maxHp, mp, maxMp, resists) {
     this.hp = hp;
     this.maxHp = maxHp;
     this.mp = mp;
