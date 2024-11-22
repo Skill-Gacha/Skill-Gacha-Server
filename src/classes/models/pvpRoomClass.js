@@ -9,21 +9,6 @@ class PvpRoomClass extends BaseSession {
     this.userTurn = null;
     this.selectedSkill;
   }
-
-  // 어느 유저의 차례인지 결정해주는 함수
-
-  setUserTurn(values) {
-    this.userTurn = values;
-    // setUserTurn가 true이면 users 배열 내
-    // index가 0번인 녀석의 행동 차례
-
-    // setUserTurn가 false이면 users 배열 내
-    // index가 1번인 녀석의 해동 차례
-  }
-
-  getUserTurn() {
-    return this.userTurn;
-  }
 }
 
 export default PvpRoomClass;
