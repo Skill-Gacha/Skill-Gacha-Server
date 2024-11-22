@@ -15,16 +15,20 @@ export const skillEnhancement = (playerElement, skillElement) => {
   }
 };
 
-export const enemyResist = (skillElement, target) => {
-  const resistList = ['electricResist', 'eartgResist', 'grassResist', 'fireResist', 'waterResist'];
+export const checkEnemyResist = (skillElement, target) => {
+  const resistList = ['electricResist', 'earthResist', 'grassResist', 'fireResist', 'waterResist'];
   const resistKey = skillElement - 1001;
   const resist = resistList[resistKey];
 
-  if (target.stat) {
-    const playerResist = target.stat.resistances[resist];
-    return playerResist;
-  } else {
-    const monsterResist = target.resistances[resist];
-    return monsterResist;
-  }
+  const monsterResist = target.resistances[resist];
+  return monsterResist;
+};
+
+export const checkStopperResist = (skillElement, target) => {
+  const resistList = ['electricResist', 'earthResist', 'grassResist', 'fireResist', 'waterResist'];
+  const resistKey = skillElement - 1001;
+  const resist = resistList[resistKey];
+
+  const playerResist = target.stat.resistances[resist];
+  return playerResist;
 };

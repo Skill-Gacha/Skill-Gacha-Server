@@ -18,7 +18,7 @@ class Monster {
     this.effectCode = monsterEffectCode;
     this.resistances = {
       electricResist: resists.electricResist,
-      eartgResist: resists.eartgResist,
+      earthResist: resists.earthResist,
       grassResist: resists.grassResist,
       fireResist: resists.fireResist,
       waterResist: resists.waterResist,
