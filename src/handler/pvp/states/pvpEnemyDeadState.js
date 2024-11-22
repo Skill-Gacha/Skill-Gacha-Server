@@ -5,6 +5,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
 import PvpGameOverState from './pvpGameOverState.js';
+import { delay } from '../../../utils/delay.js';
 
 export default class PvpEnemyDeadState extends PvpState {
   async enter() {
@@ -24,6 +25,7 @@ export default class PvpEnemyDeadState extends PvpState {
         },
       }),
     );
+    await delay(1000);
     this.changeState(PvpGameOverState);
   }
 

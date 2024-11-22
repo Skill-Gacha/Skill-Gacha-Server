@@ -6,6 +6,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/ratingService.js';
+import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
 export default class PvpGameOverState extends PvpState {
   async enter() {
@@ -44,5 +45,14 @@ export default class PvpGameOverState extends PvpState {
 
   async handleInput(responseCode) {
     // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
+    if (responseCode === 0) {
+      // PVP 종료 및 세션 제거
+      sessionManager.removePvpRoom(this.pvp.sessionId);
+      const sLeavePvpResponse = createResponse(PacketType.S_LeaveDungeon, {});
+      this.mover.socket.write(sLeavePvpResponse);
+      this.stopper.socket.write(sLeavePvpResponse);
+    } else {
+      // 잘못된 입력 처리
+    }
   }
 }

@@ -53,6 +53,13 @@ export default class EnemyAttackState extends DungeonState {
 
       // 플레이어 사망 여부 확인
       if (this.user.stat.hp <= 0) {
+        await delay(2000);
+        const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
+          actionSet: {
+            animCode: 1, // 사망 애니메이션 코드
+          },
+        });
+        this.socket.write(playerActionResponse);
         this.changeState(GameOverLoseState);
         return;
       }
