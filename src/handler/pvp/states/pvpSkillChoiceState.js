@@ -1,12 +1,15 @@
+// src/handler/pvp/states/pvpSkillChoiceState.js
+
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import PvpState from './pvpState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PvpPlayerAttackState from './pvpPlayerAttackState.js';
-import { MAX_SKILL_COUNT } from '../../../constants/battle.js';
+import { MAX_SKILL_COUNT, PVP_STATUS } from '../../../constants/battle.js';
 
 export default class PvpSkillChoice extends PvpState {
   async enter() {
+    this.pvpRoom.pvpStatus = PVP_STATUS.SKILL_CHOICE;
     // 버튼은 플레이어가 보유한 스킬들로 생성
     const buttons = this.mover.userSkills.map((skill) => ({
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,

@@ -6,6 +6,8 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpActionState from './pvpActionState.js';
 import { skillEnhancement, checkStopperResist } from '../../../utils/battle/calculate.js';
+import PvpEnemyDeadState from './pvpEnemyDeadState.js';
+import PvpTurnChangeState from './pvpTurnChangeState.js';
 
 // 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
@@ -19,37 +21,40 @@ export default class PvpPlayerAttackState extends PvpState {
     const playerElement = this.mover.element;
     const skillElement = userSkillInfo.element;
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
-    // const userDamage = userSkillInfo.damage * skillDamageRate;
+    const userDamage = userSkillInfo.damage * skillDamageRate;
 
     // 2차 검증 첫번째 : 상대가 저항값을 가지고 있냐?
-    // const stopperResist = checkStopperResist(skillElement, this.stopper);
+    const stopperResist = checkStopperResist(skillElement, this.stopper);
 
     // 저항값이 적용된 최종 대미지
-    // const totalDamage = Math.floor(userDamage * ((100 - stopperResist) / 100));
-    const totalDamage = userSkillInfo.damage;
+    const totalDamage = Math.floor(userDamage * ((100 - stopperResist) / 100));
 
     this.stopper.reduceHp(totalDamage);
     this.mover.reduceMp(userSkillInfo.mana);
 
-    // 유저 MP 업데이트
-    const setPlayerMpResponse = createResponse(PacketType.S_SetPlayerMp, {
+    // 공격 유저 MP 업데이트
+    const setPlayerMpResponse = createResponse(PacketType.S_SetPvpPlayerMp, {
       mp: this.mover.stat.mp,
     });
     this.mover.socket.write(setPlayerMpResponse);
 
+    // 상대방 HP 업데이트
+    const setEnemyHpResponse = createResponse(PacketType.S_SetPvpEnemyHp, {
+      hp: this.stopper.stat.hp,
+    });
+    this.mover.socket.write(setEnemyHpResponse);
+
+    // 맞는 유저 HP 업데이트
+    const setStopperHpResponse = createResponse(PacketType.S_SetPvpPlayerHp, {
+      hp: this.stopper.stat.hp,
+    });
+    this.stopper.socket.write(setStopperHpResponse);
+
     // 공격 시 의도되지 않은 조작 방지 위한 버튼 비활성화
     const disableButtons = [{ msg: this.stopper.nickname, enable: false }];
 
-    // 상대방 HP 업데이트
-    const setStopperHpResponse = createResponse(PacketType.S_EnemyHpNotification, {
-      hp: this.stopper.stat.hp,
-    });
-    this.mover.socket.write(setStopperHpResponse);
-    this.stopper.socket.write(setStopperHpResponse);
-
-    // 플레이어 공격 애니메이션
-    const playerActionResponse = createResponse(PacketType.S_HitAnimationNotification, {
-      playerId: this.mover.id,
+    // 공격 유저 애니메이션
+    const playerActionResponse = createResponse(PacketType.S_PvpPlayerAction, {
       actionSet: {
         animCode: 0, // 공격 애니메이션 코드
         effectCode: userSkillInfo.effectCode, // 이펙트 코드
@@ -57,14 +62,14 @@ export default class PvpPlayerAttackState extends PvpState {
     });
     this.mover.socket.write(playerActionResponse);
 
-    // 상대방이 때리는 애니메이션
-    const enemyActionResponse = createResponse(PacketType.S_HitAnimationNotification, {
-      playerId: this.mover.id,
+    // 맞는 유저 애니메이션
+    const enemyActionResponse = createResponse(PacketType.S_PvpEnemyAction, {
       actionSet: {
         animCode: 0, // 공격 애니메이션 코드
         effectCode: userSkillInfo.effectCode, // 이펙트 코드
       },
     });
+
     this.stopper.socket.write(enemyActionResponse);
 
     // 공격 결과 메시지 전송(때리는 놈)
@@ -98,86 +103,14 @@ export default class PvpPlayerAttackState extends PvpState {
     });
     this.stopper.socket.write(stopperBattleLogResponse);
 
-    // 턴이 아닌 유저 사망 유무 판별
-    // if (this.stopper.stats.hp <= 0) {
-    //   this.mover.socket.write(
-    //     // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
-    //     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-    //     this.stopper.write(
-    //       createResponse(PacketType.S_BeatenAnimationNotification, {
-    //         playerId: this.stopper.id,
-    //         actionSet: {
-    //           animCode: 1,
-    //         },
-    //       }),
-    //     ),
-    //   );
-
-    //   this.stopper.socket.write(
-    //     // TODO: stopper는 피격 + 죽는 당하는 애니메이션 전송 만들어주기
-    //     // 이유 : 몬스터가 없어서 클라이언트에서 오류가 발생합니다.
-    //     this.stopper.write(
-    //       createResponse(PacketType.S_BeatenAnimationNotification, {
-    //         playerId: this.stopper.id,
-    //         actionSet: {
-    //           animCode: 1,
-    //         },
-    //       }),
-    //     ),
-    //   );
-
-    //   //TODO: 승자 rank 포인트 증가 시켜주기  S_ViewRankPoint
-    //   this.mover.socket.write(
-    //     createResponse(PacketType.S_GameOverNotification, {
-    //       isWin: true,
-    //     }),
-    //   );
-
-    //   this.mover.socket(createResponse(PacketType.S_LeaveDungeon, {}));
-
-    //   //TODO: S_GameOverNotification을 수신하는 클라이언트 부분 만들기
-    //   //TODO: 패자 rank 포인트 감소시켜주기
-    //   this.stopper.socket.write(
-    //     createResponse(PacketType.S_GameOverNotification, {
-    //       isWin: false,
-    //     }),
-    //   );
-
-    //   this.stopper.socket(createResponse(PacketType.S_LeaveDungeon, {}));
-
-    //   sessionManager.removePvpRoom(this.pvpRoom.sessionId);
-    // }
+    // 맞는 유저 사망 여부 확인
+    if (this.stopper.stat.hp <= 0) {
+      this.changeState(PvpEnemyDeadState);
+    }
     // 죽지 않았으면 턴 교체
-    this.pvpRoom.setUserTurn(!this.pvpRoom.getUserTurn());
-    stopperBattleLogResponse = createResponse(PacketType.S_PvpBattleLog, {
-      battleLog: {
-        msg: `이제 님이 때릴 차례에요`,
-        typingAnimation: true,
-        btns: [
-          { msg: '스킬 사용', enable: true }, // 향후 구현 예정
-          { msg: '아이템 사용', enable: true }, // 향후 구현 예정
-          { msg: '기권', enable: true },
-        ],
-      },
-    });
-
-    const moverBattleLogResponse = createResponse(PacketType.S_PvpBattleLog, {
-      battleLog: {
-        msg: `이제 님이 맞을 차례에요`,
-        typingAnimation: true,
-        btns: [
-          { msg: '스킬 사용', enable: false }, // 향후 구현 예정
-          { msg: '아이템 사용', enable: false }, // 향후 구현 예정
-          { msg: '기권', enable: false },
-        ],
-      },
-    });
-
-    this.stopper.socket.write(stopperBattleLogResponse);
-    this.mover.socket.write(moverBattleLogResponse);
-    [this.pvpRoom.stopper, this.pvpRoom.mover] = [this.pvpRoom.mover, this.pvpRoom.stopper];
-    this.changeState(PvpActionState);
-    this.pvpRoom.setUserTurn(!this.pvpRoom.getUserTurn());
+    else {
+      this.changeState(PvpTurnChangeState);
+    }
   }
 
   async handleInput(responseCode) {

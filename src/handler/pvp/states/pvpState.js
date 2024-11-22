@@ -10,10 +10,8 @@ export default class PvpState {
     }
 
     this.pvpRoom = pvpRoom;
-    this.mover = mover;
-    //행동을 할 사람
-    this.stopper = stopper;
-    //행동을 할 기회가 아닌 사람
+    this.mover = mover; //행동을 할 사람
+    this.stopper = stopper; //행동을 할 기회가 아닌 사람
   }
   // 상태 전환 시 첫 호출되는 함수
   async enter() {
