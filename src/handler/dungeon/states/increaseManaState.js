@@ -5,9 +5,11 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import ActionState from './actionState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import { DUNGEON_STATUS } from '../../../constants/battle.js';
 
 export default class IncreaseManaState extends DungeonState {
   async enter() {
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.INCREASEMANA;
     const randomHp = Math.floor(Math.random() * 3);
     const randomMp = Math.floor(Math.random() * 3);
 

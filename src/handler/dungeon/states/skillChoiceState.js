@@ -3,13 +3,14 @@
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { MAX_SKILL_COUNT } from '../../../constants/battle.js';
+import { DUNGEON_STATUS, MAX_SKILL_COUNT } from '../../../constants/battle.js';
 import PlayerAttackState from './playerAttackState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
 // 스킬 선택 상태
 export default class SkillChoiceState extends DungeonState {
   async enter() {
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.SKILL_CHOICE;
     // 버튼은 플레이어가 보유한 스킬들로 생성
     const buttons = this.user.userSkills.map((skill) => ({
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,

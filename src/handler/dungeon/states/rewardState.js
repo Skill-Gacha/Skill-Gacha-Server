@@ -1,6 +1,11 @@
 // src/handler/dungeon/states/rewardState.js
 
-import { CONFIRM_TYPE, MAX_REWARD_BUTTON, MAX_SKILL_COUNT } from '../../../constants/battle.js';
+import {
+  CONFIRM_TYPE,
+  DUNGEON_STATUS,
+  MAX_REWARD_BUTTON,
+  MAX_SKILL_COUNT,
+} from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { getSkillById } from '../../../init/loadAssets.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
@@ -15,6 +20,7 @@ import SkillChangeState from './skillChangeState.js';
 // 보상 처리
 export default class RewardState extends DungeonState {
   async enter() {
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.REWARD;
     const { gold, stone, rewardSkills } = this.dungeon.reward;
 
     // 골드 및 강화석 증가

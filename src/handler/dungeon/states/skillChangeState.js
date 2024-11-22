@@ -4,13 +4,14 @@ import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import ConfirmState from './confirmState.js';
-import { CONFIRM_TYPE } from '../../../constants/battle.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
 // 스킬 교체 처리
 export default class SkillChangeState extends DungeonState {
   async enter() {
     // 버튼은 플레이어가 보유한 스킬들로 생성
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.SKILL_CHANGE;
     const buttons = this.user.userSkills.map((skill) => ({
       msg: skill.skillName,
       enable: true,
