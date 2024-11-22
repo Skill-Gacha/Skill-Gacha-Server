@@ -41,4 +41,9 @@ export const PacketType = {
   S_BeatenAnimationNotification: 37,
   S_HitAnimationNotification: 38,
   S_PvpBattleLog: 40,
+  S_PvpPlayerAction: 41,
+  S_PvpEnemyAction: 42,
+  S_SetPvpPlayerHp: 43,
+  S_SetPvpPlayerMp: 44,
+  S_SetPvpEnemyHp: 45,
 };

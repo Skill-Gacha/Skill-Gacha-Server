@@ -48,6 +48,11 @@ enum MsgId {
   S_HIT_ANIMATION_NOTIFICATION = 38;
   C_PVP_PLAYER_RESPONSE = 39;
   S_PVP_BATTLE_LOG = 40;  
+  S_PVP_PLAYER_ACTION = 41;
+  S_PVP_ENEMY_ACTION = 42;
+  S_SET_PVP_PLAYER_HP = 43;
+  S_SET_PVP_PLAYER_MP = 44;
+  S_SET_ENEMY_HP = 45;
 }
 
 // 패킷 정의 목록
@@ -226,6 +231,27 @@ message S_PvpBattleLog {
   BattleLog battleLog = 1;
 }
 
+message S_PvpPlayerAction {
+  ActionSet actionSet = 1;
+}
+
+message S_PvpEnemyAction {
+  ActionSet actionSet = 1;
+}
+
+message S_SetPvpPlayerHp {
+  float hp = 1;
+}
+
+message S_SetPvpPlayerMp {
+  float mp = 1;
+}
+
+message S_SetPvpEnemyHp {
+  float hp = 1;
+}
+
+
 // 커스텀 메세지
 message PlayerInfo {
   int32 playerId = 1;
@@ -326,3 +352,6 @@ message CurrencyInfo {
   int32 gold = 1;
   int32 stone = 2;
 }
+
+
+
