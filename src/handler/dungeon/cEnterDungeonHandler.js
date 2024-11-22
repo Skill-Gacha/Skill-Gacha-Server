@@ -8,7 +8,6 @@ import Monster from '../../classes/models/monsterClass.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import { getGameAssets } from '../../init/loadAssets.js';
 import { MyStatus } from '../../utils/battle/battle.js';
-import { DUNGEON_CODE } from '../../constants/battle.js';
 import { elementResist } from '../../utils/packet/playerPacket.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
