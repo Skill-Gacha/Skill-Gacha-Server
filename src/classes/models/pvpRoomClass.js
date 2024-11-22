@@ -9,6 +9,14 @@ class PvpRoomClass extends BaseSession {
     this.userTurn = null;
     this.selectedSkill;
   }
+
+  setUserTurn(values) {
+    this.userTurn = values;
+  }
+
+  getUserTurn() {
+    return this.userTurn;
+  }
 }
 
 export default PvpRoomClass;
