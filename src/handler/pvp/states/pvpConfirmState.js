@@ -35,7 +35,7 @@ export default class PvpConfirmState extends PvpState {
     };
 
     const confirmBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, { battleLog });
-    this.mover.write(confirmBattlelogResponse);
+    this.mover.socket.write(confirmBattlelogResponse);
   }
 
   async handleInput(responseCode) {

@@ -57,7 +57,6 @@ export default class PvpTurnChangeState extends PvpState {
   }
 
   async handleInput(responseCode) {
-    console.log(responseCode);
     // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
     switch (responseCode) {
       case 1: // 스킬

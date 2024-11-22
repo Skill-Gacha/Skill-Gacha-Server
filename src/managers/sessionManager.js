@@ -121,6 +121,13 @@ class SessionManager {
 
   // ** 1 대 1 pvp 매칭 관리**
   addMatchingQueue(user) {
+    const existingUser = this.matchingQueue.find((existUser) => existUser.id === user.id);
+
+    if (existingUser) {
+      console.log('이미 매칭중인 유저입니다.');
+      return;
+    }
+
     this.matchingQueue.push(user);
     if (this.matchingQueue.length === MAX_PLAYER) {
       return this.matchingQueue.slice(0, 2);
