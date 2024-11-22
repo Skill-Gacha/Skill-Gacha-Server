@@ -12,7 +12,7 @@ export const saveRatingToDB = async (nickname, rating) => {
       [nickname, rating],
     );
   } catch (error) {
-    console.error('Error saving rating to DB:', error);
+    console.error('DB에 레이팅 정보 저장 실패:', error);
     throw error;
   }
 };
@@ -24,7 +24,7 @@ export const getRatingFromDB = async (nickname) => {
     if (rows.length === 0) return null;
     return rows[0].rating;
   } catch (error) {
-    console.error('Error fetching rating from DB:', error);
+    console.error('DB에서 레이팅 정보 가져오기 실패:', error);
     throw error;
   }
 };

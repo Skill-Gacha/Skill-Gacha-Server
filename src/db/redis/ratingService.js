@@ -36,7 +36,7 @@ export const getAllRatingsFromRedis = async () => {
     const ratings = await redisClient.zRangeWithScores(RATING_KEY, 0, -1);
     return ratings;
   } catch (error) {
-    console.error('Error fetching all ratings from Redis:', error);
+    console.error('Redis로부터 레이팅 정보 가져오기 실패:', error);
     throw error;
   }
 };
