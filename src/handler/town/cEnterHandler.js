@@ -6,7 +6,7 @@ import { createUser, findUserNickname } from '../../db/user/user.db.js';
 import { getElementById, getSkillById } from '../../init/loadAssets.js'; // job을 element로 변경
 import { createResponse } from '../../utils/response/createResponse.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
-import { playerData } from '../../utils/packet/playerPacket.js';
+import { elementResist, playerData } from '../../utils/packet/playerPacket.js';
 import User from '../../classes/models/userClass.js';
 import { getSkillsFromDB, saveSkillsToDB } from '../../db/skill/skillDb.js';
 import { saveRatingToRedis, saveSkillsToRedis } from '../../db/redis/skillService.js';
@@ -66,6 +66,9 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord = await findUserNickname(nickname);
     }
 
+    // elementClass 값으로 조회한 속성 관련 데이터에서 저항값만 추출
+    const resists = elementResist(chosenElement);
+
     // User 인스턴스 생성
     user = new User(
       socket,
@@ -76,6 +79,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord.maxMp,
       userRecord.gold,
       userRecord.stone,
+      resists,
     );
 
     // 스킬 처리
