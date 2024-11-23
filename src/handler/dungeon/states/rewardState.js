@@ -34,13 +34,19 @@ export default class RewardState extends DungeonState {
 
     // 아이템 획득
     if (item !== null) {
-      this.user.increaseItem(item);
-      msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요 \n일정 확률로 아이템을 획득하였습니다!`;
-      try {
-        await updateItemCountInRedis(this.user.nickname, item, 1);
-      } catch (error) {
-        console.error('아이템 업데이트 중 오류 발생:', error);
+      const userHasItem = this.user.items.some(
+        (userItem) => userItem.itemId === item && userItem.count >= 1,
+      );
+      if (!userHasItem) {
+        this.user.increaseItem(item);
+        msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요 \n일정 확률로 아이템을 획득하였습니다!`;
+        try {
+          await updateItemCountInRedis(this.user.nickname, item, 1);
+        } catch (error) {
+          console.error('아이템 업데이트 중 오류 발생:', error);
+        }
       }
+      msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요 \n이미 아이템을 보유하고 있어 획득할 수 없습니다.`;
     }
 
     // 버튼 생성

@@ -20,14 +20,26 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
     user.socket.write(createResponse(PacketType.S_BuyItemResponse, { success: false }));
     return;
   }
-  // 유저 골드 감소시키기
-  user.reduceGold(product.price);
 
   // 유저 아이템량 증가시켜주기 (이미 존재하는지 안 하는지 확인)
   let reserve;
   const userItem = user.items.find((item) => item.itemId === product.id);
   userItem.count += 1;
   reserve = userItem.count;
+
+  // 아이템 카운트가 3 이상이면 구매 불가
+  if (userItem.count >= 3) {
+    user.socket.write(
+      createResponse(PacketType.S_BuyItemResponse, {
+        success: false,
+        message: '아이템을 3개 이상 구매할 수 없습니다.',
+      }),
+    );
+    return;
+  }
+
+  // 유저 골드 감소시키기
+  user.reduceGold(product.price);
 
   try {
     user.socket.write(
