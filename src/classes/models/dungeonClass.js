@@ -30,8 +30,8 @@ class Dungeon extends BaseSession {
     const rewardSkills = getRandomRewardSkills(this.dungeonCode);
     let item = null;
     if (Math.random() < 1) {
-      // 1004, 1005 둘중 하나
-      const ittmeIds = [1004, 1005];
+      // 4004 4005 둘중 하나
+      const ittmeIds = [4004, 4005];
       item = ittmeIds[Math.floor(Math.random() * ittmeIds.length)];
     }
 

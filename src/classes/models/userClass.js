@@ -32,7 +32,7 @@ class User {
   }
 
   increaseItem(itemId) {
-    const userItem = this.items.find((item) => item.id === itemId);
+    const userItem = this.items.find((item) => item.itemId === itemId);
     userItem.count += 1;
   }
 

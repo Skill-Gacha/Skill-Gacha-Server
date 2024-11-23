@@ -7,6 +7,7 @@ import {
   MAX_SKILL_COUNT,
 } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
+import { getItemsFromRedis, updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { getSkillById } from '../../../init/loadAssets.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
@@ -23,13 +24,23 @@ export default class RewardState extends DungeonState {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.REWARD;
     const { gold, stone, rewardSkills, item } = this.dungeon.reward;
 
+    let msg;
+
     // 골드 및 강화석 증가
     this.user.increaseGold(gold);
     this.user.increaseStone(stone);
 
+    msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`;
+
     // 아이템 획득
     if (item !== null) {
-      this.user.increaseItem();
+      this.user.increaseItem(item);
+      msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요 \n일정 확률로 아이템을 획득하였습니다!`;
+      try {
+        await updateItemCountInRedis(this.user.nickname, item, 1);
+      } catch (error) {
+        console.error('아이템 업데이트 중 오류 발생:', error);
+      }
     }
 
     // 버튼 생성
@@ -46,7 +57,7 @@ export default class RewardState extends DungeonState {
 
     // 보상로그 데이터
     const battleLog = {
-      msg: `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`,
+      msg,
       typingAnimation: false,
       btns: buttons,
     };

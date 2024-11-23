@@ -18,7 +18,7 @@ export const cOpenStoreHandler = async ({ socket, payload }) => {
 
   // 유저가 각 아이템 몇개 가지고 있는지
   const productList = products.map((product) => {
-    const userItem = user.items.find((item) => item.id === product.id);
+    const userItem = user.items.find((item) => item.itemId === product.id);
     return {
       reserve: userItem ? userItem.count : 0,
       price: product.price,

@@ -25,7 +25,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
 
   // 유저 아이템량 증가시켜주기 (이미 존재하는지 안 하는지 확인)
   let reserve;
-  const userItem = user.items.find((item) => item.id === product.id);
+  const userItem = user.items.find((item) => item.itemId === product.id);
   userItem.count += 1;
   reserve = userItem.count;
 
