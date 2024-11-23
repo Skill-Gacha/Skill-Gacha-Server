@@ -32,7 +32,6 @@ export const cOpenStoreHandler = async ({ socket, payload }) => {
     productList,
   };
 
-  console.log('동작 유무 확인 : ', openStoreData);
   const openStoreResponse = createResponse(PacketType.S_OpenStoreResponse, openStoreData);
 
   try {
