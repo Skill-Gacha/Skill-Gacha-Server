@@ -53,6 +53,17 @@ class User {
     saveRewardSkillsToRedis(this.nickname, rewardskill.id);
     this.userSkills.push(rewardskill);
   }
+
+  getInventory() {
+    return {
+        gold: this.gold,
+        stone: this.stone,
+        productList: this.items.map(item => ({
+          id: item.id,
+          count: item.count,
+        })),
+      };
+  }
 }
 
 export default User;
