@@ -4,6 +4,7 @@ import cron from 'node-cron';
 import redisClient from '../init/redis.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
 import { syncRatingsToDB } from '../sync/syncRatings.js';
+import { saveItemToDB } from '../db/item/itemDb.js';
 
 const SYNC_INTERVAL_IN_MIN = 5;
 
@@ -73,6 +74,7 @@ export const startSyncScheduler = () => {
     console.log('동기화 작업 시작...');
     await syncSkillsToDBTask();
     await syncRatingsToDBTask();
+    await syncItemsToDBTask();
     console.log('동기화 작업 완료');
   });
 
