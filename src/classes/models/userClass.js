@@ -19,7 +19,11 @@ class User {
   }
 
   reduceHp(damage) {
-    this.stat.hp = Math.max(0, this.stat.hp - damage);
+    if (this.stat.hp < damage) {
+      this.stat.hp = 0;
+    } else {
+      this.stat.hp -= damage;
+    }
   }
 
   reduceMp(mana) {
@@ -32,8 +36,13 @@ class User {
   }
 
   increaseItem(itemId) {
-    const userItem = this.items.find((item) => item.id === itemId);
+    const userItem = this.items.find((item) => item.itemId === itemId);
     userItem.count += 1;
+  }
+
+  discountItem(itemId) {
+    const userItem = this.items.find((item) => item.itemId === itemId);
+    userItem.count -= 1;
   }
 
   resetHpMp() {

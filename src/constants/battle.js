@@ -59,3 +59,4 @@ export const SKILL_ELEMENTAL = {
 export const MAX_SKILL_REWARD = 3;
 export const MAX_SKILL_COUNT = 5;
 export const MAX_REWARD_BUTTON = 4;
+export const MAX_ITEM_COUNT = 5;
