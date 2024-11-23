@@ -35,6 +35,6 @@ CREATE TABLE IF NOT EXISTS `Items` (
     `count` INT NOT NULL DEFAULT 0,
     PRIMARY KEY (`nickname`, `item_id`),
     FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE,
-    CHECK (`item_id` BETWEEN 1 AND 5),
+    CHECK (`item_id` BETWEEN 4001 AND 4005),
     CHECK (`count` >= 0)
-    );
+);
