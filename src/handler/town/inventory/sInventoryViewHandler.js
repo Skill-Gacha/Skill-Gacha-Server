@@ -3,10 +3,10 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
 import { getGameAssets, getproductByid } from '../../../init/loadAssets.js';
 
-export const sInventoryViewResponse = async (userId) => {
-    const session = sessionManager.getSessionByUserId(userId);
-    if (!session) {
-        console.error('sInventoryViewResponse: 사용자가 속한 세션을 찾을 수 없습니다.');
+export const sInventoryViewHandler = async ( socket, payload) => {
+    const user = sessionManager.getSessionBySocket(socket);
+    if (!user) {
+        console.error('sInventoryViewHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
         return;
     }
 
