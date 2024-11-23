@@ -3,7 +3,7 @@
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createUser, findUserNickname } from '../../db/user/user.db.js';
-import { getElementById, getSkillById } from '../../init/loadAssets.js'; // job을 element로 변경
+import { getElementById, getSkillById } from '../../init/loadAssets.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
 import { elementResist, playerData } from '../../utils/packet/playerPacket.js';
@@ -12,6 +12,8 @@ import { getSkillsFromDB, saveSkillsToDB } from '../../db/skill/skillDb.js';
 import { saveSkillsToRedis } from '../../db/redis/skillService.js';
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
+import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
+import { getItemsFromRedis, saveItemsToRedis } from '../../db/redis/itemService.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload; // 'class' 대신 'element' 사용
@@ -64,6 +66,23 @@ export const cEnterHandler = async ({ socket, payload }) => {
       // 기본 레이팅을 Redis에 저장
       await saveRatingToRedis(nickname, 1000);
 
+      // 아이템 데이터 초기화 및 저장
+      const initialItems = {
+        item1: 0,
+        item2: 0,
+        item3: 0,
+        item4: 0,
+        item5: 0,
+      };
+
+      // MySQL에 아이템 데이터 저장
+      for (let itemId = 1; itemId <= 5; itemId++) {
+        await saveItemToDB(nickname, itemId, 0);
+      }
+
+      // Redis에 아이템 데이터 저장
+      await saveItemsToRedis(nickname, initialItems);
+
       // 새로 생성된 유저 데이터 로드
       userRecord = await findUserNickname(nickname);
     }
@@ -93,8 +112,11 @@ export const cEnterHandler = async ({ socket, payload }) => {
       .filter((key) => key.startsWith('skill'))
       .map((key) => getSkillById(skills[key])) // 스킬 ID로 매핑
       .filter((skill) => skill != null); // getSkillById의 결과가 null인 경우 필터링
-
-    console.log(user.userSkills);
+    
+    const items = await getItemsFromDB(nickname);
+    await saveItemsToRedis(nickname, items);
+    
+    user.items = await getItemsFromRedis(nickname);
 
     // 세션에 유저 추가
     sessionManager.addUser(user);

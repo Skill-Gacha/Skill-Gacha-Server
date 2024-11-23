@@ -41,6 +41,31 @@ const syncRatingsToDBTask = async () => {
   }
 };
 
+// 모든 플레이어의 아이템 정보를 MySQL에 동기화
+const syncItemsToDBTask = async () => {
+  try {
+    // 모든 아이템 키 가져오기
+    const keys = await redisClient.keys('items:*');
+    const syncPromises = keys.map(async (key) => {
+      const nickname = key.split(':')[1];
+      const items = await redisClient.hGetAll(key);
+      if (Object.keys(items).length) {
+        // 각 아이템에 대해 MySQL에 저장
+        const saveItemPromises = Object.entries(items).map(async ([itemKey, count]) => {
+          const itemId = parseInt(itemKey.replace('item', ''), 10);
+          const itemCount = parseInt(count, 10);
+          await saveItemToDB(nickname, itemId, itemCount);
+        });
+        await Promise.all(saveItemPromises);
+      }
+    });
+    await Promise.all(syncPromises);
+    console.log('아이템 정보가 성공적으로 DB에 저장되었습니다.');
+  } catch (error) {
+    console.error('아이템 동기화 중 에러 발생:', error);
+  }
+};
+
 // 동기화 작업을 스케줄러 실행
 export const startSyncScheduler = () => {
   // 매 5분마다 실행
