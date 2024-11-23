@@ -16,6 +16,9 @@ export const onError = (socket) => async (err) => {
     // 디스펜스 처리 (타운 세션에만)
     await sDespawnHandler(user);
 
+    // 매칭큐 초기화
+    sessionManager.removeMatchingQueue(user);
+
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
 

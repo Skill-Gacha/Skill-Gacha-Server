@@ -6,6 +6,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS, MAX_SKILL_COUNT } from '../../../constants/battle.js';
 import PlayerAttackState from './playerAttackState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import ActionState from './actionState.js';
 
 // 스킬 선택 상태
 export default class SkillChoiceState extends DungeonState {
@@ -16,6 +17,11 @@ export default class SkillChoiceState extends DungeonState {
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
       enable: this.user.stat.mp >= skill.mana,
     }));
+
+    buttons.push({
+      msg: '뒤로 가기',
+      enable: true,
+    });
 
     // 스킬 로그 데이터
     const battleLog = {
@@ -34,11 +40,15 @@ export default class SkillChoiceState extends DungeonState {
       invalidResponseCode(this.socket);
     }
 
-    // 선택한 스킬 인덱스 계산
-    const SkillIdx = responseCode - 1;
-    this.dungeon.selectedSkill = SkillIdx;
+    if (responseCode > this.user.userSkills.length) {
+      this.changeState(ActionState);
+    } else {
+      // 선택한 스킬 인덱스 계산
+      const SkillIdx = responseCode - 1;
+      this.dungeon.selectedSkill = SkillIdx;
 
-    // 스킬 선택 후 플레이어 어택 상태로 전환
-    this.changeState(PlayerAttackState);
+      // 스킬 선택 후 플레이어 어택 상태로 전환
+      this.changeState(PlayerAttackState);
+    }
   }
 }

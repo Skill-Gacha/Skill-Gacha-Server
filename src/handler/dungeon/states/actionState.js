@@ -36,7 +36,10 @@ export default class ActionState extends DungeonState {
         break;
       case 3: // 도망치기
         this.changeState(ConfirmState);
-        await this.dungeon.currentState.setConfirm(CONFIRM_TYPE.FLEE, '추하게 빼실겁니까?');
+        await this.dungeon.currentState.setConfirm(
+          CONFIRM_TYPE.FLEE,
+          '추하게 빼실겁니까? 보유중인 골드를 잃게됩니다.',
+        );
         break;
       default:
         // responseCode 유효성 검사

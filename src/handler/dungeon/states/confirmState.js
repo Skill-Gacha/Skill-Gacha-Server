@@ -9,6 +9,7 @@ import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
 import RewardState from './rewardState.js';
 import GameOverWinState from './gameOverWinState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import FailFleeMessageState from './failFleeMessageState.js';
 
 // 확인 버튼 출력을 위한 부분
 export default class ConfirmState extends DungeonState {
@@ -53,7 +54,12 @@ export default class ConfirmState extends DungeonState {
       case CONFIRM_TYPE.FLEE:
         if (responseCode === 1) {
           // 도망감
-          this.changeState(FleeMessageState);
+          if (this.user.gold < 100) {
+            this.changeState(FailFleeMessageState);
+          } else {
+            this.user.reduceGold(100);
+            this.changeState(FleeMessageState);
+          }
         } else if (responseCode === 2) {
           // 도망 취소
           this.changeState(ActionState);

@@ -35,6 +35,10 @@ class User {
     this.stat.mp = this.stat.maxMp;
   }
 
+  reduceGold(gold) {
+    this.gold -= gold;
+  }
+
   increaseGold(gold) {
     this.gold += gold;
   }

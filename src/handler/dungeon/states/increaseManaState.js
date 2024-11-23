@@ -10,8 +10,8 @@ import { DUNGEON_STATUS } from '../../../constants/battle.js';
 export default class IncreaseManaState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.INCREASEMANA;
-    const randomHp = Math.floor(Math.random() * 3);
-    const randomMp = Math.floor(Math.random() * 3);
+    const randomHp = Math.floor(Math.random() * 6) + 5;
+    const randomMp = Math.floor(Math.random() * 6) + 5;
 
     this.user.increaseHpMp(randomHp, randomMp);
 
