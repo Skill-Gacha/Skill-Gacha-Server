@@ -6,6 +6,7 @@ import PvpState from './pvpState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PvpPlayerAttackState from './pvpPlayerAttackState.js';
 import { MAX_SKILL_COUNT, PVP_STATUS } from '../../../constants/battle.js';
+import PvpTurnChangeState from './pvpTurnChangeState.js';
 
 export default class PvpSkillChoice extends PvpState {
   async enter() {
@@ -15,6 +16,11 @@ export default class PvpSkillChoice extends PvpState {
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
       enable: this.mover.stat.mp >= skill.mana,
     }));
+
+    buttons.push({
+      msg: '턴 넘기기',
+      enable: true,
+    });
 
     //스킬 로그 데이터
     const battleLog = {
@@ -35,11 +41,15 @@ export default class PvpSkillChoice extends PvpState {
       invalidResponseCode(this.mover.socket);
     }
 
-    // 선택한 스킬 인덱스 계산
-    const SkillIdx = responseCode - 1;
-    this.pvpRoom.selectedSkill = SkillIdx;
+    if (responseCode > this.mover.userSkills.length) {
+      this.changeState(PvpTurnChangeState);
+    } else {
+      // 선택한 스킬 인덱스 계산
+      const SkillIdx = responseCode - 1;
+      this.pvpRoom.selectedSkill = SkillIdx;
 
-    // 스킬 선택 후 플레이어 어택 상태로 전환
-    this.changeState(PvpPlayerAttackState);
+      // 스킬 선택 후 플레이어 어택 상태로 전환
+      this.changeState(PvpPlayerAttackState);
+    }
   }
 }
