@@ -26,11 +26,13 @@ export const cOpenStoreHandler = async ({ socket, payload }) => {
   });
 
   const openStoreData = {
+    playerId: user.id,
     gold: user.gold,
     stone: user.stone,
     productList,
   };
 
+  console.log('동작 유무 확인 : ', openStoreData);
   const openStoreResponse = createResponse(PacketType.S_OpenStoreResponse, openStoreData);
 
   try {
