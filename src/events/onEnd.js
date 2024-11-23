@@ -7,6 +7,8 @@ import { saveRatingToDB } from '../db/rating/ratingDb.js';
 import { updateUserResource } from '../db/user/user.db.js';
 import { deleteSkillsFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
 import { getPlayerRatingFromRedis } from '../db/redis/ratingService.js';
+import { getItemsFromRedis, deleteItemsFromRedis } from '../db/redis/itemService.js';
+import { saveItemToDB } from '../db/item/itemDb.js';
 
 export const onEnd = (socket) => async () => {
   console.log('클라이언트 연결이 종료되었습니다.');
@@ -23,29 +25,37 @@ export const onEnd = (socket) => async () => {
     const skills = await getSkillsFromRedis(nickname);
     if (skills) {
       await saveSkillsToDB(nickname, skills);
-      console.log(`Skills for ${nickname} saved to DB.`);
     } else {
-      console.warn(`No skills found in Redis for ${nickname}.`);
+      console.warn(`${nickname}의 스킬을 찾을 수 없습니다.`);
     }
 
     // DB에 재화 저장
     await updateUserResource(nickname, gold, stone);
-    console.log(`Resources for ${nickname} (gold: ${gold}, stone: ${stone}) saved to DB.`);
 
     // DB에 레이팅 저장
     const rating = await getPlayerRatingFromRedis(nickname);
     if (rating !== null) {
       await saveRatingToDB(nickname, rating);
-      console.log(`Rating for ${nickname} saved to DB.`);
     } else {
-      console.warn(`No rating found in Redis for ${nickname}.`);
+      console.warn(`${nickname}의 레이팅 정보를 찾을 수 없습니다.`);
+    }
+
+    // DB에 아이템 저장
+    const items = await getItemsFromRedis(nickname);
+    if (items && Array.isArray(items)) {
+      for (const item of items) {
+        // 각 아이템을 MySQL에 저장
+        await saveItemToDB(nickname, item.itemId, item.count);
+      }
+    } else {
+      console.warn(`${nickname}의 아이템 정보를 찾을 수 없습니다.`);
     }
 
     // DB에 저장이 완료되면 레디스에서도 제거
     await deleteSkillsFromRedis(nickname);
-    console.log(`${nickname}'s skills and rating removed from Redis.`);
+    await deleteItemsFromRedis(nickname);
   } catch (error) {
-    console.error(`Error during user logout for ${nickname}:`, error);
+    console.error(`${nickname} 접속 종료 처리 중 문제 발생.`, error);
   }
 
   try {
