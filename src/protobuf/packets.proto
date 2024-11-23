@@ -53,6 +53,12 @@ enum MsgId {
   S_SET_PVP_PLAYER_HP = 43;
   S_SET_PVP_PLAYER_MP = 44;
   S_SET_ENEMY_HP = 45;
+  C_OPEN_STORE_REQUEST = 46;
+  S_OPEN_STORE_RESPONSE = 47;
+  C_BUY_ITEM_REQUEST = 48;
+  S_BUY_ITEM_RESPONSE = 49;
+  C_INVENTORY_VIEW_REQUEST = 50;
+  S_INVENTORY_VIEW_RESPONSE = 51;
 }
 
 // 패킷 정의 목록
@@ -251,6 +257,37 @@ message S_SetPvpEnemyHp {
   float hp = 1;
 }
 
+message C_OpenStoreRequest {
+  
+}
+
+message S_OpenStoreResponse {
+  int32 gold = 1;
+  int32 stone = 2;
+  repeated  Product productList = 3;
+}
+
+message C_BuyItemRequest {
+  int32 itemId = 1;
+}
+
+message S_BuyItemResponse {
+  bool success = 1;
+  optional int32 itemId = 2;
+  optional int32 changeGold = 3;
+  optional int32 reserve = 4;
+}
+
+message C_InventoryViewRequest {
+  
+}
+
+message S_InventoryViewResponse {
+  int32 gold = 1;
+  int32 stone = 2;
+  repeated Product productList = 3;
+}
+
 
 // 커스텀 메세지
 message PlayerInfo {
@@ -353,5 +390,9 @@ message CurrencyInfo {
   int32 stone = 2;
 }
 
+message Product {
+  int32 reserve = 1;
+  int32 price = 2;
+}
 
 
