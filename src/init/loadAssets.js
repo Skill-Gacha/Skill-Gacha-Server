@@ -38,15 +38,16 @@ const readFileAsync = (filename) => {
 
 export const loadGameAssets = async () => {
   try {
-    const [playerCharacter, MonsterData, skillData] = await Promise.all([
+    const [playerCharacter, MonsterData, skillData, itemData] = await Promise.all([
       // 이런 형태로 필요한 파일 로드
 
       readFileAsync('playerCharacter.json'),
       readFileAsync('MonsterData.json'), // 몬스터 상태 파일 추가
       readFileAsync('skillData.json'),
+      readFileAsync('itemData.json'), // 아이템 추가
     ]);
 
-    gameAssets = { playerCharacter, MonsterData, skillData };
+    gameAssets = { playerCharacter, MonsterData, skillData, itemData };
 
     console.log('게임 애샛 로드 완료');
   } catch (error) {
@@ -69,6 +70,10 @@ export const getSkillById = (skillId) => {
     return gameAssets.skillData.data[index];
   }
   return null;
+};
+export const getItemByid = (id) => {
+  const index = gameAssets.itemData.data.findIndex((item) => item.id === id);
+  return gameAssets.itemData.data[index];
 };
 
 // 랜덤으로 스킬 가져오기
