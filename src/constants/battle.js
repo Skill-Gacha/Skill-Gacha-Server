@@ -16,6 +16,7 @@ export const DUNGEON_STATUS = {
   FLEE_MESSAGE: 11,
   REWARD: 12,
   SKILL_CHANGE: 13,
+  FAIL_FLEE: 14,
 };
 
 export const PVP_STATUS = {
@@ -56,5 +57,5 @@ export const SKILL_ELEMENTAL = {
 };
 
 export const MAX_SKILL_REWARD = 3;
-export const MAX_SKILL_COUNT = 4;
+export const MAX_SKILL_COUNT = 5;
 export const MAX_REWARD_BUTTON = 4;

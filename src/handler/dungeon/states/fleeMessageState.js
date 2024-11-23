@@ -15,7 +15,7 @@ export default class FleeMessageState extends DungeonState {
     this.socket.write(
       createResponse(PacketType.S_ScreenText, {
         screenText: {
-          msg: '전투에서 도망쳤습니다.',
+          msg: `전투에서 도망쳐 골드가 ${this.user.gold}원 남았습니다.`,
           typingAnimation: false,
         },
       }),
