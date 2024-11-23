@@ -21,11 +21,16 @@ import SkillChangeState from './skillChangeState.js';
 export default class RewardState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.REWARD;
-    const { gold, stone, rewardSkills } = this.dungeon.reward;
+    const { gold, stone, rewardSkills, item } = this.dungeon.reward;
 
     // 골드 및 강화석 증가
     this.user.increaseGold(gold);
     this.user.increaseStone(stone);
+
+    // 아이템 획득
+    if (item !== null) {
+      this.user.increaseItem();
+    }
 
     // 버튼 생성
     const buttons = rewardSkills.map((skill) => ({
