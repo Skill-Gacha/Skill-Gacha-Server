@@ -13,7 +13,7 @@ import { saveSkillsToRedis } from '../../db/redis/skillService.js';
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
-import { getItemsFromRedis, saveItemsToRedis } from '../../db/redis/itemService.js';
+import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload; // 'class' 대신 'element' 사용
@@ -67,17 +67,11 @@ export const cEnterHandler = async ({ socket, payload }) => {
       await saveRatingToRedis(nickname, 1000);
 
       // 아이템 데이터 초기화 및 저장
-      const initialItems = {
-        item1: 0,
-        item2: 0,
-        item3: 0,
-        item4: 0,
-        item5: 0,
-      };
+      const initialItems = initializeItems();
 
       // MySQL에 아이템 데이터 저장
-      for (let itemId = 1; itemId <= 5; itemId++) {
-        await saveItemToDB(nickname, itemId, 0);
+      for (let item of initialItems) {
+        await saveItemToDB(nickname, item.itemId, item.count);
       }
 
       // Redis에 아이템 데이터 저장
@@ -112,11 +106,21 @@ export const cEnterHandler = async ({ socket, payload }) => {
       .filter((key) => key.startsWith('skill'))
       .map((key) => getSkillById(skills[key])) // 스킬 ID로 매핑
       .filter((skill) => skill != null); // getSkillById의 결과가 null인 경우 필터링
-    
-    const items = await getItemsFromDB(nickname);
-    await saveItemsToRedis(nickname, items);
-    
-    user.items = await getItemsFromRedis(nickname);
+
+    // 아이템 처리
+    const itemsFromDB = await getItemsFromDB(nickname);
+    await saveItemsToRedis(nickname, itemsFromDB);
+
+    const itemsFromRedis = await getItemsFromRedis(nickname);
+    if (!itemsFromRedis) {
+      // Redis에 아이템이 없을 경우 초기화
+      const initializedItems = initializeItems();
+      await saveItemsToRedis(nickname, initializedItems);
+      user.items = initializedItems;
+    } else {
+      // Redis에서 가져온 아이템을 배열로 할당
+      user.items = itemsFromRedis;
+    }
 
     // 세션에 유저 추가
     sessionManager.addUser(user);
@@ -141,7 +145,10 @@ export const cEnterHandler = async ({ socket, payload }) => {
     const spawnResponse = createResponse(PacketType.S_Spawn, { players: otherPlayersData });
     socket.write(spawnResponse);
   }
-
+  
+  console.log("스킬 : ", user.userSkills);
+  console.log("아이템 : ", user.items);
+  
   // 기존 유저들에게 접속한 유저 정보 알림
   await sSpawnHandler(user);
 };
