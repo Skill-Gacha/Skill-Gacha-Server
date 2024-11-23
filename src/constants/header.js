@@ -11,6 +11,9 @@ export const PacketType = {
   C_ViewRankPoint: 26,
   C_PlayerMatch: 30,
   C_PvpPlayerResponse: 39,
+  C_OpenStoreRequest: 46,
+  C_BuyItemRequest: 48,
+  C_InventoryViewRequest: 50,
 
   // 서버 → 클라이언트 패킷
   S_Enter: 1,
@@ -46,4 +49,7 @@ export const PacketType = {
   S_SetPvpPlayerHp: 43,
   S_SetPvpPlayerMp: 44,
   S_SetPvpEnemyHp: 45,
+  S_OpenStoreResponse: 47,
+  S_BuyItemResponse: 49,
+  S_InventoryViewResponse: 51,
 };
