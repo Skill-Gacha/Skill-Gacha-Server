@@ -76,6 +76,9 @@ export const getproductByid = (productId) => {
   const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
   return gameAssets.productData.data[index];
 };
+export const getProductData = () => {
+  return gameAssets.productData.data;
+};
 
 // 랜덤으로 스킬 가져오기
 export const getRandomRewardSkills = (dungeonCode) => {
