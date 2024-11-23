@@ -28,3 +28,13 @@ CREATE TABLE IF NOT EXISTS `Ratings` (
     PRIMARY KEY (`nickname`),
     FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS `Items` (
+    `nickname` VARCHAR(50) NOT NULL,
+    `item_id` INT NOT NULL,
+    `count` INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (`nickname`, `item_id`),
+    FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE,
+    CHECK (`item_id` BETWEEN 1 AND 5),
+    CHECK (`count` >= 0)
+    );
