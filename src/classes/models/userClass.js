@@ -16,7 +16,6 @@ class User {
     this.items = [];
     this.gold = gold;
     this.stone = stone;
-    this.productList =[]; // 
   }
 
   reduceHp(damage) {
