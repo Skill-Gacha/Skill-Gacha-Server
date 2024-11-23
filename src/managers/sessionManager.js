@@ -135,6 +135,16 @@ class SessionManager {
     return null;
   }
 
+  removeMatchingQueue(user) {
+    const userIndex = this.matchingQueue.findIndex((u) => (u.id = user.id));
+    if (userIndex !== -1) {
+      this.matchingQueue.splice(userIndex, 1);
+      console.log('매칭큐에서 유저를 지워줍니다');
+      return;
+    }
+    console.log('매칭큐에 유저가 존재하지 않습니다');
+  }
+
   getPvpByUser(user) {
     return this.getSessionByUserId(user.id);
   }
