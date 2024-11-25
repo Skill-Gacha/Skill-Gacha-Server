@@ -3,6 +3,7 @@
 import Position from './positionClass.js';
 import Stat from './statClass.js';
 import { updateUserResource } from '../../db/user/user.db.js';
+import { getItemsFromRedis, updateItemCountInRedis } from '../../db/redis/itemService.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {
@@ -19,11 +20,7 @@ class User {
   }
 
   reduceHp(damage) {
-    if (this.stat.hp < damage) {
-      this.stat.hp = 0;
-    } else {
-      this.stat.hp -= damage;
-    }
+    this.stat.hp = Math.max(0, this.stat.hp - damage);
   }
 
   reduceMp(mana) {
@@ -36,11 +33,6 @@ class User {
 
     // maxMp를 초과하지 않도록 제한
     this.stat.mp = Math.min(this.stat.mp + mp, this.stat.maxMp);
-  }
-
-  discountItem(itemId) {
-    const userItem = this.items.find((item) => item.itemId === itemId);
-    userItem.count -= 1;
   }
 
   resetHpMp() {
@@ -61,6 +53,10 @@ class User {
 
     // DB에 증가한 재화 저장
     await updateUserResource(this.nickname, this.gold, this.stone);
+  }
+
+  async updateItem(nickname) {
+    this.items = await getItemsFromRedis(nickname);
   }
 }
 
