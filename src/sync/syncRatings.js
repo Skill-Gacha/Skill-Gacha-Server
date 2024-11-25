@@ -15,7 +15,7 @@ export const syncRatingsToDB = async () => {
     }
 
     const savePromises = allRatings.map(({ value: nickname, score: rating }) =>
-      saveRatingToDB(nickname, rating)
+      saveRatingToDB(nickname, rating),
     );
     await Promise.all(savePromises);
 

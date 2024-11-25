@@ -32,7 +32,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
       createResponse(PacketType.S_BuyItemResponse, {
         success: false,
         message: '아이템을 3개 이상 구매할 수 없습니다.',
-      })
+      }),
     );
     return;
   }
@@ -49,7 +49,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
         itemId: itemId,
         changeGold: user.gold,
         reserve,
-      })
+      }),
     );
   } catch (error) {
     console.error('cBuyItemHandler: S_BuyItemResponse 패킷 전송 중 오류 발생:', error);

@@ -6,6 +6,7 @@ import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import { MAX_PLAYER } from '../constants/pvp.js';
 
 let instance;
+
 // 싱글톤 클래스
 class SessionManager {
   constructor() {
