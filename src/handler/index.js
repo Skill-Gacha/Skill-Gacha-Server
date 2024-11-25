@@ -3,6 +3,7 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
+
 import { cChatHandler } from './town/cChatHandler.js';
 import { cAnimationHandler } from './town/cAnimationHandler.js';
 import { cEnterHandler } from './town/cEnterHandler.js';
@@ -14,6 +15,7 @@ import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
 import { cOpenStoreHandler } from './town/cOpenStoreHandler.js';
 import { cBuyItemHandler } from './town/cBuyItemHandler.js';
 
+// 핸들러 매핑
 const handlers = {
   [PacketType.C_Enter]: {
     handler: cEnterHandler,
@@ -45,7 +47,7 @@ const handlers = {
   },
   [PacketType.C_PvpPlayerResponse]: {
     handler: cPlayerPvpResponseHandler,
-    protoType: 'C_PVP_PLAYER_RESPONSE',
+    protoType: 'C_PvpPlayerResponse',
   },
   [PacketType.C_OpenStoreRequest]: {
     handler: cOpenStoreHandler,
@@ -62,7 +64,7 @@ export const getHandlerByPacketType = (packetType) => {
   if (!handlers[packetType] || !handlers[packetType].handler) {
     throw new CustomError(
       ErrorCodes.UNKNOWN_HANDLER_ID,
-      `Handler not found for PacketType ID: ${packetType}`,
+      `PacketType ID에 해당하는 핸들러를 찾을 수 없습니다: ${packetType}`,
     );
   }
   return handlers[packetType].handler;
