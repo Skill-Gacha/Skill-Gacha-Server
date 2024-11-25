@@ -72,7 +72,7 @@ export const getSkillById = (skillId) => {
   return null;
 };
 
-export const getproductByid = (productId) => {
+export const getProductById = (productId) => {
   const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
   return gameAssets.productData.data[index];
 };
