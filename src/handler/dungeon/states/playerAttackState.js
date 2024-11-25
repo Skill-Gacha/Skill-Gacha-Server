@@ -7,7 +7,7 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement } from '../../../utils/battle/calculate.js';
+import { potionEffectDamage, checkEnemyResist, skillEnhancement } from '../../../utils/battle/calculate.js';
 
 // 플레이어가 공격하는 상태
 export default class PlayerAttackState extends DungeonState {
@@ -24,11 +24,25 @@ export default class PlayerAttackState extends DungeonState {
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
     const userDamage = userSkillInfo.damage * skillDamageRate;
 
+    // 포션 효과에 따른 최종 대미지 계산
+    const finalDamage = potionEffectDamage(userDamage, this.user.stat.berserk, this.user.stat.dangerPotion); 
+
+
+    // 효과 사용 후 상태 초기화
+    if (this.user.stat.berserk || this.user.stat.dangerPotion ) {
+      if (this.user.stat.berserk) {
+        this.user.stat.berserk = false; // 스팀팩 효과를 사용한 후 초기화
+      }
+      if (this.user.stat.dangerPotion) {
+        this.user.stat.dangerPotion = false; // 위험한 포션 효과를 사용 후 초기화
+      }  
+    }
+
     // 2차 검증 첫번째 : 몬스터가 저항값을 가지고 있냐?
     const monsterResist = checkEnemyResist(skillElement, targetMonster);
 
     // 저항값이 적용된 최종 대미지
-    const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
+    const totalDamage = Math.floor(finalDamage * ((100 - monsterResist) / 100));
 
     targetMonster.reduceHp(totalDamage);
     this.user.reduceMp(userSkillInfo.mana);

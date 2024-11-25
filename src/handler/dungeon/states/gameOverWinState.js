@@ -6,10 +6,14 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import { saveItemsToRedis } from '../../../db/redis/itemService.js';
 
 export default class GameOverWinState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.GAME_OVER_WIN;
+
+    // 아이템 현황 레디스에 저장
+    await saveItemsToRedis(this.user.nickname, this.user.items);
 
     // 승리 메시지 전송
     this.socket.write(

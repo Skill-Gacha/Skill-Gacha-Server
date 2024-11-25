@@ -12,14 +12,18 @@ class User {
     this.nickname = nickname;
     this.position = new Position(0, 0, 0, 0);
     this.stat = new Stat(maxHp, maxHp, maxMp, maxMp, resists);
-    this.userSkills = []; // 생성될 때는 빈 배열로 초기화 레디스를 통해 디비에서 유저의 스킬 정보를 가져온다(스킬 전체 정보를 가지고 있다)
+    this.userSkills = [];
     this.items = [];
     this.gold = gold;
     this.stone = stone;
   }
 
   reduceHp(damage) {
-    this.stat.hp = Math.max(0, this.stat.hp - damage);
+    if (this.stat.hp < damage) {
+      this.stat.hp = 0;
+    } else {
+      this.stat.hp -= damage;
+    }
   }
 
   reduceMp(mana) {
@@ -32,6 +36,11 @@ class User {
 
     // maxMp를 초과하지 않도록 제한
     this.stat.mp = Math.min(this.stat.mp + mp, this.stat.maxMp);
+  }
+
+  discountItem(itemId) {
+    const userItem = this.items.find((item) => item.itemId === itemId);
+    userItem.count -= 1;
   }
 
   resetHpMp() {

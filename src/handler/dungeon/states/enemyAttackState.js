@@ -7,6 +7,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import IncreaseManaState from './increaseManaState.js';
+import { resetResistances } from '../../../utils/battle/calculate.js';
 
 // 몬스터가 플레이어를 공격하는 상태
 export default class EnemyAttackState extends DungeonState {
@@ -20,11 +21,15 @@ export default class EnemyAttackState extends DungeonState {
       enable: false,
     }));
 
+
     // 유저의 확인 과정 없이 몬스터가 일괄로 공격
     for (const monster of aliveMonsters) {
       const damage = monster.monsterAtk;
       this.user.reduceHp(damage);
 
+      // 저항력 초기화
+      resetResistances(this.user.stat);
+ 
       // 플레이어 HP 업데이트
       const setPlayerHpResponse = createResponse(PacketType.S_SetPlayerHp, {
         hp: this.user.stat.hp,
