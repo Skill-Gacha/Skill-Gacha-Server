@@ -71,7 +71,7 @@ export default class ConfirmState extends DungeonState {
       case CONFIRM_TYPE.STONE: // 중복된 스킬에 대한 강화석 처리
         if (responseCode === 1) {
           // 강화석으로 받기
-          this.user.increaseStone(this.dungeon.reward.stone);
+          this.user.increaseResource(0, this.dungeon.reward.stone);
           this.changeState(GameOverWinState); // 게임 승리
         } else if (responseCode === 2) {
           // 강화석 받기 취소
