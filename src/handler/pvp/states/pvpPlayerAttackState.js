@@ -4,7 +4,6 @@ import PvpState from './pvpState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
-import PvpActionState from './pvpActionState.js';
 import { skillEnhancement, checkStopperResist } from '../../../utils/battle/calculate.js';
 import PvpEnemyDeadState from './pvpEnemyDeadState.js';
 import PvpTurnChangeState from './pvpTurnChangeState.js';

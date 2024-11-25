@@ -10,6 +10,7 @@ import RewardState from './rewardState.js';
 import GameOverWinState from './gameOverWinState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import FailFleeMessageState from './failFleeMessageState.js';
+import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 
 // 확인 버튼 출력을 위한 부분
 export default class ConfirmState extends DungeonState {
@@ -57,7 +58,7 @@ export default class ConfirmState extends DungeonState {
           if (this.user.gold < 100) {
             this.changeState(FailFleeMessageState);
           } else {
-            this.user.reduceGold(100);
+            await this.user.reduceGold(100);
             this.changeState(FleeMessageState);
           }
         } else if (responseCode === 2) {
@@ -70,7 +71,7 @@ export default class ConfirmState extends DungeonState {
       case CONFIRM_TYPE.STONE: // 중복된 스킬에 대한 강화석 처리
         if (responseCode === 1) {
           // 강화석으로 받기
-          this.user.increaseStone(this.dungeon.reward.stone);
+          this.user.increaseResource(0, this.dungeon.reward.stone);
           this.changeState(GameOverWinState); // 게임 승리
         } else if (responseCode === 2) {
           // 강화석 받기 취소
@@ -79,10 +80,17 @@ export default class ConfirmState extends DungeonState {
         break;
       case CONFIRM_TYPE.SKILLCHANGE: // 중복된 스킬에 대한 강화석 처리
         if (responseCode === 1) {
-          // 스킬 교환 로직 작성해야 됨
-          const deleteSkillIdx = this.deleteSkillIdx;
-          this.user.userSkills.splice(deleteSkillIdx, 1); // 스킬 삭제
-          this.user.userSkills.push(this.dungeon.newSkill); // 스킬 값 추가
+          // 스킬 교환 로직
+          try {
+            await saveRewardSkillsToRedis(
+              this.user.nickname,
+              this.dungeon.newSkill.id,
+              this.deleteSkillIdx + 1,
+            );
+          } catch (error) {
+            console.error('스킬 교환 중 오류 발생:', error.message);
+          }
+
           this.changeState(GameOverWinState); // 게임 승리
         } else if (responseCode === 2) {
           // 스킬 교환 취소

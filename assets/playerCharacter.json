@@ -7,7 +7,7 @@
       "maxHp": 100,
       "maxMp": 100,
       "electricResist": 70,
-      "earthResist": 0,
+      "earthResist": 10,
       "grassResist": 50,
       "fireResist": 50,
       "waterResist": 90
@@ -18,7 +18,7 @@
       "maxMp": 100,
       "electricResist": 90,
       "earthResist": 70,
-      "grassResist": 0,
+      "grassResist": 10,
       "fireResist": 50,
       "waterResist": 50
     },
@@ -29,7 +29,7 @@
       "electricResist": 50,
       "earthResist": 90,
       "grassResist": 70,
-      "fireResist": 0,
+      "fireResist": 10,
       "waterResist": 50
     },
     {
@@ -40,13 +40,13 @@
       "earthResist": 50,
       "grassResist": 90,
       "fireResist": 70,
-      "waterResist": 0
+      "waterResist": 10
     },
     {
       "id": 1005,
       "maxHp": 100,
       "maxMp": 100,
-      "electricResist": 0,
+      "electricResist": 10,
       "earthResist": 50,
       "grassResist": 50,
       "fireResist": 90,

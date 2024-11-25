@@ -7,6 +7,8 @@ import {
   MAX_SKILL_COUNT,
 } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
+import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
+import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 import { getSkillById } from '../../../init/loadAssets.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
@@ -21,11 +23,29 @@ import SkillChangeState from './skillChangeState.js';
 export default class RewardState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.REWARD;
-    const { gold, stone, rewardSkills } = this.dungeon.reward;
+    const { gold, stone, rewardSkills, item } = this.dungeon.reward;
+
+    let msg;
 
     // 골드 및 강화석 증가
-    this.user.increaseGold(gold);
-    this.user.increaseStone(stone);
+    await this.user.increaseResource(gold, stone);
+
+    msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`;
+
+    // 아이템 획득
+    if (item !== null) {
+      const userHasItem = this.user.items.find((i) => i.itemId === item);
+      if (userHasItem.count !== 1) {
+        msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요 \n일정 확률로 아이템을 획득하였습니다!`;
+        try {
+          await updateItemCountInRedis(this.user.nickname, item, 1);
+        } catch (error) {
+          console.error('아이템 업데이트 중 오류 발생:', error);
+        }
+      } else {
+        msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요 \n이미 아이템을 보유하고 있어 획득할 수 없습니다.`;
+      }
+    }
 
     // 버튼 생성
     const buttons = rewardSkills.map((skill) => ({
@@ -41,7 +61,7 @@ export default class RewardState extends DungeonState {
 
     // 보상로그 데이터
     const battleLog = {
-      msg: `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`,
+      msg,
       typingAnimation: false,
       btns: buttons,
     };
@@ -91,7 +111,7 @@ export default class RewardState extends DungeonState {
           this.changeState(ConfirmState);
           await setConfirmForDuplicateSkill(this.dungeon, stoneCount);
         } else {
-          this.user.addSkill(rewardskill);
+          await saveRewardSkillsToRedis(this.user.nickname, rewardskill.id, null);
           this.changeState(GameOverWinState);
         }
       }

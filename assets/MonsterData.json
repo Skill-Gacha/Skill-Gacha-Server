@@ -5,7 +5,7 @@
     {
       "monsterModel": 2001,
       "monsterName": "버섯",
-      "monsterHp": 20,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 100,
@@ -18,7 +18,7 @@
     {
       "monsterModel": 2002,
       "monsterName": "슬라임",
-      "monsterHp": 100,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 150,
@@ -31,7 +31,7 @@
     {
       "monsterModel": 2003,
       "monsterName": "고슴도치",
-      "monsterHp": 120,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 200,
@@ -44,7 +44,7 @@
     {
       "monsterModel": 2004,
       "monsterName": "물고기",
-      "monsterHp": 150,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 250,
@@ -57,7 +57,7 @@
     {
       "monsterModel": 2005,
       "monsterName": "악어",
-      "monsterHp": 200,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 300,
@@ -70,7 +70,7 @@
     {
       "monsterModel": 2006,
       "monsterName": "네펜데스",
-      "monsterHp": 200,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 350,
@@ -83,7 +83,7 @@
     {
       "monsterModel": 2007,
       "monsterName": "해골 기사",
-      "monsterHp": 200,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 400,
@@ -96,7 +96,7 @@
     {
       "monsterModel": 2008,
       "monsterName": "시궁쥐",
-      "monsterHp": 200,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 450,
@@ -109,7 +109,7 @@
     {
       "monsterModel": 2009,
       "monsterName": "사이클롭스",
-      "monsterHp": 200,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 500,
@@ -122,7 +122,7 @@
     {
       "monsterModel": 2010,
       "monsterName": "미믹",
-      "monsterHp": 200,
+      "monsterHp": 1,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "providedMoney": 550,

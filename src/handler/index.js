@@ -11,6 +11,10 @@ import { cEnterDungeonHandler } from './dungeon/cEnterDungeonHandler.js';
 import { cPlayerResponseHandler } from './dungeon/cPlayerResponseHandler.js';
 import { cPlayerMatchHandler } from './pvp/cPlayerMatchHandler.js';
 import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
+import { cOpenStoreHandler } from './town/store/cOpenStoreHandler.js';
+import { cBuyItemHandler } from './town/store/cBuyItemHandler.js';
+import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
+import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -43,7 +47,23 @@ const handlers = {
   },
   [PacketType.C_PvpPlayerResponse]: {
     handler: cPlayerPvpResponseHandler,
-    protoType: 'C_PVP_PLAYER_RESPONSE',
+    protoType: 'C_PvpPlayerResponse',
+  },
+  [PacketType.C_InventoryViewRequest]: {
+    handler: cInventoryViewHandler,
+    protoType: 'C_InventoryViewRequest',
+  },
+  [PacketType.C_OpenStoreRequest]: {
+    handler: cOpenStoreHandler,
+    protoType: 'C_OpenStoreRequest',
+  },
+  [PacketType.C_BuyItemRequest]: {
+    handler: cBuyItemHandler,
+    protoType: 'C_BuyItemRequest',
+  },
+  [PacketType.C_ViewRankPoint]: {
+    handler: cViewRankPointHandler,
+    protoType: 'C_BuyItemRequest',
   },
   // 다른 패킷 정의 추가...
 };

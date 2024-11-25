@@ -7,13 +7,14 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import ItemChoiceState from './ItemChoiceState.js';
 
 export default class ActionState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.ACTION;
     const buttons = [
       { msg: '스킬 사용', enable: true }, // 향후 구현 예정
-      { msg: '아이템 사용', enable: false }, // 향후 구현 예정
+      { msg: '아이템 사용', enable: true }, // 향후 구현 예정
       { msg: '도망치기', enable: true },
     ];
 
@@ -33,6 +34,7 @@ export default class ActionState extends DungeonState {
         this.changeState(TargetState);
         break;
       case 2: // 아이템
+        this.changeState(ItemChoiceState);
         break;
       case 3: // 도망치기
         this.changeState(ConfirmState);

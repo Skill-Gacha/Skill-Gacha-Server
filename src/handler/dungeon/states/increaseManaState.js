@@ -13,6 +13,9 @@ export default class IncreaseManaState extends DungeonState {
     const randomHp = Math.floor(Math.random() * 6) + 5;
     const randomMp = Math.floor(Math.random() * 6) + 5;
 
+    const existingHp = this.user.stat.hp;
+    const existingMp = this.user.stat.mp;
+
     this.user.increaseHpMp(randomHp, randomMp);
 
     this.socket.write(
@@ -29,7 +32,7 @@ export default class IncreaseManaState extends DungeonState {
     // 마나 회복 로직 전달
     const increaseManaBattleLogResponse = createResponse(PacketType.S_BattleLog, {
       battleLog: {
-        msg: `체력이 ${randomHp}만큼 회복하였습니다. \n마나가 ${randomMp}만큼 회복하였습니다.`,
+        msg: `체력이 ${this.user.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${this.user.stat.mp - existingMp}만큼 회복하였습니다.`,
         typingAnimation: false,
         btns: [
           { msg: '확인', enable: true }, // 플레이어 확인용 버튼

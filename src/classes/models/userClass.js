@@ -2,7 +2,8 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
-import { saveRewardSkillsToRedis } from '../../db/redis/skillService.js';
+import { updateUserResource } from '../../db/user/user.db.js';
+import { getItemsFromRedis, updateItemCountInRedis } from '../../db/redis/itemService.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {
@@ -27,8 +28,11 @@ class User {
   }
 
   increaseHpMp(hp, mp) {
-    this.stat.hp += hp;
-    this.stat.mp += mp;
+    // maxHp를 초과하지 않도록 제한
+    this.stat.hp = Math.min(this.stat.hp + hp, this.stat.maxHp);
+
+    // maxMp를 초과하지 않도록 제한
+    this.stat.mp = Math.min(this.stat.mp + mp, this.stat.maxMp);
   }
 
   resetHpMp() {
@@ -36,22 +40,34 @@ class User {
     this.stat.mp = this.stat.maxMp;
   }
 
-  reduceGold(gold) {
+  async reduceGold(gold) {
     this.gold -= gold;
+
+    // DB에 감소한 재화 저장
+    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 
-  increaseGold(gold) {
+  async increaseResource(gold, stone) {
     this.gold += gold;
-  }
-
-  increaseStone(stone) {
     this.stone += stone;
-    // DB에 증가한 강화석 정보 저장
+
+    // DB에 증가한 재화 저장
+    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 
-  addSkill(rewardskill) {
-    saveRewardSkillsToRedis(this.nickname, rewardskill.id);
-    this.userSkills.push(rewardskill);
+  async updateItem(nickname) {
+    this.items = await getItemsFromRedis(nickname);
+  }
+
+  getInventory() {
+    return {
+        gold: this.gold,
+        stone: this.stone,
+        productList: this.items.map(item => ({
+          id: item.itemId,
+          count: item.count,
+        })),
+      };
   }
 }
 
