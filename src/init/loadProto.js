@@ -69,10 +69,6 @@ export const loadProtos = async () => {
   }
 };
 
-export const getProtoMessages = () => {
-  return { ...protoMessages };
-};
-
 export const getProtoMessagesById = (packetId) => {
   return protoMessagesById[packetId];
 };
