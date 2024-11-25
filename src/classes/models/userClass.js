@@ -56,13 +56,13 @@ class User {
 
   getInventory() {
     return {
-        gold: this.gold,
-        stone: this.stone,
-        productList: this.items.map(item => ({
-          id: item.id,
-          count: item.count,
-        })),
-      };
+      gold: this.gold,
+      stone: this.stone,
+      productList: this.items.map((item) => ({
+        id: item.itemId,
+        count: item.count,
+      })),
+    };
   }
 }
 
