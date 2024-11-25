@@ -26,10 +26,15 @@ class Dungeon extends BaseSession {
   initReward() {
     const gold = this.dungeonCode * 100;
     const stone = this.dungeonCode * 1;
-    console.log(this.dungeonCode);
     const rewardSkills = getRandomRewardSkills(this.dungeonCode);
+    let item = null;
+    if (Math.random() < 0.1) {
+      // 4004 4005 둘중 하나
+      const ittmeIds = [4004, 4005];
+      item = ittmeIds[Math.floor(Math.random() * 2)];
+    }
 
-    return new Reward(gold, stone, rewardSkills);
+    return new Reward(gold, stone, rewardSkills, item);
   }
 }
 

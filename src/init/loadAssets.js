@@ -38,15 +38,16 @@ const readFileAsync = (filename) => {
 
 export const loadGameAssets = async () => {
   try {
-    const [playerCharacter, MonsterData, skillData] = await Promise.all([
+    const [playerCharacter, MonsterData, skillData, productData] = await Promise.all([
       // 이런 형태로 필요한 파일 로드
 
       readFileAsync('playerCharacter.json'),
       readFileAsync('MonsterData.json'), // 몬스터 상태 파일 추가
       readFileAsync('skillData.json'),
+      readFileAsync('productData.json'),
     ]);
 
-    gameAssets = { playerCharacter, MonsterData, skillData };
+    gameAssets = { playerCharacter, MonsterData, skillData, productData };
 
     console.log('게임 애샛 로드 완료');
   } catch (error) {
@@ -111,4 +112,14 @@ export const getRandomRewardSkills = (dungeonCode) => {
   }
 
   return rewardSkills;
+};
+
+// 아이템 불러오기
+export const getProductById = (productId) => {
+  const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
+  return gameAssets.productData.data[index];
+};
+
+export const getProductData = () => {
+  return gameAssets.productData.data;
 };

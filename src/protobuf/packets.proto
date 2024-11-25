@@ -262,9 +262,10 @@ message C_OpenStoreRequest {
 }
 
 message S_OpenStoreResponse {
-  int32 gold = 1;
-  int32 stone = 2;
-  repeated  Product productList = 3;
+  int32 playerId = 1;
+  int32 gold = 2;
+  int32 stone = 3;
+  repeated Product productList = 4;
 }
 
 message C_BuyItemRequest {
@@ -273,9 +274,10 @@ message C_BuyItemRequest {
 
 message S_BuyItemResponse {
   bool success = 1;
-  optional int32 itemId = 2;
-  optional int32 changeGold = 3;
-  optional int32 reserve = 4;
+  optional int32 playerId = 2;
+  optional int32 itemId = 3;
+  optional int32 changeGold = 4;
+  optional int32 reserve = 5;
 }
 
 message C_InventoryViewRequest {
@@ -283,9 +285,10 @@ message C_InventoryViewRequest {
 }
 
 message S_InventoryViewResponse {
-  int32 gold = 1;
-  int32 stone = 2;
-  repeated Product productList = 3;
+  int32 playerId = 1;
+  int32 gold = 2;
+  int32 stone = 3;
+  repeated Product productList = 4;
 }
 
 
