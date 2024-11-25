@@ -36,20 +36,20 @@ export const checkStopperResist = (skillElement, target) => {
 //스팀팩과 위험한 포션 효과
 export const potionEffectDamage = (baseDamage, isBerserk, isDangerPotion) => {
   try {
-    let damageMultiplier = 1; // 기본 대미지 배율
-
+    let damageMultiplier1 = 1; // 기본 대미지 배율
+    let damageMultiplier2 = 1;
     // 스팀팩 효과가 활성화된 경우
     if (isBerserk) {
-      damageMultiplier *= 2; // 대미지 2배
+      damageMultiplier1 *= 2; // 대미지 2배
     }
 
     // 위험한 포션 효과가 활성화된 경우
     if (isDangerPotion) {
-      damageMultiplier *= 5; // 대미지 5배
+      damageMultiplier2 *= 5; // 대미지 5배
     }
 
     // 최종 대미지 계산
-    const finalDamage = baseDamage * damageMultiplier;
+    const finalDamage = baseDamage * (damageMultiplier1 + damageMultiplier2) ; //7배 
     return finalDamage;
   } catch (error) {
     console.error('딜 계산 중 오류 발생', error);

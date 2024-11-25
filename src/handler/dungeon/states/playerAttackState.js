@@ -29,18 +29,20 @@ export default class PlayerAttackState extends DungeonState {
 
 
     // 효과 사용 후 상태 초기화
-    if (this.user.stat.berserk || this.user.stat.dangerPotion || this.user.stat.protect) {
+    if (this.user.stat.berserk || this.user.stat.dangerPotion ) {
       if (this.user.stat.berserk) {
         this.user.stat.berserk = false; // 스팀팩 효과를 사용한 후 초기화
       }
       if (this.user.stat.dangerPotion) {
         this.user.stat.dangerPotion = false; // 위험한 포션 효과를 사용 후 초기화
-      }
-      if (this.user.stat.protect) {
-        this.user.stat.protect = false; // 저항력 100 초기화
+      }  
     }
-}
 
+
+    if (this.user.stat.protect) {  
+        this.user.stat.protect = false; // 저항력 초기화
+    } 
+    
 
     // 2차 검증 첫번째 : 몬스터가 저항값을 가지고 있냐?
     const monsterResist = checkEnemyResist(skillElement, targetMonster);

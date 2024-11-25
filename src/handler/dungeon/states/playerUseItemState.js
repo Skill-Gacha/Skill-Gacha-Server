@@ -75,19 +75,21 @@ export default class PlayerUseItemState extends DungeonState {
         this.user.discountItem(selectedItem + 4000);
         break;
 
-        //20이하 버튼 비활성화, 중첩불가능하게 true 이면 버튼 비활성화
+        //20이하 버튼 비활성화, 같은 아이템 중첩불가능하게 true 이면 버튼 비활성화
         //**스팀팩(광포화 포션)**//==============================================================================================
       case 3:
         if (this.user.stat.hp <= 20 || this.user.stat.berserk) {
-          // 추가를 하려고 했으나 누르면 무조건 넘어가야 배틀로그나 남아버리는데 바로 changeState해버려서 나오지않아 보류(지워도됨)
-          //  const invalidUseResponse = createResponse(PacketType.S_BattleLog, {
+          // const invalidUseResponse = createResponse(PacketType.S_BattleLog, {
           //   battleLog: {
           //     msg: `스팀팩을 사용할 수 없습니다. 다른 아이템을 선택하세요.`,
           //       typingAnimation: false,
           //       btns:disableButtons,
           //     },
           //   });
-          //  this.socket.write(invalidUseResponse); 
+          // this.socket.write(invalidUseResponse); 
+
+          // await delay(2500);
+
           
           // 아이템 선택 상태로 돌아가기
           this.changeState(ItemChoiceState);
@@ -192,6 +194,8 @@ export default class PlayerUseItemState extends DungeonState {
         if (dangerRandomNum >= 75 && dangerRandomNum < 100) {
           this.user.stat.protect = true;
 
+
+
           const randomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
               msg: `위험한 포션을 사용하여 일시적으로 무적 상태가 되었다.`,
@@ -213,6 +217,10 @@ export default class PlayerUseItemState extends DungeonState {
         // 확률에 따라 효과 적용 및 로그 출력
         if (resistRandomNum < 3) {
           this.user.stat.resistbuff = true;
+
+
+
+
           const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
               msg: `속성 저항 포션을 사용하여 일시적으로 무적 상태가 되었다.`,
