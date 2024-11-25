@@ -8,6 +8,7 @@ import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { getProductData } from '../../../init/loadAssets.js';
 import ItemChoiceState from './itemChoiceState.js';
+import { applyPotionEffect } from '../../../utils/battle/calculate.js';
 
 // 플레이어가 아이템을 사용하는 상태
 export default class PlayerUseItemState extends DungeonState {
@@ -204,12 +205,11 @@ export default class PlayerUseItemState extends DungeonState {
       case 5:
         const resistRandomNum = Math.floor(Math.random() * 100);
         // 확률에 따라 효과 적용 및 로그 출력
-        if (resistRandomNum < 3) {
+        if (resistRandomNum < 90) {
           this.user.stat.resistbuff = true;
 
-
-
-
+          applyPotionEffect(this.user.stat);// 저항력을 100으로 채우는 함수 호출
+    
           const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
               msg: `속성 저항 포션을 사용하여 일시적으로 무적 상태가 되었다.`,

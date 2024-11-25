@@ -18,6 +18,9 @@ class Stat {
       fireResist: resists.fireResist,
       waterResist: resists.waterResist,
     };
+
+
+    this.originalResistances = { ...this.resistances };
   }
 }
 
