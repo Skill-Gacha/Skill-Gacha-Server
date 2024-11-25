@@ -7,7 +7,7 @@ import sessionManager from '#managers/sessionManager.js';
 export const cAnimationHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
-    console.error('유저를 찾을 수 없습니다.');
+    console.error('cAnimationHandler: 유저를 찾을 수 없습니다.');
     return;
   }
 
@@ -18,7 +18,7 @@ export const cAnimationHandler = async ({ socket, payload }) => {
 
   const town = sessionManager.getTown();
   if (!town) {
-    console.error('타운 세션을 찾을 수 없습니다.');
+    console.error('cAnimationHandler: 타운 세션을 찾을 수 없습니다.');
     return;
   }
 
@@ -27,8 +27,7 @@ export const cAnimationHandler = async ({ socket, payload }) => {
     try {
       targetUser.socket.write(animationPayload);
     } catch (error) {
-      console.error('S_Animation 패킷 전송중 오류 발생', error);
+      console.error('cAnimationHandler: S_Animation 패킷 전송 중 오류 발생:', error);
     }
-
   });
 };
