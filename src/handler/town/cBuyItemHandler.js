@@ -2,10 +2,12 @@
 
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
-import { getproductByid } from '../../init/loadAssets.js';
+import { getProductById } from '../../init/loadAssets.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 
 export const cBuyItemHandler = async ({ socket, payload }) => {
+  const { itemId } = payload;
+  console.log('itemId : ', itemId);
   // 소켓을 통해 사용자 정보 가져오기
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
@@ -13,7 +15,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
     return;
   }
 
-  const product = getproductByid(payload);
+  const product = getProductById(itemId);
 
   // 돈이 충분한지 확인 해서 조건문으로 실행해야 됨
   if (user.gold < product.price) {

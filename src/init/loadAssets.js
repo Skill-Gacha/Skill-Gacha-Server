@@ -115,7 +115,7 @@ export const getRandomRewardSkills = (dungeonCode) => {
 };
 
 // 아이템 불러오기
-export const getproductByid = (productId) => {
+export const getProductById = (productId) => {
   const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
   return gameAssets.productData.data[index];
 };
