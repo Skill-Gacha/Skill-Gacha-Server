@@ -13,6 +13,7 @@ import { cPlayerMatchHandler } from './pvp/cPlayerMatchHandler.js';
 import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
 import { cOpenStoreHandler } from './town/store/cOpenStoreHandler.js';
 import { cBuyItemHandler } from './town/store/cBuyItemHandler.js';
+import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -53,6 +54,10 @@ const handlers = {
   },
   [PacketType.C_BuyItemRequest]: {
     handler: cBuyItemHandler,
+    protoType: 'C_BuyItemRequest',
+  },
+  [PacketType.C_ViewRankPoint]: {
+    handler: cViewRankPointHandler,
     protoType: 'C_BuyItemRequest',
   },
   // 다른 패킷 정의 추가...
