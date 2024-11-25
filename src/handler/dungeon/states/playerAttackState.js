@@ -38,12 +38,6 @@ export default class PlayerAttackState extends DungeonState {
       }  
     }
 
-
-    if (this.user.stat.protect) {  
-        this.user.stat.protect = false; // 저항력 초기화
-    } 
-    
-
     // 2차 검증 첫번째 : 몬스터가 저항값을 가지고 있냐?
     const monsterResist = checkEnemyResist(skillElement, targetMonster);
 
