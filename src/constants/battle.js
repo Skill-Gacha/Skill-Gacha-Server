@@ -57,5 +57,6 @@ export const SKILL_ELEMENTAL = {
 };
 
 export const MAX_SKILL_REWARD = 3;
-export const MAX_SKILL_COUNT = 5;
+export const MAX_BUTTON_COUNT = 6;
+export const MAX_SKILL_COUNT = 4;
 export const MAX_REWARD_BUTTON = 4;
