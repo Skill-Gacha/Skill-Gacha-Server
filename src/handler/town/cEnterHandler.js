@@ -13,11 +13,7 @@ import { saveSkillsToRedis } from '../../db/redis/skillService.js';
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
-import {
-  getItemsFromRedis,
-  initializeItems,
-  saveItemsToRedis,
-} from '../../db/redis/itemService.js';
+import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload;
@@ -45,12 +41,14 @@ export const cEnterHandler = async ({ socket, payload }) => {
     const existingPlayer = await findUserNickname(nickname);
     if (existingPlayer) {
       userRecord = existingPlayer;
+      const elementIdByRecord = getElementById(userRecord.element);
+      userRecord.resists = elementResist(elementIdByRecord);
     } else {
       await createUser(
         nickname,
         elementId,
         chosenElement.maxHp,
-        chosenElement.maxMp
+        chosenElement.maxMp,
       );
 
       const basicSkillId = elementId - 1000;
@@ -80,8 +78,6 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord = await findUserNickname(nickname);
     }
 
-    const resists = elementResist(chosenElement);
-
     user = new User(
       socket,
       userRecord.id,
@@ -91,7 +87,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord.maxMp,
       userRecord.gold,
       userRecord.stone,
-      resists
+      userRecord ? userRecord.resists : elementResist(chosenElement),
     );
 
     const skills = await getSkillsFromDB(nickname);
@@ -123,7 +119,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
   socket.write(enterResponse);
 
   const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(
-    (u) => u.id !== user.id
+    (u) => u.id !== user.id,
   );
 
   if (otherUsers.length > 0) {
