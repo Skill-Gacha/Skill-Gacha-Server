@@ -59,7 +59,7 @@ class User {
         gold: this.gold,
         stone: this.stone,
         productList: this.items.map(item => ({
-          id: item.id,
+          id: item.itemId,
           count: item.count,
         })),
       };

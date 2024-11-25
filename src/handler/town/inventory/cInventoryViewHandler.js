@@ -3,10 +3,11 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
 import { getProductData } from '../../../init/loadAssets.js';
 
-export const sInventoryViewHandler = async (socket, payload) => {
-    const user = sessionManager.getSessionBySocket(socket);
+export const cInventoryViewHandler = async ({socket, payload}) => {
+    const user = sessionManager.getUserBySocket(socket);
+    
     if (!user) {
-        console.error('sInventoryViewHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
+        console.error('cInventoryViewHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
         return;
     }
     //모든 제품 데이터 가져오기
