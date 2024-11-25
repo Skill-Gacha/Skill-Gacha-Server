@@ -11,6 +11,7 @@ import { cEnterDungeonHandler } from './dungeon/cEnterDungeonHandler.js';
 import { cPlayerResponseHandler } from './dungeon/cPlayerResponseHandler.js';
 import { cPlayerMatchHandler } from './pvp/cPlayerMatchHandler.js';
 import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
+import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -43,7 +44,11 @@ const handlers = {
   },
   [PacketType.C_PvpPlayerResponse]: {
     handler: cPlayerPvpResponseHandler,
-    protoType: 'C_PVP_PLAYER_RESPONSE',
+    protoType: 'C_PvpPlayerResponse',
+  },
+  [PacketType.C_InventoryViewRequest]: {
+    handler: cInventoryViewHandler,
+    protoType: 'C_InventoryViewRequest',
   },
   // 다른 패킷 정의 추가...
 };
