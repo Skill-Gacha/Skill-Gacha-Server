@@ -9,13 +9,14 @@ export const sInventoryViewHandler = async (socket, payload) => {
         console.error('sInventoryViewHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
         return;
     }
+    //모든 제품 데이터 가져오기
     const allProducts = getProductData();
     const inventory = user.getInventory();
 
     try {
         // 제품 리스트 생성
         const productList = allProducts.map(product => {
-            const userItem = inventory.productList.find(item => item.id === product.id);  // 제품 정보를 가져옴
+            const userItem = inventory.productList.find(item => item.id === product.id);  // 사용자 인벤토리에서 제품 조회
             return {
                 reserve: userItem ? userItem.count : 0, // 보유 수량
                 price: product.price, // 제품 가격
