@@ -7,7 +7,7 @@ class Stat {
     this.mp = mp;
     this.maxMp = maxMp;
     this.berserk = false;
-    this.danger = false;
+    this.dangerPotion = false;
     this.protect = false;
     this.resistbuff = false;
 

@@ -175,7 +175,7 @@ export default class PlayerUseItemState extends DungeonState {
           this.user.discountItem(selectedItem + 4000);
         }
         if (dangerRandomNum >= 50 && dangerRandomNum < 75) {
-          this.user.stat.danger = true;
+          this.user.stat.dangerPotion = true;
 
           const randomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
