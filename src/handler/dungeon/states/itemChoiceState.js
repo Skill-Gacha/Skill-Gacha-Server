@@ -19,9 +19,11 @@ export default class ItemChoiceState extends DungeonState {
     const itemsName = itemsData.map((itemData) => itemData.name);
 
     // 버튼은 플레이어가 보유한 아이템들로 생성
+    console.log(this.user.stat.berserk);
+
     const buttons = this.user.items.map((item) => ({
       msg: `${itemsName[item.itemId - 4001]}(보유 수량: ${item.count})`,
-      enable: item.count !== 0,
+      enable: item.itemId === 4003 ? !this.user.stat.berserk && item.count !== 0 : item.count !== 0,
     }));
 
     buttons.push({
