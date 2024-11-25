@@ -1,7 +1,7 @@
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
-import { getproductByid } from '../../../init/loadAssets.js';
+import { getProductData } from '../../../init/loadAssets.js';
 
 export const sInventoryViewHandler = async (socket, payload) => {
     const user = sessionManager.getSessionBySocket(socket);
@@ -9,15 +9,15 @@ export const sInventoryViewHandler = async (socket, payload) => {
         console.error('sInventoryViewHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
         return;
     }
-
+    const allProducts = getProductData();
     const inventory = user.getInventory();
 
     try {
         // 제품 리스트 생성
-        const productList = inventory.productList.map(item => {
-            const product = getproductByid(payload); // 제품 정보를 가져옴
+        const productList = allProducts.map(product => {
+            const userItem = inventory.productList.find(item => item.id === product.id);  // 제품 정보를 가져옴
             return {
-                reserve: item.count, // 보유 수량
+                reserve: userItem ? userItem.count : 0, // 보유 수량
                 price: product.price, // 제품 가격
             };
         });
