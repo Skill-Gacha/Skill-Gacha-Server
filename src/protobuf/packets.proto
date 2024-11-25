@@ -265,7 +265,7 @@ message S_OpenStoreResponse {
   int32 playerId = 1;
   int32 gold = 2;
   int32 stone = 3;
-  repeated  Product productList = 4;
+  repeated Product productList = 4;
 }
 
 message C_BuyItemRequest {
