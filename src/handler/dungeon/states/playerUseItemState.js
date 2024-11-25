@@ -1,5 +1,4 @@
 // src/handler/dungeon/states/playerUseItemState.js
-
 import DungeonState from './dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';
 import MonsterDeadState from './monsterDeadState.js';
@@ -8,6 +7,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { getProductData } from '../../../init/loadAssets.js';
+import ItemChoiceState from './itemChoiceState.js';
 
 // 플레이어가 아이템을 사용하는 상태
 export default class PlayerUseItemState extends DungeonState {
@@ -16,7 +16,7 @@ export default class PlayerUseItemState extends DungeonState {
 
     const selectedItem = this.dungeon.selectedItem;
 
-    const itemsData = getProductData();
+    const itemsData = getProductData();//이부분 수정 할수있으면 하기 두번불러짐
     const itemsName = itemsData.map((itemData) => itemData.name);
 
     // 아이템 사용 시 의도되지 않은 조작 방지 위한 버튼 비활성화
@@ -26,7 +26,8 @@ export default class PlayerUseItemState extends DungeonState {
     }));
 
     switch (selectedItem) {
-      case 1: // HP 회복 포션
+       //**HP 회복 포션**//==============================================================================================
+      case 1:
         this.user.increaseHpMp(30, 0);
 
         // 유저 HP 업데이트
@@ -48,7 +49,10 @@ export default class PlayerUseItemState extends DungeonState {
         // 아이템 차감
         this.user.discountItem(selectedItem + 4000);
         break;
-      case 2: // MP 회복 포션
+
+
+        //**MP 회복 포션**//===================================================================================================
+      case 2:
         this.user.increaseHpMp(0, 30);
 
         // 유저 MP 업데이트
@@ -70,7 +74,26 @@ export default class PlayerUseItemState extends DungeonState {
         // 아이템 차감
         this.user.discountItem(selectedItem + 4000);
         break;
-      case 3: // 스팀팩(광포화 포션)
+
+        //20이하 버튼 비활성화, 중첩불가능하게 true 이면 버튼 비활성화
+        //**스팀팩(광포화 포션)**//==============================================================================================
+      case 3:
+        if (this.user.stat.hp <= 20 || this.user.stat.berserk) {
+          // 추가를 하려고 했으나 누르면 무조건 넘어가야 배틀로그나 남아버리는데 바로 changeState해버려서 나오지않아 보류(지워도됨)
+          //  const invalidUseResponse = createResponse(PacketType.S_BattleLog, {
+          //   battleLog: {
+          //     msg: `스팀팩을 사용할 수 없습니다. 다른 아이템을 선택하세요.`,
+          //       typingAnimation: false,
+          //       btns:disableButtons,
+          //     },
+          //   });
+          //  this.socket.write(invalidUseResponse); 
+          
+          // 아이템 선택 상태로 돌아가기
+          this.changeState(ItemChoiceState);
+          return; // 함수 종료
+        }
+
         this.user.reduceHp(20);
         this.user.stat.berserk = true;
 
@@ -92,7 +115,11 @@ export default class PlayerUseItemState extends DungeonState {
         // 아이템 차감
         this.user.discountItem(selectedItem + 4000);
         break;
-      case 4: // 위험한 포션
+
+
+
+        //**위험한 포션**// ========================================================================================================
+      case 4:
         const dangerRandomNum = Math.floor(Math.random() * 100);
 
         if (dangerRandomNum < 25) {
@@ -178,10 +205,13 @@ export default class PlayerUseItemState extends DungeonState {
           this.user.discountItem(selectedItem + 4000);
         }
         break;
-      case 5: // 저항 포션
+
+
+        //**저항 포션**// ===================================================================================================================
+      case 5:
         const resistRandomNum = Math.floor(Math.random() * 100);
         // 확률에 따라 효과 적용 및 로그 출력
-        if (resistRandomNum < 10) {
+        if (resistRandomNum < 3) {
           this.user.stat.resistbuff = true;
           const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
