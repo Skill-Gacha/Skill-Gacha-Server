@@ -27,8 +27,11 @@ class User {
   }
 
   increaseHpMp(hp, mp) {
-    this.stat.hp += hp;
-    this.stat.mp += mp;
+    // maxHp를 초과하지 않도록 제한
+    this.stat.hp = Math.min(this.stat.hp + hp, this.stat.maxHp);
+
+    // maxMp를 초과하지 않도록 제한
+    this.stat.mp = Math.min(this.stat.mp + mp, this.stat.maxMp);
   }
 
   increaseItem(itemId) {
@@ -54,9 +57,9 @@ class User {
     // DB에 증가한 강화석 정보 저장
   }
 
-  addSkill(rewardskill) {
-    saveRewardSkillsToRedis(this.nickname, rewardskill.id);
-    this.userSkills.push(rewardskill);
+  addSkill(rewardSkill, selectedSkill) {
+    saveRewardSkillsToRedis(this.nickname, rewardSkill.id, selectedSkill);
+    this.userSkills.push(rewardSkill);
   }
 }
 

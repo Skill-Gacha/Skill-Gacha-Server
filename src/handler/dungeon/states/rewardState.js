@@ -7,7 +7,7 @@ import {
   MAX_SKILL_COUNT,
 } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
-import { getItemsFromRedis, updateItemCountInRedis } from '../../../db/redis/itemService.js';
+import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { getSkillById } from '../../../init/loadAssets.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
@@ -113,7 +113,7 @@ export default class RewardState extends DungeonState {
           this.changeState(ConfirmState);
           await setConfirmForDuplicateSkill(this.dungeon, stoneCount);
         } else {
-          this.user.addSkill(rewardskill);
+          this.user.addSkill(rewardskill, responseCode);
           this.changeState(GameOverWinState);
         }
       }
