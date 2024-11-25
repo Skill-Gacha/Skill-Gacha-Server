@@ -50,6 +50,17 @@ export const cEnterHandler = async ({ socket, payload }) => {
         .map((key) => getSkillById(skillsFromRedis[key])) // 스킬 ID로 매핑
         .filter((skill) => skill != null); // getSkillById의 결과가 null인 경우 필터링
       console.log(`유저 ${user.id}가 마을 세션으로 이동되었습니다.`);
+
+      const itemsFromRedis = await getItemsFromRedis(nickname);
+      if (!itemsFromRedis) {
+        // Redis에 아이템이 없을 경우 초기화
+        const initializedItems = initializeItems();
+        await saveItemsToRedis(nickname, initializedItems);
+        user.items = initializedItems;
+      } else {
+        // Redis에서 가져온 아이템을 배열로 할당
+        user.items = itemsFromRedis;
+      }
     }
   } else {
     // 세션에 유저가 없을 경우, 새로 생성 또는 기존 데이터 로드
