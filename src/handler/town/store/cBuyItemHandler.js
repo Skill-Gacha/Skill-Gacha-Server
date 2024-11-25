@@ -47,7 +47,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
   await updateItemCountInRedis(user.nickname, itemId, 1);
 
   // 유저 골드 감소시키기
-  user.reduceGold(product.price);
+  await user.reduceGold(product.price);
 
   console.log('골드', user.gold);
   console.log('아이템', user.items);

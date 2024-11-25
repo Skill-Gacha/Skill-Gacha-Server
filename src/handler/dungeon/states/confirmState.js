@@ -58,7 +58,7 @@ export default class ConfirmState extends DungeonState {
           if (this.user.gold < 100) {
             this.changeState(FailFleeMessageState);
           } else {
-            this.user.reduceGold(100);
+            await this.user.reduceGold(100);
             this.changeState(FleeMessageState);
           }
         } else if (responseCode === 2) {

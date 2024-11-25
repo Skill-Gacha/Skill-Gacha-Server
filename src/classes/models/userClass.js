@@ -2,6 +2,7 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
+import { updateUserResource } from '../../db/user/user.db.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {
@@ -33,27 +34,24 @@ class User {
     this.stat.mp = Math.min(this.stat.mp + mp, this.stat.maxMp);
   }
 
-  increaseItem(itemId) {
-    const userItem = this.items.find((item) => item.itemId === itemId);
-    userItem.count += 1;
-  }
-
   resetHpMp() {
     this.stat.hp = this.stat.maxHp;
     this.stat.mp = this.stat.maxMp;
   }
 
-  reduceGold(gold) {
+  async reduceGold(gold) {
     this.gold -= gold;
+
+    // DB에 감소한 재화 저장
+    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 
-  increaseGold(gold) {
+  async increaseResource(gold, stone) {
     this.gold += gold;
-  }
-
-  increaseStone(stone) {
     this.stone += stone;
-    // DB에 증가한 강화석 정보 저장
+
+    // DB에 증가한 재화 저장
+    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 }
 
