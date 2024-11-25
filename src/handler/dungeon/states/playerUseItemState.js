@@ -89,7 +89,7 @@ export default class PlayerUseItemState extends DungeonState {
 
         const berserkLogResponse = createResponse(PacketType.S_BattleLog, {
           battleLog: {
-            msg: `광포화 포션을 사용하여 HP가 20 감소하고, 일시적으로 공격력이 200% 증가했다.`,
+            msg: `광포화 포션을 사용하여 HP가 20 감소하고, 일시적으로 공격력이  증가했다.`,
             typingAnimation: false,
             btns: disableButtons,
           },
@@ -152,7 +152,7 @@ export default class PlayerUseItemState extends DungeonState {
 
           const randomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
-              msg: `위험한 포션을 사용하여 일시적으로 공격력이 500% 증가했다.`,
+              msg: `위험한 포션을 사용하여 일시적으로 공격력이 1.5배 증가했다.`,
               typingAnimation: false,
               btns: disableButtons,
             },
@@ -180,7 +180,7 @@ export default class PlayerUseItemState extends DungeonState {
         if (resistRandomNum < 90) {
           this.user.stat.resistbuff = true;
 
-          applyPotionEffect(this.user.stat.resistances); // 저항력을 100으로 채우는 함수 호출
+          applyPotionEffect(this.user); // 저항력을 100으로 채우는 함수 호출
 
           const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
