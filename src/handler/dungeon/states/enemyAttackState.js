@@ -22,7 +22,12 @@ export default class EnemyAttackState extends DungeonState {
 
     // 유저의 확인 과정 없이 몬스터가 일괄로 공격
     for (const monster of aliveMonsters) {
-      const damage = monster.monsterAtk;
+      let damage = monster.monsterAtk;
+
+      if (this.user.stat.resistbuff || this.user.stat.protect) {
+        damage = 0;
+      }
+
       this.user.reduceHp(damage);
 
       // 플레이어 HP 업데이트
@@ -68,6 +73,9 @@ export default class EnemyAttackState extends DungeonState {
       await delay(1000);
     }
 
+    // 무적 버프 초기화
+    this.user.stat.resistbuff = false;
+    this.user.stat.protect = false;
     // 행동 선택 상태로 전환
     this.changeState(IncreaseManaState);
   }

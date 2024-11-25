@@ -48,6 +48,7 @@ export const loadGameAssets = async () => {
     ]);
 
     gameAssets = { playerCharacter, MonsterData, skillData, productData };
+    gameAssets = { playerCharacter, MonsterData, skillData, productData };
 
     console.log('게임 애샛 로드 완료');
   } catch (error) {
@@ -70,6 +71,14 @@ export const getSkillById = (skillId) => {
     return gameAssets.skillData.data[index];
   }
   return null;
+};
+
+export const getProductById = (productId) => {
+  const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
+  return gameAssets.productData.data[index];
+};
+export const getProductData = () => {
+  return gameAssets.productData.data;
 };
 
 // 랜덤으로 스킬 가져오기
@@ -112,14 +121,4 @@ export const getRandomRewardSkills = (dungeonCode) => {
   }
 
   return rewardSkills;
-};
-
-// 아이템 불러오기
-export const getProductById = (productId) => {
-  const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
-  return gameAssets.productData.data[index];
-};
-
-export const getProductData = () => {
-  return gameAssets.productData.data;
 };

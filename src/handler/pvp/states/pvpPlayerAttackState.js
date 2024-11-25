@@ -5,8 +5,12 @@ import PvpTurnChangeState from './pvpTurnChangeState.js';
 import PvpEnemyDeadState from './pvpEnemyDeadState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { checkStopperResist, skillEnhancement } from '../../../utils/battle/calculate.js';
+import { PVP_STATUS } from '../../../constants/battle.js';
+import { skillEnhancement, checkStopperResist } from '../../../utils/battle/calculate.js';
+import PvpEnemyDeadState from './pvpEnemyDeadState.js';
+import PvpTurnChangeState from './pvpTurnChangeState.js';
 
+// 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
   async enter() {
     const selectedSkill = this.pvpRoom.selectedSkill;
@@ -32,7 +36,7 @@ export default class PvpPlayerAttackState extends PvpState {
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
     const userDamage = skillInfo.damage * skillDamageRate;
     const stopperResist = checkStopperResist(skillElement, this.stopper);
-    
+
     console.log(playerElement);
     console.log(skillElement);
     console.log(skillDamageRate);
@@ -47,9 +51,15 @@ export default class PvpPlayerAttackState extends PvpState {
   }
 
   sendStatusUpdates() {
-    this.mover.socket.write(createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }));
-    this.mover.socket.write(createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }));
-    this.stopper.socket.write(createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.stopper.stat.hp }));
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
+    );
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }),
+    );
+    this.stopper.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.stopper.stat.hp }),
+    );
   }
 
   sendActionAnimations(effectCode) {

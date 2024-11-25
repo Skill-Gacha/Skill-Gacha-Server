@@ -9,11 +9,15 @@ import { sSpawnHandler } from './sSpawnHandler.js';
 import { elementResist, playerData } from '../../utils/packet/playerPacket.js';
 import User from '../../classes/models/userClass.js';
 import { getSkillsFromDB, saveSkillsToDB } from '../../db/skill/skillDb.js';
-import { saveSkillsToRedis } from '../../db/redis/skillService.js';
+import { getSkillsFromRedis, saveSkillsToRedis } from '../../db/redis/skillService.js';
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
-import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
+import {
+  getItemsFromRedis,
+  initializeItems,
+  saveItemsToRedis,
+} from '../../db/redis/itemService.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload;
@@ -33,7 +37,27 @@ export const cEnterHandler = async ({ socket, payload }) => {
     const currentSession = sessionManager.getSessionByUserId(user.id);
     if (currentSession !== sessionManager.getTown()) {
       sessionManager.getTown().addUser(user);
+
+      // 레디스를 통해 스킬 최신화
+      const skillsFromRedis = await getSkillsFromRedis(nickname);
+
+      // 유저 인스턴스에 스킬 할당
+      user.userSkills = Object.keys(skillsFromRedis)
+        .filter((key) => key.startsWith('skill'))
+        .map((key) => getSkillById(skillsFromRedis[key])) // 스킬 ID로 매핑
+        .filter((skill) => skill != null); // getSkillById의 결과가 null인 경우 필터링
       console.log(`cEnterHandler: 유저 ${user.id}가 마을 세션으로 이동되었습니다.`);
+
+      const itemsFromRedis = await getItemsFromRedis(nickname);
+      if (!itemsFromRedis) {
+        // Redis에 아이템이 없을 경우 초기화
+        const initializedItems = initializeItems();
+        await saveItemsToRedis(nickname, initializedItems);
+        user.items = initializedItems;
+      } else {
+        // Redis에서 가져온 아이템을 배열로 할당
+        user.items = itemsFromRedis;
+      }
     }
   } else {
     let userRecord;
@@ -44,12 +68,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       const elementIdByRecord = getElementById(userRecord.element);
       userRecord.resists = elementResist(elementIdByRecord);
     } else {
-      await createUser(
-        nickname,
-        elementId,
-        chosenElement.maxHp,
-        chosenElement.maxMp,
-      );
+      await createUser(nickname, elementId, chosenElement.maxHp, chosenElement.maxMp);
 
       const basicSkillId = elementId - 1000;
 
@@ -129,5 +148,6 @@ export const cEnterHandler = async ({ socket, payload }) => {
     socket.write(spawnResponse);
   }
 
+  // 기존 유저들에게 접속한 유저 정보 알림
   await sSpawnHandler(user);
 };

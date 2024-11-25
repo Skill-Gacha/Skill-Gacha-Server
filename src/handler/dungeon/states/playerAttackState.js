@@ -7,7 +7,11 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement } from '../../../utils/battle/calculate.js';
+import {
+  checkEnemyResist,
+  skillEnhancement,
+  updateDamage,
+} from '../../../utils/battle/calculate.js';
 
 // 플레이어가 공격하는 상태
 export default class PlayerAttackState extends DungeonState {
@@ -22,7 +26,20 @@ export default class PlayerAttackState extends DungeonState {
     const playerElement = this.user.element;
     const skillElement = userSkillInfo.element;
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
-    const userDamage = userSkillInfo.damage * skillDamageRate;
+    let userDamage = userSkillInfo.damage * skillDamageRate;
+
+    // 포션 효과에 따른 최종 대미지 계산
+    userDamage = updateDamage(this.user, userDamage);
+
+    // 효과 사용 후 상태 초기화
+    if (this.user.stat.berserk || this.user.stat.dangerPotion) {
+      if (this.user.stat.berserk) {
+        this.user.stat.berserk = false; // 스팀팩 효과를 사용한 후 초기화
+      }
+      if (this.user.stat.dangerPotion) {
+        this.user.stat.dangerPotion = false; // 위험한 포션 효과를 사용 후 초기화
+      }
+    }
 
     // 2차 검증 첫번째 : 몬스터가 저항값을 가지고 있냐?
     const monsterResist = checkEnemyResist(skillElement, targetMonster);
@@ -62,18 +79,15 @@ export default class PlayerAttackState extends DungeonState {
     });
     this.socket.write(playerActionResponse);
 
-    const battleLog = {
-      msg: `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
-      typingAnimation: false,
-      btns: disableButtons,
-    };
-
     // 공격 결과 메시지 전송
     if (skillDamageRate > 1) {
       const battleLogResponse = createResponse(PacketType.S_BattleLog, {
-        battleLog,
+        battleLog: {
+          msg: `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
+          typingAnimation: false,
+          btns: disableButtons,
+        },
       });
-      console.log('battleLog :', battleLog);
       this.socket.write(battleLogResponse);
     } else {
       const battleLogResponse = createResponse(PacketType.S_BattleLog, {

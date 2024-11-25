@@ -5,7 +5,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import PvpState from './pvpState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PvpPlayerAttackState from './pvpPlayerAttackState.js';
-import { PVP_STATUS } from '../../../constants/battle.js';
+import { MAX_BUTTON_COUNT, PVP_STATUS } from '../../../constants/battle.js';
 import PvpTurnChangeState from './pvpTurnChangeState.js';
 
 export default class PvpSkillChoice extends PvpState {
@@ -29,7 +29,8 @@ export default class PvpSkillChoice extends PvpState {
   }
 
   async handleInput(responseCode) {
-    if (responseCode < 1 || responseCode > this.mover.userSkills.length + 1) {
+    // responseCode 유효성 검사)
+    if (responseCode < 1 || responseCode > MAX_BUTTON_COUNT) {
       invalidResponseCode(this.mover.socket);
       return;
     }

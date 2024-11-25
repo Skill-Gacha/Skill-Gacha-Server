@@ -29,9 +29,6 @@ export const onEnd = (socket) => async () => {
       console.warn(`onEnd: ${nickname}의 스킬을 찾을 수 없습니다.`);
     }
 
-    // DB에 재화 저장
-    await updateUserResource(nickname, gold, stone);
-
     // DB에 레이팅 저장
     const rating = await getPlayerRatingFromRedis(nickname);
     if (rating !== null) {

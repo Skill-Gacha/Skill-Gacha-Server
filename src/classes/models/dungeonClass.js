@@ -13,6 +13,7 @@ class Dungeon extends BaseSession {
     this.reward = this.initReward();
     this.selectedSkill = null;
     this.newSkill = null;
+    this.selectedItem = null;
 
     this.dungeonStatus = null;
     // this.selectedMonster = null;
@@ -28,7 +29,7 @@ class Dungeon extends BaseSession {
     const stone = this.dungeonCode * 1;
     const rewardSkills = getRandomRewardSkills(this.dungeonCode);
     let item = null;
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.02) {
       // 4004 4005 둘중 하나
       const ittmeIds = [4004, 4005];
       item = ittmeIds[Math.floor(Math.random() * 2)];

@@ -1,9 +1,9 @@
 // src/handler/town/cOpenStoreHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
-import { PacketType } from '../../constants/header.js';
-import { getProductData } from '../../init/loadAssets.js';
-import { createResponse } from '../../utils/response/createResponse.js';
+import { PacketType } from '../../../constants/header.js';
+import { getProductData } from '../../../init/loadAssets.js';
+import { createResponse } from '../../../utils/response/createResponse.js';
 
 export const cOpenStoreHandler = async ({ socket }) => {
   const user = sessionManager.getUserBySocket(socket);
@@ -23,7 +23,6 @@ export const cOpenStoreHandler = async ({ socket }) => {
   });
 
   const openStoreData = {
-    playerId: user.id,
     gold: user.gold,
     stone: user.stone,
     productList,
