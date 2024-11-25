@@ -17,13 +17,6 @@ class BaseSession {
   getUser(userId) {
     return this.users.get(userId);
   }
-
-  getOpponentUsers(userId) {
-    return this.users.filter((user) => user.id !== userId);
-  }
-  getUsers() {
-    return this.users;
-  }
 }
 
 export default BaseSession;
