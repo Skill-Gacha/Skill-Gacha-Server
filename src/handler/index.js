@@ -11,8 +11,8 @@ import { cEnterDungeonHandler } from './dungeon/cEnterDungeonHandler.js';
 import { cPlayerResponseHandler } from './dungeon/cPlayerResponseHandler.js';
 import { cPlayerMatchHandler } from './pvp/cPlayerMatchHandler.js';
 import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
-import { cOpenStoreHandler } from './town/cOpenStoreHandler.js';
-import { cBuyItemHandler } from './town/cBuyItemHandler.js';
+import { cOpenStoreHandler } from './town/store/cOpenStoreHandler.js';
+import { cBuyItemHandler } from './town/store/cBuyItemHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {

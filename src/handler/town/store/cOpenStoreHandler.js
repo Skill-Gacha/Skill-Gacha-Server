@@ -1,9 +1,9 @@
 // src/handler/town/cMoveHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
-import { PacketType } from '../../constants/header.js';
-import { getProductData } from '../../init/loadAssets.js';
-import { createResponse } from '../../utils/response/createResponse.js';
+import { PacketType } from '../../../constants/header.js';
+import { getProductData } from '../../../init/loadAssets.js';
+import { createResponse } from '../../../utils/response/createResponse.js';
 
 export const cOpenStoreHandler = async ({ socket, payload }) => {
   // 소켓을 통해 사용자 정보 가져오기
@@ -26,7 +26,6 @@ export const cOpenStoreHandler = async ({ socket, payload }) => {
   });
 
   const openStoreData = {
-    playerId: user.id,
     gold: user.gold,
     stone: user.stone,
     productList,
