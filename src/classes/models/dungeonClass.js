@@ -11,8 +11,8 @@ class Dungeon extends BaseSession {
     this.dungeonCode = dungeonCode;
     this.currentState = null;
     this.reward = this.initReward();
-    this.selectedSkill;
-    this.newSkill;
+    this.selectedSkill = null;
+    this.newSkill = null;
 
     this.dungeonStatus = null;
     // this.selectedMonster = null;

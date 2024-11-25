@@ -7,7 +7,7 @@ class PvpRoomClass extends BaseSession {
     this.currentState = null;
     this.pvpStatus = null;
     this.userTurn = null;
-    this.selectedSkill;
+    this.selectedSkill = null;
   }
 
   // 어느 유저의 차례인지 결정해주는 함수
