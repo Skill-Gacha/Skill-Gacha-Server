@@ -10,28 +10,21 @@ import { delay } from '../../../utils/delay.js';
 export default class PvpEnemyDeadState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.ENEMY_DEAD;
-    // 맞는 유저 사망 애네메이션 전송(양쪽 유저 모두 전송)
-    this.mover.socket.write(
-      createResponse(PacketType.S_PvpEnemyAction, {
-        actionSet: {
-          animCode: 1, // 사망 애니메이션 코드
-          effectCode: null,
-        },
-      }),
-    );
-    this.stopper.socket.write(
-      createResponse(PacketType.S_PvpPlayerAction, {
-        actionSet: {
-          animCode: 1, // 사망 애니메이션 코드
-          effectCode: null,
-        },
-      }),
-    );
+
+    // 상대방에게 사망 애니메이션 전송
+    const deathAnimation = {
+      actionSet: { animCode: 1, effectCode: null },
+    };
+
+    this.mover.socket.write(createResponse(PacketType.S_PvpEnemyAction, deathAnimation));
+    this.stopper.socket.write(createResponse(PacketType.S_PvpPlayerAction, deathAnimation));
+
     await delay(4000);
+
     this.changeState(PvpGameOverState);
   }
 
-  async handleInput(responseCode) {
-    // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
+  handleInput(responseCode) {
+    // 입력 처리 없는 State
   }
 }

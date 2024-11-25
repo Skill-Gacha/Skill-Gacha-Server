@@ -5,23 +5,18 @@ import GameState from '../../states/gameState.js';
 export default class PvpState extends GameState {
   constructor(session, mover, stopper) {
     super(session, mover, mover.socket);
-    this.pvpRoom = session; // 세션을 PVP 룸으로 명시적으로 설정
+    this.pvpRoom = session;
     this.mover = mover;
     this.stopper = stopper;
   }
 
-  changeState(StateClass) {
-    // 턴 교체 로직 추가
-    const [playerA, playerB] = Array.from(this.pvpRoom.users.values());
-
-    if (this.pvpRoom.getUserTurn() === 0) {
-      this.mover = playerB;
-      this.stopper = playerA;
-    } else {
-      this.mover = playerA;
-      this.stopper = playerB;
+  changeState(StateClass, switchTurn = false) {
+    if (switchTurn) {
+      // mover와 stopper 교체
+      const temp = this.mover;
+      this.mover = this.stopper;
+      this.stopper = temp;
     }
-
     this.pvpRoom.currentState = new StateClass(this.pvpRoom, this.mover, this.stopper);
     this.pvpRoom.currentState.enter();
   }

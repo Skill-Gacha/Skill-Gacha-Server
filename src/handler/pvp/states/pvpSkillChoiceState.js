@@ -5,50 +5,46 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import PvpState from './pvpState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PvpPlayerAttackState from './pvpPlayerAttackState.js';
-import { MAX_SKILL_COUNT, PVP_STATUS } from '../../../constants/battle.js';
+import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpTurnChangeState from './pvpTurnChangeState.js';
 
 export default class PvpSkillChoice extends PvpState {
-  async enter() {
+  enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.SKILL_CHOICE;
-    // 버튼은 플레이어가 보유한 스킬들로 생성
-    const buttons = this.mover.userSkills.map((skill) => ({
+
+    const buttons = this.mover.userSkills.map((skill, index) => ({
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
       enable: this.mover.stat.mp >= skill.mana,
     }));
 
-    buttons.push({
-      msg: '턴 넘기기',
-      enable: true,
-    });
+    buttons.push({ msg: '턴 넘기기', enable: true });
 
-    //스킬 로그 데이터
     const battleLog = {
       msg: '스킬을 선택하여 상대방을 공격하세요',
       typingAnimation: false,
       btns: buttons,
     };
 
-    const choiceSkillBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, {
-      battleLog,
-    });
-    this.mover.socket.write(choiceSkillBattlelogResponse);
+    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
   }
 
   async handleInput(responseCode) {
-    // responseCode 유효성 검사)
-    if (responseCode < 1 || responseCode > MAX_SKILL_COUNT) {
+    if (responseCode < 1 || responseCode > this.mover.userSkills.length + 1) {
       invalidResponseCode(this.mover.socket);
+      return;
     }
 
-    if (responseCode > this.mover.userSkills.length) {
+    if (responseCode === this.mover.userSkills.length + 1) {
       this.changeState(PvpTurnChangeState);
     } else {
-      // 선택한 스킬 인덱스 계산
-      const SkillIdx = responseCode - 1;
-      this.pvpRoom.selectedSkill = SkillIdx;
+      const skillIndex = responseCode - 1;
+      const selectedSkill = this.mover.userSkills[skillIndex];
 
-      // 스킬 선택 후 플레이어 어택 상태로 전환
+      if (this.mover.stat.mp < selectedSkill.mana) {
+        return;
+      }
+
+      this.pvpRoom.selectedSkill = skillIndex;
       this.changeState(PvpPlayerAttackState);
     }
   }

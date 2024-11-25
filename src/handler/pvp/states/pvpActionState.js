@@ -7,10 +7,7 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import PvpSkillChoice from './pvpSkillChoiceState.js';
 
 export default class PvpActionState extends PvpState {
-  constructor(pvpRoom, mover, stopper) {
-    super(pvpRoom, mover, stopper);
-  }
-  async enter() {
+  enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.ACTION;
   }
 
@@ -26,8 +23,7 @@ export default class PvpActionState extends PvpState {
         await this.pvpRoom.currentState.setConfirm(CONFIRM_TYPE.FLEE, '추하게 빼실겁니까?');
         break;
       default:
-        // 잘못된 입력 처리
-        invalidResponseCode(this.socket);
+        invalidResponseCode(this.mover.socket);
         break;
     }
   }
