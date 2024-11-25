@@ -33,9 +33,10 @@ export const checkStopperResist = (skillElement, target) => {
   return playerResist;
 };
 
-//저항력 ALL 100 
+
+// 저항력 ALL 100 
 export const applyPotionEffect = (target) => {
-  const resistTypes = ['electricResist', 'earthResist', 'grassResist', 'fireResist', 'waterResist'];
+  const resistList = ['electricResist', 'earthResist', 'grassResist', 'fireResist', 'waterResist'];
 
   // 타겟이 저항력을 가지고 있는지 확인
   if (!target.resistances) {
@@ -44,15 +45,18 @@ export const applyPotionEffect = (target) => {
   }
 
   // 저항력을 최대치로 설정
-  resistTypes.forEach(type => {
+  resistList.forEach(type => {
     target.resistances[type] = 100;  // 저항력을 100으로 설정
   });
+
+  target.resistbuff = true; // 포션 효과 활성화
 };
 
 // 저항력 초기화 함수
 export const resetResistances = (target) => {
   if (target.originalResistances) {
     target.resistances = { ...target.originalResistances };  // 원래 저항력으로 되돌리기
+    target.resistbuff = false; // 포션 효과 비활성화
   }
 };
 
@@ -81,7 +85,6 @@ export const potionEffectDamage = (baseDamage, isBerserk, isDangerPotion) => {
 
   
 };
-//저항값 다 불러오고 올 100
 
 //위험한 포션의 저항
 

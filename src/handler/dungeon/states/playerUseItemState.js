@@ -180,7 +180,7 @@ export default class PlayerUseItemState extends DungeonState {
         if (resistRandomNum < 90) {
           this.user.stat.resistbuff = true;
 
-          applyPotionEffect(this.user.stat); // 저항력을 100으로 채우는 함수 호출
+          applyPotionEffect(this.user.stat.resistances); // 저항력을 100으로 채우는 함수 호출
 
           const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
