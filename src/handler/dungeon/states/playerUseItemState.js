@@ -206,10 +206,9 @@ export default class PlayerUseItemState extends DungeonState {
         const resistRandomNum = Math.floor(Math.random() * 100);
         // 확률에 따라 효과 적용 및 로그 출력
         if (resistRandomNum < 90) {
-          this.user.stat.resistbuff = true;
 
-          applyPotionEffect(this.user.stat.resistances);// 저항력을 100으로 채우는 함수 호출
-    
+          this.user.stat.resistbuff = true;
+  
           const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
               msg: `속성 저항 포션을 사용하여 일시적으로 무적 상태가 되었다.`,

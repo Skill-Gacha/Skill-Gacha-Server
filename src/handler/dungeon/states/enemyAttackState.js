@@ -7,7 +7,6 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import IncreaseManaState from './increaseManaState.js';
-import { resetResistances } from '../../../utils/battle/calculate.js';
 
 // 몬스터가 플레이어를 공격하는 상태
 export default class EnemyAttackState extends DungeonState {
@@ -21,22 +20,10 @@ export default class EnemyAttackState extends DungeonState {
       enable: false,
     }));
 
-
     // 유저의 확인 과정 없이 몬스터가 일괄로 공격
     for (const monster of aliveMonsters) {
       const damage = monster.monsterAtk;
-
-      let effectiveDamage = damage;
-      if (this.user.stat.resistbuff) {
-        effectiveDamage = 0; // 저항 포션 효과로 인해 피해 없음
-      } else {
-        // 모든 저항력을 고려한 피해 계산
-        const totalResist = Object.values(this.user.stat.resistances).reduce((sum, resist) => sum + resist, 0);
-        effectiveDamage = damage * ((100 - totalResist) / 100); // 저항력을 고려한 피해
-      }
-
-      this.user.reduceHp(effectiveDamage);
-
+      this.user.reduceHp(damage);
 
       // 플레이어 HP 업데이트
       const setPlayerHpResponse = createResponse(PacketType.S_SetPlayerHp, {
@@ -79,12 +66,6 @@ export default class EnemyAttackState extends DungeonState {
 
       // 공격 간 딜레이
       await delay(1000);
-    }
-
-    
-    if (this.user.stat.resistbuff) {
-      this.user.stat.resistbuff = false; // 저항 포션 효과 비활성화
-      resetResistances(this.user.stat.resistances); // 저항력 원상 복구
     }
 
     // 행동 선택 상태로 전환
