@@ -13,11 +13,7 @@ import { getSkillsFromRedis, saveSkillsToRedis } from '../../db/redis/skillServi
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
-import {
-  getItemsFromRedis,
-  initializeItems,
-  saveItemsToRedis,
-} from '../../db/redis/itemService.js';
+import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload;

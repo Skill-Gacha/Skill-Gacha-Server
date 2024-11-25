@@ -3,11 +3,7 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
-import {
-  getPlayerRank,
-  getPlayerRatingFromRedis,
-  getTopRatings,
-} from '../../db/redis/ratingService.js';
+import { getPlayerRank, getPlayerRatingFromRedis, getTopRatings } from '../../db/redis/ratingService.js';
 
 export const cViewRankPointHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);

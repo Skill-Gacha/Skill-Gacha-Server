@@ -6,7 +6,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS, MAX_ITEM_COUNT } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import ActionState from './actionState.js';
-import { getProductData, getSkillById } from '../../../init/loadAssets.js';
+import { getProductData } from '../../../init/loadAssets.js';
 import PlayerUseItemState from './PlayerUseItemState.js';
 
 // 아이템 선택 상태

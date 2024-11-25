@@ -3,7 +3,7 @@
 import Position from './positionClass.js';
 import Stat from './statClass.js';
 import { updateUserResource } from '../../db/user/user.db.js';
-import { getItemsFromRedis, updateItemCountInRedis } from '../../db/redis/itemService.js';
+import { getItemsFromRedis } from '../../db/redis/itemService.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {
@@ -61,13 +61,13 @@ class User {
 
   getInventory() {
     return {
-        gold: this.gold,
-        stone: this.stone,
-        productList: this.items.map(item => ({
-          id: item.itemId,
-          count: item.count,
-        })),
-      };
+      gold: this.gold,
+      stone: this.stone,
+      productList: this.items.map(item => ({
+        id: item.itemId,
+        count: item.count,
+      })),
+    };
   }
 }
 

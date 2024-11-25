@@ -1,11 +1,6 @@
 // src/handler/dungeon/states/rewardState.js
 
-import {
-  CONFIRM_TYPE,
-  DUNGEON_STATUS,
-  MAX_REWARD_BUTTON,
-  MAX_SKILL_COUNT,
-} from '../../../constants/battle.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS, MAX_REWARD_BUTTON, MAX_SKILL_COUNT } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';

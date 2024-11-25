@@ -7,11 +7,7 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import {
-  checkEnemyResist,
-  skillEnhancement,
-  updateDamage,
-} from '../../../utils/battle/calculate.js';
+import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../utils/battle/calculate.js';
 
 // 플레이어가 공격하는 상태
 export default class PlayerAttackState extends DungeonState {

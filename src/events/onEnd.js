@@ -4,7 +4,6 @@ import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
 import sessionManager from '#managers/sessionManager.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
 import { saveRatingToDB } from '../db/rating/ratingDb.js';
-import { updateUserResource } from '../db/user/user.db.js';
 import { deleteSkillsFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
 import { getPlayerRatingFromRedis } from '../db/redis/ratingService.js';
 import { deleteItemsFromRedis, getItemsFromRedis } from '../db/redis/itemService.js';
