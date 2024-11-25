@@ -20,6 +20,12 @@ export default class EnemyAttackState extends DungeonState {
       enable: false,
     }));
 
+    
+    if (this.user.stat.protect) {  
+      this.user.stat.protect = false; // 저항력 초기화
+  } 
+  
+
     // 유저의 확인 과정 없이 몬스터가 일괄로 공격
     for (const monster of aliveMonsters) {
       const damage = monster.monsterAtk;

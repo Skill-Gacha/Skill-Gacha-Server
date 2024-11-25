@@ -30,6 +30,10 @@ class User {
     this.stat.mp -= mana;
   }
 
+  increaseAllResistances(resist){
+    this.stat.resistances += resist;
+  }
+
   increaseHpMp(hp, mp) {
     this.stat.hp += hp;
     this.stat.mp += mp;
