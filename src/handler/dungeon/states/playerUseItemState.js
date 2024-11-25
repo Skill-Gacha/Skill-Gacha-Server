@@ -79,18 +79,7 @@ export default class PlayerUseItemState extends DungeonState {
         //**스팀팩(광포화 포션)**//==============================================================================================
       case 3:
         if (this.user.stat.hp <= 20 || this.user.stat.berserk) {
-          // const invalidUseResponse = createResponse(PacketType.S_BattleLog, {
-          //   battleLog: {
-          //     msg: `스팀팩을 사용할 수 없습니다. 다른 아이템을 선택하세요.`,
-          //       typingAnimation: false,
-          //       btns:disableButtons,
-          //     },
-          //   });
-          // this.socket.write(invalidUseResponse); 
-
-          // await delay(2500);
-
-          
+                  
           // 아이템 선택 상태로 돌아가기
           this.changeState(ItemChoiceState);
           return; // 함수 종료
