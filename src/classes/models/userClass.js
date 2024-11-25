@@ -2,7 +2,6 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
-import { saveRewardSkillsToRedis } from '../../db/redis/skillService.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {
@@ -55,11 +54,6 @@ class User {
   increaseStone(stone) {
     this.stone += stone;
     // DB에 증가한 강화석 정보 저장
-  }
-
-  addSkill(rewardSkill, selectedSkill) {
-    saveRewardSkillsToRedis(this.nickname, rewardSkill.id, selectedSkill);
-    this.userSkills.push(rewardSkill);
   }
 }
 

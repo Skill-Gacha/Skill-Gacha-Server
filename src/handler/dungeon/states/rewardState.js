@@ -8,6 +8,7 @@ import {
 } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
+import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 import { getSkillById } from '../../../init/loadAssets.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
@@ -113,7 +114,7 @@ export default class RewardState extends DungeonState {
           this.changeState(ConfirmState);
           await setConfirmForDuplicateSkill(this.dungeon, stoneCount);
         } else {
-          this.user.addSkill(rewardskill, responseCode);
+          await saveRewardSkillsToRedis(this.user.nickname, rewardskill.id, null);
           this.changeState(GameOverWinState);
         }
       }

@@ -3,7 +3,7 @@
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS, MAX_BUTTON_COUNT, MAX_SKILL_COUNT } from '../../../constants/battle.js';
+import { DUNGEON_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
 import PlayerAttackState from './playerAttackState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import ActionState from './actionState.js';
