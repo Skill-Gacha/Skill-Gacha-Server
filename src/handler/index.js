@@ -14,6 +14,7 @@ import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
 import { cOpenStoreHandler } from './town/store/cOpenStoreHandler.js';
 import { cBuyItemHandler } from './town/store/cBuyItemHandler.js';
 import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
+import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
 
 const handlers = {
   [PacketType.C_Enter]: {
@@ -46,7 +47,11 @@ const handlers = {
   },
   [PacketType.C_PvpPlayerResponse]: {
     handler: cPlayerPvpResponseHandler,
-    protoType: 'C_PVP_PLAYER_RESPONSE',
+    protoType: 'C_PvpPlayerResponse',
+  },
+  [PacketType.C_InventoryViewRequest]: {
+    handler: cInventoryViewHandler,
+    protoType: 'C_InventoryViewRequest',
   },
   [PacketType.C_OpenStoreRequest]: {
     handler: cOpenStoreHandler,

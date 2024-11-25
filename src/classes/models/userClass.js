@@ -58,6 +58,17 @@ class User {
   async updateItem(nickname) {
     this.items = await getItemsFromRedis(nickname);
   }
+
+  getInventory() {
+    return {
+        gold: this.gold,
+        stone: this.stone,
+        productList: this.items.map(item => ({
+          id: item.itemId,
+          count: item.count,
+        })),
+      };
+  }
 }
 
 export default User;
