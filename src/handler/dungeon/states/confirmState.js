@@ -56,10 +56,10 @@ export default class ConfirmState extends DungeonState {
       case CONFIRM_TYPE.FLEE:
         if (responseCode === 1) {
           // 도망감
-          if (this.user.gold < 100) {
+          if (this.user.gold < this.dungeon.dungeonCode * 100) {
             this.changeState(FailFleeMessageState);
           } else {
-            this.user.reduceGold(100);
+            this.user.reduceResource(this.dungeon.dungeonCode * 100, 0);
             await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
             this.changeState(FleeMessageState);
           }

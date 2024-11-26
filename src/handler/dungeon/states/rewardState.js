@@ -1,6 +1,11 @@
 // src/handler/dungeon/states/rewardState.js
 
-import { CONFIRM_TYPE, DUNGEON_STATUS, MAX_REWARD_BUTTON, MAX_SKILL_COUNT } from '../../../constants/battle.js';
+import {
+  CONFIRM_TYPE,
+  DUNGEON_STATUS,
+  MAX_REWARD_BUTTON,
+  MAX_SKILL_COUNT,
+} from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
@@ -27,7 +32,7 @@ export default class RewardState extends DungeonState {
     this.user.increaseResource(gold, stone);
     await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
 
-    msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`;
+    msg = `Gold가 ${gold}원 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`;
 
     // 아이템 획득
     if (item !== null) {
