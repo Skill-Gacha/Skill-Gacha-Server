@@ -1,4 +1,4 @@
-// src/handler/dungeon/states/increaseManaState.js
+// src/handler/dungeon/states/playerDeadState.js
 
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';

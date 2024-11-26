@@ -25,8 +25,8 @@ export default class EnemyAttackState extends DungeonState {
     for (const monster of aliveMonsters) {
       let damage = monster.monsterAtk;
 
-      if (this.user.stat.resistbuff || this.user.stat.protect) {
-        damage = 0;
+      if (this.user.stat.protect) {
+        damage = 1;
       }
 
       this.user.reduceHp(damage);

@@ -28,9 +28,23 @@ export default class PlayerAttackState extends DungeonState {
       buffSkill(this.user, userSkillInfo.id);
 
       // 버프 상태에 따라 행동 결정
-      useBuffSkill(this.user, this.socket);
+      useBuffSkill(this.user, this.socket, this.dungeon);
+      let targetMonsterIdx;
+
+      userSkillInfo.id === 29
+        ? (targetMonsterIdx = targetMonster.monsterIdx)
+        : (targetMonsterIdx = -1);
+
+      this.user.reduceMp(userSkillInfo.mana);
+
+      // 유저 MP 업데이트
+      const setPlayerMpResponse = createResponse(PacketType.S_SetPlayerMp, {
+        mp: this.user.stat.mp,
+      });
+
+      this.socket.write(setPlayerMpResponse);
       const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
-        targetMonsterIdx: -1,
+        targetMonsterIdx,
         actionSet: {
           animCode: 0,
           effectCode: userSkillInfo.effectCode,

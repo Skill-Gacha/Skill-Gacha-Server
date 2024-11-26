@@ -18,6 +18,7 @@ export const DUNGEON_STATUS = {
   SKILL_CHANGE: 13,
   FAIL_FLEE: 14,
   PALYER_DEAD: 15,
+  ITEM_CHOCE: 16,
 };
 
 export const PVP_STATUS = {

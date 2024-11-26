@@ -13,7 +13,7 @@ import PlayerUseItemState from './PlayerUseItemState.js';
 // 스킬과 달리, id 값 기반으로 이름 불러와야 함
 export default class ItemChoiceState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = DUNGEON_STATUS.SKILL_CHOICE;
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.ITEM_CHOCE;
 
     const itemsData = getProductData();
     const itemsName = itemsData.map((itemData) => itemData.name);

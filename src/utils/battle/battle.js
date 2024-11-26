@@ -2,6 +2,7 @@
 
 import { PacketType } from '../../constants/header.js';
 import { delay } from '../delay.js';
+import { createResponse } from '../response/createResponse.js';
 
 // 자신
 export const MyStatus = (my) => {
@@ -42,57 +43,91 @@ export const buffSkill = (user, skillId) => {
   }
 };
 
-export const useBuffSkill = async (user, socket) => {
+export const useBuffSkill = async (user, socket, dungeon) => {
+  const disableButtons = dungeon.monsters.map((monster) => ({
+    msg: monster.monsterName,
+    enable: false,
+  }));
+
   switch (user.stat.buff) {
     case '전투의 함성':
-      socket.write(
-        createResponse(PacketType.S_BattleLog, {
-          battleLog: {
-            msg: '전투의 함성! 공격력이 두 배로 증가했습니다!',
-            typingAnimation: false,
-          },
-        }),
-      );
+      try {
+        socket.write(
+          createResponse(PacketType.S_BattleLog, {
+            battleLog: {
+              msg: '전투의 함성! 공격력이 두 배로 증가했습니다!',
+              typingAnimation: false,
+              btns: disableButtons,
+            },
+          }),
+        );
+      } catch (error) {
+        console.error('소켓 쓰기 중 오류 발생:', error);
+      }
       await delay(1000);
       break;
 
     case '치유의 손길':
-      const existHp = this.user.stat.hp;
-      this.user.increaseHpMp(this.user.stat.maxHp * 0.3, 0); // 최대 체력의 30% 회복
-      this.socket.write(createResponse(PacketType.S_SetPlayerHp, { hp: this.user.stat.hp }));
-      this.socket.write(
-        createResponse(PacketType.S_BattleLog, {
-          battleLog: {
-            msg: `치유의 손길! 체력이 ${this.user.stat.hp - existHp}만큼 회복되었습니다!`,
-            typingAnimation: false,
-          },
-        }),
-      );
+      const existHp = user.stat.hp;
+      console.log(user.stat.maxHp * 0.3);
+      user.increaseHpMp(user.stat.maxHp * 0.3, 0); // 최대 체력의 30% 회복
+
+      try {
+        socket.write(createResponse(PacketType.S_SetPlayerHp, { hp: user.stat.hp }));
+        socket.write(
+          createResponse(PacketType.S_BattleLog, {
+            battleLog: {
+              msg: `치유의 손길! 체력이 ${user.stat.hp - existHp}만큼 회복되었습니다!`,
+              typingAnimation: false,
+              btns: disableButtons,
+            },
+          }),
+        );
+      } catch (error) {
+        console.error('소켓 쓰기 중 오류 발생:', error);
+      }
       await delay(1000);
       break;
 
     case '구원의 손길':
-      const existMp = this.user.stat.mp;
-      this.user.increaseHpMp(0, this.user.stat.maxMp * 0.3); // 최대 마나의 30% 회복
-      this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
-      this.socket.write(
-        createResponse(PacketType.S_BattleLog, {
-          battleLog: {
-            msg: `구원의 손길! 마나가 ${this.user.stat.mp - existMp}만큼 회복되었습니다!`,
-            typingAnimation: false,
-          },
-        }),
-      );
+      console.log(user.stat.maxMp * 0.3);
+      const existMp = user.stat.mp;
+      user.increaseHpMp(0, user.stat.maxMp * 0.3); // 최대 마나의 30% 회복
+
+      try {
+        socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: user.stat.mp }));
+        socket.write(
+          createResponse(PacketType.S_BattleLog, {
+            battleLog: {
+              msg: `구원의 손길! 마나가 ${user.stat.mp - existMp}만큼 회복되었습니다!`,
+              typingAnimation: false,
+              btns: disableButtons,
+            },
+          }),
+        );
+      } catch (error) {
+        console.error('소켓 쓰기 중 오류 발생:', error);
+      }
+
       await delay(1000);
       break;
 
     case '영혼 분쇄':
-      // 상태 이상 제거 로직 필요
-      this.socket.write(
-        createResponse(PacketType.S_BattleLog, {
-          battleLog: { msg: '영혼 분쇄! 모든 상태 이상이 제거되었습니다!', typingAnimation: false },
-        }),
-      );
+      user.stat.protect = true;
+      try {
+        console.log('너 실행 안 돼?');
+        socket.write(
+          createResponse(PacketType.S_BattleLog, {
+            battleLog: {
+              msg: '영혼 분쇄! 모든 상태 이상이 제거되었습니다!',
+              typingAnimation: false,
+              btns: disableButtons,
+            },
+          }),
+        );
+      } catch (error) {
+        console.error('소켓 쓰기 중 오류 발생:', error);
+      }
       await delay(1000);
       break;
 
