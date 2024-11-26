@@ -5,7 +5,7 @@ import { dbConfig } from '../config/dbConfig.js';
 
 const createPool = () => {
   const pool = mysql.createPool({
-    ...dbConfig.database,
+    ...dbConfig,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
