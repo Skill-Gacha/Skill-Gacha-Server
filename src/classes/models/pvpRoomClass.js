@@ -11,7 +11,6 @@ class PvpRoomClass extends BaseSession {
   }
 
   // 어느 유저의 차례인지 결정해주는 함수
-
   setUserTurn() {
     if (this.userTurn === null) {
       this.userTurn = Math.random() > 0.5 ? 0 : 1;
