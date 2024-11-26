@@ -17,11 +17,11 @@ class Monster {
     this.monsterAtk = monsterAtk;
     this.effectCode = monsterEffectCode;
     this.resistances = {
-      electricResist: resists.electricResist,
-      earthResist: resists.earthResist,
-      grassResist: resists.grassResist,
-      fireResist: resists.fireResist,
-      waterResist: resists.waterResist,
+      electricResist: resists.electricResist || 0,
+      earthResist: resists.earthResist || 0,
+      grassResist: resists.grassResist || 0,
+      fireResist: resists.fireResist || 0,
+      waterResist: resists.waterResist || 0,
     };
   }
 
