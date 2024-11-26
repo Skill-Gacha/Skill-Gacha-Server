@@ -52,7 +52,7 @@ export const loadGameAssets = async () => {
 
     console.log('게임 애샛 로드 완료');
   } catch (error) {
-    throw new Error('Failed to load game assets: ' + error.message);
+    throw new Error('loadAssets: 게임 애샛 로드 실패: ' + error.message);
   }
 };
 

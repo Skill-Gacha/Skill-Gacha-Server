@@ -1,11 +1,6 @@
 // src/handler/dungeon/states/rewardState.js
 
-import {
-  CONFIRM_TYPE,
-  DUNGEON_STATUS,
-  MAX_REWARD_BUTTON,
-  MAX_SKILL_COUNT,
-} from '../../../constants/battle.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS, MAX_REWARD_BUTTON, MAX_SKILL_COUNT } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
@@ -18,6 +13,7 @@ import ConfirmState from './confirmState.js';
 import DungeonState from './dungeonState.js';
 import GameOverWinState from './gameOverWinState.js';
 import SkillChangeState from './skillChangeState.js';
+import { updateUserResource } from '../../../db/user/userDb.js';
 
 // 보상 처리
 export default class RewardState extends DungeonState {
@@ -28,7 +24,8 @@ export default class RewardState extends DungeonState {
     let msg;
 
     // 골드 및 강화석 증가
-    await this.user.increaseResource(gold, stone);
+    this.user.increaseResource(gold, stone);
+    await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
 
     msg = `Gold가 ${gold}만큼 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬중 1개의 스킬을 선택하여 스킬을 획득하세요`;
 

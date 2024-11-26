@@ -1,80 +1,29 @@
 ﻿// src/schedulers/syncScheduler.js
 
 import cron from 'node-cron';
-import redisClient from '../init/redis.js';
-import { saveSkillsToDB } from '../db/skill/skillDb.js';
+import { syncSkillsToDB } from '../sync/syncSkills.js';
 import { syncRatingsToDB } from '../sync/syncRatings.js';
-import { saveItemToDB } from '../db/item/itemDb.js';
+import { syncItemsToDB } from '../sync/syncItems.js';
 
 const SYNC_INTERVAL_IN_MIN = 5;
 
-// 모든 플레이어의 스킬 ID 정보를 MySQL에 동기화
-const syncSkillsToDBTask = async () => {
-  try {
-    // 모든 스킬 키 가져오기
-    const keys = await redisClient.keys('skills:*');
-    const syncPromises = keys.map(async (key) => {
-      const nickname = key.split(':')[1];
-      const skills = await redisClient.hGetAll(key);
-      if (Object.keys(skills).length) {
-        const parsedSkills = {
-          skill1: skills.skill1 ? parseInt(skills.skill1, 10) : null,
-          skill2: skills.skill2 ? parseInt(skills.skill2, 10) : null,
-          skill3: skills.skill3 ? parseInt(skills.skill3, 10) : null,
-          skill4: skills.skill4 ? parseInt(skills.skill4, 10) : null,
-        };
-        await saveSkillsToDB(nickname, parsedSkills);
-      }
-    });
-    await Promise.all(syncPromises);
-    console.log('스킬 정보가 성공적으로 DB에 저장되었습니다.');
-  } catch (error) {
-    console.error('스킬 동기화 중 에러 발생:', error);
-  }
-};
-
-// 모든 플레이어의 레이팅 정보를 MySQL에 동기화
-const syncRatingsToDBTask = async () => {
-  try {
-    await syncRatingsToDB();
-  } catch (error) {
-    console.error('레이팅 동기화 중 에러 발생:', error);
-  }
-};
-
-// 모든 플레이어의 아이템 정보를 MySQL에 동기화
-const syncItemsToDBTask = async () => {
-  try {
-    // 모든 아이템 키 가져오기
-    const keys = await redisClient.keys('items:*');
-    const syncPromises = keys.map(async (key) => {
-      const nickname = key.split(':')[1];
-      const items = await redisClient.hGetAll(key);
-      if (Object.keys(items).length) {
-        // 각 아이템에 대해 MySQL에 저장
-        const saveItemPromises = Object.entries(items).map(async ([itemKey, count]) => {
-          const itemId = parseInt(itemKey.replace('item', ''), 10);
-          const itemCount = parseInt(count, 10);
-          await saveItemToDB(nickname, itemId, itemCount);
-        });
-        await Promise.all(saveItemPromises);
-      }
-    });
-    await Promise.all(syncPromises);
-    console.log('아이템 정보가 성공적으로 DB에 저장되었습니다.');
-  } catch (error) {
-    console.error('아이템 동기화 중 에러 발생:', error);
-  }
-};
-
-// 동기화 작업을 스케줄러 실행
+// 동기화 작업을 스케줄러로 실행하는 함수
 export const startSyncScheduler = () => {
-  // 매 5분마다 실행
+  // 1. */${SYNC_INTERVAL_IN_MIN} : SYNC_INTERVAL_IN_MIN마다 동작
+  // 2. 모든 시간 (0 ~ 23)
+  // 3. 모든 일  (1 ~ 31)
+  // 4. 모든 월  (1 ~ 12)
+  // 5. 모든 요일 (월 ~ 일)
+  // 
+  // */${SYNC_INTERVAL_IN_MIN} * * * *
+  // -> 5분마다 모든 시간/일/월/요일에 동기화 작업 실행
+  //
+  // 0 12 * * * -> 매일 정오(12:00)에 실행 
   cron.schedule(`*/${SYNC_INTERVAL_IN_MIN} * * * *`, async () => {
     console.log('동기화 작업 시작...');
-    await syncSkillsToDBTask();
-    await syncRatingsToDBTask();
-    await syncItemsToDBTask();
+    await syncSkillsToDB();
+    await syncRatingsToDB();
+    await syncItemsToDB();
     console.log('동기화 작업 완료');
   });
 

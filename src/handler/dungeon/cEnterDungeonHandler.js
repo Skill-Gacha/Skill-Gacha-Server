@@ -1,4 +1,4 @@
-﻿// src/handler/dungeon/cEnterDungeonHandler.js
+﻿// handler/dungeon/cEnterDungeonHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
@@ -10,9 +10,10 @@ import { getGameAssets } from '../../init/loadAssets.js';
 import { MyStatus } from '../../utils/battle/battle.js';
 import { DUNGEON_CODE } from '../../constants/battle.js';
 import { elementResist } from '../../utils/packet/playerPacket.js';
+import { handleError } from '../../utils/error/errorHandler.js';
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
-  let { dungeonCode } = payload;
+  const { dungeonCode } = payload;
   const user = sessionManager.getUserBySocket(socket);
   const monsterData = getGameAssets().MonsterData.data;
 
@@ -26,7 +27,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const dungeon = sessionManager.createDungeon(dungeonId, dungeonCode);
     dungeon.addUser(user);
 
-    // 던전 코드에 따라 몬스터를 선택
+    // 던전 코드에 따라 몬스터 선택
     const startIndex = (dungeonCode - 1) * 7;
     const endIndex = startIndex + 6;
     const dungeonMonsters = monsterData.slice(startIndex, endIndex);
@@ -54,11 +55,12 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     // 타운 세션에서 사용자 제거 및 디스폰 처리
     await sDespawnHandler(user);
 
-    dungeonCode += DUNGEON_CODE;
+    const actualDungeonCode = dungeonCode + DUNGEON_CODE;
+
     // 던전 입장 패킷 생성 및 전송
     const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
       dungeonInfo: {
-        dungeonCode,
+        dungeonCode: actualDungeonCode,
         monsters: dungeon.monsters.map((monster) => ({
           monsterIdx: monster.monsterIdx,
           monsterModel: monster.monsterModel,
@@ -75,8 +77,9 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
 
     socket.write(enterDungeonPayload);
 
-    console.log(`유저 ${user.id}가 던전 ${dungeonCode}에 입장하였습니다.`);
+    console.log(`유저 ${user.id}가 던전 ${actualDungeonCode}에 입장하였습니다.`);
   } catch (error) {
     console.error('cEnterDungeonHandler 처리 중 오류 발생:', error);
+    handleError(error);
   }
 };

@@ -2,8 +2,7 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
-import { updateUserResource } from '../../db/user/user.db.js';
-import { getItemsFromRedis, updateItemCountInRedis } from '../../db/redis/itemService.js';
+import { getItemsFromRedis } from '../../db/redis/itemService.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {
@@ -40,19 +39,15 @@ class User {
     this.stat.mp = this.stat.maxMp;
   }
 
-  async reduceGold(gold) {
+  // reduce, increase인데도 단순히 증감만 수행하는 것이 아니라,
+  // DB 저장까지 겸하고 있어 클래스의 책임이 모호할 수 있음
+  reduceGold(gold) {
     this.gold -= gold;
-
-    // DB에 감소한 재화 저장
-    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 
-  async increaseResource(gold, stone) {
+  increaseResource(gold, stone) {
     this.gold += gold;
     this.stone += stone;
-
-    // DB에 증가한 재화 저장
-    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 
   async updateItem(nickname) {
@@ -61,13 +56,13 @@ class User {
 
   getInventory() {
     return {
-        gold: this.gold,
-        stone: this.stone,
-        productList: this.items.map(item => ({
-          id: item.itemId,
-          count: item.count,
-        })),
-      };
+      gold: this.gold,
+      stone: this.stone,
+      productList: this.items.map(item => ({
+        id: item.itemId,
+        count: item.count,
+      })),
+    };
   }
 }
 

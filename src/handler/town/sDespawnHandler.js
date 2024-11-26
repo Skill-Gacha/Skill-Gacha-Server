@@ -16,7 +16,7 @@ export const sDespawnHandler = async (user) => {
   try {
     const town = sessionManager.getTown();
     if (!town) {
-      throw new Error('타운 세션을 찾을 수 없습니다.');
+      throw new Error('sDespawnHandler: 타운 세션을 찾을 수 없습니다.');
     }
 
     town.removeUser(user.id);
@@ -30,7 +30,7 @@ export const sDespawnHandler = async (user) => {
 
     console.log(`유저 ${user.id}의 Despawn 패킷을 타운 세션에 전송하였습니다.`);
   } catch (error) {
-    console.error('sDespawnHandler 처리 중 오류 발생:', error);
+    console.error('sDespawnHandler: sDespawnHandler 처리 중 오류 발생:', error);
     handleError(error);
   }
 };

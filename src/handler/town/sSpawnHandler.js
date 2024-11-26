@@ -24,7 +24,7 @@ export const sSpawnHandler = async (newUser) => {
       try {
         targetUser.socket.write(spawnResponse);
       } catch (error) {
-        console.error('S_Spawn 패킷 전송중 오류 발생', error);
+        console.error('sSpawnHandler: S_Spawn 패킷 전송중 오류 발생', error);
       }
     }
   });

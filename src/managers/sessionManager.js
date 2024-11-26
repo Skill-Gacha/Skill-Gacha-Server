@@ -5,13 +5,12 @@ import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import { MAX_PLAYER } from '../constants/pvp.js';
 
-let instance;
 // 싱글톤 클래스
 class SessionManager {
   constructor() {
-    if (instance) {
+    if (SessionManager.instance) {
       console.log(`기존 세션 관리자 인스턴스 반환`);
-      return instance;
+      return SessionManager.instance;
     }
     console.log(`세션 관리자 생성`);
     this.sessions = {
@@ -60,10 +59,6 @@ class SessionManager {
     this.sessions.dungeons.set(sessionId, dungeon);
     console.log('던전 생성 확인 ');
     return dungeon;
-  }
-
-  getDungeon(sessionId) {
-    return this.sessions.dungeons.get(sessionId);
   }
 
   getDungeonByUser(user) {
@@ -136,7 +131,7 @@ class SessionManager {
   }
 
   removeMatchingQueue(user) {
-    const userIndex = this.matchingQueue.findIndex((u) => (u.id = user.id));
+    const userIndex = this.matchingQueue.findIndex((u) => (u.id === user.id));
     if (userIndex !== -1) {
       this.matchingQueue.splice(userIndex, 1);
       console.log('매칭큐에서 유저를 지워줍니다');
@@ -157,32 +152,6 @@ class SessionManager {
 
   removePvpRoom(sessionId) {
     this.sessions.pvpRooms.delete(sessionId);
-  }
-
-  getSessionBySocket(socket) {
-    // 유저가 Town에 있으면 Town 세션 반환
-    this.sessions.town.users.forEach((user) => {
-      if (user.socket === socket) return this.sessions.town;
-    });
-
-    // 유저가 Dungeon 있으면 Dungeon 세션 반환
-    for (let dungeon of this.sessions.dungeons.values()) {
-      for (let user of dungeon.users) {
-        if (user.socket === socket) return dungeon;
-      }
-    }
-
-    // 유저가 Town에 있으면 Pvp 세션 반환
-    for (let pvp of this.sessions.pvpRooms.values()) {
-      for (let user of pvp.users) {
-        if (user.socket === socket) return pvp;
-      }
-    }
-    return null;
-  }
-
-  getPvpRoom(socket) {
-    this.this.sessions.pvpRooms.values();
   }
 }
 

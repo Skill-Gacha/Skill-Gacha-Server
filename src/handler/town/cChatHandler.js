@@ -5,11 +5,11 @@ import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
 
 export const cChatHandler = async ({ socket, payload }) => {
-  const { playerId, senderName, chatMsg } = payload;
+  const { chatMsg } = payload;
 
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
-    console.error('유저를 찾을 수 없습니다.');
+    console.error('cChatHandler: 유저를 찾을 수 없습니다.');
     return;
   }
 
@@ -20,7 +20,7 @@ export const cChatHandler = async ({ socket, payload }) => {
 
   const town = sessionManager.getTown();
   if (!town) {
-    console.error('타운 세션을 찾을 수 없습니다.');
+    console.error('cChatHandler: 타운 세션을 찾을 수 없습니다.');
     return;
   }
 
@@ -29,7 +29,7 @@ export const cChatHandler = async ({ socket, payload }) => {
     try {
       targetUser.socket.write(chatPayload);
     } catch (error) {
-      console.error('S_Chat 패킷 전송중 오류 발생', error);
+      console.error('cChatHandler: S_Chat 패킷 전송 중 오류 발생:', error);
     }
   });
 };

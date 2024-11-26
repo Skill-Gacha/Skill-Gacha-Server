@@ -3,37 +3,36 @@
 import { getElementById } from '../../init/loadAssets.js';
 import { elementResist } from '../packet/playerPacket.js';
 
+const RESISTANCE_KEYS = {
+  1001: 'electricResist',
+  1002: 'earthResist',
+  1003: 'grassResist',
+  1004: 'fireResist',
+  1005: 'waterResist',
+};
+
 export const skillEnhancement = (playerElement, skillElement) => {
   try {
-    let damageRate = 0;
-    //속성이 일치하는지
-    if (playerElement === skillElement) {
-      damageRate = 2;
-    } else {
-      damageRate = 1;
-    }
-    return damageRate;
+    return playerElement === skillElement ? 2 : 1;
   } catch (error) {
-    console.error('속성 일치 여부 확인 중 오류 발생', error);
+    console.error('calculate: 속성 일치 여부 확인 중 오류 발생', error);
   }
 };
 
 export const checkEnemyResist = (skillElement, target) => {
-  const resistList = ['electricResist', 'earthResist', 'grassResist', 'fireResist', 'waterResist'];
-  const resistKey = skillElement - 1001;
-  const resist = resistList[resistKey];
-
-  const monsterResist = target.resistances[resist];
-  return monsterResist;
+  const resistKey = RESISTANCE_KEYS[skillElement];
+  if (!resistKey) {
+    throw new Error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
+  }
+  return target.resistances[resistKey] || 0;
 };
 
 export const checkStopperResist = (skillElement, target) => {
-  const resistList = ['electricResist', 'earthResist', 'grassResist', 'fireResist', 'waterResist'];
-  const resistKey = skillElement - 1001;
-  const resist = resistList[resistKey];
-
-  const playerResist = target.stat.resistances[resist];
-  return playerResist;
+  const resistKey = RESISTANCE_KEYS[skillElement];
+  if (!resistKey) {
+    throw new Error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
+  }
+  return target.stat.resistances[resistKey] || 0;
 };
 
 // 저항력 ALL 100

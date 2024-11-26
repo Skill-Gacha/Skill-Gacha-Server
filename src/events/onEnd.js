@@ -4,10 +4,9 @@ import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
 import sessionManager from '#managers/sessionManager.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
 import { saveRatingToDB } from '../db/rating/ratingDb.js';
-import { updateUserResource } from '../db/user/user.db.js';
 import { deleteSkillsFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
 import { getPlayerRatingFromRedis } from '../db/redis/ratingService.js';
-import { getItemsFromRedis, deleteItemsFromRedis } from '../db/redis/itemService.js';
+import { deleteItemsFromRedis, getItemsFromRedis } from '../db/redis/itemService.js';
 import { saveItemToDB } from '../db/item/itemDb.js';
 
 export const onEnd = (socket) => async () => {
@@ -26,7 +25,7 @@ export const onEnd = (socket) => async () => {
     if (skills) {
       await saveSkillsToDB(nickname, skills);
     } else {
-      console.warn(`${nickname}의 스킬을 찾을 수 없습니다.`);
+      console.warn(`onEnd: ${nickname}의 스킬을 찾을 수 없습니다.`);
     }
 
     // DB에 레이팅 저장
@@ -34,7 +33,7 @@ export const onEnd = (socket) => async () => {
     if (rating !== null) {
       await saveRatingToDB(nickname, rating);
     } else {
-      console.warn(`${nickname}의 레이팅 정보를 찾을 수 없습니다.`);
+      console.warn(`onEnd: ${nickname}의 레이팅 정보를 찾을 수 없습니다.`);
     }
 
     // DB에 아이템 저장
@@ -45,14 +44,14 @@ export const onEnd = (socket) => async () => {
         await saveItemToDB(nickname, item.itemId, item.count);
       }
     } else {
-      console.warn(`${nickname}의 아이템 정보를 찾을 수 없습니다.`);
+      console.warn(`onEnd: ${nickname}의 아이템 정보를 찾을 수 없습니다.`);
     }
 
     // DB에 저장이 완료되면 레디스에서도 제거
     await deleteSkillsFromRedis(nickname);
     await deleteItemsFromRedis(nickname);
   } catch (error) {
-    console.error(`${nickname} 접속 종료 처리 중 문제 발생.`, error);
+    console.error(`onEnd: ${nickname} 접속 종료 처리 중 문제 발생.`, error);
   }
 
   try {
@@ -67,7 +66,7 @@ export const onEnd = (socket) => async () => {
 
     console.log(`유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {
-    console.error('onEnd 처리 중 오류 발생:', error);
+    console.error('onEnd: 처리 중 오류 발생:', error);
     // 추가적인 에러 핸들링 필요 시 추가
   }
 };

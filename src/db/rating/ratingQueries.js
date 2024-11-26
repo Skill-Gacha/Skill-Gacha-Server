@@ -1,4 +1,4 @@
-﻿// src/db/rating/ratingService.js
+﻿// src/db/rating/ratingQueries.js
 
 export const RATING_QUERIES = {
   GET_RATING_BY_NICKNAME: 'SELECT rating FROM Ratings WHERE nickname = ?',

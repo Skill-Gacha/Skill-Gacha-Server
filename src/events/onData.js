@@ -29,7 +29,7 @@ export const onData = (socket) => (data) => {
 
     // 유효성 검사
     if (packetSize <= 0) {
-      console.error('유효하지 않은 패킷 크기:', packetSize);
+      console.error('onData: 유효하지 않은 패킷 크기:', packetSize);
       // 버퍼에서 잘못된 부분 제거
       socket.buffer = socket.buffer.slice(offset);
       continue;
@@ -62,10 +62,10 @@ export const onData = (socket) => (data) => {
       if (handler) {
         handler({ socket, payload: messageData });
       } else {
-        console.error(`핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
+        console.error(`onData: 핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
       }
     } catch (error) {
-      console.error('패킷 파싱 중 오류 발생:');
+      console.error('onData: 패킷 파싱 중 오류 발생:');
       handleError(error);
     }
   }

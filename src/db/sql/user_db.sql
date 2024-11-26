@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `CharacterInfo` (
-    `id` INT NOT NULL PRIMARY KEY auto_increment,
-    `nickname` VARCHAR (50) NOT NULL UNIQUE,
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nickname` VARCHAR(50) NOT NULL UNIQUE,
     `element` INT NOT NULL,
     `maxHp` FLOAT NOT NULL,
     `maxMp` FLOAT NOT NULL,
@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS `CharacterInfo` (
 );
 
 CREATE TABLE IF NOT EXISTS `Skills` (
-    `id` INT PRIMARY KEY NOT NULL auto_increment,
-    `nickname` VARCHAR (50) NOT NULL,
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nickname` VARCHAR(50) NOT NULL,
     `skill1` INT DEFAULT NULL,
     `skill2` INT DEFAULT NULL,
     `skill3` INT DEFAULT NULL,
@@ -20,11 +20,9 @@ CREATE TABLE IF NOT EXISTS `Skills` (
 );
 
 CREATE TABLE IF NOT EXISTS `Ratings` (
-    `nickname` varchar (50) NOT NULL,
-    `rating` int NOT NULL,
-    `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON
-    UPDATE
-    CURRENT_TIMESTAMP,
+    `nickname` VARCHAR(50) NOT NULL,
+    `rating` INT NOT NULL,
+    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`nickname`),
     FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE
 );

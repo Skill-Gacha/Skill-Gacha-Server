@@ -393,5 +393,4 @@ message CurrencyInfo {
 message Product {
   int32 reserve = 1;
   optional int32 price = 2;
-  optional int32 price = 2;
 }

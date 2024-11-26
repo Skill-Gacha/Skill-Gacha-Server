@@ -3,16 +3,12 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
-import {
-  getPlayerRank,
-  getPlayerRatingFromRedis,
-  getTopRatings,
-} from '../../db/redis/ratingService.js';
+import { getPlayerRank, getPlayerRatingFromRedis, getTopRatings } from '../../db/redis/ratingService.js';
 
 export const cViewRankPointHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
-    console.error('유저를 찾을 수 없습니다.');
+    console.error('cViewRankPointHandler: 유저를 찾을 수 없습니다.');
     return;
   }
 
@@ -41,6 +37,6 @@ export const cViewRankPointHandler = async ({ socket, payload }) => {
       }),
     );
   } catch (error) {
-    console.error('S_ViewRankPoint 패킷 전송중 오류 발생', error);
+    console.error('cViewRankPointHandler: S_ViewRankPoint 패킷 전송중 오류 발생', error);
   }
 };
