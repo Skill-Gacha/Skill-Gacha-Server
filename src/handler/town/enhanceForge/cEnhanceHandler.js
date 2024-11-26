@@ -27,31 +27,31 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
 
     //스킬의 랭크에 따른 요구 자원들
     switch (currentSkill.rank) {
-        case 1: // 노말
+        case 100: // 노말
             requiredStone = 5;
             requiredGold = 1000;
             successRate = 0.5;
             downgradeRate = 0; // 하락 없음
             break;
-        case 2: // 레어
+        case 101: // 레어
             requiredStone = 20;
             requiredGold = 3000;
             successRate = 0.3;
             downgradeRate = 0; // 하락 없음
             break;
-        case 3: // 에픽
+        case 102: // 에픽
             requiredStone = 30;
             requiredGold = 5000;
             successRate = 0.1;
             downgradeRate = 0.1; // 10% 하락
             break;
-        case 4: // 유니크
+        case 103: // 유니크
             requiredStone = 50;
             requiredGold = 10000;
             successRate = 0.05;
             downgradeRate = 0.05; // 5% 하락
             break;
-        case 5: // 레전더리
+        case 104: // 레전더리
             console.error('cEnhanceHandler: 레전더리 스킬은 더 이상 업그레이드할 수 없습니다.');
             return;
         default:
