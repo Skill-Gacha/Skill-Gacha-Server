@@ -30,10 +30,10 @@ export const OpponentStatus = (opponent) => {
 
 export const buffSkill = (user, skillId) => {
   const buffs = {
-    26: '전투의 함성',
-    27: '치유의 손길',
-    28: '구원의 손길',
-    29: '영혼 분쇄',
+    26: 1,
+    27: 2,
+    28: 3,
+    29: 4,
   };
 
   if (buffs[skillId]) {
@@ -50,7 +50,7 @@ export const useBuffSkill = async (user, socket, dungeon) => {
   }));
 
   switch (user.stat.buff) {
-    case '전투의 함성':
+    case 1:
       try {
         socket.write(
           createResponse(PacketType.S_BattleLog, {
@@ -67,9 +67,8 @@ export const useBuffSkill = async (user, socket, dungeon) => {
       await delay(1000);
       break;
 
-    case '치유의 손길':
+    case 2:
       const existHp = user.stat.hp;
-      console.log(user.stat.maxHp * 0.3);
       user.increaseHpMp(user.stat.maxHp * 0.3, 0); // 최대 체력의 30% 회복
 
       try {
@@ -89,8 +88,7 @@ export const useBuffSkill = async (user, socket, dungeon) => {
       await delay(1000);
       break;
 
-    case '구원의 손길':
-      console.log(user.stat.maxMp * 0.3);
+    case 3:
       const existMp = user.stat.mp;
       user.increaseHpMp(0, user.stat.maxMp * 0.3); // 최대 마나의 30% 회복
 
@@ -112,10 +110,9 @@ export const useBuffSkill = async (user, socket, dungeon) => {
       await delay(1000);
       break;
 
-    case '영혼 분쇄':
+    case 4:
       user.stat.protect = true;
       try {
-        console.log('너 실행 안 돼?');
         socket.write(
           createResponse(PacketType.S_BattleLog, {
             battleLog: {

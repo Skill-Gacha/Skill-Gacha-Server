@@ -74,8 +74,8 @@ export default class EnemyAttackState extends DungeonState {
     }
 
     // 무적 버프 초기화
-    this.user.stat.resistbuff = false;
     this.user.stat.protect = false;
+
     // 행동 선택 상태로 전환
     this.changeState(IncreaseManaState);
   }
