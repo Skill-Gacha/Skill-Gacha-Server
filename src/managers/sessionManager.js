@@ -5,14 +5,12 @@ import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import { MAX_PLAYER } from '../constants/pvp.js';
 
-let instance;
-
 // 싱글톤 클래스
 class SessionManager {
   constructor() {
-    if (instance) {
+    if (SessionManager.instance) {
       console.log(`기존 세션 관리자 인스턴스 반환`);
-      return instance;
+      return SessionManager.instance;
     }
     console.log(`세션 관리자 생성`);
     this.sessions = {
@@ -137,7 +135,7 @@ class SessionManager {
   }
 
   removeMatchingQueue(user) {
-    const userIndex = this.matchingQueue.findIndex((u) => (u.id = user.id));
+    const userIndex = this.matchingQueue.findIndex((u) => (u.id === user.id));
     if (userIndex !== -1) {
       this.matchingQueue.splice(userIndex, 1);
       console.log('매칭큐에서 유저를 지워줍니다');
