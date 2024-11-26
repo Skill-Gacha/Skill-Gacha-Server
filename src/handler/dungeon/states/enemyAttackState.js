@@ -7,6 +7,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import IncreaseManaState from './increaseManaState.js';
+import PlayerDeadState from './playerDeadState.js';
 
 // 몬스터가 플레이어를 공격하는 상태
 export default class EnemyAttackState extends DungeonState {
@@ -24,8 +25,8 @@ export default class EnemyAttackState extends DungeonState {
     for (const monster of aliveMonsters) {
       let damage = monster.monsterAtk;
 
-      if (this.user.stat.resistbuff || this.user.stat.protect) {
-        damage = 0;
+      if (this.user.stat.protect) {
+        damage = 1;
       }
 
       this.user.reduceHp(damage);
@@ -58,14 +59,13 @@ export default class EnemyAttackState extends DungeonState {
 
       // 플레이어 사망 여부 확인
       if (this.user.stat.hp <= 0) {
-        await delay(2000);
         const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
           actionSet: {
             animCode: 1, // 사망 애니메이션 코드
           },
         });
         this.socket.write(playerActionResponse);
-        this.changeState(GameOverLoseState);
+        this.changeState(PlayerDeadState);
         return;
       }
 
@@ -74,8 +74,8 @@ export default class EnemyAttackState extends DungeonState {
     }
 
     // 무적 버프 초기화
-    this.user.stat.resistbuff = false;
     this.user.stat.protect = false;
+
     // 행동 선택 상태로 전환
     this.changeState(IncreaseManaState);
   }

@@ -3,7 +3,7 @@
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS, MAX_ITEM_COUNT } from '../../../constants/battle.js';
+import { DUNGEON_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import ActionState from './actionState.js';
 import { getProductData } from '../../../init/loadAssets.js';
@@ -13,7 +13,7 @@ import PlayerUseItemState from './PlayerUseItemState.js';
 // 스킬과 달리, id 값 기반으로 이름 불러와야 함
 export default class ItemChoiceState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = DUNGEON_STATUS.SKILL_CHOICE;
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.ITEM_CHOCE;
 
     const itemsData = getProductData();
     const itemsName = itemsData.map((itemData) => itemData.name);
@@ -42,7 +42,7 @@ export default class ItemChoiceState extends DungeonState {
 
   async handleInput(responseCode) {
     // responseCode 유효성 검사)
-    if (responseCode < 1 || responseCode > MAX_ITEM_COUNT) {
+    if (responseCode < 1 || responseCode > MAX_BUTTON_COUNT) {
       invalidResponseCode(this.socket);
     }
 

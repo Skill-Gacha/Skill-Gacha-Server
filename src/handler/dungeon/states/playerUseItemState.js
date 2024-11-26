@@ -3,10 +3,7 @@ import DungeonState from './dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { delay } from '../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import { getProductData } from '../../../init/loadAssets.js';
-import { applyPotionEffect } from '../../../utils/battle/calculate.js';
 import ItemChoiceState from './ItemChoiceState.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 
@@ -16,20 +13,14 @@ export default class PlayerUseItemState extends DungeonState {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.USE_ITEM;
 
     const selectedItem = this.dungeon.selectedItem;
-
-    const itemsData = getProductData(); //이부분 수정 할수있으면 하기 두번불러짐
-    const itemsName = itemsData.map((itemData) => itemData.name);
-
-    // 아이템 사용 시 의도되지 않은 조작 방지 위한 버튼 비활성화
-    const disableButtons = this.user.items.map((item) => ({
-      msg: `${itemsName[item.itemId - 4001]}(보유 수량: ${item.count})`,
-      enable: false,
-    }));
+    const btns = [{ msg: '확인', enable: true }];
+    const existingHp = this.user.stat.hp;
+    const existingMp = this.user.stat.mp;
 
     switch (selectedItem) {
       //**HP 회복 포션**//==============================================================================================
       case 1:
-        this.user.increaseHpMp(30, 0);
+        this.user.increaseHpMp(100, 0);
 
         // 유저 HP 업데이트
         const setPlayerHpResponse = createResponse(PacketType.S_SetPlayerHp, {
@@ -40,9 +31,9 @@ export default class PlayerUseItemState extends DungeonState {
         // 회복 로그
         const hpIncreaseLogResponse = createResponse(PacketType.S_BattleLog, {
           battleLog: {
-            msg: `HP 회복 포션을 사용하여 HP를 30 회복했다.`,
+            msg: `HP 회복 포션을 사용하여 HP를 ${this.user.stat.hp - existingHp} 회복했다.`,
             typingAnimation: false,
-            btns: disableButtons,
+            btns,
           },
         });
         this.socket.write(hpIncreaseLogResponse);
@@ -50,7 +41,7 @@ export default class PlayerUseItemState extends DungeonState {
 
       //**MP 회복 포션**//===================================================================================================
       case 2:
-        this.user.increaseHpMp(0, 30);
+        this.user.increaseHpMp(0, 60);
 
         // 유저 MP 업데이트
         const setPlayerMpResponse = createResponse(PacketType.S_SetPlayerMp, {
@@ -61,9 +52,9 @@ export default class PlayerUseItemState extends DungeonState {
         // 회복 로그
         const mpIncreaseLogResponse = createResponse(PacketType.S_BattleLog, {
           battleLog: {
-            msg: `MP 회복 포션을 사용하여 MP를 30 회복했다.`,
+            msg: `MP 회복 포션을 사용하여 MP를 ${this.user.stat.mp - existingMp} 회복했다.`,
             typingAnimation: false,
-            btns: disableButtons,
+            btns,
           },
         });
         this.socket.write(mpIncreaseLogResponse);
@@ -78,7 +69,7 @@ export default class PlayerUseItemState extends DungeonState {
           return; // 함수 종료
         }
 
-        this.user.reduceHp(20);
+        this.user.reduceHp(50);
         this.user.stat.berserk = true;
 
         // 유저 HP 업데이트
@@ -89,9 +80,9 @@ export default class PlayerUseItemState extends DungeonState {
 
         const berserkLogResponse = createResponse(PacketType.S_BattleLog, {
           battleLog: {
-            msg: `광포화 포션을 사용하여 HP가 20 감소하고, 일시적으로 공격력이  증가했다.`,
+            msg: `광포화 포션을 사용하여 HP가 50 감소하고, 일시적으로 공격력이 2.5배 증가했다.`,
             typingAnimation: false,
-            btns: disableButtons,
+            btns,
           },
         });
         this.socket.write(berserkLogResponse);
@@ -103,8 +94,7 @@ export default class PlayerUseItemState extends DungeonState {
 
         if (dangerRandomNum < 25) {
           // 1만 남기고, HP 감소
-          const userHp = this.user.stat.hp;
-          this.user.reduceHp(userHp - 1);
+          this.user.reduceHp(this.user.stat.hp - 1);
 
           // 유저 HP 업데이트
           const setPlayerHpResponse = createResponse(PacketType.S_SetPlayerHp, {
@@ -117,15 +107,17 @@ export default class PlayerUseItemState extends DungeonState {
             battleLog: {
               msg: `위험한 포션의 부작용으로 HP가 1만 남게 되었다.`,
               typingAnimation: false,
-              btns: disableButtons,
+              btns,
             },
           });
           this.socket.write(randomLogResponse);
         }
         if (dangerRandomNum >= 25 && dangerRandomNum < 50) {
-          const userHp = this.user.stat.hp;
-          const userMp = this.user.stat.mp;
-          this.user.increaseHpMp(100 - userHp, 100 - userMp);
+          // 최대 체력 - 현재 체력만큼 회복
+          this.user.increaseHpMp(
+            this.user.stat.maxHp - this.user.stat.hp,
+            this.user.stat.maxMp - this.user.stat.mp,
+          );
 
           // 유저 HP 업데이트
           const setPlayerHpResponse = createResponse(PacketType.S_SetPlayerHp, {
@@ -142,7 +134,7 @@ export default class PlayerUseItemState extends DungeonState {
             battleLog: {
               msg: `위험한 포션을 사용하여 HP와 MP가 최대치로 회복되었다.`,
               typingAnimation: false,
-              btns: disableButtons,
+              btns,
             },
           });
           this.socket.write(randomLogResponse);
@@ -152,9 +144,9 @@ export default class PlayerUseItemState extends DungeonState {
 
           const randomLogResponse = createResponse(PacketType.S_BattleLog, {
             battleLog: {
-              msg: `위험한 포션을 사용하여 일시적으로 공격력이 1.5배 증가했다.`,
+              msg: `위험한 포션을 사용하여 일시적으로 공격력이 5배 증가했다.`,
               typingAnimation: false,
-              btns: disableButtons,
+              btns,
             },
           });
           this.socket.write(randomLogResponse);
@@ -166,46 +158,30 @@ export default class PlayerUseItemState extends DungeonState {
             battleLog: {
               msg: `위험한 포션을 사용하여 일시적으로 무적 상태가 되었다.`,
               typingAnimation: false,
-              btns: disableButtons,
+              btns,
             },
           });
           this.socket.write(randomLogResponse);
         }
         break;
 
-      //**저항 포션**// ===================================================================================================================
+      //**만병통치약**// ===================================================================================================================
       case 5:
-        const resistRandomNum = Math.floor(Math.random() * 100);
-        // 확률에 따라 효과 적용 및 로그 출력
-        if (resistRandomNum < 90) {
-          this.user.stat.resistbuff = true;
+        // 상태이상 풀어주는 로직 추가해야 됨(아직 디버프가 없음) => 상태이상을 true에서 false로 바꿔주면 됨
 
-          applyPotionEffect(this.user); // 저항력을 100으로 채우는 함수 호출
-
-          const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
-            battleLog: {
-              msg: `속성 저항 포션을 사용하여 일시적으로 무적 상태가 되었다.`,
-              typingAnimation: false,
-              btns: disableButtons,
-            },
-          });
-          this.socket.write(resistRandomLogResponse);
-        } else {
-          const resistRandomLogResponse = createResponse(PacketType.S_BattleLog, {
-            battleLog: {
-              msg: `속성 저항 포션이 상한 것 같다. 별다른 효과를 얻지 못했다.`,
-              typingAnimation: false,
-              btns: disableButtons,
-            },
-          });
-          this.socket.write(resistRandomLogResponse);
-        }
         break;
     }
     await updateItemCountInRedis(this.user.nickname, this.dungeon.selectedItem + 4000, -1);
     await this.user.updateItem(this.user.nickname);
-    await delay(1000);
+  }
 
-    this.changeState(EnemyAttackState);
+  async handleInput(responseCode) {
+    // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
+    if (responseCode === 1) {
+      this.changeState(EnemyAttackState); // 플레이어 확인 후 다음 상태로 전환
+    } else {
+      // 유효하지 않은 응답 처리
+      invalidResponseCode(this.socket);
+    }
   }
 }
