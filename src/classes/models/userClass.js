@@ -41,8 +41,9 @@ class User {
 
   // reduce, increase인데도 단순히 증감만 수행하는 것이 아니라,
   // DB 저장까지 겸하고 있어 클래스의 책임이 모호할 수 있음
-  reduceGold(gold) {
-    this.gold -= gold;
+  reduceResource(gold, stone) { 
+    this.gold = Math.max(0, this.gold - gold); 
+    this.stone = Math.max(0, this.stone - stone); 
   }
 
   increaseResource(gold, stone) {
