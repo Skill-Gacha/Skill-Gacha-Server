@@ -16,6 +16,8 @@ import { cOpenStoreHandler } from './town/store/cOpenStoreHandler.js';
 import { cBuyItemHandler } from './town/store/cBuyItemHandler.js';
 import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
 import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
+import { cEnhanceHandler } from './town/enhanceForge/cEnhanceHandler.js';
+import { cEnhanceUiHandler } from './town/enhanceForge/cEnhanceUiHandler.js';
 
 // 핸들러 매핑
 const handlers = {
@@ -65,8 +67,18 @@ const handlers = {
   },
   [PacketType.C_ViewRankPoint]: {
     handler: cViewRankPointHandler,
-    protoType: 'C_BuyItemRequest',
+    protoType: 'C_ViewRankPoint',
   },
+
+  // [PacketType.C_EnhanceUiRequest]: {
+  //   handler: cEnhanceUiHandler,
+  //   protoType: 'C_EnhanceUiRequest',
+  // },
+  // [PacketType.C_EnhanceRequest]: {
+  //   handler: cEnhanceHandler,
+  //   protoType: 'C_EnhanceRequest',
+  // },
+  
   // 다른 패킷 정의 추가...
 };
 
