@@ -5,6 +5,7 @@ import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { getProductById } from '../../../init/loadAssets.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import { updateUserResource } from '../../../db/user/userDb.js';
 
 export const cBuyItemHandler = async ({ socket, payload }) => {
   const { itemId } = payload;
@@ -47,7 +48,8 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
   await updateItemCountInRedis(user.nickname, itemId, 1);
 
   // 유저 골드 감소시키기
-  await user.reduceGold(product.price);
+  user.reduceGold(product.price);
+  await updateUserResource(user.nickname, user.gold, user.stone);
 
   try {
     user.socket.write(

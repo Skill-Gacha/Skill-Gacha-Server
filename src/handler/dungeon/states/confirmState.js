@@ -11,6 +11,7 @@ import GameOverWinState from './gameOverWinState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import FailFleeMessageState from './failFleeMessageState.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
+import { updateUserResource } from '../../../db/user/userDb.js';
 
 // 확인 버튼 출력을 위한 부분
 export default class ConfirmState extends DungeonState {
@@ -58,7 +59,8 @@ export default class ConfirmState extends DungeonState {
           if (this.user.gold < 100) {
             this.changeState(FailFleeMessageState);
           } else {
-            await this.user.reduceGold(100);
+            this.user.reduceGold(100);
+            await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
             this.changeState(FleeMessageState);
           }
         } else if (responseCode === 2) {
@@ -72,6 +74,7 @@ export default class ConfirmState extends DungeonState {
         if (responseCode === 1) {
           // 강화석으로 받기
           this.user.increaseResource(0, this.dungeon.reward.stone);
+          await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
           this.changeState(GameOverWinState); // 게임 승리
         } else if (responseCode === 2) {
           // 강화석 받기 취소

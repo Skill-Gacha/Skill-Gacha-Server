@@ -40,19 +40,15 @@ class User {
     this.stat.mp = this.stat.maxMp;
   }
 
-  async reduceGold(gold) {
+  // reduce, increase인데도 단순히 증감만 수행하는 것이 아니라,
+  // DB 저장까지 겸하고 있어 클래스의 책임이 모호할 수 있음
+  reduceGold(gold) {
     this.gold -= gold;
-
-    // DB에 감소한 재화 저장
-    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 
-  async increaseResource(gold, stone) {
+  increaseResource(gold, stone) {
     this.gold += gold;
     this.stone += stone;
-
-    // DB에 증가한 재화 저장
-    await updateUserResource(this.nickname, this.gold, this.stone);
   }
 
   async updateItem(nickname) {
