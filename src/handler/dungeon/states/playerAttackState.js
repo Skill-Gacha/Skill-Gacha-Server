@@ -6,8 +6,13 @@ import MonsterDeadState from './monsterDeadState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../utils/battle/calculate.js';
+import { BUFF_SKILL, DUNGEON_STATUS } from '../../../constants/battle.js';
+import {
+  checkEnemyResist,
+  skillEnhancement,
+  updateDamage,
+} from '../../../utils/battle/calculate.js';
+import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
 
 // 플레이어가 공격하는 상태
 export default class PlayerAttackState extends DungeonState {
@@ -17,6 +22,24 @@ export default class PlayerAttackState extends DungeonState {
 
     const selectedSkill = this.dungeon.selectedSkill;
     const userSkillInfo = this.user.userSkills[selectedSkill];
+
+    if (userSkillInfo.id >= BUFF_SKILL) {
+      // user.stat.buff 값 설정해주기
+      buffSkill(this.user, userSkillInfo.id);
+
+      // 버프 상태에 따라 행동 결정
+      useBuffSkill(this.user, this.socket);
+      const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
+        targetMonsterIdx: -1,
+        actionSet: {
+          animCode: 0,
+          effectCode: userSkillInfo.effectCode,
+        },
+      });
+      this.socket.write(playerActionResponse);
+      this.changeState(EnemyAttackState);
+      return;
+    }
 
     // 플레이어의 속성과 스킬의 속성이 일치하는지 검증 후, 배율 적용(1차 검증)
     const playerElement = this.user.element;

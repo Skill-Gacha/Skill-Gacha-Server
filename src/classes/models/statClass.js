@@ -6,10 +6,10 @@ class Stat {
     this.maxHp = maxHp;
     this.mp = mp;
     this.maxMp = maxMp;
+    this.buff = null;
     this.berserk = false;
     this.dangerPotion = false;
     this.protect = false;
-    this.resistbuff = false;
 
     this.resistances = {
       electricResist: resists.electricResist,
@@ -18,7 +18,6 @@ class Stat {
       fireResist: resists.fireResist,
       waterResist: resists.waterResist,
     };
-
 
     this.originalResistances = { ...this.resistances };
   }
