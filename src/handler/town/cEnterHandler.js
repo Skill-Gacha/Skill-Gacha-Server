@@ -2,7 +2,7 @@
 
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
-import { createUser, findUserNickname } from '../../db/user/user.db.js';
+import { createUser, findUserNickname } from '../../db/user/userDb.js';
 import { getElementById, getSkillById } from '../../init/loadAssets.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { sSpawnHandler } from './sSpawnHandler.js';
@@ -92,7 +92,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
 
       userRecord = await findUserNickname(nickname);
     }
-
+    
     user = new User(
       socket,
       userRecord.id,
@@ -102,7 +102,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord.maxMp,
       userRecord.gold,
       userRecord.stone,
-      userRecord ? userRecord.resists : elementResist(chosenElement),
+      userRecord.resists ? userRecord.resists : elementResist(chosenElement),
     );
 
     const skills = await getSkillsFromDB(nickname);
