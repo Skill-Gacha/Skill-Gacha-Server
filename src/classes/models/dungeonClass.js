@@ -14,9 +14,7 @@ class Dungeon extends BaseSession {
     this.selectedSkill = null;
     this.newSkill = null;
     this.selectedItem = null;
-
     this.dungeonStatus = null;
-    // this.selectedMonster = null;
   }
 
   addMonster(monster) {
@@ -25,17 +23,30 @@ class Dungeon extends BaseSession {
 
   // 리워드 데이터 초기화 함수
   initReward() {
-    const gold = this.dungeonCode * 100;
-    const stone = this.dungeonCode * 1;
+    const gold = this.calculateGold();
+    const stone = this.calculateStone();
     const rewardSkills = getRandomRewardSkills(this.dungeonCode);
-    let item = null;
-    if (Math.random() < 0.02) {
-      // 4004 4005 둘중 하나
-      const ittmeIds = [4004, 4005];
-      item = ittmeIds[Math.floor(Math.random() * 2)];
-    }
+    const item = this.generateRandomItem();
 
     return new Reward(gold, stone, rewardSkills, item);
+  }
+
+  calculateGold() {
+    const baseGold = 100;
+    return this.dungeonCode * baseGold;
+  }
+
+  calculateStone() {
+    const baseStone = 1;
+    return this.dungeonCode * baseStone;
+  }
+
+  generateRandomItem() {
+    if (Math.random() < 0.02) {
+      const itemIds = [4004, 4005];
+      return itemIds[Math.floor(Math.random() * itemIds.length)];
+    }
+    return null;
   }
 }
 
