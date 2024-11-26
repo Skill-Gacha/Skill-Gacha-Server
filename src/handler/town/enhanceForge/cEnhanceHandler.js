@@ -1,8 +1,8 @@
 // src/handler/town/enhanceForge/cEnhanceHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
-import { PacketType } from '../../constants/header.js';
-import { createResponse } from '../../utils/response/createResponse.js';
+import { PacketType } from '../../../constants/header.js';
+import { createResponse } from '../../../utils/response/createResponse.js';
 import {getNextRankAndSameElement, getSkillById} from '../../../init/loadAssets.js'; 
 
 export const cEnhanceHandler = async ({ socket, payload }) => {
