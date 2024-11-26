@@ -22,7 +22,7 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
         console.error('cEnhanceHandler: 잘못된 스킬 코드입니다.');
         return;
     }
-    
+
     let requiredStone, requiredGold, successRate, downgradeRate;
 
     //스킬의 랭크에 따른 요구 자원들
