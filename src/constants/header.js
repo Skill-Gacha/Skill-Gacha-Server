@@ -14,6 +14,8 @@ export const PacketType = {
   C_OpenStoreRequest: 46,
   C_BuyItemRequest: 48,
   C_InventoryViewRequest: 50,
+  C_EnhanceUiRequest: 52,
+  C_EnhanceRequest: 54,
 
   // 서버 → 클라이언트 패킷
   S_Enter: 1,
@@ -52,4 +54,6 @@ export const PacketType = {
   S_OpenStoreResponse: 47,
   S_BuyItemResponse: 49,
   S_InventoryViewResponse: 51,
+  S_EnhanceUiResponse: 53,
+  S_EnhanceResponse: 55,
 };
