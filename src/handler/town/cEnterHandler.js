@@ -38,10 +38,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       const skillsFromRedis = await getSkillsFromRedis(nickname);
 
       // 유저 인스턴스에 스킬 할당
-      user.userSkills = Object.keys(skillsFromRedis)
-        .filter((key) => key.startsWith('skill'))
-        .map((key) => getSkillById(skillsFromRedis[key])) // 스킬 ID로 매핑
-        .filter((skill) => skill != null); // getSkillById의 결과가 null인 경우 필터링
+      user.userSkills = loadUserSkills(skillsFromRedis);
       console.log(`cEnterHandler: 유저 ${user.id}가 마을 세션으로 이동되었습니다.`);
 
       const itemsFromRedis = await getItemsFromRedis(nickname);
@@ -108,10 +105,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
     const skills = await getSkillsFromDB(nickname);
     await saveSkillsToRedis(nickname, skills);
 
-    user.userSkills = Object.keys(skills)
-      .filter((key) => key.startsWith('skill'))
-      .map((key) => getSkillById(skills[key]))
-      .filter((skill) => skill != null);
+    user.userSkills = loadUserSkills(skills);
 
     const itemsFromDB = await getItemsFromDB(nickname);
     await saveItemsToRedis(nickname, itemsFromDB);
@@ -146,4 +140,11 @@ export const cEnterHandler = async ({ socket, payload }) => {
 
   // 기존 유저들에게 접속한 유저 정보 알림
   await sSpawnHandler(user);
+};
+
+const loadUserSkills = (skillsData) => {
+  return Object.keys(skillsData)
+    .filter((key) => key.startsWith('skill'))
+    .map((key) => getSkillById(skillsData[key]))
+    .filter((skill) => skill != null);
 };
