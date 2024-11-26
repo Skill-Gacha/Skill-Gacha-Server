@@ -15,18 +15,66 @@ import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
 import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
 
+const SKILL_OFFSET = 1000;
+
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload;
+  
+  try {
+    // 입력값 검증
+    const validation = validatePayload(payload);
+    if (!validation) {
+      console.warn(`cEnterHandler: 잘못된 입력값입니다. 닉네임: ${nickname}, 속성ID: ${elementId}`);
+      return;
+    }
 
-  // 엘리먼트 유효성 검사
-  const chosenElement = getElementById(elementId);
-  if (!chosenElement) {
-    console.error('cEnterHandler: 존재하지 않는 속성 ID입니다.');
-    return;
+    // 속성 유효성 검사
+    const chosenElement = getElementById(elementId);
+    if (!chosenElement) {
+      console.error('cEnterHandler: 존재하지 않는 속성 ID입니다.');
+      return;
+    }
+
+    let user = sessionManager.getUserBySocket(socket);
+    if (user) {
+      await handleExistingUser(user, nickname, chosenElement);
+    } else {
+      user = await handleConnectingUser(nickname, elementId, chosenElement, socket);
+      sessionManager.addUser(user);
+    }
+
+    // 클라이언트에게 현재 유저 정보 전송
+    const enterData = playerData(user);
+    const enterResponse = createResponse(PacketType.S_Enter, { player: enterData });
+    socket.write(enterResponse);
+
+    // 내 화면에 다른 플레이어 스폰
+    await spawnOtherUsers(user);
+
+    // 다른 플레이어에게 나를 알림
+    await sSpawnHandler(user);
+  } catch (error) {
+    console.error('cEnterHandler 에러:', error);
+  }
+};
+
+// 입력 검증
+const validatePayload = (payload) => {
+  const { nickname, class: elementId } = payload;
+
+  if (typeof nickname !== 'string' || nickname.length < 2 || nickname.length > 10) {
+    return false;
   }
 
-  let user = sessionManager.getUserBySocket(socket);
-  if (user) {
+  if (typeof elementId !== 'number' || elementId < 1001 || elementId > 1005) {
+    return false;
+  }
+
+  return true;
+};
+
+const handleExistingUser = async (user, nickname, chosenElement) => {
+  try {
     user.resetHpMp();
     console.log(`cEnterHandler: 유저 ${user.id}가 이미 세션에 존재합니다.`);
 
@@ -34,63 +82,41 @@ export const cEnterHandler = async ({ socket, payload }) => {
     if (currentSession !== sessionManager.getTown()) {
       sessionManager.getTown().addUser(user);
 
-      // 레디스를 통해 스킬 최신화
-      const skillsFromRedis = await getSkillsFromRedis(nickname);
+      // 스킬 및 아이템 로드
+      const [skillsFromRedis, itemsFromRedis] = await Promise.all([
+        getSkillsFromRedis(nickname),
+        getItemsFromRedis(nickname),
+      ]);
 
-      // 유저 인스턴스에 스킬 할당
       user.userSkills = loadUserSkills(skillsFromRedis);
       console.log(`cEnterHandler: 유저 ${user.id}가 마을 세션으로 이동되었습니다.`);
 
-      const itemsFromRedis = await getItemsFromRedis(nickname);
       if (!itemsFromRedis) {
-        // Redis에 아이템이 없을 경우 초기화
         const initializedItems = initializeItems();
         await saveItemsToRedis(nickname, initializedItems);
         user.items = initializedItems;
       } else {
-        // Redis에서 가져온 아이템을 배열로 할당
         user.items = itemsFromRedis;
       }
     }
-  } else {
-    let userRecord;
+  } catch (error) {
+    console.error(`cEnterHandler: handleExistingUser 에러; 유저 ID: ${user.id}:`, error);
+    throw error;
+  }
+};
 
-    const existingPlayer = await findUserNickname(nickname);
-    if (existingPlayer) {
-      userRecord = existingPlayer;
-      const elementIdByRecord = getElementById(userRecord.element);
-      userRecord.resists = elementResist(elementIdByRecord);
+const handleConnectingUser = async (nickname, classId, chosenElement, socket) => {
+  try {
+    let userRecord = await findUserNickname(nickname);
+
+    if (!userRecord) {
+      userRecord = await createNewUser(nickname, classId, chosenElement);
     } else {
-      await createUser(nickname, elementId, chosenElement.maxHp, chosenElement.maxMp);
-
-      const basicSkillId = elementId - 1000;
-
-      await saveSkillsToDB(nickname, {
-        skill1: basicSkillId,
-        skill2: 0,
-        skill3: 0,
-        skill4: 0,
-      });
-      await saveRatingToDB(nickname, 1000);
-
-      await saveSkillsToRedis(nickname, {
-        skill1: basicSkillId,
-        skill2: 0,
-        skill3: 0,
-        skill4: 0,
-      });
-      await saveRatingToRedis(nickname, 1000);
-
-      const initialItems = initializeItems();
-      for (let item of initialItems) {
-        await saveItemToDB(nickname, item.itemId, item.count);
-      }
-      await saveItemsToRedis(nickname, initialItems);
-
-      userRecord = await findUserNickname(nickname);
+      const elementByRecord = getElementById(userRecord.element);
+      userRecord.resists = elementResist(elementByRecord);
     }
-    
-    user = new User(
+
+    const user = new User(
       socket,
       userRecord.id,
       userRecord.element,
@@ -99,16 +125,21 @@ export const cEnterHandler = async ({ socket, payload }) => {
       userRecord.maxMp,
       userRecord.gold,
       userRecord.stone,
-      userRecord.resists ? userRecord.resists : elementResist(chosenElement),
+      userRecord.resists || elementResist(chosenElement)
     );
 
-    const skills = await getSkillsFromDB(nickname);
-    await saveSkillsToRedis(nickname, skills);
+    // 스킬 및 아이템 로드
+    const [skills, itemsFromDB] = await Promise.all([
+      getSkillsFromDB(nickname),
+      getItemsFromDB(nickname),
+    ]);
+
+    await Promise.all([
+      saveSkillsToRedis(nickname, skills),
+      saveItemsToRedis(nickname, itemsFromDB),
+    ]);
 
     user.userSkills = loadUserSkills(skills);
-
-    const itemsFromDB = await getItemsFromDB(nickname);
-    await saveItemsToRedis(nickname, itemsFromDB);
 
     const itemsFromRedis = await getItemsFromRedis(nickname);
     if (!itemsFromRedis) {
@@ -119,27 +150,44 @@ export const cEnterHandler = async ({ socket, payload }) => {
       user.items = itemsFromRedis;
     }
 
-    sessionManager.addUser(user);
+    return user;
+  } catch (error) {
+    console.error(`cEnterHandler: handleNewOrReturningUser 에러; 닉네임: ${nickname}:`, error);
+    throw error;
   }
+};
 
-  const enterData = playerData(user);
+const createNewUser = async (nickname, classId, chosenElement) => {
+  try {
+    await createUser(nickname, classId, chosenElement.maxHp, chosenElement.maxMp);
 
-  const enterResponse = createResponse(PacketType.S_Enter, { player: enterData });
-  socket.write(enterResponse);
+    const basicSkillId = classId - SKILL_OFFSET;
 
-  const otherUsers = Array.from(sessionManager.getTown().users.values()).filter(
-    (u) => u.id !== user.id,
-  );
+    const skillData = {
+      skill1: basicSkillId,
+      skill2: 0,
+      skill3: 0,
+      skill4: 0,
+    };
 
-  if (otherUsers.length > 0) {
-    const otherPlayersData = otherUsers.map((u) => playerData(u));
+    await Promise.all([
+      saveSkillsToDB(nickname, skillData),
+      saveRatingToDB(nickname, 1000),
+      saveSkillsToRedis(nickname, skillData),
+      saveRatingToRedis(nickname, 1000),
+    ]);
 
-    const spawnResponse = createResponse(PacketType.S_Spawn, { players: otherPlayersData });
-    socket.write(spawnResponse);
+    const initialItems = initializeItems();
+    await Promise.all(
+      initialItems.map(item => saveItemToDB(nickname, item.itemId, item.count))
+    );
+    await saveItemsToRedis(nickname, initialItems);
+
+    return await findUserNickname(nickname);
+  } catch (error) {
+    console.error(`cEnterHandler: createNewUser 에러; 닉네임: ${nickname}:`, error);
+    throw error;
   }
-
-  // 기존 유저들에게 접속한 유저 정보 알림
-  await sSpawnHandler(user);
 };
 
 const loadUserSkills = (skillsData) => {
@@ -147,4 +195,22 @@ const loadUserSkills = (skillsData) => {
     .filter((key) => key.startsWith('skill'))
     .map((key) => getSkillById(skillsData[key]))
     .filter((skill) => skill != null);
+};
+
+const spawnOtherUsers = async (user) => {
+  try {
+    const townSession = sessionManager.getTown();
+    const otherUsers = Array.from(townSession.users.values()).filter(
+      (u) => u.id !== user.id,
+    );
+
+    if (otherUsers.length > 0) {
+      const otherPlayersData = otherUsers.map((otherUser) => playerData(otherUser));
+      const spawnResponse = createResponse(PacketType.S_Spawn, { players: otherPlayersData });
+      user.socket.write(spawnResponse);
+    }
+  } catch (error) {
+    console.error(`cEnterHandler: notifyOtherUsers 에러; 유저ID: ${user.id}:`, error);
+    throw error;
+  }
 };
