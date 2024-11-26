@@ -1,7 +1,7 @@
 ﻿// src/db/log/log.db.js
 
 import dbPool from '../database.js';
-import { GAME_LOG_QUERIES } from './gameLog.queries.js';
+import { GAME_LOG_QUERIES } from './gameLogQueries.js';
 import CustomError from '../../utils/error/customError.js';
 import { ErrorCodes } from '../../utils/error/errorCodes.js';
 

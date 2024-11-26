@@ -2,7 +2,7 @@
 
 import dbPool from '../database.js';
 import { toCamelCase } from '../../utils/transformCase.js';
-import { USER_QUERIES } from './user.queries.js';
+import { USER_QUERIES } from './userQueries.js';
 
 export const findUserNickname = async (nickname) => {
   const [rows] = await dbPool.query(USER_QUERIES.FIND_USER_BY_NICKNAME, [nickname]);
