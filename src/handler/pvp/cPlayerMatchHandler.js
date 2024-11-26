@@ -36,7 +36,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   }
 
   const dungeonCode = Math.floor(Math.random() * 3 + 1) + 5000;
-  pvpRoom.setUserTurn();
+  pvpRoom.initializeTurn();
   const isFirstAttack = pvpRoom.getUserTurn();
 
   const lastKoreanA = checkBatchim(playerB.nickname) ? '과' : '와';

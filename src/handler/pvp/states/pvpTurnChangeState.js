@@ -11,7 +11,7 @@ export default class PvpTurnChangeState extends PvpState {
     this.pvpRoom.pvpStatus = PVP_STATUS.TURN_CHANGE;
 
     // 턴 전환
-    this.pvpRoom.setUserTurn();
+    this.pvpRoom.switchTurn();
 
     // 양쪽 유저에게 턴 정보 전달
     this.mover.socket.write(
