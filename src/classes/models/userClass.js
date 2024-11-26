@@ -2,7 +2,7 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
-import { updateUserResource } from '../../db/user/user.db.js';
+import { updateUserResource } from '../../db/user/userDb.js';
 import { getItemsFromRedis } from '../../db/redis/itemService.js';
 
 class User {
