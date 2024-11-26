@@ -61,10 +61,6 @@ class SessionManager {
     return dungeon;
   }
 
-  getDungeon(sessionId) {
-    return this.sessions.dungeons.get(sessionId);
-  }
-
   getDungeonByUser(user) {
     return this.getSessionByUserId(user.id);
   }
@@ -156,32 +152,6 @@ class SessionManager {
 
   removePvpRoom(sessionId) {
     this.sessions.pvpRooms.delete(sessionId);
-  }
-
-  getSessionBySocket(socket) {
-    // 유저가 Town에 있으면 Town 세션 반환
-    this.sessions.town.users.forEach((user) => {
-      if (user.socket === socket) return this.sessions.town;
-    });
-
-    // 유저가 Dungeon 있으면 Dungeon 세션 반환
-    for (let dungeon of this.sessions.dungeons.values()) {
-      for (let user of dungeon.users) {
-        if (user.socket === socket) return dungeon;
-      }
-    }
-
-    // 유저가 Town에 있으면 Pvp 세션 반환
-    for (let pvp of this.sessions.pvpRooms.values()) {
-      for (let user of pvp.users) {
-        if (user.socket === socket) return pvp;
-      }
-    }
-    return null;
-  }
-
-  getPvpRoom(socket) {
-    this.this.sessions.pvpRooms.values();
   }
 }
 
