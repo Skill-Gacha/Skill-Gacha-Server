@@ -12,7 +12,7 @@ class PvpRoomClass extends BaseSession {
     this.userTurn = null;
     this.selectedSkill = null;
   }
-  
+
   initializeTurn() {
     this.userTurn = Math.random() > 0.5 ? PLAYER_A : PLAYER_B;
   }

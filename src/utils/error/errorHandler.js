@@ -1,7 +1,5 @@
 // src/utils/error/errorHandler.js
 
-import { ErrorCodes } from './errorCodes.js';
-
 export const handleError = (error) => {
   let responseCode;
   let message;

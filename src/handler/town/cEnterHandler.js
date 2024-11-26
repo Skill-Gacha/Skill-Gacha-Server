@@ -19,7 +19,7 @@ const SKILL_OFFSET = 1000;
 
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload;
-  
+
   try {
     // 입력값 검증
     const validation = validatePayload(payload);
@@ -125,7 +125,7 @@ const handleConnectingUser = async (nickname, classId, chosenElement, socket) =>
       userRecord.maxMp,
       userRecord.gold,
       userRecord.stone,
-      userRecord.resists || elementResist(chosenElement)
+      userRecord.resists || elementResist(chosenElement),
     );
 
     // 스킬 및 아이템 로드
@@ -179,7 +179,7 @@ const createNewUser = async (nickname, classId, chosenElement) => {
 
     const initialItems = initializeItems();
     await Promise.all(
-      initialItems.map(item => saveItemToDB(nickname, item.itemId, item.count))
+      initialItems.map(item => saveItemToDB(nickname, item.itemId, item.count)),
     );
     await saveItemsToRedis(nickname, initialItems);
 
