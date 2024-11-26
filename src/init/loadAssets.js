@@ -73,6 +73,10 @@ export const getSkillById = (skillId) => {
   return null;
 };
 
+export const getUserSkills = (user) => {
+  return user.skillCodes.map(skillId => getSkillById(skillId)).filter(skill => skill !== null);
+};
+
 export const getProductById = (productId) => {
   const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
   return gameAssets.productData.data[index];
