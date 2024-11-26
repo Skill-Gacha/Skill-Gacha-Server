@@ -12,7 +12,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
   // 소켓을 통해 사용자 정보 가져오기
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
-    console.error('C_Move: 사용자 정보를 찾을 수 없습니다.');
+    console.error('cBuyItemHandler: 사용자 정보를 찾을 수 없습니다.');
     return;
   }
 
@@ -21,7 +21,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
   // 돈이 충분한지 확인 해서 조건문으로 실행해야 됨
   if (user.gold < product.price) {
     user.socket.write(createResponse(PacketType.S_BuyItemResponse, { success: false }));
-    console.log('유저 골드가 부족합니다.');
+    console.log('cBuyItemHandler: 골드 부족 시 아이템 구매 시도 확인');
     return;
   }
 
@@ -34,7 +34,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
         success: false,
       }),
     );
-    console.log('아이템을 3개 이상 보유할 수 없습니다');
+    console.log('cBuyItemHandler: 3개 초과 시 아이템 구매 시도 확인');
     return;
   }
 
@@ -59,6 +59,6 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
       }),
     );
   } catch (error) {
-    console.error('S_BuyItemResponse 패킷 전송중 오류 발생', error);
+    console.error('cBuyItemHandler: S_BuyItemResponse 패킷 전송중 오류 발생', error);
   }
 };

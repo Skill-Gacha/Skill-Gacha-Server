@@ -10,6 +10,7 @@ export const cInventoryViewHandler = async ({ socket, payload }) => {
     console.error('cInventoryViewHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
     return;
   }
+  
   //모든 제품 데이터 가져오기
   const allProducts = getProductData(); //전체 아이템들 5종
   const inventory = user.getInventory();
@@ -34,7 +35,7 @@ export const cInventoryViewHandler = async ({ socket, payload }) => {
     socket.write(inventoryResponse);
 
   } catch (error) {
-    console.error('인벤토리 조회 중 오류 발생:', error);
+    console.error('cInventoryViewHandler: 인벤토리 조회 중 오류 발생:', error);
     // 필요한 경우 오류 응답 전송
   }
 };

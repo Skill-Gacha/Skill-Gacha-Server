@@ -36,7 +36,7 @@ const initializeRedis = async () => {
           await redisClient.hSet(skillKey, skillsData);
           console.log(`Redis에 스킬 정보 저장: ${skillKey}`);
         } else {
-          console.warn(`유저 ${nickname}의 스킬 정보를 찾을 수 없습니다.`);
+          console.warn(`initializeRedis: 유저 ${nickname}의 스킬 정보를 찾을 수 없습니다.`);
         }
 
         // 레이팅 정보 가져오기
@@ -52,15 +52,15 @@ const initializeRedis = async () => {
           });
           console.log(`Redis에 레이팅 정보 저장: ${nickname} (레이팅: ${rating})`);
         } else {
-          console.warn(`유저 ${nickname}의 레이팅 정보를 찾을 수 없습니다.`);
+          console.warn(`initializeRedis: 유저 ${nickname}의 레이팅 정보를 찾을 수 없습니다.`);
         }
       } catch (userError) {
-        console.error(`유저 ${nickname} 초기화 중 오류 발생:`, userError);
+        console.error(`initializeRedis: 유저 ${nickname} 초기화 중 오류 발생:`, userError);
       }
     }));
 
     console.log('Redis 초기화 완료.');
   } catch (error) {
-    console.error('Redis 초기화 중 오류 발생:', error);
+    console.error('initializeRedis: Redis 초기화 중 오류 발생:', error);
   }
 };
