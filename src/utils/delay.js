@@ -1,7 +1,5 @@
 // src/utils/delay.js
 
-export const delay = (time) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
-};
+import { promisify } from 'util';
+
+export const delay = promisify(setTimeout);
