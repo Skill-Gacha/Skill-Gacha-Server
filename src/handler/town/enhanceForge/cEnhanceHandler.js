@@ -154,6 +154,7 @@ try {
         console.log(`스킬 하락: ${currentSkill.skillName} -> ${downgradeSkill.skillName}`);
         return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
     } else {
+        await user.reduceResource(requiredGold, requiredStone);
         // 스킬 강화 실패
         console.log('스킬 강화 실패');
         return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
