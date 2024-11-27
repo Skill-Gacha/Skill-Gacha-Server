@@ -5,6 +5,7 @@ import {
   DUNGEON_STATUS,
   MAX_REWARD_BUTTON,
   MAX_SKILL_COUNT,
+  STONE,
 } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
@@ -93,16 +94,9 @@ export default class RewardState extends DungeonState {
       // 이미 보유한 스킬인지 확인
       const existingSkill = this.user.userSkills.find((s) => s.id === rewardskill.id);
       let stoneCount;
-      if (existingSkill.id >= 1 && existingSkill.id <= 5) {
-        stoneCount = 1;
-      } else if (existingSkill.id >= 6 && existingSkill.id <= 10) {
-        stoneCount = 5;
-      } else if (existingSkill.id >= 11 && existingSkill.id <= 15) {
-        stoneCount = 10;
-      } else if (existingSkill.id >= 16 && existingSkill.id <= 20) {
-        stoneCount = 15;
-      } else if (existingSkill.id >= 21) {
-        stoneCount = 20;
+
+      if (existingSkill) {
+        stoneCount = STONE[existingSkill.rank];
       }
 
       this.dungeon.stoneCount = stoneCount;

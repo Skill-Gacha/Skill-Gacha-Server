@@ -1,5 +1,6 @@
 // src/utils/battle/battle.js
 
+import { buffs } from '../../constants/battle.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../response/createResponse.js';
 
@@ -28,13 +29,6 @@ export const OpponentStatus = (opponent) => {
 };
 
 export const buffSkill = (user, skillId) => {
-  const buffs = {
-    26: 1,
-    27: 2,
-    28: 3,
-    29: 4,
-  };
-
   if (buffs[skillId]) {
     user.stat.buff = buffs[skillId];
   } else {

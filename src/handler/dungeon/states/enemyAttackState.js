@@ -1,7 +1,6 @@
 ﻿// src/handler/dungeon/states/enemyAttackState.js
 
 import DungeonState from './dungeonState.js';
-import GameOverLoseState from './gameOverLoseState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
