@@ -35,15 +35,8 @@ export const onError = (socket) => async (err) => {
           typingAnimation: false,
         },
       });
-      const defeatMessage = createResponse(PacketType.S_ScreenText, {
-        screenText: {
-          msg: '강제 종료로 인해 게임에서 패배하여 랭크점수 10점 감소하였습니다.',
-          typingAnimation: false,
-        },
-      });
 
       winner.socket.write(victoryMessage); // 승리 메시지 전송
-      loser.socket.write(defeatMessage); // 패배 메시지 전송
 
       // 매칭큐 및 세션 정리
       sessionManager.removeMatchingQueue(user);

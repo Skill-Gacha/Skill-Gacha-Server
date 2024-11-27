@@ -10,7 +10,6 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     const responseCode = payload.responseCode || 0;
 
     if (responseCode === 0) {
-      console.log('여기가 문제인가?');
       socket.write(createResponse(PacketType.S_LeaveDungeon, {})); // 마을로 돌아갈 수 있게 패킷 전송
       return;
     }
