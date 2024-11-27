@@ -189,7 +189,7 @@
       "skillName": "뇌신의 분노",
       "damage": 80,
       "mana": 70,
-      "effectCode": 3028
+      "effectCode": 3024
     },
     {
       "id": 22,
@@ -198,7 +198,7 @@
       "skillName": "대지의 분노",
       "damage": 80,
       "mana": 70,
-      "effectCode": 3029
+      "effectCode": 3025
     },
     {
       "id": 23,
@@ -216,7 +216,7 @@
       "skillName": "화염의 분노",
       "damage": 80,
       "mana": 70,
-      "effectCode": 3031
+      "effectCode": 3022
     },
     {
       "id": 25,
@@ -225,7 +225,7 @@
       "skillName": "바다의 분노",
       "damage": 80,
       "mana": 70,
-      "effectCode": 3030
+      "effectCode": 3026
     },
     {
       "id": 26,
@@ -234,7 +234,7 @@
       "skillName": "전투의 함성",
       "damage": 0,
       "mana": 80,
-      "effectCode": 3027
+      "effectCode": 3029
     },
     {
       "id": 27,
@@ -243,7 +243,7 @@
       "skillName": "치유의 손길",
       "damage": 0,
       "mana": 80,
-      "effectCode": 3025
+      "effectCode": 3030
     },
     {
       "id": 28,
@@ -252,7 +252,7 @@
       "skillName": "구원의 손길",
       "damage": 0,
       "mana": 0,
-      "effectCode": 3026
+      "effectCode": 3031
     },
     {
       "id": 29,
@@ -261,7 +261,7 @@
       "skillName": "영혼 분쇄",
       "damage": 0,
       "mana": 80,
-      "effectCode": 3024
+      "effectCode": 3028
     }
   ]
 }
