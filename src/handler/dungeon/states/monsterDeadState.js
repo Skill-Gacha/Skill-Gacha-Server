@@ -9,14 +9,7 @@ import { DUNGEON_STATUS } from '../../../constants/battle.js';
 export default class MonsterDeadState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.MONSTER_DEAD;
-
-    // 광역 스킬이나 단일 스킬에 따라 사망 처리
     const deadMonsters = this.dungeon.monsters.filter((m) => m.monsterHp <= 0 && !m.isDead);
-
-    if (deadMonsters.length === 0) {
-      console.error('No monsters to process in MonsterDeadState!');
-      return;
-    }
 
     // 모든 사망 몬스터에 대해 애니메이션 전송
     deadMonsters.forEach((monster) => {
@@ -29,7 +22,7 @@ export default class MonsterDeadState extends DungeonState {
         }),
       );
 
-      // 사망 애니메이션 처리가 끝난 몬스터는 더 이상 사망 상태로 처리
+      // 사망 애니메이션 중복을 막기 위해 true 처리
       monster.isDead = true;
     });
 

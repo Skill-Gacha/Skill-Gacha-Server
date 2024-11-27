@@ -28,29 +28,55 @@ export default class PlayerAttackState extends DungeonState {
       enable: false,
     }));
 
+    // 플레이어 액션 패킷 보내기
+    const sendPlayerAction = (targetMonsterIdx, effectCode) => {
+      const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
+        targetMonsterIdx,
+        actionSet: {
+          animCode: 0, // 공격 애니메이션 코드
+          effectCode: effectCode, // 스킬의 이펙트 코드
+        },
+      });
+      this.socket.write(playerActionResponse);
+    };
+
+    // 배틀로그 패킷 보내기
+    const sendBattleLog = (msg, disableButtons) => {
+      const battleLogResponse = createResponse(PacketType.S_BattleLog, {
+        battleLog: {
+          msg: msg,
+          typingAnimation: false,
+          btns: disableButtons,
+        },
+      });
+      this.socket.write(battleLogResponse);
+    };
+
+    // 몬스터 HP 업데이트
+    const sendMonsterHpUpdate = (monster) => {
+      const setMonsterHpResponse = createResponse(PacketType.S_SetMonsterHp, {
+        monsterIdx: monster.monsterIdx,
+        hp: monster.monsterHp,
+      });
+      this.socket.write(setMonsterHpResponse);
+    };
+
     // 버프 스킬 처리
     if (userSkillInfo.id >= BUFF_SKILL) {
       // user.stat.buff 값 설정해주기
       buffSkill(this.user, userSkillInfo.id);
 
-      // 버프 상태에 따라 행동 결정
+      // 버프 값에 따라 행동 결정
       useBuffSkill(this.user, this.socket, this.dungeon);
+
       this.user.reduceMp(userSkillInfo.mana);
 
       // 유저 MP 업데이트
-      const setPlayerMpResponse = createResponse(PacketType.S_SetPlayerMp, {
-        mp: this.user.stat.mp,
-      });
+      this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
-      this.socket.write(setPlayerMpResponse);
-      const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
-        targetMonsterIdx: [],
-        actionSet: {
-          animCode: 0,
-          effectCode: userSkillInfo.effectCode,
-        },
-      });
-      this.socket.write(playerActionResponse);
+      // 행동 액션 보내기
+      sendPlayerAction([], userSkillInfo.effectCode);
+
       await delay(1000);
       this.changeState(EnemyAttackState);
       return;
@@ -61,21 +87,14 @@ export default class PlayerAttackState extends DungeonState {
       const aliveMonsters = this.dungeon.monsters.filter((monster) => monster.monsterHp > 0);
       const targetMonsterIdx = aliveMonsters.map((monster) => monster.monsterIdx);
 
-      // ID가 29일 경우 버프 적용
+      // 영혼 분쇄일 경우 버프처리
       if (userSkillInfo.id === DEBUFF) {
-        // 버프 적용
         buffSkill(this.user, userSkillInfo.id);
         useBuffSkill(this.user, this.socket, this.dungeon);
       }
 
-      const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
-        targetMonsterIdx, // 광역 스킬은 살아있는 모든 몬스터를 배열 형태로 인덱스 값 전달
-        actionSet: {
-          animCode: 0, // 공격 애니메이션 코드
-          effectCode: userSkillInfo.effectCode, // 스킬의 이펙트 코드
-        },
-      });
-      this.socket.write(playerActionResponse);
+      // 행동 액션 보내기
+      sendPlayerAction(targetMonsterIdx, userSkillInfo.effectCode);
 
       // 모든 몬스터를 대상으로 처리
       for (const monster of aliveMonsters) {
@@ -94,30 +113,15 @@ export default class PlayerAttackState extends DungeonState {
         monster.reduceHp(totalDamage);
 
         // 몬스터 HP 업데이트 패킷 전송
-        const setMonsterHpResponse = createResponse(PacketType.S_SetMonsterHp, {
-          monsterIdx: monster.monsterIdx,
-          hp: monster.monsterHp,
-        });
-        this.socket.write(setMonsterHpResponse);
+        sendMonsterHpUpdate(monster);
       }
 
       // 피해 로그 전송
-      const battleLogResponse = createResponse(PacketType.S_BattleLog, {
-        battleLog: {
-          msg: '광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.',
-          typingAnimation: false,
-          btns: disableButtons,
-        },
-      });
-      this.socket.write(battleLogResponse);
+      sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
 
       // 플레이어 MP 감소
       this.user.reduceMp(userSkillInfo.mana);
-      const setPlayerMpResponse = createResponse(PacketType.S_SetPlayerMp, {
-        mp: this.user.stat.mp,
-      });
-      this.socket.write(setPlayerMpResponse);
-
+      this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
       await delay(1000);
 
       // 모든 몬스터의 사망 여부 확인
@@ -130,6 +134,7 @@ export default class PlayerAttackState extends DungeonState {
       return;
     }
 
+    // 단일 스킬 처리
     const targetMonster = this.dungeon.selectedMonster;
 
     // 플레이어의 속성과 스킬의 속성이 일치하는지 검증 후, 배율 적용(1차 검증)
@@ -149,51 +154,26 @@ export default class PlayerAttackState extends DungeonState {
 
     targetMonster.reduceHp(totalDamage);
     this.user.reduceMp(userSkillInfo.mana);
-
-    // 유저 MP 업데이트
-    const setPlayerMpResponse = createResponse(PacketType.S_SetPlayerMp, {
-      mp: this.user.stat.mp,
-    });
-    this.socket.write(setPlayerMpResponse);
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     // 몬스터 HP 업데이트
-    const setMonsterHpResponse = createResponse(PacketType.S_SetMonsterHp, {
-      monsterIdx: targetMonster.monsterIdx,
-      hp: targetMonster.monsterHp,
-    });
-    this.socket.write(setMonsterHpResponse);
+    sendMonsterHpUpdate(targetMonster);
 
     // 플레이어 공격 애니메이션 전송
-    const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
-      targetMonsterIdx: [targetMonster.monsterIdx],
-      actionSet: {
-        animCode: 0, // 공격 애니메이션 코드
-        effectCode: userSkillInfo.effectCode, // 이펙트 코드
-      },
-    });
-    this.socket.write(playerActionResponse);
+    sendPlayerAction([targetMonster.monsterIdx], userSkillInfo.effectCode);
 
     // 공격 결과 메시지 전송
     if (skillDamageRate > 1) {
-      const battleLogResponse = createResponse(PacketType.S_BattleLog, {
-        battleLog: {
-          msg: `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
-          typingAnimation: false,
-          btns: disableButtons,
-        },
-      });
-      this.socket.write(battleLogResponse);
+      sendBattleLog(
+        `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
+        disableButtons,
+      );
     } else {
-      const battleLogResponse = createResponse(PacketType.S_BattleLog, {
-        battleLog: {
-          msg: `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
-          typingAnimation: false,
-          btns: disableButtons,
-        },
-      });
-      this.socket.write(battleLogResponse);
+      sendBattleLog(
+        `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
+        disableButtons,
+      );
     }
-
     await delay(1000);
 
     // 몬스터 사망 여부 확인
