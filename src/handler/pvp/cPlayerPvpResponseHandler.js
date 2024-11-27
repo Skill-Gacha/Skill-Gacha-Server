@@ -9,6 +9,12 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     const user = sessionManager.getUserBySocket(socket);
     const responseCode = payload.responseCode || 0;
 
+    if (responseCode === 0) {
+      console.log('여기가 문제인가?');
+      socket.write(createResponse(PacketType.S_LeaveDungeon, {})); // 마을로 돌아갈 수 있게 패킷 전송
+      return;
+    }
+
     if (!user) {
       console.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
       return;
@@ -30,14 +36,10 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     // 턴 정보 클라이언트에게 전송
-    currentPlayer.socket.write(
-      createResponse(PacketType.S_UserTurn, { userTurn: true }),
-    );
+    currentPlayer.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: true }));
 
     const opponent = currentPlayer === playerA ? playerB : playerA;
-    opponent.socket.write(
-      createResponse(PacketType.S_UserTurn, { userTurn: false }),
-    );
+    opponent.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: false }));
 
     if (!pvpRoom.currentState) {
       const PvpActionState = (await import('./states/pvpActionState.js')).default;
@@ -46,7 +48,6 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     await pvpRoom.currentState.handleInput(responseCode);
-
   } catch (error) {
     console.error('cPlayerPvpResponseHandler: ', error);
   }
