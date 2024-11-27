@@ -101,18 +101,6 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
                     enhanceResponse.success = false; // 업그레이드 실패
                 }
             }
-
-            // 동일한 element를 가진 스킬 필터링
-            const uniqueSkills = {};
-            user.skillCodes.forEach(skillId => {
-                const skill = getSkillById(skillId);
-                if (skill) {
-                    if (!uniqueSkills[skill.element] || uniqueSkills[skill.element].rank < skill.rank) {
-                        uniqueSkills[skill.element] = skill; // 높은 rank의 스킬로 업데이트
-                    }
-                }
-            });
-            user.skillCodes = Object.values(uniqueSkills).map(skill => skill.id); // 최종 스킬 코드 목록 생성
         } catch (error) {
             console.error('cEnhanceHandler: 자원 감소 중 오류 발생', error);
             enhanceResponse.success = false; // 자원 감소 실패
@@ -126,13 +114,26 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
             console.log(`스킬이 하락했습니다: ${currentSkill.skillName} -> ${downgradeSkillCode}`);
         }
     }
-     // 최종적으로 응답 데이터 업데이트
+    
+    // 필터링 로직을 한 번만 호출
+    const uniqueSkills = {};
+    user.skillCodes.forEach(skillId => {
+        const skill = getSkillById(skillId);
+        if (skill) {
+            if (!uniqueSkills[skill.element] || uniqueSkills[skill.element].rank < skill.rank) {
+                uniqueSkills[skill.element] = skill; // 높은 rank의 스킬로 업데이트
+            }
+        }
+    });
+    user.skillCodes = Object.values(uniqueSkills).map(skill => skill.id); // 최종 스킬 코드 목록 생성
+    
+    // 최종적으로 응답 데이터 업데이트
     const enhanceUiResponse = createResponse(PacketType.S_EnhanceUiResponse, {
         gold: user.gold, // 현재 골드
         stone: user.stone, // 현재 스톤
         skillCode: user.skillCodes, // 현재 보유한 스킬 코드 목록
     });
-
+    
     // 사용자에게 응답 전송
     try {
         socket.write(enhanceUiResponse);
