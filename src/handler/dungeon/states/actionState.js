@@ -38,7 +38,7 @@ export default class ActionState extends DungeonState {
       case 2: // 아이템
         this.changeState(ItemChoiceState);
         break;
-      case 3: // 아이템
+      case 3: // 턴 넘기기
         this.user.turnOff = true;
         this.changeState(IncreaseManaState);
         break;
