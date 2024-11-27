@@ -2,7 +2,6 @@
 
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
-import { getUserSkills } from '../../../init/loadAssets.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 
 export const cEnhanceUiHandler = async ({ socket }) => {
@@ -30,7 +29,7 @@ export const cEnhanceUiHandler = async ({ socket }) => {
 
   // 응답 패킷 전송
   try {
-    user.socket.write(enhanceUiResponse);
+    socket.write(enhanceUiResponse);
   } catch (error) {
     console.error('cEnhanceUiHandler: 패킷 전송 중 오류 발생:', error);
   }
