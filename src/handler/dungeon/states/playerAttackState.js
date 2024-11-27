@@ -28,7 +28,7 @@ export default class PlayerAttackState extends DungeonState {
       buffSkill(this.user, userSkillInfo.id);
 
       // 버프 상태에 따라 행동 결정
-      await useBuffSkill(this.user, this.socket, this.dungeon);
+      useBuffSkill(this.user, this.socket, this.dungeon);
       let targetMonsterIdx;
 
       userSkillInfo.id === 29
@@ -51,6 +51,7 @@ export default class PlayerAttackState extends DungeonState {
         },
       });
       this.socket.write(playerActionResponse);
+      await delay(1000);
       this.changeState(EnemyAttackState);
       return;
     }

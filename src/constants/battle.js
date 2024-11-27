@@ -32,6 +32,7 @@ export const PVP_STATUS = {
   USE_ITEM: 9,
   FLEE_MESSAGE: 10,
   TURN_CHANGE: 11,
+  ITEM_CHOICE: 12,
 };
 
 export const CONFIRM_TYPE = {

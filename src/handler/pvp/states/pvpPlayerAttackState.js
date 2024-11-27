@@ -6,12 +6,37 @@ import PvpEnemyDeadState from './pvpEnemyDeadState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { checkStopperResist, skillEnhancement } from '../../../utils/battle/calculate.js';
+import { BUFF_SKILL } from '../../../constants/battle.js';
+import { buffSkill, pvpUseBuffSkill } from '../../../utils/battle/battle.js';
+import { delay } from '../../../utils/delay.js';
 
 // 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
   async enter() {
     const selectedSkill = this.pvpRoom.selectedSkill;
     const userSkillInfo = this.mover.userSkills[selectedSkill];
+
+    if (userSkillInfo.id >= BUFF_SKILL) {
+      // user.stat.buff 값 설정해주기
+      buffSkill(this.mover, userSkillInfo.id);
+
+      // 버프 상태에 따라 행동 결정
+      pvpUseBuffSkill(this.mover, this.stopper);
+
+      // 유저 MP 업데이트
+      this.mover.reduceMp(userSkillInfo.mana);
+      this.mover.socket.write(
+        createResponse(PacketType.S_SetPvpPlayerMp, {
+          mp: this.mover.stat.mp,
+        }),
+      );
+
+      // 무버 액션 보내기
+      this.sendActionAnimations(userSkillInfo.effectCode);
+      await delay(1000);
+      this.changeState(PvpTurnChangeState);
+      return;
+    }
 
     const totalDamage = this.calculateDamage(userSkillInfo);
     this.applyDamage(totalDamage, userSkillInfo.mana);
@@ -32,6 +57,7 @@ export default class PvpPlayerAttackState extends PvpState {
     const skillElement = skillInfo.element;
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
     const userDamage = skillInfo.damage * skillDamageRate;
+    console.log(skillElement);
     const stopperResist = checkStopperResist(skillElement, this.stopper);
     return Math.floor(userDamage * ((100 - stopperResist) / 100));
   }
