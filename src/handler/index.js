@@ -70,15 +70,15 @@ const handlers = {
     protoType: 'C_ViewRankPoint',
   },
 
-  // [PacketType.C_EnhanceUiRequest]: {
-  //   handler: cEnhanceUiHandler,
-  //   protoType: 'C_EnhanceUiRequest',
-  // },
-  // [PacketType.C_EnhanceRequest]: {
-  //   handler: cEnhanceHandler,
-  //   protoType: 'C_EnhanceRequest',
-  // },
-  
+  [PacketType.C_EnhanceUiRequest]: {
+    handler: cEnhanceUiHandler,
+    protoType: 'C_EnhanceUiRequest',
+  },
+  [PacketType.C_EnhanceRequest]: {
+    handler: cEnhanceHandler,
+    protoType: 'C_EnhanceRequest',
+  },
+
   // 다른 패킷 정의 추가...
 };
 

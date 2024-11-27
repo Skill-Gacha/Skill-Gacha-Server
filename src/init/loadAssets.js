@@ -74,15 +74,16 @@ export const getSkillById = (skillId) => {
 };
 
 export const getUserSkills = (user) => {
-  return user.skillCodes.map(skillId => getSkillById(skillId)).filter(skill => skill !== null);
+  return user.userSkills.map((skillId) => getSkillById(skillId)).filter((skill) => skill !== null);
 };
 
 // 랭크와 동일한 속성을 유지하면서 다음 랭크의 스킬을 반환하는 함수
 export const getNextRankAndSameElement = (nextRank, element) => {
-  const skill = getGameAssets().skillData.data.find(skill => skill.rank === nextRank && skill.element === element);
+  const skill = getGameAssets().skillData.data.find(
+    (skill) => skill.rank === nextRank && skill.element === element,
+  );
   return skill ? skill.id : null; // 스킬 ID 반환
 };
-
 
 export const getProductById = (productId) => {
   const index = gameAssets.productData.data.findIndex((product) => product.id === productId);
