@@ -5,7 +5,6 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import SkillChoiceState from './skillChoiceState.js';
 import PlayerAttackState from './playerAttackState.js';
 
 // 공격할 대상을 고르는 상태
