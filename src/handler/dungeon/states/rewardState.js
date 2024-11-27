@@ -92,7 +92,20 @@ export default class RewardState extends DungeonState {
 
       // 이미 보유한 스킬인지 확인
       const existingSkill = this.user.userSkills.find((s) => s.id === rewardskill.id);
-      const stoneCount = this.dungeon.reward.stone;
+      let stoneCount;
+      if (existingSkill.id >= 1 && existingSkill.id <= 5) {
+        stoneCount = 1;
+      } else if (existingSkill.id >= 6 && existingSkill.id <= 10) {
+        stoneCount = 5;
+      } else if (existingSkill.id >= 11 && existingSkill.id <= 15) {
+        stoneCount = 10;
+      } else if (existingSkill.id >= 16 && existingSkill.id <= 20) {
+        stoneCount = 15;
+      } else if (existingSkill.id >= 21) {
+        stoneCount = 20;
+      }
+
+      this.dungeon.stoneCount = stoneCount;
 
       // 이미 4개의 스킬을 보유하고 있다면
       if (this.user.userSkills.length >= MAX_SKILL_COUNT) {

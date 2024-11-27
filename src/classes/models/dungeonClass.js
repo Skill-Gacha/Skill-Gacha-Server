@@ -16,6 +16,7 @@ class Dungeon extends BaseSession {
     this.newSkill = null;
     this.selectedItem = null;
     this.dungeonStatus = null;
+    this.stoneCount = 0;
   }
 
   addMonster(monster) {
