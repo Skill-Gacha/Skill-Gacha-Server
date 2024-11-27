@@ -43,9 +43,11 @@ export const updateDamage = (user, userDamage) => {
   }
   if (user.stat.berserk) {
     multiplier += 2.5; // 버서크가 있으면 2.5배 증가
+    user.stat.berserk = false;
   }
   if (user.stat.dangerPotion) {
     multiplier += 5; // 위험한 포션이 있으면 5배 증가
+    user.stat.dangerPotion = false;
   }
   // 최종 데미지 계산
   if (multiplier === 0) {

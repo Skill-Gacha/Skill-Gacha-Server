@@ -1,4 +1,4 @@
-// src/handler/dungeon/states/pvpUseItemState.js;
+// src/handler/pvp/states/pvpUseItemState.js;
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
@@ -77,10 +77,17 @@ export default class PvpUseItemState extends PvpState {
         this.mover.stat.berserk = true;
 
         // 유저 HP 업데이트
-        const sideEffectResponse = createResponse(PacketType.S_SetPvpPlayerHp, {
-          hp: this.mover.stat.hp,
-        });
-        this.mover.socket.write(sideEffectResponse);
+        this.mover.socket.write(
+          createResponse(PacketType.S_SetPvpPlayerHp, {
+            hp: this.mover.stat.hp,
+          }),
+        );
+
+        this.stopper.socket.write(
+          createResponse(PacketType.S_SetPvpEnemyHp, {
+            hp: this.mover.stat.hp,
+          }),
+        );
 
         const berserkLogResponse = createResponse(PacketType.S_PvpBattleLog, {
           battleLog: {
@@ -175,7 +182,7 @@ export default class PvpUseItemState extends PvpState {
 
         break;
     }
-    await updateItemCountInRedis(this.mover.nickname, this.dungeon.selectedItem + 4000, -1);
+    await updateItemCountInRedis(this.mover.nickname, this.pvpRoom.selectedItem + 4000, -1);
     await this.mover.updateItem(this.mover.nickname);
   }
 

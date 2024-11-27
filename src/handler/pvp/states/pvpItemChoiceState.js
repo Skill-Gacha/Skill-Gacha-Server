@@ -1,4 +1,4 @@
-// src/handler/dungeon/states/pvpItemChoiceState.js
+// src/handler/pvp/states/pvpItemChoiceState.js
 import PvpActionState from './pvpActionState.js';
 import PvpState from './pvpState.js';
 import { PacketType } from '../../../constants/header.js';

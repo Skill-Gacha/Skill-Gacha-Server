@@ -38,7 +38,8 @@ export default class PvpPlayerAttackState extends PvpState {
       return;
     }
 
-    const totalDamage = this.calculateDamage(userSkillInfo);
+    const damage = this.calculateDamage(userSkillInfo);
+    const totalDamage = this.calculateDamage(this.mover, damage);
     this.applyDamage(totalDamage, userSkillInfo.mana);
 
     this.sendStatusUpdates();
@@ -57,7 +58,6 @@ export default class PvpPlayerAttackState extends PvpState {
     const skillElement = skillInfo.element;
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
     const userDamage = skillInfo.damage * skillDamageRate;
-    console.log(skillElement);
     const stopperResist = checkStopperResist(skillElement, this.stopper);
     return Math.floor(userDamage * ((100 - stopperResist) / 100));
   }
