@@ -64,7 +64,10 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
         console.error('cEnhanceHandler: 자원이 부족합니다. 필요한 스톤:', requiredStone, '현재 스톤:', user.stone, '필요한 골드:', requiredGold, '현재 골드:', user.gold);
         return;
     }
-
+    if (!user.skillCodes) {
+        user.skillCodes = [];
+    }
+    
     const success = Math.random() < successRate; //성공
     const downgrade = !success && Math.random() < downgradeRate; //하락
     
@@ -75,10 +78,11 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
 
     if (success) {
         try {
-            user.reduceResource(requiredGold, requiredStone); // 자원 감소
+            await user.reduceResource(requiredGold, requiredStone); // 자원 감소
             const newSkillCode = getNextRankAndSameElement(currentSkill.rank + 1, currentSkill.element);
             if (newSkillCode) {
                 user.skillCodes.push(newSkillCode); // 성공한 스킬 코드 추가
+                console.log(newSkillCode);
             }
         } catch (error) {
             console.error('cEnhanceHandler: 자원 감소 중 오류 발생', error);
@@ -93,6 +97,7 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
             console.log(`스킬이 하락했습니다: ${currentSkill.skillName} -> ${downgradeSkillCode}`);
         }
     }
+    console.log()
 
     // 사용자에게 응답 전송
     try {
