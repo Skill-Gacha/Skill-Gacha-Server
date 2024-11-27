@@ -185,6 +185,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
 
     case 4:
       user.stat.protect = true;
+      console.log('제발', user.stat.protect);
       try {
         user.socket.write(
           createResponse(PacketType.S_PvpBattleLog, {

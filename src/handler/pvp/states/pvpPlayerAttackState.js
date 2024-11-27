@@ -10,7 +10,7 @@ import {
   skillEnhancement,
   updateDamage,
 } from '../../../utils/battle/calculate.js';
-import { BUFF_SKILL } from '../../../constants/battle.js';
+import { BUFF_SKILL, DEBUFF } from '../../../constants/battle.js';
 import { buffSkill, pvpUseBuffSkill } from '../../../utils/battle/battle.js';
 import { delay } from '../../../utils/delay.js';
 
@@ -20,7 +20,7 @@ export default class PvpPlayerAttackState extends PvpState {
     const selectedSkill = this.pvpRoom.selectedSkill;
     const userSkillInfo = this.mover.userSkills[selectedSkill];
 
-    if (userSkillInfo.id >= BUFF_SKILL) {
+    if (userSkillInfo.id >= BUFF_SKILL || userSkillInfo.id === DEBUFF) {
       // user.stat.buff 값 설정해주기
       buffSkill(this.mover, userSkillInfo.id);
 
@@ -46,6 +46,7 @@ export default class PvpPlayerAttackState extends PvpState {
     let totalDamage = updateDamage(this.mover, damage);
 
     // 상대가 위험한 포션이나 영혼분쇄로 무적이 됐을 때
+    console.log('엥?', this.stopper.stat.protect);
     if (this.stopper.stat.protect) {
       totalDamage = 1;
       this.stopper.stat.protect = false;
