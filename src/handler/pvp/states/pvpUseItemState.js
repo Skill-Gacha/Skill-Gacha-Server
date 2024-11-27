@@ -27,7 +27,7 @@ export default class PvpUseItemState extends PvpState {
           hp: this.mover.stat.hp,
         });
         const setEnemyHpResponse = createResponse(PacketType.S_SetPvpEnemyHp, {
-          hp: this.stopper.stat.hp,
+          hp: this.mover.stat.hp,
         });
         this.mover.socket.write(setPlayerHpResponse);
         this.stopper.socket.write(setEnemyHpResponse);
