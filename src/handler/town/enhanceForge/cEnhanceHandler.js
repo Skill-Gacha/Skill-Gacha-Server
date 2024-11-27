@@ -3,7 +3,8 @@
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import {getNextRankAndSameElement, getSkillById} from '../../../init/loadAssets.js'; 
+import { getNextRankAndSameElement, getSkillById } from '../../../init/loadAssets.js';
+import {  saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 
 export const cEnhanceHandler = async ({ socket, payload }) => {
     const user = sessionManager.getUserBySocket(socket);
@@ -13,11 +14,9 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
         return;
     }
 
-    const { skillCode } = payload; ; 
-    console.log('스킬 코드 잘 불러와? ' , skillCode);
+    const { skillCode } = payload;
 
     const currentSkill = getSkillById(skillCode);
-
     if (!currentSkill) {
         console.error('cEnhanceHandler: 잘못된 스킬 코드입니다.');
         return;
@@ -25,7 +24,7 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
 
     let requiredStone, requiredGold, successRate, downgradeRate;
 
-    //스킬의 랭크에 따른 요구 자원들
+    // 스킬의 랭크에 따른 요구 자원들
     switch (currentSkill.rank) {
         case 100: // 노말
             requiredStone = 5;
@@ -62,82 +61,105 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
     // 유저 자원 확인
     if (user.stone < requiredStone || user.gold < requiredGold) {
         console.error('cEnhanceHandler: 자원이 부족합니다. 필요한 스톤:', requiredStone, '현재 스톤:', user.stone, '필요한 골드:', requiredGold, '현재 골드:', user.gold);
-        return;
-    }
-    if (!user.skillCodes) {
-        user.skillCodes = [];
-    }
-    
-    const success = Math.random() < successRate; //성공
-    const downgrade = !success && Math.random() < downgradeRate; //하락
-    
-    // 응답 데이터 생성
-    const enhanceResponse = {
-        success,
-    };
+    return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+}
 
+const success = Math.random() < successRate; // 성공
+const downgrade = !success && Math.random() < downgradeRate; // 하락
+
+try {
     if (success) {
+        await user.reduceResource(requiredGold, requiredStone);
+        // 스킬 강화 성공
+        const nextRankSkillId = getNextRankAndSameElement(currentSkill.rank + 1, currentSkill.element);
+        
+        if (!nextRankSkillId) {
+            console.error('cEnhanceHandler: 다음 랭크의 스킬을 찾을 수 없습니다.');
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+        }
+
+        // 기존 스킬 제거 및 새로운 스킬 추가
+        const skillIndex = user.userSkills.findIndex(skill => skill.id === skillCode);
+        const newSkill = getSkillById(nextRankSkillId);
+        
+        if (skillIndex !== -1) {
+            user.userSkills.splice(skillIndex, 1, newSkill); // 기존 스킬 제거 및 새로운 스킬 추가
+        } else {
+            console.error('cEnhanceHandler: 기존 스킬을 찾을 수 없습니다.');
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+        }
+
+        // Redis에 업데이트
+        const newSkillIndex = user.userSkills.findIndex(skill => skill.id === newSkill.id);
+        if (newSkillIndex >= 0 && newSkillIndex < 4) { // 인덱스 범위 체크
+            await saveRewardSkillsToRedis(user.nickname, newSkill.id, newSkillIndex + 1); // 1-based index
+        } else {
+            console.error('cEnhanceHandler: 잘못된 스킬 인덱스입니다.');
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+        }
+
+        console.log(`스킬 강화 성공: ${currentSkill.skillName} -> ${nextRankSkillId}`);
+
+        // 최종적으로 응답 데이터 업데이트
+        let enhanceUiResponse;
         try {
-            await user.reduceResource(requiredGold, requiredStone); // 자원 감소
-            const newSkillCode = getNextRankAndSameElement(currentSkill.rank + 1, currentSkill.element);
-            
-            // 스킬 코드 업데이트
-            if (newSkillCode) {
-                // 현재 스킬 코드 제거
-                user.skillCodes = user.skillCodes.filter(skillId => skillId !== skillCode);
-                
-                // 새로운 스킬 코드가 이미 존재하지 않을 경우에만 추가
-                if (!user.skillCodes.includes(newSkillCode)) {
-                    user.skillCodes.push(newSkillCode); // 새로운 스킬 코드 추가
-                
-                    // 새로운 스킬 정보를 가져와서 user.userSkills에 추가
-                    const newSkill = getSkillById(newSkillCode);
-                    if (newSkill) {
-                        user.userSkills.push(newSkill); // userSkills에 새로운 스킬 추가
-                    }
-                    console.log(`스킬 업그레이드: ${currentSkill.skillName} -> ${newSkill.skillName}`);
-                } else {
-                    console.error('cEnhanceHandler: 이미 보유한 스킬 코드입니다. 업그레이드 실패.');
-                    enhanceResponse.success = false; // 업그레이드 실패
-                }
-            }
+            enhanceUiResponse = createResponse(PacketType.S_EnhanceUiResponse, {
+                gold: user.gold, // 현재 골드
+                stone: user.stone, // 현재 스톤
+                skillCode: user.userSkills.map(skill => skill.id), // 현재 보유한 스킬 코드 목록
+            });
         } catch (error) {
-            console.error('cEnhanceHandler: 자원 감소 중 오류 발생', error);
-            enhanceResponse.success = false; // 자원 감소 실패
+            console.error('cEnhanceHandler: 응답 데이터 생성 중 오류 발생:', error);
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
         }
+
+        // 사용자에게 응답 전송
+        try {
+            socket.write(enhanceUiResponse);
+        } catch (error) {
+            console.error('cEnhanceHandler: 패킷 전송 중 오류 발생:', error);
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+        }
+
+        return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: true }));
     } else if (downgrade) {
-        // 하락 처리
-        const downgradeSkillCode = getNextRankAndSameElement(currentSkill.rank - 1, currentSkill.element);
-        if (downgradeSkillCode) {
-            user.skillCodes = user.skillCodes.filter(skillId => skillId !== skillCode); // 현재 스킬 제거
-            user.skillCodes.push(downgradeSkillCode); // 하락한 스킬 추가
-            console.log(`스킬이 하락했습니다: ${currentSkill.skillName} -> ${downgradeSkillCode}`);
+        // 스킬 하락 처리
+        await user.reduceResource(requiredGold, requiredStone);
+        const downgradeSkillId = getNextRankAndSameElement(currentSkill.rank - 1, currentSkill.element);
+        if (!downgradeSkillId) {
+            console.error('cEnhanceHandler: 하락할 스킬을 찾을 수 없습니다.');
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
         }
-    }
-    
-    // 필터링 로직을 한 번만 호출
-    const uniqueSkills = {};
-    user.skillCodes.forEach(skillId => {
-        const skill = getSkillById(skillId);
-        if (skill) {
-            if (!uniqueSkills[skill.element] || uniqueSkills[skill.element].rank < skill.rank) {
-                uniqueSkills[skill.element] = skill; // 높은 rank의 스킬로 업데이트
-            }
+
+        // 기존 스킬 제거 및 새로운 하락 스킬 추가
+        const downgradeSkillIndex = user.userSkills.findIndex(skill => skill.id === skillCode);
+        const downgradeSkill = getSkillById(downgradeSkillId);
+        
+        if (downgradeSkillIndex !== -1) {
+            user.userSkills.splice(downgradeSkillIndex, 1, downgradeSkill); // 기존 스킬 제거 및 새로운 하락 스킬 추가
+        } else {
+            console.error('cEnhanceHandler: 기존 스킬을 찾을 수 없습니다.');
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
         }
-    });
-    user.skillCodes = Object.values(uniqueSkills).map(skill => skill.id); // 최종 스킬 코드 목록 생성
-    
-    // 최종적으로 응답 데이터 업데이트
-    const enhanceUiResponse = createResponse(PacketType.S_EnhanceUiResponse, {
-        gold: user.gold, // 현재 골드
-        stone: user.stone, // 현재 스톤
-        skillCode: user.skillCodes, // 현재 보유한 스킬 코드 목록
-    });
-    
-    // 사용자에게 응답 전송
-    try {
-        socket.write(enhanceUiResponse);
-    } catch (error) {
-        console.error('cEnhanceHandler: 패킷 전송 중 오류 발생:', error);
+
+        // Redis에 업데이트
+        const newDowngradeSkillIndex = user.userSkills.findIndex(skill => skill.id === downgradeSkill.id);
+        if (newDowngradeSkillIndex >= 0 && newDowngradeSkillIndex < 4) { // 인덱스 범위 체크
+            await saveRewardSkillsToRedis(user.nickname, downgradeSkill.id, newDowngradeSkillIndex + 1); // 1-based index
+        } else {
+            console.error('cEnhanceHandler: 잘못된 하락 스킬 인덱스입니다.');
+            return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+        }
+
+        console.log(`스킬 하락: ${currentSkill.skillName} -> ${downgradeSkill.skillName}`);
+        return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+    } else {
+        // 스킬 강화 실패
+        console.log('스킬 강화 실패');
+        return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
     }
+} catch (error) {
+    console.error('cEnhanceHandler: 처리 중 오류 발생:', error);
+    return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
+}
 };
