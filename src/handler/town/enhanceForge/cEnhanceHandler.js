@@ -5,6 +5,7 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { getNextRankAndSameElement, getSkillById } from '../../../init/loadAssets.js';
 import {  saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
+import { cEnhanceUiHandler } from './cEnhanceUiHandler.js';
 
 export const cEnhanceHandler = async ({ socket, payload }) => {
     const user = sessionManager.getUserBySocket(socket);
@@ -67,9 +68,10 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
 const success = Math.random() < successRate; // 성공
 const downgrade = !success && Math.random() < downgradeRate; // 하락
 
+
 try {
+    await user.reduceResource(requiredGold, requiredStone);
     if (success) {
-        await user.reduceResource(requiredGold, requiredStone);
         // 스킬 강화 성공
         const nextRankSkillId = getNextRankAndSameElement(currentSkill.rank + 1, currentSkill.element);
         
@@ -120,11 +122,12 @@ try {
             console.error('cEnhanceHandler: 패킷 전송 중 오류 발생:', error);
             return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
         }
-
+        await cEnhanceUiHandler({ socket });
         return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: true }));
+
+
     } else if (downgrade) {
         // 스킬 하락 처리
-        await user.reduceResource(requiredGold, requiredStone);
         const downgradeSkillId = getNextRankAndSameElement(currentSkill.rank - 1, currentSkill.element);
         if (!downgradeSkillId) {
             console.error('cEnhanceHandler: 하락할 스킬을 찾을 수 없습니다.');
@@ -150,13 +153,14 @@ try {
             console.error('cEnhanceHandler: 잘못된 하락 스킬 인덱스입니다.');
             return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
         }
-
+        await cEnhanceUiHandler({ socket });
         console.log(`스킬 하락: ${currentSkill.skillName} -> ${downgradeSkill.skillName}`);
         return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
     } else {
-        await user.reduceResource(requiredGold, requiredStone);
+        
         // 스킬 강화 실패
         console.log('스킬 강화 실패');
+        await cEnhanceUiHandler({ socket });
         return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
     }
 } catch (error) {
