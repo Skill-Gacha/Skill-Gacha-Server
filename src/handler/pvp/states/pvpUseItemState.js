@@ -175,7 +175,7 @@ export default class PvpUseItemState extends PvpState {
 
         break;
     }
-    await updateItemCountInRedis(this.mover.nickname, this.dungeon.selectedItem + 4000, -1);
+    await updateItemCountInRedis(this.mover.nickname, this.pvpRoom.selectedItem + 4000, -1);
     await this.mover.updateItem(this.mover.nickname);
   }
 
