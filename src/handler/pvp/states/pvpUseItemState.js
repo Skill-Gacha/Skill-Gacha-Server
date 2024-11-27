@@ -131,15 +131,24 @@ export default class PvpUseItemState extends PvpState {
           );
 
           // 유저 HP 업데이트
-          const setPlayerHpResponse = createResponse(PacketType.S_SetPvpPlayerHp, {
-            hp: this.mover.stat.hp,
-          });
-          this.mover.socket.write(setPlayerHpResponse);
+          this.mover.socket.write(
+            createResponse(PacketType.S_SetPvpPlayerHp, {
+              hp: this.mover.stat.hp,
+            }),
+          );
           // 유저 MP 업데이트
-          const setPlayerMpResponse = createResponse(PacketType.S_SetPvpPlayerMp, {
-            mp: this.mover.stat.mp,
-          });
-          this.mover.socket.write(setPlayerMpResponse);
+          this.mover.socket.write(
+            createResponse(PacketType.S_SetPvpPlayerMp, {
+              mp: this.mover.stat.mp,
+            }),
+          );
+
+          // 상대 HP 업데이트
+          this.stopper.socket.write(
+            createResponse(PacketType.S_SetPvpEnemyHp, {
+              hp: this.mover.stat.hp,
+            }),
+          );
           // 최대 회복 로그
           const randomLogResponse = createResponse(PacketType.S_PvpBattleLog, {
             battleLog: {
