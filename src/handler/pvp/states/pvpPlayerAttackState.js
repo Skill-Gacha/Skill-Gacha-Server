@@ -46,7 +46,6 @@ export default class PvpPlayerAttackState extends PvpState {
     let totalDamage = updateDamage(this.mover, damage);
 
     // 상대가 위험한 포션이나 영혼분쇄로 무적이 됐을 때
-    console.log('엥?', this.stopper.stat.protect);
     if (this.stopper.stat.protect) {
       totalDamage = 1;
       this.stopper.stat.protect = false;
