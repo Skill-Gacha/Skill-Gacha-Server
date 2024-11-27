@@ -81,14 +81,38 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
             await user.reduceResource(requiredGold, requiredStone); // 자원 감소
             const newSkillCode = getNextRankAndSameElement(currentSkill.rank + 1, currentSkill.element);
             
-            // 이미 보유한 스킬 코드인지 확인
-            if (newSkillCode && !user.skillCodes.includes(newSkillCode)) {
-                user.skillCodes.push(newSkillCode); // 성공한 스킬 코드 추가
-                console.log(newSkillCode);
-            } else {
-                console.error('cEnhanceHandler: 이미 보유한 스킬 코드입니다. 업그레이드 실패.');
-                enhanceResponse.success = false; // 업그레이드 실패
+            // 스킬 코드 업데이트
+            if (newSkillCode) {
+                // 현재 스킬 코드 제거
+                user.skillCodes = user.skillCodes.filter(skillId => skillId !== skillCode);
+                
+                // 새로운 스킬 코드가 이미 존재하지 않을 경우에만 추가
+                if (!user.skillCodes.includes(newSkillCode)) {
+                    user.skillCodes.push(newSkillCode); // 새로운 스킬 코드 추가
+                
+                    // 새로운 스킬 정보를 가져와서 user.userSkills에 추가
+                    const newSkill = getSkillById(newSkillCode);
+                    if (newSkill) {
+                        user.userSkills.push(newSkill); // userSkills에 새로운 스킬 추가
+                    }
+                    console.log(`스킬 업그레이드: ${currentSkill.skillName} -> ${newSkill.skillName}`);
+                } else {
+                    console.error('cEnhanceHandler: 이미 보유한 스킬 코드입니다. 업그레이드 실패.');
+                    enhanceResponse.success = false; // 업그레이드 실패
+                }
             }
+
+            // 동일한 element를 가진 스킬 필터링
+            const uniqueSkills = {};
+            user.skillCodes.forEach(skillId => {
+                const skill = getSkillById(skillId);
+                if (skill) {
+                    if (!uniqueSkills[skill.element] || uniqueSkills[skill.element].rank < skill.rank) {
+                        uniqueSkills[skill.element] = skill; // 높은 rank의 스킬로 업데이트
+                    }
+                }
+            });
+            user.skillCodes = Object.values(uniqueSkills).map(skill => skill.id); // 최종 스킬 코드 목록 생성
         } catch (error) {
             console.error('cEnhanceHandler: 자원 감소 중 오류 발생', error);
             enhanceResponse.success = false; // 자원 감소 실패
