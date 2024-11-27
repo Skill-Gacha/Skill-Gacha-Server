@@ -72,17 +72,22 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
     const downgrade = !success && Math.random() < downgradeRate; //하락
     
     // 응답 데이터 생성
-    const enhanceResponse = createResponse(PacketType.S_EnhanceResponse, {
+    const enhanceResponse = {
         success,
-    });
+    };
 
     if (success) {
         try {
             await user.reduceResource(requiredGold, requiredStone); // 자원 감소
             const newSkillCode = getNextRankAndSameElement(currentSkill.rank + 1, currentSkill.element);
-            if (newSkillCode) {
+            
+            // 이미 보유한 스킬 코드인지 확인
+            if (newSkillCode && !user.skillCodes.includes(newSkillCode)) {
                 user.skillCodes.push(newSkillCode); // 성공한 스킬 코드 추가
                 console.log(newSkillCode);
+            } else {
+                console.error('cEnhanceHandler: 이미 보유한 스킬 코드입니다. 업그레이드 실패.');
+                enhanceResponse.success = false; // 업그레이드 실패
             }
         } catch (error) {
             console.error('cEnhanceHandler: 자원 감소 중 오류 발생', error);
@@ -97,11 +102,16 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
             console.log(`스킬이 하락했습니다: ${currentSkill.skillName} -> ${downgradeSkillCode}`);
         }
     }
-    console.log()
+     // 최종적으로 응답 데이터 업데이트
+    const enhanceUiResponse = createResponse(PacketType.S_EnhanceUiResponse, {
+        gold: user.gold, // 현재 골드
+        stone: user.stone, // 현재 스톤
+        skillCode: user.skillCodes, // 현재 보유한 스킬 코드 목록
+    });
 
     // 사용자에게 응답 전송
     try {
-        socket.write(enhanceResponse);
+        socket.write(enhanceUiResponse);
     } catch (error) {
         console.error('cEnhanceHandler: 패킷 전송 중 오류 발생:', error);
     }
