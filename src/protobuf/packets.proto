@@ -59,6 +59,10 @@ enum MsgId {
   S_BUY_ITEM_RESPONSE = 49;
   C_INVENTORY_VIEW_REQUEST = 50;
   S_INVENTORY_VIEW_RESPONSE = 51;
+  C_ENHANCE_UI_REQUEST = 52;
+  S_ENHANCE_UI_RESPONSE = 53;
+  C_ENHANCE_REQUEST = 54;
+  S_ENHANCE_RESPONSE = 55;
 }
 
 // 패킷 정의 목록
@@ -162,7 +166,7 @@ message S_SetMonsterHp {
 }
 
 message S_PlayerAction {
-  int32 targetMonsterIdx = 1;
+  repeated int32 targetMonsterIdx = 1;
   ActionSet actionSet = 2;
 }
 
@@ -286,6 +290,24 @@ message S_InventoryViewResponse {
   int32 gold = 1;
   int32 stone = 2;
   repeated Product productList = 3;
+}
+
+message C_EnhanceUiRequest {
+  
+}
+
+message S_EnhanceUiResponse {
+  int32 gold = 1;
+  int32 stone = 2;
+  repeated int32 skillCode = 3;
+}
+
+message C_EnhanceRequest {
+  int32 skillCode = 1;
+}
+
+message S_EnhanceResponse {
+  bool success = 1;
 }
 
 
