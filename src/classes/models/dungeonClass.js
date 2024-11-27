@@ -1,5 +1,6 @@
 // src/classes/models/dungeonClass.js
 
+import { DUNGEON_RESOURCES } from '../../constants/battle.js';
 import { getRandomRewardSkills } from '../../init/loadAssets.js';
 import BaseSession from './baseSession.js';
 import Reward from './rewardClass.js';
@@ -15,6 +16,7 @@ class Dungeon extends BaseSession {
     this.newSkill = null;
     this.selectedItem = null;
     this.dungeonStatus = null;
+    this.stoneCount = 0;
   }
 
   addMonster(monster) {
@@ -23,28 +25,30 @@ class Dungeon extends BaseSession {
 
   // 리워드 데이터 초기화 함수
   initReward() {
-    const gold = this.calculateGold();
-    const stone = this.calculateStone();
+    const gold = this.calculateGold(this.dungeonCode);
+    const stone = this.calculateStone(this.dungeonCode);
     const rewardSkills = getRandomRewardSkills(this.dungeonCode);
     const item = this.generateRandomItem();
 
     return new Reward(gold, stone, rewardSkills, item);
   }
 
-  calculateGold() {
-    const baseGold = 100;
-    return this.dungeonCode * baseGold;
+  calculateGold(dungeonCode) {
+    const resource = DUNGEON_RESOURCES[dungeonCode];
+    return resource.gold;
   }
 
-  calculateStone() {
-    const baseStone = 1;
-    return this.dungeonCode * baseStone;
+  calculateStone(dungeonCode) {
+    const resource = DUNGEON_RESOURCES[dungeonCode];
+    return resource.stone;
   }
 
   generateRandomItem() {
-    if (Math.random() < 0.02) {
-      const itemIds = [4004, 4005];
-      return itemIds[Math.floor(Math.random() * itemIds.length)];
+    const random = Math.random();
+    if (random < 0.02) {
+      return 4004; // 2프로 확률로 이상한 물약
+    } else if (random < 0.12) {
+      return 4005; // 10프로 확률로 만병통치약
     }
     return null;
   }

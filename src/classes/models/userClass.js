@@ -16,6 +16,7 @@ class User {
     this.items = [];
     this.gold = gold;
     this.stone = stone;
+    this.turnOff = false;
   }
 
   reduceHp(damage) {
@@ -41,8 +42,9 @@ class User {
 
   // reduce, increase인데도 단순히 증감만 수행하는 것이 아니라,
   // DB 저장까지 겸하고 있어 클래스의 책임이 모호할 수 있음
-  reduceGold(gold) {
-    this.gold -= gold;
+  reduceResource(gold, stone) {
+    this.gold = Math.max(0, this.gold - gold);
+    this.stone = Math.max(0, this.stone - stone);
   }
 
   increaseResource(gold, stone) {
@@ -58,11 +60,15 @@ class User {
     return {
       gold: this.gold,
       stone: this.stone,
-      productList: this.items.map(item => ({
+      productList: this.items.map((item) => ({
         id: item.itemId,
         count: item.count,
       })),
     };
+  }
+
+  getAddMsg() {
+    return this.turnOff ? '턴을 넘기셔서' : '턴이 돌아와서';
   }
 }
 

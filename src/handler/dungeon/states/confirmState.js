@@ -56,10 +56,10 @@ export default class ConfirmState extends DungeonState {
       case CONFIRM_TYPE.FLEE:
         if (responseCode === 1) {
           // 도망감
-          if (this.user.gold < 100) {
+          if (this.user.gold < this.dungeon.dungeonCode * 100) {
             this.changeState(FailFleeMessageState);
           } else {
-            this.user.reduceGold(100);
+            this.user.reduceResource(this.dungeon.dungeonCode * 100, 0);
             await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
             this.changeState(FleeMessageState);
           }
@@ -73,7 +73,7 @@ export default class ConfirmState extends DungeonState {
       case CONFIRM_TYPE.STONE: // 중복된 스킬에 대한 강화석 처리
         if (responseCode === 1) {
           // 강화석으로 받기
-          this.user.increaseResource(0, this.dungeon.reward.stone);
+          this.user.increaseResource(0, this.dungeon.stoneCount);
           await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
           this.changeState(GameOverWinState); // 게임 승리
         } else if (responseCode === 2) {

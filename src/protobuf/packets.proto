@@ -166,7 +166,7 @@ message S_SetMonsterHp {
 }
 
 message S_PlayerAction {
-  int32 targetMonsterIdx = 1;
+  repeated int32 targetMonsterIdx = 1;
   ActionSet actionSet = 2;
 }
 

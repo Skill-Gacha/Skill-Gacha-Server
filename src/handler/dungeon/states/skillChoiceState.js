@@ -3,10 +3,11 @@
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
-import PlayerAttackState from './playerAttackState.js';
+import { AREASKILL, DUNGEON_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import ActionState from './actionState.js';
+import TargetState from './targetState.js';
+import PlayerAttackState from './playerAttackState.js';
 
 // 스킬 선택 상태
 export default class SkillChoiceState extends DungeonState {
@@ -46,9 +47,14 @@ export default class SkillChoiceState extends DungeonState {
       // 선택한 스킬 인덱스 계산
       const SkillIdx = responseCode - 1;
       this.dungeon.selectedSkill = SkillIdx;
+      const userSkillInfo = this.user.userSkills[SkillIdx];
+      if (userSkillInfo.id >= AREASKILL) {
+        this.changeState(PlayerAttackState);
+        return;
+      }
 
-      // 스킬 선택 후 플레이어 어택 상태로 전환
-      this.changeState(PlayerAttackState);
+      // 스킬 선택 후 타겟 지정
+      this.changeState(TargetState);
     }
   }
 }

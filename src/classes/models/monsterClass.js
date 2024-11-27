@@ -16,6 +16,7 @@ class Monster {
     this.monsterHp = monsterHp;
     this.monsterAtk = monsterAtk;
     this.effectCode = monsterEffectCode;
+    this.isDead = false;
     this.resistances = {
       electricResist: resists.electricResist || 0,
       earthResist: resists.earthResist || 0,

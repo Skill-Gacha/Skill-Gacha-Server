@@ -11,6 +11,8 @@ class PvpRoomClass extends BaseSession {
     this.pvpStatus = null;
     this.userTurn = null;
     this.selectedSkill = null;
+    this.selectedItem = null;
+    this.gameStart = false;
   }
 
   initializeTurn() {

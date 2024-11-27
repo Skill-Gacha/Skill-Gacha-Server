@@ -5,7 +5,7 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import SkillChoiceState from './skillChoiceState.js';
+import PlayerAttackState from './playerAttackState.js';
 
 // 공격할 대상을 고르는 상태
 // '공격'을 누르고 공격할 몬스터를 선택하기 위한 상태
@@ -30,7 +30,7 @@ export default class TargetState extends DungeonState {
     const monster = this.dungeon.monsters.find((m) => m.monsterIdx === responseCode - 1);
     if (monster && monster.monsterHp > 0) {
       this.dungeon.selectedMonster = monster;
-      this.changeState(SkillChoiceState);
+      this.changeState(PlayerAttackState);
     } else {
       // responseCode 유효성 검사
       invalidResponseCode(this.socket);

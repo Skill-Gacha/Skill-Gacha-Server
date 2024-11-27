@@ -1,7 +1,6 @@
 // src/utils/battle/calculate.js
 
-import { getElementById } from '../../init/loadAssets.js';
-import { elementResist } from '../packet/playerPacket.js';
+import { DUNGEON_DEAD_RESOURCES } from '../../constants/battle.js';
 
 const RESISTANCE_KEYS = {
   1001: 'electricResist',
@@ -13,7 +12,7 @@ const RESISTANCE_KEYS = {
 
 export const skillEnhancement = (playerElement, skillElement) => {
   try {
-    return playerElement === skillElement ? 2 : 1;
+    return playerElement === skillElement ? 1.5 : 1;
   } catch (error) {
     console.error('calculate: 속성 일치 여부 확인 중 오류 발생', error);
   }
@@ -35,35 +34,36 @@ export const checkStopperResist = (skillElement, target) => {
   return target.stat.resistances[resistKey] || 0;
 };
 
-// 저항력 ALL 100
-export const applyPotionEffect = (user) => {
-  const resistances = user.stat.resistances;
-
-  // 저항력을 최대치로 설정
-  for (let resist in resistances) {
-    resistances[resist] = 100;
-  }
-
-  user.resistbuff = true; // 포션 효과 활성화
-  console.log(user.stat.resistances);
-};
-
-// 저항력 초기화 함수
-export const resetResistances = (user) => {
-  // 유저 클래스에 맞는 저항값들 다시 가져오기
-  const element = getElementById(user.element);
-  const resitances = elementResist(element);
-  user.stat.resistances = resitances;
-  user.stat.resistbuff = false;
-};
-
 // 스팀팩 효과 및 위험한 포션
 export const updateDamage = (user, userDamage) => {
-  if (user.stat.berserk && user.stat.dangerPotion) {
-    userDamage *= 1.7;
+  let multiplier = 0; // 초기 배율 값
+  if (user.stat.buff === 1) {
+    multiplier += 2; // "전투의 함성" 버프가 있으면 데미지 2배 증가
+    user.stat.buff = null;
+  }
+  if (user.stat.berserk) {
+    multiplier += 2.5; // 버서크가 있으면 2.5배 증가
+    user.stat.berserk = false;
+  }
+  if (user.stat.dangerPotion) {
+    multiplier += 5; // 위험한 포션이 있으면 5배 증가
+    user.stat.dangerPotion = false;
+  }
+  // 최종 데미지 계산
+  if (multiplier === 0) {
     return userDamage;
   }
-  user.stat.berserk ? (userDamage *= 1.2) : userDamage;
-  user.stat.dangerPotion ? (userDamage *= 1.5) : userDamage;
-  return userDamage;
+  return (userDamage *= multiplier);
+};
+
+// 사망 보상 계산 함수
+export const deadResource = (user, dungeonCode) => {
+  const resource = DUNGEON_DEAD_RESOURCES[dungeonCode];
+
+  if (!resource) {
+    console.error(`던전코드가 이상합니다.: ${dungeonCode}`);
+    return;
+  }
+
+  user.reduceResource(resource.gold, resource.stone);
 };

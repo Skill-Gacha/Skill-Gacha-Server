@@ -1,27 +1,27 @@
-// src/handler/dungeon/states/itemChoiceState.js
-
-import DungeonState from './dungeonState.js';
+// src/handler/pvp/states/pvpItemChoiceState.js
+import PvpActionState from './pvpActionState.js';
+import PvpState from './pvpState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
+import { MAX_BUTTON_COUNT, PVP_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import ActionState from './actionState.js';
 import { getProductData } from '../../../init/loadAssets.js';
-import PlayerUseItemState from './PlayerUseItemState.js';
+import PvpUseItemState from './pvpUseItemState.js';
 
 // 아이템 선택 상태
 // 스킬과 달리, id 값 기반으로 이름 불러와야 함
-export default class ItemChoiceState extends DungeonState {
+export default class PvpItemChoiceState extends PvpState {
   async enter() {
-    this.dungeon.dungeonStatus = DUNGEON_STATUS.ITEM_CHOCE;
+    this.pvpRoom.pvpStatus = PVP_STATUS.ITEM_CHOICE;
 
     const itemsData = getProductData();
     const itemsName = itemsData.map((itemData) => itemData.name);
 
     // 버튼은 플레이어가 보유한 아이템들로 생성
-    const buttons = this.user.items.map((item) => ({
+    const buttons = this.mover.items.map((item) => ({
       msg: `${itemsName[item.itemId - 4001]}(보유 수량: ${item.count})`,
-      enable: item.itemId === 4003 ? !this.user.stat.berserk && item.count !== 0 : item.count !== 0,
+      enable:
+        item.itemId === 4003 ? !this.mover.stat.berserk && item.count !== 0 : item.count !== 0,
     }));
 
     buttons.push({
@@ -36,8 +36,8 @@ export default class ItemChoiceState extends DungeonState {
       btns: buttons,
     };
 
-    const choiceItemBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
-    this.socket.write(choiceItemBattlelogResponse);
+    const choiceItemBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, { battleLog });
+    this.mover.socket.write(choiceItemBattlelogResponse);
   }
 
   async handleInput(responseCode) {
@@ -47,14 +47,14 @@ export default class ItemChoiceState extends DungeonState {
     }
 
     if (responseCode > this.user.items.length) {
-      this.changeState(ActionState);
+      this.changeState(PvpActionState);
     } else {
       // 선택한 아이템 인덱스 계산
       const itemIdx = responseCode;
-      this.dungeon.selectedItem = itemIdx;
+      this.pvpRoom.selectedItem = itemIdx;
 
       // 스킬 선택 후 플레이어 어택 상태로 전환
-      this.changeState(PlayerUseItemState);
+      this.changeState(PvpUseItemState);
     }
   }
 }
