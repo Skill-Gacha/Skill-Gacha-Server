@@ -100,8 +100,6 @@ try {
             return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
         }
 
-        console.log(`스킬 강화 성공: ${currentSkill.skillName} -> ${nextRankSkillId}`);
-
         // 최종적으로 응답 데이터 업데이트
         let enhanceUiResponse;
         try {
@@ -154,12 +152,8 @@ try {
             return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
         }
         await cEnhanceUiHandler({ socket });
-        console.log(`스킬 하락: ${currentSkill.skillName} -> ${downgradeSkill.skillName}`);
         return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
     } else {
-        
-        // 스킬 강화 실패
-        console.log('스킬 강화 실패');
         await cEnhanceUiHandler({ socket });
         return socket.write(createResponse(PacketType.S_EnhanceResponse, { success: false }));
     }

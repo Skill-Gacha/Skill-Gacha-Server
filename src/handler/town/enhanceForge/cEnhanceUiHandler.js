@@ -15,7 +15,6 @@ export const cEnhanceUiHandler = async ({ socket }) => {
     try {
         // 사용자의 스킬 정보 가져오기
         const userSkills = user.userSkills;
-        console.log('스킬을 잘 불러오니?', userSkills);
 
         // 사용자의 스킬 코드 목록 생성
         const skillCodes = userSkills.map(skill => skill.id); // 사용자 스킬에서 ID 추출
