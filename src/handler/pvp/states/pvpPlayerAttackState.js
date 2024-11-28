@@ -5,16 +5,13 @@ import PvpTurnChangeState from './pvpTurnChangeState.js';
 import PvpEnemyDeadState from './pvpEnemyDeadState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import {
-  checkStopperResist,
-  skillEnhancement,
-  updateDamage,
-} from '../../../utils/battle/calculate.js';
+import { checkStopperResist, skillEnhancement, updateDamage } from '../../../utils/battle/calculate.js';
 import { BUFF_SKILL, DEBUFF } from '../../../constants/battle.js';
 import { buffSkill, pvpUseBuffSkill } from '../../../utils/battle/battle.js';
 import { delay } from '../../../utils/delay.js';
 
 const ACTION_ANIMATION_CODE = 0;
+const AFTER_ATTACK_DELAY_TIME = 1000;
 
 // 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
@@ -39,7 +36,7 @@ export default class PvpPlayerAttackState extends PvpState {
 
       // 무버 액션 보내기
       this.sendActionAnimations(userSkillInfo.effectCode);
-      await delay(1000);
+      await delay(AFTER_ATTACK_DELAY_TIME);
       this.changeState(PvpTurnChangeState);
       return;
     }

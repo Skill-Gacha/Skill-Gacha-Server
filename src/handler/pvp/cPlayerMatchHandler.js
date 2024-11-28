@@ -54,7 +54,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     battleLog: createBattleLogResponse(
       generateBattleLog(playerB.nickname, lastKoreanA, isFirstAttack, '선공입니다.'),
       isFirstAttack,
-      [true, true, true, true]
+      [true, true, true, true],
     ),
   });
 
@@ -65,7 +65,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     battleLog: createBattleLogResponse(
       generateBattleLog(playerA.nickname, lastKoreanB, !isFirstAttack, '후공입니다.'),
       !isFirstAttack,
-      [false, false, false, false]
+      [false, false, false, false],
     ),
   });
 

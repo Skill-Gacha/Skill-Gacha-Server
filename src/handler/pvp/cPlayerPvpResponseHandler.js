@@ -26,7 +26,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     const isConfirmOrGameOver = [PvpFleeMessageState, PvpGameOverState].some(
-      (StateClass) => pvpRoom.currentState instanceof StateClass
+      (StateClass) => pvpRoom.currentState instanceof StateClass,
     );
 
     if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
