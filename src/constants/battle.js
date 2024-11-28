@@ -98,8 +98,8 @@ export const AREASKILL = 21;
 export const BUFF_SKILL = 27;
 export const DEBUFF = 26;
 
-export const PVP_TURN_TIMEOUT_LIMIT = 5000;
-export const PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT = 2500;
+export const PVP_TURN_TIMEOUT_LIMIT = 30000;
+export const PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT = 5000;
 
 export const PHASE_ONE_TURN_TIMEOUT_LIMIT = 30000;
 export const PHASE_TWO_TURN_TIMEOUT_LIMIT = 20000;
