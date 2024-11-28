@@ -6,7 +6,7 @@ import PvpState from './pvpState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PvpPlayerAttackState from './pvpPlayerAttackState.js';
 import { MAX_BUTTON_COUNT, PVP_STATUS } from '../../../constants/battle.js';
-import PvpTurnChangeState from './pvpTurnChangeState.js';
+import PvpActionState from './pvpActionState.js';
 
 export default class PvpSkillChoice extends PvpState {
   enter() {
@@ -17,7 +17,7 @@ export default class PvpSkillChoice extends PvpState {
       enable: this.mover.stat.mp >= skill.mana,
     }));
 
-    buttons.push({ msg: '턴 넘기기', enable: true });
+    buttons.push({ msg: '뒤로 가기', enable: true });
 
     const battleLog = {
       msg: '스킬을 선택하여 상대방을 공격하세요',
@@ -36,7 +36,7 @@ export default class PvpSkillChoice extends PvpState {
     }
 
     if (responseCode === this.mover.userSkills.length + 1) {
-      this.changeState(PvpTurnChangeState);
+      this.changeState(PvpActionState);
     } else {
       const skillIndex = responseCode - 1;
       const selectedSkill = this.mover.userSkills[skillIndex];

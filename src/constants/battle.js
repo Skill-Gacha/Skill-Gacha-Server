@@ -32,6 +32,7 @@ export const PVP_STATUS = {
   USE_ITEM: 9,
   FLEE_MESSAGE: 10,
   TURN_CHANGE: 11,
+  ITEM_CHOICE: 12,
 };
 
 export const CONFIRM_TYPE = {
@@ -72,8 +73,25 @@ export const DUNGEON_DEAD_RESOURCES = {
   4: { gold: 2000, stone: 8 },
 };
 
+export const STONE = {
+  100: 1,
+  101: 5,
+  102: 10,
+  103: 15,
+  104: 20,
+};
+
+export const buffs = {
+  26: 4,
+  27: 1,
+  28: 2,
+  29: 3,
+};
+
 export const MAX_SKILL_REWARD = 3;
 export const MAX_BUTTON_COUNT = 6;
 export const MAX_SKILL_COUNT = 4;
 export const MAX_REWARD_BUTTON = 4;
-export const BUFF_SKILL = 26;
+export const AREASKILL = 21;
+export const BUFF_SKILL = 27;
+export const DEBUFF = 26;
