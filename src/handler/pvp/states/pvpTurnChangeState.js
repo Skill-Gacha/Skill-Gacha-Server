@@ -24,7 +24,7 @@ export default class PvpTurnChangeState extends PvpState {
 
     // 배틀 로그 전송
     const moverBattleLog = {
-      msg: '이제 님이 때릴 차례예요',
+      msg: '이제 님이 맞을 차례예요',
       typingAnimation: false,
       btns: [
         { msg: '스킬 사용', enable: false },
@@ -34,7 +34,7 @@ export default class PvpTurnChangeState extends PvpState {
     };
 
     const stopperBattleLog = {
-      msg: '이제 님이 맞을 차례예요',
+      msg: '이제 님이 때릴 차례예요',
       typingAnimation: false,
       btns: [
         { msg: '스킬 사용', enable: true },
@@ -53,6 +53,9 @@ export default class PvpTurnChangeState extends PvpState {
 
     // 다음 상태로 전환하면서 mover와 stopper 교체
     this.changeState(PvpActionState, true);
+    
+    this.pvpRoom.clearTurnTimer();
+    this.pvpRoom.startTurnTimer();
   }
 
   handleInput(responseCode) {

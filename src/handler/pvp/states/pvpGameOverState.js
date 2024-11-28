@@ -49,6 +49,7 @@ export default class PvpGameOverState extends PvpState {
       const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
       this.mover.socket.write(leaveResponse);
       this.stopper.socket.write(leaveResponse);
+      this.pvpRoom.clearTurnTimer();
       sessionManager.removePvpRoom(this.pvpRoom.sessionId);
     } else {
       invalidResponseCode(this.mover.socket);

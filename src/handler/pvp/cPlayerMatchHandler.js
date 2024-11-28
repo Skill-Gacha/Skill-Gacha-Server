@@ -76,4 +76,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
   playerA.socket.write(responseA);
   playerB.socket.write(responseB);
+  
+  pvpRoom.startTurnTimer();
 };
