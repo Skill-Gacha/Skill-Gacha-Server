@@ -3,16 +3,13 @@
 import sessionManager from '#managers/sessionManager.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
+import PvpFleeMessageState from './states/pvpFleeMessageState.js';
+import PvpGameOverState from './states/pvpGameOverState.js';
 
 export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
   try {
     const user = sessionManager.getUserBySocket(socket);
     const responseCode = payload.responseCode || 0;
-
-    if (responseCode === 0) {
-      socket.write(createResponse(PacketType.S_LeaveDungeon, {})); // 마을로 돌아갈 수 있게 패킷 전송
-      return;
-    }
 
     if (!user) {
       console.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
@@ -26,10 +23,16 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
       return;
     }
 
+    if ((!(pvpRoom.currentState instanceof PvpFleeMessageState) && !(pvpRoom.currentState instanceof PvpGameOverState)) && responseCode === 0) {
+      socket.write(createResponse(PacketType.S_LeaveDungeon, {})); // 마을로 돌아갈 수 있게 패킷 전송
+      sessionManager.removePvpRoom(pvpRoom.sessionId);
+      return;
+    }
+
     const [playerA, playerB] = Array.from(pvpRoom.users.values());
     const currentPlayer = pvpRoom.getUserTurn() === 0 ? playerB : playerA;
 
-    if (currentPlayer.socket !== socket) {
+    if (currentPlayer.nickname !== user.nickname) {
       console.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
       return;
     }

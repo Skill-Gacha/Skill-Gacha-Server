@@ -48,7 +48,6 @@ export const onEnd = (socket) => async () => {
 
       // 매칭큐 및 세션 정리
       sessionManager.removeMatchingQueue(user);
-      sessionManager.removePvpRoom(pvpRoom.sessionId);
     } catch (error) {
       console.error('onEnd: PVP 강제종료 처리중 에러:', error);
     }
