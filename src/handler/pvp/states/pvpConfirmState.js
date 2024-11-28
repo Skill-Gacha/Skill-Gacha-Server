@@ -14,16 +14,10 @@ const CONFIRM_BUTTONS = [
 ];
 
 export default class PvpConfirmState extends PvpState {
-  constructor(pvp, mover, stopper) {
-    super(pvp, mover, stopper);
+  constructor(pvpRoom, mover, stopper) {
+    super(pvpRoom, mover, stopper);
     this.confirmType = CONFIRM_TYPE.DEFAULT;
     this.message = '확인';
-  }
-
-  async setConfirm(type, message) {
-    this.confirmType = type;
-    this.message = message;
-    this.enter();
   }
 
   enter() {
@@ -51,7 +45,14 @@ export default class PvpConfirmState extends PvpState {
         }
         break;
       default:
+        invalidResponseCode(this.mover.socket);
         break;
     }
+  }
+
+  async setConfirm(type, message) {
+    this.confirmType = type;
+    this.message = message;
+    this.enter();
   }
 }
