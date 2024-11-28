@@ -8,6 +8,8 @@ import PvpState from './pvpState.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/ratingService.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
+const RANK_CHANGE_POINTS = 10;
+
 export default class PvpFleeMessageState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.FLEE_MESSAGE;
@@ -19,11 +21,12 @@ export default class PvpFleeMessageState extends PvpState {
       ]);
 
       await Promise.all([
-        updatePlayerRating(this.stopper.nickname, winnerRating + 10),
-        updatePlayerRating(this.mover.nickname, loserRating - 10),
+        updatePlayerRating(this.stopper.nickname, winnerRating + RANK_CHANGE_POINTS),
+        updatePlayerRating(this.mover.nickname, loserRating - RANK_CHANGE_POINTS),
       ]);
     } catch (error) {
       console.error('pvpFleeMessageState: 랭크 점수 업데이트 중 오류 발생:', error);
+      return;
     }
 
     const fleeMessageMover = createResponse(PacketType.S_ScreenText, {
