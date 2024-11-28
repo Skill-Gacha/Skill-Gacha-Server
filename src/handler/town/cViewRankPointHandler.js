@@ -3,7 +3,9 @@
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
-import { getPlayerRank, getPlayerRatingFromRedis, getTopRatings } from '../../db/redis/ratingService.js';
+import { getTopRatingsWithPlayer } from '../../db/redis/ratingService.js';
+
+const RANK_RANGE = 10;
 
 export const cViewRankPointHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
@@ -12,26 +14,32 @@ export const cViewRankPointHandler = async ({ socket, payload }) => {
     return;
   }
 
-  // 유저의 랭킹과 스코어 가져오기
-  const playerRank = await getPlayerRank(user.nickname);
-  const playerScore = await getPlayerRatingFromRedis(user.nickname);
-
-  // 상위 10명의 유저 랭크 정보 가져오기
-  const topRatings = await getTopRatings(10);
-
-  const otherRanks = topRatings.map((rank, index) => ({
-    playerName: rank.value,
-    playerRank: index + 1,
-    playerScore: rank.score,
-  }));
-
   try {
+    // 상위 10명과 특정 유저의 레이팅 정보 가져오기
+    const topRatings = await getTopRatingsWithPlayer(user.nickname, RANK_RANGE);
+
+    // 대상 유저의 랭킹 정보 찾기
+    const myRankInfo = topRatings.find((rank) => rank.value === user.nickname);
+
+    if (!myRankInfo) {
+      console.error('cViewRankPointHandler: 대상 유저의 랭킹 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    // 상위 10명 랭크 정보
+    const otherRanks = topRatings.map((rank) => ({
+      playerName: rank.value,
+      playerRank: rank.rank,
+      playerScore: rank.score,
+    }));
+
+    // 클라이언트에 응답 전송
     user.socket.write(
       createResponse(PacketType.S_ViewRankPoint, {
         myRank: {
-          playerName: user.nickname,
-          playerRank,
-          playerScore,
+          playerName: myRankInfo.value,
+          playerRank: myRankInfo.rank,
+          playerScore: myRankInfo.score,
         },
         otherRanks,
       }),
