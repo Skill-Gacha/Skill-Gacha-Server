@@ -8,6 +8,8 @@ import PvpState from './pvpState.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/ratingService.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
+const POINT_CHANGE = 10;
+
 export default class PvpGameOverState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.GAME_OVER;
@@ -19,11 +21,13 @@ export default class PvpGameOverState extends PvpState {
       ]);
 
       await Promise.all([
-        updatePlayerRating(this.mover.nickname, winnerRating + 10),
-        updatePlayerRating(this.stopper.nickname, loserRating - 10),
+        updatePlayerRating(this.mover.nickname, winnerRating + POINT_CHANGE),
+        updatePlayerRating(this.stopper.nickname, loserRating - POINT_CHANGE),
       ]);
     } catch (error) {
       console.error('pvpGameOverState: 랭크 점수 업데이트 중 오류 발생:', error);
+      invalidResponseCode(this.mover.socket);
+      return;
     }
 
     const victoryMessage = createResponse(PacketType.S_ScreenText, {
