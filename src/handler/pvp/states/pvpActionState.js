@@ -4,7 +4,7 @@ import PvpConfirmState from './pvpConfirmState.js';
 import { CONFIRM_TYPE, PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import PvpSkillChoice from './pvpSkillChoiceState.js';
+import PvpSkillChoiceState from './pvpSkillChoiceState.js';
 import PvpItemChoiceState from './pvpItemChoiceState.js';
 import PvpIncreaseManaState from './pvpIncreaseManaState.js';
 import { PacketType } from '../../../constants/header.js';
@@ -31,7 +31,7 @@ export default class PvpActionState extends PvpState {
   // switch-case 대신 매핑으로 가독성 개선
   async handleInput(responseCode) {
     const actionMap = {
-      1: PvpSkillChoice,
+      1: PvpSkillChoiceState,
       2: PvpItemChoiceState,
       3: PvpIncreaseManaState,
       4: PvpConfirmState,
