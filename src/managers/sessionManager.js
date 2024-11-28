@@ -141,7 +141,12 @@ class SessionManager {
   }
 
   getPvpByUser(user) {
-    return this.getSessionByUserId(user.id);
+    for (let pvp of this.sessions.pvpRooms.values()) {
+      if (pvp.getUser(user.id)) {
+        return pvp;
+      }
+    }
+    return false;
   }
 
   createPvpRoom(sessionId) {
