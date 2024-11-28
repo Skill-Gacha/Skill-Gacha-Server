@@ -52,6 +52,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       btns: [
         { msg: '스킬 사용', enable: isFirstAttack },
         { msg: '아이템 사용', enable: isFirstAttack },
+        { msg: '턴 넘기기', enable: isFirstAttack },
         { msg: '도망치기', enable: isFirstAttack },
       ],
     },
@@ -67,6 +68,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       btns: [
         { msg: '스킬 사용', enable: !isFirstAttack },
         { msg: '아이템 사용', enable: !isFirstAttack },
+        { msg: '턴 넘기기', enable: !isFirstAttack },
         { msg: '도망치기', enable: !isFirstAttack },
       ],
     },
