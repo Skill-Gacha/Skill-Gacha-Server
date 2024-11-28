@@ -14,6 +14,8 @@ import { BUFF_SKILL, DEBUFF } from '../../../constants/battle.js';
 import { buffSkill, pvpUseBuffSkill } from '../../../utils/battle/battle.js';
 import { delay } from '../../../utils/delay.js';
 
+const ACTION_ANIMATION_CODE = 0;
+
 // 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
   async enter() {
@@ -21,7 +23,7 @@ export default class PvpPlayerAttackState extends PvpState {
     const userSkillInfo = this.mover.userSkills[selectedSkill];
 
     if (userSkillInfo.id >= BUFF_SKILL || userSkillInfo.id === DEBUFF) {
-      // user.stat.buff 값 설정해주기
+      // 버프 스킬 적용
       buffSkill(this.mover, userSkillInfo.id);
 
       // 버프 상태에 따라 행동 결정
@@ -92,7 +94,7 @@ export default class PvpPlayerAttackState extends PvpState {
 
   sendActionAnimations(effectCode) {
     const action = {
-      actionSet: { animCode: 0, effectCode },
+      actionSet: { animCode: ACTION_ANIMATION_CODE, effectCode },
     };
     this.mover.socket.write(createResponse(PacketType.S_PvpPlayerAction, action));
     this.stopper.socket.write(createResponse(PacketType.S_PvpEnemyAction, action));
