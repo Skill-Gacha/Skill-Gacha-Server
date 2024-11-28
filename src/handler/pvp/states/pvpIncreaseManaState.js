@@ -7,11 +7,18 @@ import { PVP_STATUS, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT } from '../../../consta
 import PvpState from './pvpState.js';
 import PvpTurnChangeState from './pvpTurnChangeState.js';
 
+const HP_RECOVERY_MIN = 5;
+const HP_RECOVERY_MAX = 10;
+const MP_RECOVERY_MIN = 5;
+const MP_RECOVERY_MAX = 10;
+
+const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
+
 export default class PvpIncreaseManaState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.INCREASE_MANA;
-    const randomHp = Math.floor(Math.random() * 6) + 5;
-    const randomMp = Math.floor(Math.random() * 6) + 5;
+    const randomHp = Math.floor(Math.random() * (HP_RECOVERY_MAX - HP_RECOVERY_MIN + 1)) + HP_RECOVERY_MIN;
+    const randomMp = Math.floor(Math.random() * (MP_RECOVERY_MAX - MP_RECOVERY_MIN + 1)) + MP_RECOVERY_MIN;
 
     const existingHp = this.mover.stat.hp;
     const existingMp = this.mover.stat.mp;
@@ -21,25 +28,25 @@ export default class PvpIncreaseManaState extends PvpState {
     this.mover.socket.write(
       createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }),
     );
-    
+
     this.mover.socket.write(
       createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
     );
+
     this.stopper.socket.write(
       createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.mover.stat.hp }),
     );
 
-    // 마나 회복 로직 전달
+    const battleLogMsg = `턴을 넘기며 체력이 ${this.mover.stat.hp - existingHp}만큼 회복 되었습니다. \n마나가 ${this.mover.stat.mp - existingMp}만큼 회복 되었습니다.`;
+
     const increaseManaBattleLogResponse = createResponse(PacketType.S_PvpBattleLog, {
       battleLog: {
-        msg: `턴을 넘겨 체력이 ${this.mover.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${this.mover.stat.mp - existingMp}만큼 회복하였습니다.`,
+        msg: battleLogMsg,
         typingAnimation: false,
-        btns: [
-          { msg: '확인', enable: true }, // 플레이어 확인용 버튼
-        ],
+        btns: BUTTON_CONFIRM,
       },
     });
-    
+
     this.mover.socket.write(increaseManaBattleLogResponse);
 
     // 5초 후에 handleInput(1)을 자동으로 호출하는 타이머 설정
@@ -49,13 +56,12 @@ export default class PvpIncreaseManaState extends PvpState {
   }
 
   async handleInput(responseCode) {
-    // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
     if (responseCode === 1) {
       clearTimeout(this.timeoutId);
       this.changeState(PvpTurnChangeState);
     } else {
       // 유효하지 않은 응답 처리
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.mover.socket);
     }
   }
 }
