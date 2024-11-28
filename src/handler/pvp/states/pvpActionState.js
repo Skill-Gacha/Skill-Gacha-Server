@@ -8,6 +8,7 @@ import PvpSkillChoice from './pvpSkillChoiceState.js';
 import PvpItemChoiceState from './pvpItemChoiceState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import PvpIncreaseManaState from './pvpIncreaseManaState.js';
 
 export default class PvpActionState extends PvpState {
   enter() {
@@ -16,6 +17,7 @@ export default class PvpActionState extends PvpState {
       const buttons = [
         { msg: '스킬 사용', enable: true },
         { msg: '아이템 사용', enable: true },
+        { msg: '턴 넘기기', enable: true },
         { msg: '도망치기', enable: true },
       ];
 
@@ -41,7 +43,10 @@ export default class PvpActionState extends PvpState {
       case 2: // 아이템
         this.changeState(PvpItemChoiceState);
         break;
-      case 3: // 도망치기
+      case 3: // 턴 넘기기
+        this.changeState(PvpIncreaseManaState);
+        break;
+      case 4: // 도망치기
         this.changeState(PvpConfirmState);
         await this.pvpRoom.currentState.setConfirm(CONFIRM_TYPE.FLEE, '추하게 빼실겁니까?');
         break;

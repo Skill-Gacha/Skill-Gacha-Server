@@ -19,6 +19,7 @@ export const DUNGEON_STATUS = {
   FAIL_FLEE: 14,
   PALYER_DEAD: 15,
   ITEM_CHOCE: 16,
+  INCREASE_MANA: 17,
 };
 
 export const PVP_STATUS = {
@@ -33,6 +34,7 @@ export const PVP_STATUS = {
   FLEE_MESSAGE: 10,
   TURN_CHANGE: 11,
   ITEM_CHOICE: 12,
+  INCREASE_MANA: 13,
 };
 
 export const CONFIRM_TYPE = {

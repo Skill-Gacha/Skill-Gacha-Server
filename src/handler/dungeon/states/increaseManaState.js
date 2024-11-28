@@ -10,7 +10,7 @@ import EnemyAttackState from './enemyAttackState.js';
 
 export default class IncreaseManaState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = DUNGEON_STATUS.INCREASEMANA;
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.INCREASE_MANA;
     const randomHp = Math.floor(Math.random() * 6) + 5;
     const randomMp = Math.floor(Math.random() * 6) + 5;
 
