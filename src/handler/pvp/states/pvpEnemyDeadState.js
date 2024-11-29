@@ -7,19 +7,25 @@ import PvpState from './pvpState.js';
 import PvpGameOverState from './pvpGameOverState.js';
 import { delay } from '../../../utils/delay.js';
 
+const DEATH_ANIMATION_CODE = 1;
+const DEFEAT_DELAY = 4000;
+
 export default class PvpEnemyDeadState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.ENEMY_DEAD;
 
     // 상대방에게 사망 애니메이션 전송
     const deathAnimation = {
-      actionSet: { animCode: 1, effectCode: null },
+      actionSet: { animCode: DEATH_ANIMATION_CODE, effectCode: null },
     };
 
-    this.mover.socket.write(createResponse(PacketType.S_PvpEnemyAction, deathAnimation));
-    this.stopper.socket.write(createResponse(PacketType.S_PvpPlayerAction, deathAnimation));
+    const enemyActionResponse = createResponse(PacketType.S_PvpEnemyAction, deathAnimation);
+    const playerActionResponse = createResponse(PacketType.S_PvpPlayerAction, deathAnimation);
 
-    await delay(4000);
+    this.mover.socket.write(enemyActionResponse);
+    this.stopper.socket.write(playerActionResponse);
+
+    await delay(DEFEAT_DELAY);
 
     this.changeState(PvpGameOverState);
   }
