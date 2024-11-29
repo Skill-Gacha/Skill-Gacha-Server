@@ -31,7 +31,7 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
 
     if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
       socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
-      sessionManager.removePvpRoom(pvpRoom.sessionId);
+      sessionManager.removeBossRoom(bossRoom.sessionId);
       return;
     }
 
