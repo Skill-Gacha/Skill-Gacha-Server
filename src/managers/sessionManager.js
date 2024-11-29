@@ -3,7 +3,7 @@
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
-import { MAX_PLAYER } from '../constants/pvp.js';
+import BossRoomClass from '../classes/models/bossRoomClass.js';
 
 // 싱글톤 클래스
 class SessionManager {
@@ -17,8 +17,10 @@ class SessionManager {
       town: new Town(10000),
       dungeons: new Map(),
       pvpRooms: new Map(),
+      bossRooms: new Map(),
     };
-    this.matchingQueue = [];
+    this.pvpMatchingQueue = [];
+    this.bossMatchingQueue = [];
     this.users = new Map();
     SessionManager.instance = this;
     Object.freeze(this);
@@ -115,25 +117,27 @@ class SessionManager {
   }
 
   // ** 1 대 1 pvp 매칭 관리**
-  addMatchingQueue(user) {
-    const existingUser = this.matchingQueue.find((existUser) => existUser.id === user.id);
+  addMatchingQueue(user, maxPlayer, queueType) {
+    const matchingQueue = queueType === 'pvp' ? this.pvpMatchingQueue : this.bossMatchingQueue;
+    const existingUser = matchingQueue.find((existUser) => existUser.id === user.id);
 
     if (existingUser) {
       console.log('이미 매칭중인 유저입니다.');
       return;
     }
 
-    this.matchingQueue.push(user);
-    if (this.matchingQueue.length === MAX_PLAYER) {
-      return this.matchingQueue.splice(0, 2);
+    matchingQueue.push(user);
+    if (matchingQueue === maxPlayer) {
+      return matchingQueue.splice(0, maxPlayer);
     }
     return null;
   }
 
-  removeMatchingQueue(user) {
-    const userIndex = this.matchingQueue.findIndex((u) => (u.id === user.id));
+  removeMatchingQueue(user, queueType) {
+    const matchingQueue = queueType === 'pvp' ? this.pvpMatchingQueue : this.bossMatchingQueue;
+    const userIndex = matchingQueue.findIndex((u) => u.id === user.id);
     if (userIndex !== -1) {
-      this.matchingQueue.splice(userIndex, 1);
+      matchingQueue.splice(userIndex, 1);
       console.log('매칭큐에서 유저를 지워줍니다');
       return;
     }
@@ -141,7 +145,21 @@ class SessionManager {
   }
 
   getPvpByUser(user) {
-    return this.getSessionByUserId(user.id);
+    for (let pvp of this.sessions.pvpRooms.values()) {
+      if (pvp.getUser(user.id)) {
+        return pvp;
+      }
+    }
+    return false;
+  }
+
+  getBossRommByUser(user) {
+    for (let bossRoom of this.sessions.bossRooms.values()) {
+      if (bossRoom.getUser(user.id)) {
+        return bossRoom;
+      }
+    }
+    return false;
   }
 
   createPvpRoom(sessionId) {
@@ -152,6 +170,27 @@ class SessionManager {
 
   removePvpRoom(sessionId) {
     this.sessions.pvpRooms.delete(sessionId);
+  }
+
+  removeBossRoom(sessionId) {
+    this.sessions.bossRooms.delete(sessionId);
+  }
+
+  createbossRoom(sessionId) {
+    const bossRoom = new BossRoomClass(sessionId);
+    this.sessions.bossRooms.set(sessionId, bossRoom);
+    return bossRoom;
+  }
+
+  getMatchingQueue(queueType) {
+    if (queueType === 'boss') {
+      return this.bossMatchingQueue;
+    } else if (queueType === 'pvp') {
+      return this.pvpMatchingQueue;
+    } else {
+      console.error(`유효하지 않은 큐 타입: ${queueType}`);
+      return [];
+    }
   }
 }
 
