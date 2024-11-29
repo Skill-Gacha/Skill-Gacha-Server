@@ -13,10 +13,6 @@ const DUNGEON_CODE_BASE = 5000;
 const DUNGEON_CODE_RANGE = 3;
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기', '도망치기'];
 
-const DUNGEON_CODE_BASE = 5000;
-const DUNGEON_CODE_RANGE = 3;
-const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기', '도망치기'];
-
 export const cPlayerMatchHandler = async ({ socket }) => {
   const user = sessionManager.getUserBySocket(socket);
 

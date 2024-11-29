@@ -127,7 +127,8 @@ class SessionManager {
     }
 
     matchingQueue.push(user);
-    if (matchingQueue === maxPlayer) {
+    if (matchingQueue.length === maxPlayer) {
+      console.log('다 찼습니다.');
       return matchingQueue.splice(0, maxPlayer);
     }
     return null;
@@ -136,6 +137,7 @@ class SessionManager {
   removeMatchingQueue(user, queueType) {
     const matchingQueue = queueType === 'pvp' ? this.pvpMatchingQueue : this.bossMatchingQueue;
     const userIndex = matchingQueue.findIndex((u) => u.id === user.id);
+
     if (userIndex !== -1) {
       matchingQueue.splice(userIndex, 1);
       console.log('매칭큐에서 유저를 지워줍니다');
