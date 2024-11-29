@@ -41,7 +41,7 @@ export default class PlayerUseItemState extends DungeonState {
         await this.useDangerPotion();
         break;
       case 'PANACEA':
-        await this.useCureAll();
+        await this.usePanacea();
         break;
       default:
         console.error(`PlayerUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
@@ -157,7 +157,7 @@ export default class PlayerUseItemState extends DungeonState {
     this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
   }
 
-  async useCureAll() {
+  async usePanacea() {
     // 상태 이상 해제 로직 추가
     this.user.stat.berserk = false;
     this.user.stat.protect = false;
