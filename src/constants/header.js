@@ -16,6 +16,9 @@ export const PacketType = {
   C_InventoryViewRequest: 50,
   C_EnhanceUiRequest: 52,
   C_EnhanceRequest: 54,
+  C_BossMatch: 56,
+  C_AcceptResponse: 58,
+  C_BossPlayerResponse: 60,
 
   // 서버 → 클라이언트 패킷
   S_Enter: 1,
@@ -56,4 +59,13 @@ export const PacketType = {
   S_InventoryViewResponse: 51,
   S_EnhanceUiResponse: 53,
   S_EnhanceResponse: 55,
+  S_AcceptRequest: 57,
+  S_BossMatchNotification: 59,
+  S_BossBattleLog: 61,
+  S_BossPlayerStatusNotification: 62,
+  S_BossSetMonsterHp: 63,
+  S_BossPlayerActionNotification: 64,
+  S_BossMonsterAction: 65,
+  S_BossPhase: 66,
+  S_BossUserTurn: 67,
 };
