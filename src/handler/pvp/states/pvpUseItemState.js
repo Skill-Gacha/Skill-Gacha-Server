@@ -1,23 +1,23 @@
 // src/handler/pvp/states/pvpUseItemState.js
 
+import PvpState from './pvpState.js';
+import PvpTurnChangeState from './pvpTurnChangeState.js';
+import PvpItemChoiceState from './pvpItemChoiceState.js';
+import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../constants/battle.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
-import PvpState from './pvpState.js';
-import PvpTurnChangeState from './pvpTurnChangeState.js';
-import { PacketType } from '../../../constants/header.js';
-import PvpItemChoiceState from './pvpItemChoiceState.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { ITEM_TYPES } from '../../../constants/items.js';
 
-
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
+const BASE_ITEM_CODE_OFFSET = 4000;
 
 export default class PvpUseItemState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.USE_ITEM;
 
-    const selectedItemId = this.pvpRoom.selectedItem + 4000; // Assuming item IDs start at 4001
+    const selectedItemId = this.pvpRoom.selectedItem + BASE_ITEM_CODE_OFFSET;
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {
@@ -26,32 +26,37 @@ export default class PvpUseItemState extends PvpState {
       return;
     }
 
-    // 아이템 사용 로직 분기
-    switch (itemEffect) {
-      case 'HP_POTION':
-        await this.useHpPotion();
-        break;
-      case 'MP_POTION':
-        await this.useMpPotion();
-        break;
-      case 'BERSERK_POTION':
-        await this.useBerserkPotion();
-        break;
-      case 'DANGER_POTION':
-        await this.useDangerPotion();
-        break;
-      case 'PANACEA':
-        await this.usePanacea();
-        break;
-      default:
-        console.error(`PvpUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
-        invalidResponseCode(this.mover.socket);
-        return;
-    }
+    try {
+      // 아이템 사용 로직 분기
+      switch (itemEffect) {
+        case 'HP_POTION':
+          await this.useHpPotion();
+          break;
+        case 'MP_POTION':
+          await this.useMpPotion();
+          break;
+        case 'BERSERK_POTION':
+          await this.useBerserkPotion();
+          break;
+        case 'DANGER_POTION':
+          await this.useDangerPotion();
+          break;
+        case 'PANACEA':
+          await this.usePanacea();
+          break;
+        default:
+          console.error(`PvpUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
+          invalidResponseCode(this.mover.socket);
+          return;
+      }
 
-    // 아이템 수량 업데이트
-    await updateItemCountInRedis(this.mover.nickname, selectedItemId, -1);
-    await this.mover.updateItem(this.mover.nickname);
+      // 아이템 수량 업데이트
+      await updateItemCountInRedis(this.mover.nickname, selectedItemId, -1);
+      await this.mover.updateItem(this.mover.nickname);
+    } catch (error) {
+      console.error('PvpUseItemState: 아이템 사용 중 오류 발생:', error);
+      invalidResponseCode(this.mover.socket);
+    }
   }
 
   async useHpPotion() {
@@ -59,10 +64,14 @@ export default class PvpUseItemState extends PvpState {
     this.mover.increaseHpMp(100, 0);
 
     this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }),
+      createResponse(PacketType.S_SetPvpPlayerHp, {
+        hp: this.mover.stat.hp,
+      }),
     );
     this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.mover.stat.hp }),
+      createResponse(PacketType.S_SetPvpEnemyHp, {
+        hp: this.stopper.stat.hp,
+      }),
     );
 
     const battleLog = {
@@ -79,10 +88,14 @@ export default class PvpUseItemState extends PvpState {
     this.mover.increaseHpMp(0, 60);
 
     this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
+      createResponse(PacketType.S_SetPvpPlayerMp, {
+        mp: this.mover.stat.mp,
+      }),
     );
     this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.mover.stat.hp }),
+      createResponse(PacketType.S_SetPvpEnemyMp, {
+        mp: this.stopper.stat.mp,
+      }),
     );
 
     const battleLog = {
@@ -105,10 +118,14 @@ export default class PvpUseItemState extends PvpState {
     this.mover.stat.berserk = true;
 
     this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }),
+      createResponse(PacketType.S_SetPvpPlayerHp, {
+        hp: this.mover.stat.hp,
+      }),
     );
     this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.mover.stat.hp }),
+      createResponse(PacketType.S_SetPvpEnemyHp, {
+        hp: this.stopper.stat.hp,
+      }),
     );
 
     const battleLog = {
@@ -146,7 +163,7 @@ export default class PvpUseItemState extends PvpState {
       createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
     );
     this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.mover.stat.hp }),
+      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }),
     );
 
     const battleLog = {
@@ -159,9 +176,7 @@ export default class PvpUseItemState extends PvpState {
   }
 
   async usePanacea() {
-    // 상태이상 해제 로직 추가 필요 (현재 상태 이상이 없음)
-    // 예시: this.mover.stat = { ...this.mover.stat, debuffs: [] };
-    const previousStatus = { ...this.mover.stat };
+    // 모든 상태 이상 해제
     this.mover.stat.berserk = false;
     this.mover.stat.protect = false;
     this.mover.stat.dangerPotion = false;
@@ -173,7 +188,15 @@ export default class PvpUseItemState extends PvpState {
     };
 
     this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
-    this.stopper.socket.write(createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }));
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }),
+    );
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
+    );
+    this.stopper.socket.write(
+      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }),
+    );
   }
 
   async handleInput(responseCode) {
