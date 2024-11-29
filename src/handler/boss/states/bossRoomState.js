@@ -1,4 +1,4 @@
-// src/handler/dungeon/states/dungeonState.js
+// src/handler/boss/states/bossRoomState.js
 
 import GameState from '../../states/gameState.js';
 
