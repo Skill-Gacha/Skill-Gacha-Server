@@ -25,10 +25,9 @@ export default class MessageState extends DungeonState {
     if (responseCode === RESPONSE_CODE.SCREEN_TEXT_DONE) {
       const screenTextDoneResponse = createResponse(PacketType.S_ScreenDone, {});
       this.socket.write(screenTextDoneResponse);
-      
+
       this.changeState(ActionState);
-    }
-    else {
+    } else {
       invalidResponseCode(this.socket);
     }
   }

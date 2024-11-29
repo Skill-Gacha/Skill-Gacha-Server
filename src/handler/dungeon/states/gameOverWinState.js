@@ -37,7 +37,7 @@ export default class GameOverWinState extends DungeonState {
       invalidResponseCode(this.socket);
     }
   }
-  
+
   endDungeonSession() {
     sessionManager.removeDungeon(this.dungeon.sessionId);
     this.socket.write(createResponse(PacketType.S_LeaveDungeon, {}));

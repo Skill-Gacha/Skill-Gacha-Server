@@ -25,7 +25,7 @@ export default class PlayerDeadState extends DungeonState {
 
     const goldLost = gold - this.user.gold;
     const stoneLost = stone - this.user.stone;
-    
+
     // 플레이어 사망 로직 전달
     const playerDeadBattleLogResponse = createResponse(PacketType.S_BattleLog, {
       battleLog: {

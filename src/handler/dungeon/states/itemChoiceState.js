@@ -66,7 +66,7 @@ export default class ItemChoiceState extends DungeonState {
     }
     return item.count > 0;
   }
-  
+
   isValidResponseCode(code) {
     return code >= 1 && code <= MAX_BUTTON_COUNT;
   }

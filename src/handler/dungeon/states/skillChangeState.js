@@ -4,7 +4,7 @@ import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import ConfirmState from './confirmState.js';
-import { CONFIRM_TYPE, DUNGEON_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import RewardState from './rewardState.js';
 
