@@ -7,5 +7,6 @@ export default class BossRoomState extends GameState {
     super(session, user);
     this.bossRoom = session;
     this.user = this.bossRoom.userTurn;
+    this.users = this.bossRoom.getUsers();
   }
 }
