@@ -158,10 +158,7 @@ export default class PlayerUseItemState extends DungeonState {
   }
 
   async usePanacea() {
-    // 상태 이상 해제 로직 추가
-    this.user.stat.berserk = false;
-    this.user.stat.protect = false;
-    this.user.stat.dangerPotion = false;
+    // 디버프 관련 로직 보완 필요
 
     const battleLog = {
       msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
