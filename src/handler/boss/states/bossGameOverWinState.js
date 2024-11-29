@@ -19,8 +19,7 @@ export default class BossGameOverWinState extends BossRoomState {
       },
     });
 
-    const bossUsers = this.bossRoom.getUsers();
-    bossUsers.forEach((user) => {
+    this.users.forEach((user) => {
       user.socket.write(winResponse);
     });
 

@@ -33,8 +33,7 @@ export default class BossIncreaseManaState extends BossRoomState {
       mp: this.user.stat.mp,
     });
 
-    const bossUsers = this.bossRoom.getUsers();
-    bossUsers.forEach((user) => {
+    this.users.forEach((user) => {
       user.socket.write(hpResponse);
     });
 
