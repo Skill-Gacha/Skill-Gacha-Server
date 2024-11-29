@@ -269,7 +269,7 @@ message S_SetPvpPlayerMp {
   float mp = 1;
 }
 
-message S_SetPvpEnemyHp {asdasd
+message S_SetPvpEnemyHp {
   float hp = 1;
 }
 
