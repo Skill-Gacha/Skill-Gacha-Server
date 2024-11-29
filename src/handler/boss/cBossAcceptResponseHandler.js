@@ -7,11 +7,26 @@ import { v4 as uuidv4 } from 'uuid';
 import { MemberStatus, MyStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import { DUNGEON_CODE, MAX_PLAYER } from '../../constants/boss.js';
+import { getGameAssets } from '../../init/loadAssets.js';
+import Monster from '../../classes/models/monsterClass.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
+const BOSS_NUMBER = 28;
+const BOSS_IDX = 0;
 
 export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
+  const monsterData = getGameAssets().MonsterData.data;
+  const bossMonster = monsterData[BOSS_NUMBER];
+  const bossMonsterInstance = new Monster(
+    BOSS_IDX,
+    bossMonster.monsterModel,
+    bossMonster.monsterName,
+    bossMonster.monsterHp,
+    bossMonster.monsterAtk,
+    bossMonster.monsterEffectCode,
+    bossMonster,
+  );
 
   if (!user) {
     console.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
@@ -26,6 +41,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       const [playerA, playerB, playerC] = matchedPlayers;
       const bossRoom = sessionManager.createbossRoom(uuidv4());
       bossRoom.setUsers(playerA, playerB, playerC);
+      bossRoom.addMonster(bossMonsterInstance);
       sDespawnHandler(playerA);
       sDespawnHandler(playerB);
       sDespawnHandler(playerC);
