@@ -10,7 +10,7 @@ import { deadResource } from '../../../utils/battle/calculate.js';
 
 export default class PlayerDeadState extends DungeonState {
   async enter() {
-    this.dungeon.dungeonStatus = DUNGEON_STATUS.PALYER_DEAD;
+    this.dungeon.dungeonStatus = DUNGEON_STATUS.PLAYER_DEAD;
     const gold = this.user.gold;
     const stone = this.user.stone;
 
