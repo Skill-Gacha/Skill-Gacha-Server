@@ -8,11 +8,17 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import EnemyAttackState from './enemyAttackState.js';
 
+const HP_RECOVERY_MIN = 5;
+const HP_RECOVERY_MAX = 10;
+const MP_RECOVERY_MIN = 5;
+const MP_RECOVERY_MAX = 10;
+const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
+
 export default class IncreaseManaState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.INCREASE_MANA;
-    const randomHp = Math.floor(Math.random() * 6) + 5;
-    const randomMp = Math.floor(Math.random() * 6) + 5;
+    const randomHp = getRandomInt(HP_RECOVERY_MIN, HP_RECOVERY_MAX);
+    const randomMp = getRandomInt(MP_RECOVERY_MIN, MP_RECOVERY_MAX);
 
     const existingHp = this.user.stat.hp;
     const existingMp = this.user.stat.mp;
@@ -35,26 +41,26 @@ export default class IncreaseManaState extends DungeonState {
       battleLog: {
         msg: `${this.user.getAddMsg()} 체력이 ${this.user.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${this.user.stat.mp - existingMp}만큼 회복하였습니다.`,
         typingAnimation: false,
-        btns: [
-          { msg: '확인', enable: true }, // 플레이어 확인용 버튼
-        ],
+        btns: BUTTON_CONFIRM,
       },
     });
     this.socket.write(increaseManaBattleLogResponse);
   }
 
   async handleInput(responseCode) {
-    // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
     if (responseCode === 1) {
       if (this.user.turnOff) {
         this.user.turnOff = false;
         this.changeState(EnemyAttackState);
-        return;
+      } else {
+        this.changeState(ActionState);
       }
-      this.changeState(ActionState); // 플레이어 확인 후 다음 상태로 전환
     } else {
-      // 유효하지 않은 응답 처리
       invalidResponseCode(this.socket);
     }
   }
 }
+
+const getRandomInt = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
