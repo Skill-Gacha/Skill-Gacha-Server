@@ -336,10 +336,11 @@ message C_AcceptResponse {
 }
 
 message S_BossMatchNotification {
-  int32 dungeonCode = 1;
-  BattleLog battleLog = 2;
-  PlayerStatus player = 3;
-  repeated PlayerStatus member = 4;
+  bool success = 1;
+  repeated PlayerStatus member = 2; // repeated임에 주의
+  optional int32 dungeonCode = 3;
+  optional BattleLog battleLog = 4;
+  optional PlayerStatus player = 5;
 }
 
 message C_BossPlayerResponse {
