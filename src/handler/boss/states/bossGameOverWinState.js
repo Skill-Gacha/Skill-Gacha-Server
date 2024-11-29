@@ -5,6 +5,7 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { BOSS_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import BossRoomState from './bossRoomState.js';
 
 export default class BossGameOverWinState extends BossRoomState {
   async enter() {
