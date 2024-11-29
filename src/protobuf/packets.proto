@@ -335,12 +335,13 @@ message C_AcceptResponse {
   bool accept = 1;
 }
 
+// ids          [1, 2, 3]
+// partyList    [1의 정보, 2의 정보, 3의 정보]
 message S_BossMatchNotification {
   bool success = 1;
-  repeated PlayerStatus member = 2; // repeated임에 주의
-  optional int32 dungeonCode = 3;
+  repeated int32 playerIds = 2;
+  repeated PlayerStatus partyList = 3;
   optional BattleLog battleLog = 4;
-  optional PlayerStatus player = 5;
 }
 
 message C_BossPlayerResponse {
