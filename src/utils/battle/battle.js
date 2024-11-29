@@ -28,17 +28,6 @@ export const OpponentStatus = (opponent) => {
   };
 };
 
-// 팀원
-export const MemberStatus = (user) => {
-  return {
-    playerClass: user.element,
-    playerLevel: user.stat.level,
-    playerName: user.nickname,
-    playerFullHp: user.stat.maxHp,
-    playerCurHp: user.stat.hp,
-  };
-};
-
 export const buffSkill = (user, skillId) => {
   if (buffs[skillId]) {
     user.stat.buff = buffs[skillId];
