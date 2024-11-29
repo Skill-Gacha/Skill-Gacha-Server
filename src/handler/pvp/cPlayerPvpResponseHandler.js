@@ -6,10 +6,12 @@ import { PacketType } from '../../constants/header.js';
 import PvpFleeMessageState from './states/pvpFleeMessageState.js';
 import PvpGameOverState from './states/pvpGameOverState.js';
 
+const LEAVE_DUNGEON_RESPONSE_CODE = 0;
+
 export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
   try {
     const user = sessionManager.getUserBySocket(socket);
-    const responseCode = payload.responseCode || 0;
+    const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
 
     if (!user) {
       console.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
@@ -23,8 +25,12 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
       return;
     }
 
-    if ((!(pvpRoom.currentState instanceof PvpFleeMessageState) && !(pvpRoom.currentState instanceof PvpGameOverState)) && responseCode === 0) {
-      socket.write(createResponse(PacketType.S_LeaveDungeon, {})); // 마을로 돌아갈 수 있게 패킷 전송
+    const isConfirmOrGameOver = [PvpFleeMessageState, PvpGameOverState].some(
+      (StateClass) => pvpRoom.currentState instanceof StateClass,
+    );
+
+    if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
+      socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
       sessionManager.removePvpRoom(pvpRoom.sessionId);
       return;
     }

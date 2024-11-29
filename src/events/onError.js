@@ -2,6 +2,9 @@
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
 import sessionManager from '#managers/sessionManager.js';
+import { getPlayerRatingFromRedis, updatePlayerRating } from '../db/redis/ratingService.js';
+import { createResponse } from '../utils/response/createResponse.js';
+import { PacketType } from '../constants/header.js';
 
 export const onError = (socket) => async (err) => {
   console.error('onError: 소켓 에러 발생:', err);

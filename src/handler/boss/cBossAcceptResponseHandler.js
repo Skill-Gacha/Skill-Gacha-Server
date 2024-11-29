@@ -49,7 +49,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
 
       const responseC = createResponse(PacketType.S_BossMatchNotification, {
         success: true,
-        member: [MemberStatus(playerA), MemberStatus(playerC)],
+        member: [MemberStatus(playerA), MemberStatus(playerB)],
         dungeonCode,
         battleLog: createBattleLogResponse(false),
         player: MyStatus(playerC),
@@ -81,7 +81,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       });
     }
   } catch (error) {
-    console.error('cBossMatchHandler: 잘못된 payload 값입니다.');
+    console.error('cBossAcceptResponseHandler: 오류입니다.');
   }
 };
 
