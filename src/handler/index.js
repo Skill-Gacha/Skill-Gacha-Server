@@ -3,7 +3,6 @@
 import { PacketType } from '../constants/header.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
-
 import { cChatHandler } from './town/cChatHandler.js';
 import { cAnimationHandler } from './town/cAnimationHandler.js';
 import { cEnterHandler } from './town/cEnterHandler.js';
@@ -18,6 +17,9 @@ import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
 import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
 import { cEnhanceHandler } from './town/enhanceForge/cEnhanceHandler.js';
 import { cEnhanceUiHandler } from './town/enhanceForge/cEnhanceUiHandler.js';
+import { cBossMatchHandler } from './boss/cBossMatchHandler.js';
+import { cBossAcceptResponseHandler } from './boss/cBossAcceptResponseHandler.js';
+import { cPlayerBossResponseHandler } from './boss/cPlayerbossResponseHandler.js';
 
 // 핸들러 매핑
 const handlers = {
@@ -77,6 +79,18 @@ const handlers = {
   [PacketType.C_EnhanceRequest]: {
     handler: cEnhanceHandler,
     protoType: 'C_EnhanceRequest',
+  },
+  [PacketType.C_BossMatch]: {
+    handler: cBossMatchHandler,
+    protoType: 'C_BossMatch',
+  },
+  [PacketType.C_AcceptResponse]: {
+    handler: cBossAcceptResponseHandler,
+    protoType: 'C_AcceptResponse ',
+  },
+  [PacketType.C_BossPlayerResponse]: {
+    handler: cPlayerBossResponseHandler,
+    protoType: 'C_BossPlayerResponse  ',
   },
 
   // 다른 패킷 정의 추가...
