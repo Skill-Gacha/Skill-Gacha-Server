@@ -169,8 +169,8 @@ export default class BossPlayerUseItemState extends BossRoomState {
   }
 
   async usePanacea() {
-    // 상태이상 해제 로직 추가 필요 (현재 상태 이상이 없음)
-    // 예시: this.user.stat = { ...this.user.stat, debuffs: [] };
+    // 상태 이상 status 해제
+    this.user.stat.debuff = false;
 
     const battleLog = {
       msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
