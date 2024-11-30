@@ -9,7 +9,7 @@ export const cMoveHandler = async ({ socket, payload }) => {
     const { transform } = payload;
 
     if (!validateTransform(transform)) {
-      throw new Error('cMoveHandler: 유요하지 않은 Transform 데이터.');
+      throw new Error('cMoveHandler: 유효하지 않은 Transform 데이터.');
     }
 
     const user = sessionManager.getUserBySocket(socket);
@@ -53,7 +53,9 @@ const broadcastToSession = (session, payload, excludeUserId) => {
       try {
         targetUser.socket.write(payload);
       } catch (error) {
-        console.error(`cMoveHandler: S_Move 패킷 전송 중 오류 발생: ${targetUser.id}: ${error.message}`);
+        console.error(
+          `cMoveHandler: S_Move 패킷 전송 중 오류 발생: ${targetUser.id}: ${error.message}`,
+        );
       }
     }
   });
