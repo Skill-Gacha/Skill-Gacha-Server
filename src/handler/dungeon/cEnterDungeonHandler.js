@@ -1,4 +1,4 @@
-﻿// handler/dungeon/cEnterDungeonHandler.js
+﻿// src/handler/dungeon/cEnterDungeonHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
