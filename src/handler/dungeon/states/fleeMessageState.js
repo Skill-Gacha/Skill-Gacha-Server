@@ -7,6 +7,10 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
+const RESPONSE_CODE = {
+  SCREEN_TEXT_DONE: 0,
+};
+
 export default class FleeMessageState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.FLEE_MESSAGE;
@@ -23,13 +27,11 @@ export default class FleeMessageState extends DungeonState {
   }
 
   async handleInput(responseCode) {
-    if (responseCode === 0) {
+    if (responseCode === RESPONSE_CODE.SCREEN_TEXT_DONE) {
       // 던전 종료 및 세션 제거
       sessionManager.removeDungeon(this.dungeon.sessionId);
-      const sLeaveDungeonResponse = createResponse(PacketType.S_LeaveDungeon, {});
-      this.socket.write(sLeaveDungeonResponse);
+      this.socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
     } else {
-      // responseCode 유효성 검사
       invalidResponseCode(this.socket);
     }
   }

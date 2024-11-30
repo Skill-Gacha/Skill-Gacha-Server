@@ -1,4 +1,4 @@
-// src/handler/pvp/cPlayerMathHandler.js
+// src/handler/pvp/cPlayerMatchHandler.js
 
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
@@ -8,6 +8,10 @@ import { MyStatus, OpponentStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import checkBatchim from '../../utils/korean/checkBatchim.js';
 
+const DUNGEON_CODE_BASE = 5000;
+const DUNGEON_CODE_RANGE = 3;
+const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기', '도망치기'];
+
 export const cPlayerMatchHandler = async ({ socket }) => {
   const user = sessionManager.getUserBySocket(socket);
 
@@ -16,7 +20,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     return;
   }
 
-  user.socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
+  socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
   const matchedPlayers = sessionManager.addMatchingQueue(user);
 
@@ -33,9 +37,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     sDespawnHandler(playerB);
   } catch (error) {
     console.error('cPlayerMatchHandler: 디스폰 처리 중 오류 발생:', error);
+    return;
   }
 
-  const dungeonCode = Math.floor(Math.random() * 3 + 1) + 5000;
+  const dungeonCode = Math.floor(Math.random() * DUNGEON_CODE_RANGE + 1) + DUNGEON_CODE_BASE;
   pvpRoom.initializeTurn();
   const isFirstAttack = pvpRoom.getUserTurn();
 
@@ -46,34 +51,40 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     dungeonCode,
     playerData: MyStatus(playerA),
     opponentData: OpponentStatus(playerB),
-    battleLog: {
-      msg: `${playerB.nickname}${lastKoreanA} 싸워 이기세요!\n${isFirstAttack ? '선공입니다.' : '후공입니다'}`,
-      typingAnimation: false,
-      btns: [
-        { msg: '스킬 사용', enable: isFirstAttack },
-        { msg: '아이템 사용', enable: isFirstAttack },
-        { msg: '턴 넘기기', enable: isFirstAttack },
-        { msg: '도망치기', enable: isFirstAttack },
-      ],
-    },
+    battleLog: createBattleLogResponse(
+      generateBattleLog(playerB.nickname, lastKoreanA, isFirstAttack, '선공입니다.'),
+      isFirstAttack,
+      [true, true, true, true],
+    ),
   });
 
   const responseB = createResponse(PacketType.S_PlayerMatchNotification, {
     dungeonCode,
     playerData: MyStatus(playerB),
     opponentData: OpponentStatus(playerA),
-    battleLog: {
-      msg: `${playerA.nickname}${lastKoreanB} 싸워 이기세요!\n${isFirstAttack ? '후공입니다' : '선공입니다.'}`,
-      typingAnimation: false,
-      btns: [
-        { msg: '스킬 사용', enable: !isFirstAttack },
-        { msg: '아이템 사용', enable: !isFirstAttack },
-        { msg: '턴 넘기기', enable: !isFirstAttack },
-        { msg: '도망치기', enable: !isFirstAttack },
-      ],
-    },
+    battleLog: createBattleLogResponse(
+      generateBattleLog(playerA.nickname, lastKoreanB, !isFirstAttack, '후공입니다.'),
+      !isFirstAttack,
+      [false, false, false, false],
+    ),
   });
 
   playerA.socket.write(responseA);
   playerB.socket.write(responseB);
+
+  pvpRoom.startTurnTimer();
 };
+
+const generateBattleLog = (nickname, suffix, isFirstAttack, turn) => {
+  const attackOrder = isFirstAttack ? '선공입니다.' : '후공입니다.';
+  return `${nickname}${suffix} 싸워 이기세요!\n${turn}`;
+};
+
+const createBattleLogResponse = (msg, isFirstAttack, enableButtons) => ({
+  msg,
+  typingAnimation: false,
+  btns: BUTTON_OPTIONS.map((btn, idx) => ({
+    msg: btn,
+    enable: enableButtons[idx],
+  })),
+});

@@ -10,12 +10,13 @@ export default class PvpState extends GameState {
     this.stopper = stopper;
   }
 
+  // changeState(StateClass, options = {})
+  // 위와 같은 형태로 여러 옵션 넘겨주기 가능
+  // 지금 당장은 필요없으므로 하던대로 사용
   changeState(StateClass, switchTurn = false) {
     if (switchTurn) {
-      // mover와 stopper 교체
-      const temp = this.mover;
-      this.mover = this.stopper;
-      this.stopper = temp;
+      // 구조 분해 할당으로 스왑
+      [this.mover, this.stopper] = [this.stopper, this.mover];
     }
     this.pvpRoom.currentState = new StateClass(this.pvpRoom, this.mover, this.stopper);
     this.pvpRoom.currentState.enter();

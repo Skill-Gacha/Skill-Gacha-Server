@@ -13,14 +13,25 @@ import FailFleeMessageState from './failFleeMessageState.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 import { updateUserResource } from '../../../db/user/userDb.js';
 
-// 확인 버튼 출력을 위한 부분
+const BASE_FLEE_COST = 100;
+
+const CONFIRM_BUTTONS = [
+  { msg: '예', enable: true },
+  { msg: '아니오', enable: true },
+];
+
+const CONFIRM_RESPONSES = {
+  YES: 1,
+  NO: 2,
+};
+
 export default class ConfirmState extends DungeonState {
   constructor(dungeon, user, socket) {
     super(dungeon, user, socket);
     this.confirmType = CONFIRM_TYPE.DEFAULT;
     this.message = '확인';
-    this.deleteSkillIdx;
-    this.changSkill;
+    this.deleteSkillIdx = null;
+    this.changeSkill = null;
   }
 
   async setConfirm(type, message) {
@@ -31,20 +42,16 @@ export default class ConfirmState extends DungeonState {
 
   async setChangeSkill(deleteSkillIdx, changeSkill) {
     this.deleteSkillIdx = deleteSkillIdx;
-    this.changSkill = changeSkill;
+    this.changeSkill = changeSkill;
   }
 
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.CONFIRM;
-    const buttons = [
-      { msg: '예', enable: true },
-      { msg: '아니오', enable: true },
-    ];
 
     const battleLog = {
       msg: this.message,
       typingAnimation: false,
-      btns: buttons,
+      btns: CONFIRM_BUTTONS,
     };
 
     const confirmBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
@@ -54,65 +61,78 @@ export default class ConfirmState extends DungeonState {
   async handleInput(responseCode) {
     switch (this.confirmType) {
       case CONFIRM_TYPE.FLEE:
-        if (responseCode === 1) {
-          // 도망감
-          if (this.user.gold < this.dungeon.dungeonCode * 100) {
-            this.changeState(FailFleeMessageState);
-          } else {
-            this.user.reduceResource(this.dungeon.dungeonCode * 100, 0);
-            await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
-            this.changeState(FleeMessageState);
-          }
-        } else if (responseCode === 2) {
-          // 도망 취소
-          this.changeState(ActionState);
-        } else {
-          // 잘못된 입력 처리
-        }
+        await this.handleFleeResponse(responseCode);
         break;
-      case CONFIRM_TYPE.STONE: // 중복된 스킬에 대한 강화석 처리
-        if (responseCode === 1) {
-          // 강화석으로 받기
-          this.user.increaseResource(0, this.dungeon.stoneCount);
-          await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
-          this.changeState(GameOverWinState); // 게임 승리
-        } else if (responseCode === 2) {
-          // 강화석 받기 취소
-          this.changeState(RewardState); // 다시 보상 선택으로 돌아가기
-        }
+      case CONFIRM_TYPE.STONE:
+        await this.handleStoneResponse(responseCode);
         break;
-      case CONFIRM_TYPE.SKILLCHANGE: // 중복된 스킬에 대한 강화석 처리
-        if (responseCode === 1) {
-          // 스킬 교환 로직
-          try {
-            await saveRewardSkillsToRedis(
-              this.user.nickname,
-              this.dungeon.newSkill.id,
-              this.deleteSkillIdx + 1,
-            );
-          } catch (error) {
-            console.error('스킬 교환 중 오류 발생:', error.message);
-          }
-
-          this.changeState(GameOverWinState); // 게임 승리
-        } else if (responseCode === 2) {
-          // 스킬 교환 취소
-          this.changeState(RewardState); // 다시 보상 선택으로 돌아가기
-        }
+      case CONFIRM_TYPE.SKILLCHANGE:
+        await this.handleSkillChangeResponse(responseCode);
         break;
-      case CONFIRM_TYPE.GIVEUP: // 스킬 보상 포기
-        if (responseCode === 1) {
-          // 포기
-          this.changeState(GameOverWinState);
-        } else if (responseCode === 2) {
-          // 도망 취소
-          this.changeState(RewardState);
-        }
+      case CONFIRM_TYPE.GIVEUP:
+        await this.handleGiveUpResponse(responseCode);
         break;
       default:
-        // responseCode 유효성 검사
         invalidResponseCode(this.socket);
         break;
+    }
+  }
+
+  async handleFleeResponse(responseCode) {
+    if (responseCode === CONFIRM_RESPONSES.YES) {
+      const fleeCost = this.dungeon.dungeonCode * BASE_FLEE_COST;
+      if (this.user.gold < this.dungeon.dungeonCode * fleeCost) {
+        this.changeState(FailFleeMessageState);
+      } else {
+        this.user.reduceResource(fleeCost, 0);
+        await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
+        this.changeState(FleeMessageState);
+      }
+    } else if (responseCode === CONFIRM_RESPONSES.NO) {
+      this.changeState(ActionState);
+    } else {
+      invalidResponseCode(this.socket);
+    }
+  }
+
+  async handleStoneResponse(responseCode) {
+    if (responseCode === CONFIRM_RESPONSES.YES) {
+      this.user.increaseResource(0, this.dungeon.stoneCount);
+      await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
+      this.changeState(GameOverWinState);
+    } else if (responseCode === CONFIRM_RESPONSES.NO) {
+      this.changeState(RewardState);
+    } else {
+      invalidResponseCode(this.socket);
+    }
+  }
+
+  async handleSkillChangeResponse(responseCode) {
+    if (responseCode === CONFIRM_RESPONSES.YES) {
+      try {
+        await saveRewardSkillsToRedis(
+          this.user.nickname,
+          this.dungeon.newSkill.id,
+          this.deleteSkillIdx + 1,
+        );
+        this.changeState(GameOverWinState);
+      } catch (error) {
+        console.error('스킬 교환 중 오류 발생:', error.message);
+      }
+    } else if (responseCode === CONFIRM_RESPONSES.NO) {
+      this.changeState(RewardState);
+    } else {
+      invalidResponseCode(this.socket);
+    }
+  }
+
+  async handleGiveUpResponse(responseCode) {
+    if (responseCode === CONFIRM_RESPONSES.YES) {
+      this.changeState(GameOverWinState);
+    } else if (responseCode === CONFIRM_RESPONSES.NO) {
+      this.changeState(RewardState);
+    } else {
+      invalidResponseCode(this.socket);
     }
   }
 }
