@@ -12,10 +12,13 @@ import { DUNGEON_CODE } from '../../constants/battle.js';
 import { elementResist } from '../../utils/packet/playerPacket.js';
 import { handleError } from '../../utils/error/errorHandler.js';
 
+const MONSTERS_PER_DUNGEON_DELIMITER = 7;
+const MIN_MONSTERS = 1;
+const MAX_MONSTERS = 3;
+
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const user = sessionManager.getUserBySocket(socket);
-  const monsterData = getGameAssets().MonsterData.data;
 
   if (!user) {
     console.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
@@ -27,33 +30,15 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const dungeon = sessionManager.createDungeon(dungeonId, dungeonCode);
     dungeon.addUser(user);
 
-    // 던전 코드에 따라 몬스터 선택
-    const startIndex = (dungeonCode - 1) * 7;
-    const endIndex = startIndex + 6;
-    const dungeonMonsters = monsterData.slice(startIndex, endIndex);
-
-    const totalMonsters = Math.floor(Math.random() * 3) + 1; // 1~3마리 랜덤 생성
-
-    for (let i = 0; i < totalMonsters; i++) {
-      const index = Math.floor(Math.random() * dungeonMonsters.length);
-      const findMonster = dungeonMonsters[index];
-      const findMonsterResists = elementResist(findMonster);
-
-      const monsterInstance = new Monster(
-        i,
-        findMonster.monsterModel,
-        findMonster.monsterName,
-        findMonster.monsterHp,
-        findMonster.monsterAtk,
-        findMonster.monsterEffectCode,
-        findMonsterResists,
-      );
-
-      dungeon.addMonster(monsterInstance);
-    }
-
     // 타운 세션에서 사용자 제거 및 디스폰 처리
     await sDespawnHandler(user);
+
+    // 몬스터 데이터 로드
+    const monsterData = getGameAssets().MonsterData.data;
+    const dungeonMonsters = selectDungeonMonsters(dungeonCode, monsterData);
+    const monsters = generateRandomMonsters(dungeonMonsters);
+
+    monsters.forEach((monster) => dungeon.addMonster(monster));
 
     const actualDungeonCode = dungeonCode + DUNGEON_CODE;
 
@@ -82,4 +67,35 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     console.error('cEnterDungeonHandler 처리 중 오류 발생:', error);
     handleError(error);
   }
+};
+
+const selectDungeonMonsters = (dungeonCode, monsterData) => {
+  const startIndex = (dungeonCode - 1) * MONSTERS_PER_DUNGEON_DELIMITER;
+  const endIndex = startIndex + MONSTERS_PER_DUNGEON_DELIMITER;
+  return monsterData.slice(startIndex, endIndex);
+};
+
+const generateRandomMonsters = (dungeonMonsters) => {
+  const totalMonsters =
+    Math.floor(Math.random() * (MAX_MONSTERS - MIN_MONSTERS + 1)) + MIN_MONSTERS;
+
+  const monsters = [];
+  for (let i = 0; i < totalMonsters; i++) {
+    const index = Math.floor(Math.random() * dungeonMonsters.length);
+    const findMonster = dungeonMonsters[index];
+    const monsterResists = elementResist(findMonster);
+
+    const monsterInstance = new Monster(
+      i,
+      findMonster.monsterModel,
+      findMonster.monsterName,
+      findMonster.monsterHp,
+      findMonster.monsterAtk,
+      findMonster.monsterEffectCode,
+      monsterResists,
+    );
+
+    monsters.push(monsterInstance);
+  }
+  return monsters;
 };

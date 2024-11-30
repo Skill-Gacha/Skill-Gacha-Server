@@ -1,4 +1,4 @@
-// src/handler/town/cChatHandler.js
+// src/handler/town/cViewRankPointHandler.js
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
@@ -7,14 +7,14 @@ import { getTopRatingsWithPlayer } from '../../db/redis/ratingService.js';
 
 const RANK_RANGE = 10;
 
-export const cViewRankPointHandler = async ({ socket, payload }) => {
-  const user = sessionManager.getUserBySocket(socket);
-  if (!user) {
-    console.error('cViewRankPointHandler: 유저를 찾을 수 없습니다.');
-    return;
-  }
-
+export const cViewRankPointHandler = async ({ socket }) => {
   try {
+    const user = sessionManager.getUserBySocket(socket);
+    if (!user) {
+      console.error('cViewRankPointHandler: 유저를 찾을 수 없습니다.');
+      return;
+    }
+
     // 상위 10명과 특정 유저의 레이팅 정보 가져오기
     const topRatings = await getTopRatingsWithPlayer(user.nickname, RANK_RANGE);
 
@@ -45,6 +45,6 @@ export const cViewRankPointHandler = async ({ socket, payload }) => {
       }),
     );
   } catch (error) {
-    console.error('cViewRankPointHandler: S_ViewRankPoint 패킷 전송중 오류 발생', error);
+    console.error(`cViewRankPointHandler: S_ViewRankPoint 패킷 전송중 오류 발생: ${error.message}`);
   }
 };
