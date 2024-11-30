@@ -7,7 +7,7 @@ import { MAX_PLAYER } from '../../constants/boss.js';
 
 export const cBossMatchHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
-  const isInPortal = payload.isIn;
+  const { isIn } = payload;
 
   if (!user) {
     console.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
@@ -16,7 +16,7 @@ export const cBossMatchHandler = async ({ socket, payload }) => {
 
   try {
     // 포탈에 들어왔을 때 처리
-    if (isInPortal) {
+    if (isIn) {
       const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
 
