@@ -1,26 +1,30 @@
 // src/handler/boss/states/bossPlayerAttackState.js
 
-import { BOSS_STATUS } from '../../../constants/battle.js';
 import BossRoomState from './bossRoomState.js';
+import BossEnemyAttackState from './bossEnemyAttackState.js';
+import MonsterDeadState from './bossMonsterDeadState.js';
+import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
-import { AREASKILL, BUFF_SKILL, DEBUFF } from '../../../constants/battle.js';
+import { AREASKILL, BUFF_SKILL, DEBUFF, BOSS_STATUS } from '../../../constants/battle.js';
 import {
   checkEnemyResist,
   skillEnhancement,
   updateDamage,
 } from '../../../utils/battle/calculate.js';
 import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
-import MonsterDeadState from './bossMonsterDeadState.js';
-import BossEnemyAttackState from './bossEnemyAttackState.js';
 
-// 보스 플레이어 공격 상태
+const ACTION_ANIMATION_CODE = 0;
+const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
+const DEBUFF_SKILL_ID = DEBUFF;
+const PLAYER_ACTION_DELAY = 1000;
+
 export default class BossPlayerAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.PLAYER_ATTACK;
 
-    const selectedSkill = this.bossRoom.selectedSkill; // 선택된 스킬
-    const userSkillInfo = this.user.userSkills[selectedSkill]; // 유저 스킬 정보
+    const selectedSkillIdx = this.bossRoom.selectedSkill;
+    const userSkillInfo = this.user.userSkills[selectedSkillIdx];
 
     // 공격 시 의도되지 않은 조작 방지 위한 버튼 비활성화
     const disableButtons = this.bossRoom.monsters.map((monster) => ({
@@ -28,142 +32,154 @@ export default class BossPlayerAttackState extends BossRoomState {
       enable: false,
     }));
 
-    // 플레이어 액션 패킷 보내기
-    const sendPlayerAction = (targetMonsterIdx, effectCode) => {
-      const playerActionResponse = createResponse(PacketType.S_PlayerAction, {
-        targetMonsterIdx,
-        actionSet: {
-          animCode: 0, // 공격 애니메이션 코드
-          effectCode: effectCode, // 스킬의 이펙트 코드
-        },
-      });
-      this.socket.write(playerActionResponse);
-    };
-
-    // 배틀로그 패킷 보내기
-    const sendBattleLog = (msg, disableButtons) => {
-      const battleLogResponse = createResponse(PacketType.S_BattleLog, {
-        battleLog: {
-          msg: msg,
-          typingAnimation: false,
-          btns: disableButtons,
-        },
-      });
-      this.socket.write(battleLogResponse);
-    };
-
-    // 몬스터 HP 업데이트
-    const sendMonsterHpUpdate = (monster) => {
-      const setMonsterHpResponse = createResponse(PacketType.S_SetMonsterHp, {
-        monsterIdx: monster.monsterIdx,
-        hp: monster.monsterHp,
-      });
-      this.socket.write(setMonsterHpResponse);
-    };
-
-    // 버프 스킬 처리
-    if (userSkillInfo.id >= BUFF_SKILL) {
-      buffSkill(this.user, userSkillInfo.id);
-      useBuffSkill(this.user, this.socket, this.bossRoom);
-      this.user.reduceMp(userSkillInfo.mana);
-
-      // 유저 MP 업데이트
-      this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
-
-      // 행동 액션 보내기
-      sendPlayerAction([], userSkillInfo.effectCode);
-
-      await delay(1000);
-      this.changeState(BossEnemyAttackState);
+    if (this.isBuffSkill(userSkillInfo)) {
+      await this.handleBuffSkill(userSkillInfo);
       return;
     }
 
-    // 광역기 스킬 처리
-    if (userSkillInfo.id >= AREASKILL) {
-      const targetMonster = this.bossRoom.selectedMonster;
-
-      // 행동 액션 보내기
-      sendPlayerAction([targetMonster.monsterIdx], userSkillInfo.effectCode);
-
-      // 속성과 데미지 배율 계산
-      const skillDamageRate = skillEnhancement(this.user.element, userSkillInfo.element);
-      let userDamage = userSkillInfo.damage * skillDamageRate;
-
-      // 버프 및 아이템 효과를 적용한 최종 데미지 계산
-      userDamage = updateDamage(this.user, userDamage);
-
-      // 몬스터 저항 계산
-      const monsterResist = checkEnemyResist(userSkillInfo.element, targetMonster);
-      const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
-
-      // 몬스터 HP 감소
-      targetMonster.reduceHp(totalDamage);
-      sendMonsterHpUpdate(targetMonster);
-
-      // 피해 로그 전송
-      sendBattleLog('광역 스킬을 사용하여 보스에게 피해를 입혔습니다.', disableButtons);
-
-      // 플레이어 MP 감소
-      this.user.reduceMp(userSkillInfo.mana);
-      this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
-      await delay(1000);
-
-      // 보스의 사망 여부 확인
-      if (targetMonster.monsterHp <= 0) {
-        this.changeState(MonsterDeadState);
-      } else {
-        this.changeState(BossEnemyAttackState);
-      }
+    if (this.isAreaSkill(userSkillInfo)) {
+      await this.handleAreaSkill(userSkillInfo, disableButtons);
       return;
     }
 
     // 단일 스킬 처리
+    await this.handleSingleSkill(userSkillInfo, disableButtons);
+  }
+
+  isBuffSkill(skillInfo) {
+    return skillInfo.id >= BUFF_SKILL_THRESHOLD;
+  }
+
+  isAreaSkill(skillInfo) {
+    return skillInfo.id >= AREASKILL;
+  }
+
+  async handleBuffSkill(skillInfo) {
+    buffSkill(this.user, skillInfo.id);
+    useBuffSkill(this.user, this.socket, this.bossRoom);
+
+    this.user.reduceMp(skillInfo.mana);
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
+
+    this.sendPlayerAction([], skillInfo.effectCode);
+    await delay(PLAYER_ACTION_DELAY);
+    this.changeState(BossEnemyAttackState);
+  }
+
+  async handleAreaSkill(skillInfo, disableButtons) {
+    const aliveMonsters = this.getAliveMonsters();
+
+    if (skillInfo.id === DEBUFF_SKILL_ID) {
+      buffSkill(this.user, skillInfo.id);
+      useBuffSkill(this.user, this.socket, this.bossRoom);
+    }
+
+    this.sendPlayerAction(
+      aliveMonsters.map((m) => m.monsterIdx),
+      skillInfo.effectCode,
+    );
+
+    for (const monster of aliveMonsters) {
+      const totalDamage = this.calculateTotalDamage(skillInfo, monster);
+      monster.reduceHp(totalDamage);
+      this.sendMonsterHpUpdate(monster);
+    }
+
+    this.sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
+
+    this.user.reduceMp(skillInfo.mana);
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
+    await delay(PLAYER_ACTION_DELAY);
+
+    const allMonstersDead = this.checkAllMonstersDead();
+    if (allMonstersDead) {
+      this.changeState(MonsterDeadState);
+    } else {
+      this.changeState(BossEnemyAttackState);
+    }
+  }
+
+  async handleSingleSkill(skillInfo, disableButtons) {
     const targetMonster = this.bossRoom.selectedMonster;
 
-    // 플레이어의 속성과 스킬의 속성이 일치하는지 검증 후, 배율 적용
     const playerElement = this.user.element;
-    const skillElement = userSkillInfo.element;
+    const skillElement = skillInfo.element;
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
-    let userDamage = userSkillInfo.damage * skillDamageRate;
+    let userDamage = skillInfo.damage * skillDamageRate;
 
-    // 포션 및 버프 효과에 따른 최종 대미지 계산
     userDamage = updateDamage(this.user, userDamage);
-
-    // 몬스터 저항값 계산
     const monsterResist = checkEnemyResist(skillElement, targetMonster);
     const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
 
-    // 몬스터 HP 감소
     targetMonster.reduceHp(totalDamage);
-    this.user.reduceMp(userSkillInfo.mana);
+    this.user.reduceMp(skillInfo.mana);
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
-    // 몬스터 HP 업데이트
-    sendMonsterHpUpdate(targetMonster);
+    this.sendMonsterHpUpdate(targetMonster);
+    this.sendPlayerAction([targetMonster.monsterIdx], skillInfo.effectCode);
 
-    // 플레이어 공격 애니메이션 전송
-    sendPlayerAction([targetMonster.monsterIdx], userSkillInfo.effectCode);
+    const battleLogMsg =
+      skillDamageRate > 1
+        ? `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
+        : `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
 
-    // 공격 결과 메시지 전송
-    if (skillDamageRate > 1) {
-      sendBattleLog(
-        `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
-        disableButtons,
-      );
-    } else {
-      sendBattleLog(
-        `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
-        disableButtons,
-      );
-    }
-    await delay(1000);
+    this.sendBattleLog(battleLogMsg, disableButtons);
+    await delay(PLAYER_ACTION_DELAY);
 
-    // 몬스터 사망 여부 확인
     if (targetMonster.monsterHp <= 0) {
       this.changeState(MonsterDeadState);
     } else {
       this.changeState(BossEnemyAttackState);
     }
+  }
+
+  getAliveMonsters() {
+    return this.bossRoom.monsters.filter((monster) => monster.monsterHp > 0);
+  }
+
+  calculateTotalDamage(skillInfo, monster) {
+    const skillDamageRate = skillEnhancement(this.user.element, skillInfo.element);
+    let userDamage = skillInfo.damage * skillDamageRate;
+    userDamage = updateDamage(this.user, userDamage);
+    const monsterResist = checkEnemyResist(skillInfo.element, monster);
+    return Math.floor(userDamage * ((100 - monsterResist) / 100));
+  }
+
+  sendMonsterHpUpdate(monster) {
+    this.socket.write(
+      createResponse(PacketType.S_SetMonsterHp, {
+        monsterIdx: monster.monsterIdx,
+        hp: monster.monsterHp,
+      }),
+    );
+  }
+
+  sendPlayerAction(targetMonsterIdxs, effectCode) {
+    this.socket.write(
+      createResponse(PacketType.S_PlayerAction, {
+        targetMonsterIdx: targetMonsterIdxs,
+        actionSet: {
+          animCode: ACTION_ANIMATION_CODE,
+          effectCode: effectCode,
+        },
+      }),
+    );
+  }
+
+  sendBattleLog(message, buttons) {
+    this.socket.write(
+      createResponse(PacketType.S_BattleLog, {
+        battleLog: {
+          msg: message,
+          typingAnimation: false,
+          btns: buttons,
+        },
+      }),
+    );
+  }
+
+  checkAllMonstersDead() {
+    return this.bossRoom.monsters.every((monster) => monster.monsterHp <= 0);
   }
 
   async handleInput(responseCode) {
