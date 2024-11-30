@@ -1,4 +1,4 @@
-// src/handler/dungeon/states/fleeMessageState.js
+// src/handler/dungeon/states/failFleeMessageState.js
 
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
@@ -7,6 +7,12 @@ import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import ActionState from './actionState.js';
 
+const CONFIRM_RESPONSES = {
+  YES: 1,
+};
+
+const CONFIRM_BUTTONS = [{ msg: '예', enable: true }];
+
 export default class FailFleeMessageState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.FAIL_FLEE;
@@ -14,17 +20,16 @@ export default class FailFleeMessageState extends DungeonState {
     const battleLog = {
       msg: '보유 골드가 부족하여 도망칠 수 없습니다.',
       typingAnimation: false,
-      btns: [{ msg: '예', enable: true }],
+      btns: CONFIRM_BUTTONS,
     };
-    const failFreeBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
-    this.socket.write(failFreeBattlelogResponse);
+    const response = createResponse(PacketType.S_BattleLog, { battleLog });
+    this.socket.write(response);
   }
 
   async handleInput(responseCode) {
-    if (responseCode === 1) {
+    if (responseCode === CONFIRM_RESPONSES.YES) {
       this.changeState(ActionState);
     } else {
-      // responseCode 유효성 검사
       invalidResponseCode(this.socket);
     }
   }

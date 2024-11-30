@@ -7,6 +7,10 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 
+const RESPONSE_CODE = {
+  SCREEN_TEXT_DONE: 0,
+};
+
 export default class MessageState extends DungeonState {
   constructor(dungeon, user, socket, message) {
     super(dungeon, user, socket);
@@ -18,16 +22,12 @@ export default class MessageState extends DungeonState {
   }
 
   async handleInput(responseCode) {
-    if (responseCode === 0) {
-      // S_ScreenDone 패킷 전송
+    if (responseCode === RESPONSE_CODE.SCREEN_TEXT_DONE) {
       const screenTextDoneResponse = createResponse(PacketType.S_ScreenDone, {});
       this.socket.write(screenTextDoneResponse);
 
-      // 행동 선택 상태로 전환
       this.changeState(ActionState);
-    }
-    // responseCode 유효성 검사
-    else {
+    } else {
       invalidResponseCode(this.socket);
     }
   }

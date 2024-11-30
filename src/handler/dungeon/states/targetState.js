@@ -7,8 +7,8 @@ import { DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import PlayerAttackState from './playerAttackState.js';
 
-// 공격할 대상을 고르는 상태
-// '공격'을 누르고 공격할 몬스터를 선택하기 위한 상태
+const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
+
 export default class TargetState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.TARGET;
@@ -23,17 +23,26 @@ export default class TargetState extends DungeonState {
       btns: buttons,
     };
 
-    this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
+    this.socket.write(
+      createResponse(PacketType.S_BattleLog, { battleLog }),
+    );
   }
 
   async handleInput(responseCode) {
-    const monster = this.dungeon.monsters.find((m) => m.monsterIdx === responseCode - 1);
-    if (monster && monster.monsterHp > 0) {
-      this.dungeon.selectedMonster = monster;
-      this.changeState(PlayerAttackState);
-    } else {
-      // responseCode 유효성 검사
+    const selectedMonster = this.getSelectedMonster(responseCode);
+
+    if (!selectedMonster) {
       invalidResponseCode(this.socket);
+      return;
     }
+
+    this.dungeon.selectedMonster = selectedMonster;
+    this.changeState(PlayerAttackState);
+  }
+
+  getSelectedMonster(code) {
+    const monsterIdx = code - 1;
+    const monster = this.dungeon.monsters.find((m) => m.monsterIdx === monsterIdx && m.monsterHp > 0);
+    return monster || null;
   }
 }

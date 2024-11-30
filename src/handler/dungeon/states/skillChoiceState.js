@@ -3,58 +3,70 @@
 import DungeonState from './dungeonState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { AREASKILL, DUNGEON_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
+import { AREASKILL, DUNGEON_STATUS } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import ActionState from './actionState.js';
 import TargetState from './targetState.js';
 import PlayerAttackState from './playerAttackState.js';
 
-// 스킬 선택 상태
+const BUTTON_BACK = '뒤로 가기';
+
 export default class SkillChoiceState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.SKILL_CHOICE;
-    // 버튼은 플레이어가 보유한 스킬들로 생성
+
     const buttons = this.user.userSkills.map((skill) => ({
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
       enable: this.user.stat.mp >= skill.mana,
     }));
 
     buttons.push({
-      msg: '뒤로 가기',
+      msg: BUTTON_BACK,
       enable: true,
     });
 
-    // 스킬 로그 데이터
     const battleLog = {
       msg: '스킬을 선택하여 몬스터를 공격하세요',
       typingAnimation: false,
       btns: buttons,
     };
 
-    const choiceSkillBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
-    this.socket.write(choiceSkillBattlelogResponse);
+    this.socket.write(
+      createResponse(PacketType.S_BattleLog, { battleLog }),
+    );
   }
 
   async handleInput(responseCode) {
-    // responseCode 유효성 검사)
-    if (responseCode < 1 || responseCode > MAX_BUTTON_COUNT) {
+    if (!this.isValidResponseCode(responseCode)) {
       invalidResponseCode(this.socket);
+      return;
     }
 
-    if (responseCode > this.user.userSkills.length) {
+    if (responseCode === this.user.userSkills.length + 1) { // 뒤로 가기 버튼
       this.changeState(ActionState);
-    } else {
-      // 선택한 스킬 인덱스 계산
-      const SkillIdx = responseCode - 1;
-      this.dungeon.selectedSkill = SkillIdx;
-      const userSkillInfo = this.user.userSkills[SkillIdx];
-      if (userSkillInfo.id >= AREASKILL) {
-        this.changeState(PlayerAttackState);
-        return;
-      }
-
-      // 스킬 선택 후 타겟 지정
-      this.changeState(TargetState);
+      return;
     }
+
+    const skillIdx = responseCode - 1;
+    const selectedSkill = this.user.userSkills[skillIdx];
+
+    if (this.user.stat.mp < selectedSkill.mana) {
+      invalidResponseCode(this.socket);
+      return;
+    }
+
+    this.dungeon.selectedSkill = skillIdx;
+
+    if (selectedSkill.id >= AREASKILL) {
+      this.changeState(PlayerAttackState);
+      return;
+    }
+
+    // 타겟 지정 상태로 전환
+    this.changeState(TargetState);
+  }
+
+  isValidResponseCode(code) {
+    return code >= 1 && code <= this.user.userSkills.length + 1;
   }
 }

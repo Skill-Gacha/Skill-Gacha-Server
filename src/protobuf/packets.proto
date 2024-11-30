@@ -365,13 +365,14 @@ message S_BossSetMonsterHp {
 
 message S_BossPlayerActionNotification {
   int32 playerId = 1;
-  int32 targetMonsterIdx = 2;
+  repeated int32 targetMonsterIdx = 2;
   ActionSet actionSet = 3;
 }
 
 message S_BossMonsterAction {
-  int32 actionMonsterIdx = 1;
-  ActionSet actionSet = 2;
+  repeated int32 playerIds = 1;
+  int32 actionMonsterIdx = 2;
+  ActionSet actionSet = 3;
 }
 
 message S_BossPhase {

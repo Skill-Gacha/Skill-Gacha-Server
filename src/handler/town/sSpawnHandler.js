@@ -6,25 +6,32 @@ import sessionManager from '#managers/sessionManager.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
 
 export const sSpawnHandler = async (newUser) => {
-  const session = sessionManager.getSessionByUserId(newUser.id);
-  if (!session) {
-    console.error('sSpawnHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
-    return;
+  try {
+    const session = sessionManager.getSessionByUserId(newUser.id);
+    if (!session) {
+      throw new Error('sSpawnHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
+    }
+
+    // 새로운 사용자 정보 생성
+    const newPlayerData = playerData(newUser);
+
+    // S_Spawn 응답 생성
+    const spawnResponse = createResponse(PacketType.S_Spawn, { players: [newPlayerData] });
+
+    // 기존 사용자들에게 전송 (자신을 제외)
+    broadcastToSession(session, spawnResponse, newUser.id);
+  } catch (error) {
+    console.error(`sSpawnHandler 에러 발생: ${error.message}`);
   }
+};
 
-  // 새로운 사용자 정보 생성
-  const newPlayerData = playerData(newUser);
-
-  // S_Spawn 응답 생성
-  const spawnResponse = createResponse(PacketType.S_Spawn, { players: [newPlayerData] });
-
-  // 기존 사용자들에게 전송 (자신을 제외)
+const broadcastToSession = (session, payload, excludeUserId) => {
   session.users.forEach((targetUser) => {
-    if (targetUser.id !== newUser.id) {
+    if (targetUser.id !== excludeUserId) {
       try {
-        targetUser.socket.write(spawnResponse);
+        targetUser.socket.write(payload);
       } catch (error) {
-        console.error('sSpawnHandler: S_Spawn 패킷 전송중 오류 발생', error);
+        console.error(`sSpawnHandler: S_Spawn 패킷 전송중 오류 발생 ${targetUser.id}: ${error.message}`);
       }
     }
   });

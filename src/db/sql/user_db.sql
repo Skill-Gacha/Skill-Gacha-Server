@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS `CharacterInfo` (
     `element` INT NOT NULL,
     `maxHp` FLOAT NOT NULL,
     `maxMp` FLOAT NOT NULL,
-    `gold` INT NOT NULL DEFAULT 0,
-    `stone` INT NOT NULL DEFAULT 0
+    `gold` INT NOT NULL DEFAULT 1000,
+    `stone` INT NOT NULL DEFAULT 10
 );
 
 CREATE TABLE IF NOT EXISTS `Skills` (
