@@ -168,7 +168,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   sendBattleLog(message, buttons) {
     this.socket.write(
-      createResponse(PacketType.S_BattleLog, {
+      createResponse(PacketType.S_BossBattleLog, {
         battleLog: {
           msg: message,
           typingAnimation: false,
