@@ -53,7 +53,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       sendBossMatchNotification(playerB, playerIds, partyList, false);
       sendBossMatchNotification(playerC, playerIds, partyList, false);
 
-      bossRoom.startTurnTimer();
+      // bossRoom.startTurnTimer();
     }
 
     // 거절했을 때 처리
