@@ -51,6 +51,7 @@ export const BOSS_STATUS = {
   USE_ITEM: 11,
   TARGET: 12,
   TURN_CHANGE: 13,
+  BOSS_PHASE_CHANGE: 14,
 };
 
 export const CONFIRM_TYPE = {
