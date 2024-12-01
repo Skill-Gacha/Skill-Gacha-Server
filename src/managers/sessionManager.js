@@ -178,7 +178,7 @@ class SessionManager {
     this.sessions.bossRooms.delete(sessionId);
   }
 
-  createbossRoom(sessionId) {
+  createBossRoom(sessionId) {
     const bossRoom = new BossRoomClass(sessionId);
     this.sessions.bossRooms.set(sessionId, bossRoom);
     return bossRoom;

@@ -40,7 +40,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         bossMonster.monsterEffectCode,
         bossMonster,
       );
-      const bossRoom = sessionManager.createbossRoom(uuidv4());
+      const bossRoom = sessionManager.createBossRoom(uuidv4());
       bossRoom.setUsers(playerA, playerB, playerC);
       bossRoom.addMonster(bossMonsterInstance);
       matchedPlayers.forEach((user) => {
@@ -75,12 +75,12 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       });
     }
   } catch (error) {
-    console.error('cBossAcceptResponseHandler: 오류입니다.');
+    console.error('cBossAcceptResponseHandler: 오류입니다.', error);
   }
 };
 
 const createBattleLogResponse = (enable) => ({
-  msg: `보스전에 입장하였습니다 ${playerA.nickname}의 차례입니다.`,
+  msg: `보스전에 입장하였습니다.`,
   typingAnimation: false,
   btns: BUTTON_OPTIONS.map((btn) => ({
     msg: btn,
