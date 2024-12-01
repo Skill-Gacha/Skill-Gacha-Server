@@ -1,7 +1,7 @@
 // src/handler/boss/states/bossPlayerAttackState.js
 
 import BossRoomState from './bossRoomState.js';
-import BossEnemyAttackState from './bossEnemyAttackState.js';
+import BossEnemyAttackState from './bossEnemyAttackStateTest.js';
 import MonsterDeadState from './bossMonsterDeadState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
