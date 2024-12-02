@@ -95,14 +95,14 @@ const createBattleLogResponse = (enable) => ({
   })),
 });
 
-const sendBossMatchNotification = (player, playerIds, partyList, monster, enable) => {
+const sendBossMatchNotification = (player, playerIds, partyList, monsterStatus, enable) => {
   const battleLog = createBattleLogResponse(enable);
   const response = createResponse(PacketType.S_BossMatchNotification, {
     success: true,
     playerIds,
     partyList,
     battleLog,
-    monster,
+    monsterStatus,
   });
   player.socket.write(response);
 };
