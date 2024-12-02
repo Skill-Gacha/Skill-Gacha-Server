@@ -13,7 +13,6 @@ const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 
 export default class BossActionState extends BossRoomState {
   enter() {
-    console.log('BossActionState 넘어왔다.');
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ACTION;
     if (this.bossRoom.gameStart) {
       const battleLog = {
@@ -22,12 +21,7 @@ export default class BossActionState extends BossRoomState {
         btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: true })),
       };
 
-      console.log('battleLog : ', battleLog);
-
       const response = createResponse(PacketType.S_BossBattleLog, { battleLog });
-
-      console.log('response : ', response);
-
       this.user.socket.write(response);
     }
     this.bossRoom.gameStart = true;
