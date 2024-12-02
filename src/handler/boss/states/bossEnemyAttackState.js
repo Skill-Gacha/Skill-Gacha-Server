@@ -18,54 +18,30 @@ export default class BossEnemyAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ENEMY_ATTACK;
 
-    // 일반 몬스터 공격 처리
-    const aliveMonsters = this.bossRoom.monsters.filter(
-      (monster, index) => monster.monsterHp > 0 && index !== 0,
-    );
-
-    if (aliveMonsters.length > 0) {
-      for (const monster of aliveMonsters) {
-        const aliveUsers = this.users.filter((user) => user.stat.hp > 0);
-        const user = aliveUsers[Math.floor(Math.random() * aliveUsers.length)];
-
-        await this.monsterAttackPlayer(monster, user);
-
-        if (user.stat.hp <= 0) {
-          this.handlePlayerDeath(user);
-          return;
-        }
-
-        await delay(ATTACK_DELAY);
-      }
-    }
-
-    // 보스 몬스터 공격 처리
     const boss = this.bossRoom.monsters[0];
 
-    if (boss.monsterHp > 0) {
-      if (this.bossRoom.phase === 1) {
-        // 광역 공격만 가능 속성값도 없음
+    // 광역 공격만 가능 속성값도 없음
+    if (this.bossRoom.phase === 1) {
+      await this.bossAttackPlayers(boss);
+      await delay(ATTACK_DELAY);
+    }
+
+    // 광역기 & 저항력 약화 디버프 & 속성
+    else if (this.bossRoom.phase === 2) {
+      Math.random() < 0.5 ? await this.bossAttackPlayers(boss) : await this.downResist(boss);
+      await delay(ATTACK_DELAY);
+    }
+
+    // 광역기 & 저항력 약화 디버프 & 속성 & 유저 HP, MP 바꾸는 디버프
+    else if (this.bossRoom.phase === 3) {
+      const randomChoice = Math.floor(Math.random() * 3);
+
+      if (randomChoice === 0) {
         await this.bossAttackPlayers(boss);
-        await delay(ATTACK_DELAY);
-      }
-
-      // 광역기 & 저항력 약화 디버프 & 속성
-      else if (this.bossRoom.phase === 2) {
-        Math.random() < 0.5 ? await this.bossAttackPlayers(boss) : await this.downResist(boss);
-        await delay(ATTACK_DELAY);
-      }
-
-      // 광역기 & 저항력 약화 디버프 & 속성 & 유저 HP, MP 바꾸는 디버프
-      else if (this.bossRoom.phase === 3) {
-        const randomChoice = Math.floor(Math.random() * 3);
-
-        if (randomChoice === 0) {
-          await this.bossAttackPlayers(boss);
-        } else if (randomChoice === 1) {
-          await this.downResist(boss);
-        } else {
-          await this.changeStatus(boss);
-        }
+      } else if (randomChoice === 1) {
+        await this.downResist(boss);
+      } else {
+        await this.changeStatus(boss);
       }
     }
 
@@ -74,26 +50,6 @@ export default class BossEnemyAttackState extends BossRoomState {
     this.users.forEach((user) => {
       user.stat.protect = false;
     });
-  }
-
-  async monsterAttackPlayer(monster, user) {
-    let damage = monster.monsterAtk;
-
-    if (user.stat.protect) {
-      damage = 1;
-    }
-
-    user.reduceHp(damage);
-
-    this.users.forEach((u) => {
-      this.sendPlayerStatus(user);
-      this.sendMonsterAnimation(u, monster, monster.effectCode);
-    });
-
-    this.createBattleLogResponse(
-      user,
-      `${monster.monsterName}이(가) 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
-    );
   }
 
   async bossAttackPlayers(bossMonster) {
@@ -168,15 +124,13 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   // 각 유저의 HP, MP 알림 전송
   sendPlayerStatus(user) {
-    this.users.forEach((u) => {
-      u.socket.write(
-        createResponse(PacketType.S_BossPlayerStatusNotification, {
-          playerId: user.id,
-          hp: user.stat.hp,
-          mp: user.stat.mp,
-        }),
-      );
-    });
+    user.socket.write(
+      createResponse(PacketType.S_BossPlayerStatusNotification, {
+        playerId: [this.users[0].id, this.users[1].id, this.users[2].id],
+        hp: [this.users[0].stat.hp, this.users[1].stat.hp, this.users[2].stat.hp],
+        mp: [this.users[0].stat.mp, this.users[1].stat.mp, this.users[2].stat.mp],
+      }),
+    );
   }
 
   // 유저 사망 함수
