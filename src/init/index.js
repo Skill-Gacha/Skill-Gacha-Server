@@ -5,7 +5,6 @@ import { loadProtos } from './loadProto.js';
 import { loadGameAssets } from './loadAssets.js';
 import { initRedisClient } from './redis.js';
 import { startSyncScheduler } from '../schedulers/syncScheduler.js';
-import logger from '../utils/log/logger.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
 

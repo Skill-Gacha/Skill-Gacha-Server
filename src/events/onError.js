@@ -50,7 +50,7 @@ export const onError = (socket) => async (err) => {
       sessionManager.removePvpRoom(pvpRoom.sessionId);
     } catch (error) {
       logger.error('onError: PVP 강제종료 처리중 에러:', error);
-      const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error)
+      const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error);
       handleError(newCustomeError);
     }
   }
@@ -64,7 +64,7 @@ export const onError = (socket) => async (err) => {
     logger.info(`onError: 유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {
     logger.error('onError: 처리 중 오류 발생:', error);
-    const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error)
+    const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error);
     handleError(newCustomeError);
   }
 };

@@ -26,13 +26,13 @@ const redisClient = createClient({
  */
 export const initRedisClient = async () => {
   try {
-    redisClient.on('error', (err) => {});
+    redisClient.on('error', (err) => {
+    });
 
     await redisClient.connect();
 
     logger.info('Redis 초기화 완료');
-  }
-  catch (error) {
+  } catch (error) {
     throw new CustomError(ErrorCodes.REDIS_INIT_FAILED, 'Redis 초기화 실패');
   }
 };

@@ -85,7 +85,7 @@ const handlers = {
 
 export const getHandlerByPacketType = (packetType) => {
   if (!handlers[packetType] || !handlers[packetType].handler) {
-    const newCustomError =  new CustomError(
+    const newCustomError = new CustomError(
       ErrorCodes.UNKNOWN_HANDLER_ID,
       `PacketType ID에 해당하는 핸들러를 찾을 수 없습니다: ${packetType}`,
     );

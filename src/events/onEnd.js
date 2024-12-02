@@ -91,7 +91,7 @@ export const onEnd = (socket) => async () => {
     await deleteItemsFromRedis(nickname);
   } catch (error) {
     logger.error(`onEnd: ${nickname} 접속 종료 처리 중 문제 발생.`, error);
-    const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_END, error)
+    const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_END, error);
     handleError(newCustomeError);
   }
 
@@ -105,7 +105,7 @@ export const onEnd = (socket) => async () => {
     logger.info(`유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {
     console.error('onEnd: 처리 중 오류 발생:', error);
-    const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_END, error)
+    const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_END, error);
     handleError(newCustomeError);
   }
 };

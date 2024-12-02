@@ -41,7 +41,7 @@ const createFileTransport = (filename, level) => {
     format: combine(
       timestamp(),
       errors({ stack: true }), // 스택 트레이스 포함
-      koreanTimeFormat
+      koreanTimeFormat,
     ),
   });
 };
@@ -56,7 +56,7 @@ const consoleTransport = new winston.transports.Console({
     winston.format.colorize(),
     timestamp(),
     errors({ stack: true }),
-    koreanTimeFormat
+    koreanTimeFormat,
   ),
 });
 
