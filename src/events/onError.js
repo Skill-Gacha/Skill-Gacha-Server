@@ -5,13 +5,17 @@ import sessionManager from '#managers/sessionManager.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../db/redis/ratingService.js';
 import { createResponse } from '../utils/response/createResponse.js';
 import { PacketType } from '../constants/header.js';
+import logger from '../utils/log/logger.js';
+import CustomError from '../utils/error/customError.js';
+import { ErrorCodes } from '../utils/error/errorCodes.js';
+import { handleError } from '../utils/error/errorHandler.js';
 
 export const onError = (socket) => async (err) => {
-  console.error('onError: 소켓 에러 발생:', err);
+  logger.error('onError: 소켓 에러 발생:', err);
 
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
-    console.error('onError: 유저를 찾을 수 없습니다.');
+    logger.error('onError: 유저를 찾을 수 없습니다.');
     return;
   }
   const pvpRoom = sessionManager.getPvpByUser(user);
@@ -45,7 +49,9 @@ export const onError = (socket) => async (err) => {
       sessionManager.removeMatchingQueue(user);
       sessionManager.removePvpRoom(pvpRoom.sessionId);
     } catch (error) {
-      console.error('onEnd: PVP 강제종료 처리중 에러:', error);
+      logger.error('onError: PVP 강제종료 처리중 에러:', error);
+      const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error)
+      handleError(newCustomeError);
     }
   }
 
@@ -55,9 +61,10 @@ export const onError = (socket) => async (err) => {
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
 
-    console.log(`onError: 유저 ${user.id}가 세션에서 제거되었습니다.`);
+    logger.info(`onError: 유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {
-    console.error('onError: 처리 중 오류 발생:', error);
-    // 추가적인 에러 핸들링 필요 시 추가
+    logger.error('onError: 처리 중 오류 발생:', error);
+    const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error)
+    handleError(newCustomeError);
   }
 };
