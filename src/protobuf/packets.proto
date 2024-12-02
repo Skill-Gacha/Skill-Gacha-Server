@@ -354,9 +354,9 @@ message S_BossBattleLog {
 }
 
 message S_BossPlayerStatusNotification {
-  int32 playerId = 1;
-  int32 hp = 2;
-  int32 mp = 3;
+  repeated int32 playerId = 1;
+  repeated int32 hp = 2;
+  repeated int32 mp = 3;
 }
 
 message S_BossSetMonsterHp {
@@ -379,7 +379,6 @@ message S_BossMonsterAction {
 message S_BossPhase {
   int32 randomElement = 1;
   int32 phase = 2;
-  repeated MonsterStatus monsterIdx = 3;
 }
 
 message S_BossUserTurn {
