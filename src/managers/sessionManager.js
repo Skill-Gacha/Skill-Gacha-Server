@@ -20,7 +20,8 @@ class SessionManager {
       pvpRooms: new Map(),
     };
     this.matchingQueue = [];
-    this.users = new Map();
+    this.users = new Map(); // userId -> user
+    this.socketToUser = new Map(); // socket -> user
     this.sessionTimeout = 300000;
     this.userTimeout = 300000;
     this.cleansingInterval = 60000;
@@ -31,6 +32,7 @@ class SessionManager {
   // **사용자 관리**
   addUser(user) {
     this.users.set(user.id, user);
+    this.socketToUser.set(user.socket, user); // 소켓 맵에 추가
     this.sessions.town.addUser(user); // 기본적으로 마을 세션에 추가
     user.lastActivity = Date.now();
   }
@@ -43,6 +45,8 @@ class SessionManager {
     }
 
     this.users.delete(userId);
+    this.socketToUser.delete(user.socket); // 소켓 맵에서 제거
+
     // 모든 던전 세션에서 사용자 제거
     this.sessions.dungeons.forEach((dungeon) => {
       if (dungeon.removeUser(userId)) {
@@ -80,14 +84,11 @@ class SessionManager {
   }
 
   getUserBySocket(socket) {
-    for (let user of this.users.values()) {
-      if (user.socket === socket) {
-        return user;
-      }
+    const user = this.socketToUser.get(socket);
+    if (!user) {
+      logger.info('소켓을 찾을 수 없음');
     }
-
-    logger.info('소켓을 찾을 수 없음');
-    return null;
+    return user || null;
   }
 
   // **던전 세션 관리**
@@ -123,7 +124,7 @@ class SessionManager {
     return this.sessions.town;
   }
 
-  // 사용자 세션 조회 (마을 또는 던전)
+  // 사용자 세션 조회 (마을 / 던전 / PvP)
   getSessionByUserId(userId) {
     // 유저가 Town에 있으면 Town 세션 반환
     if (this.sessions.town.getUser(userId)) {
