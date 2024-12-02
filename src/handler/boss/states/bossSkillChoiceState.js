@@ -7,6 +7,7 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import BossActionState from './bossActionState.js';
 import BossPlayerAttackState from './bossPlayerAttackState.js';
 import BossTargetState from './bossTargetState.js';
+import BossRoomState from './bossRoomState.js';
 
 // 스킬 선택 상태
 export default class BossSkillChoiceState extends BossRoomState {
@@ -31,7 +32,7 @@ export default class BossSkillChoiceState extends BossRoomState {
       btns: buttons,
     };
 
-    const choiceSkillBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
+    const choiceSkillBattlelogResponse = createResponse(PacketType.S_BossBattleLog, { battleLog });
     this.user.socket.write(choiceSkillBattlelogResponse);
   }
 

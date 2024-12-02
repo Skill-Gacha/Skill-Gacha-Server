@@ -344,11 +344,11 @@
       "monsterHp": 6000,
       "monsterAtk": 100,
       "monsterEffectCode": 3001,
-      "electricResist": 50,
-      "earthResist": 50,
-      "grassResist": 50,
-      "fireResist": 50,
-      "waterResist": 50
+      "electricResist": 30,
+      "earthResist": 30,
+      "grassResist": 30,
+      "fireResist": 30,
+      "waterResist": 30
     }
   ]
 }
