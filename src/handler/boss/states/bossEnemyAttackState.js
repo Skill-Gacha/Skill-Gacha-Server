@@ -51,8 +51,8 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   async bossAttackPlayers(bossMonster) {
     // 모든 유저에게 공격
-    const statusResponse = createStatusResponse(this.users);
-    const monsterAction = createMonsterAnimation(this.users, bossMonster, 3001);
+    const statusResponse = this.createStatusResponse(this.users);
+    const monsterAction = this.createMonsterAnimation(this.users, bossMonster, 3001);
     this.users.forEach((user) => {
       let damage = bossMonster.monsterAtk;
 
@@ -88,7 +88,7 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   async downResist(bossMonster) {
     // 모든 유저에게 디버프 적용
-    const monsterAction = createMonsterAnimation(this.users, bossMonster, 3001);
+    const monsterAction = this.createMonsterAnimation(this.users, bossMonster, 3001);
     this.users.forEach((user) => {
       // 디버프 상태로 전환
       user.stat.downResist = true;
@@ -106,8 +106,8 @@ export default class BossEnemyAttackState extends BossRoomState {
     const temp = user.stat.hp;
     user.stat.hp = user.stat.mp;
     user.stat.mp = temp;
-    const statusResponse = createStatusResponse([user]);
-    const monsterAction = createMonsterAnimation([user], bossMonster, 3001);
+    const statusResponse = this.createStatusResponse([user]);
+    const monsterAction = this.createMonsterAnimation([user], bossMonster, 3001);
 
     this.users.forEach((u) => {
       u.socket.write(statusResponse);
