@@ -59,7 +59,13 @@ export default class BossPlayerAttackState extends BossRoomState {
     useBuffSkill(this.user, this.socket, this.bossRoom);
 
     this.user.reduceMp(skillInfo.mana);
-    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
+    this.user.socket.write(
+      createResponse(PacketType.S_BossPlayerStatusNotification, {
+        playerId: this.user.id,
+        hp: this.user.stat.hp,
+        mp: this.user.stat.mp,
+      }),
+    );
 
     this.sendPlayerAction([], skillInfo.effectCode);
     await delay(PLAYER_ACTION_DELAY);
@@ -92,7 +98,14 @@ export default class BossPlayerAttackState extends BossRoomState {
     this.sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
 
     this.user.reduceMp(skillInfo.mana);
-    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
+    this.user.socket.write(
+      createResponse(PacketType.S_BossPlayerStatusNotification, {
+        playerId: this.user.id,
+        hp: this.user.stat.hp,
+        mp: this.user.stat.mp,
+      }),
+    );
+
     await delay(PLAYER_ACTION_DELAY);
 
     const allMonstersDead = this.checkAllMonstersDead();
@@ -117,7 +130,13 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     targetMonster.reduceHp(totalDamage);
     this.user.reduceMp(skillInfo.mana);
-    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
+    this.user.socket.write(
+      createResponse(PacketType.S_BossPlayerStatusNotification, {
+        playerId: this.user.id,
+        hp: this.user.stat.hp,
+        mp: this.user.stat.mp,
+      }),
+    );
 
     this.sendMonsterHpUpdate(targetMonster);
     this.sendPlayerAction([targetMonster.monsterIdx], skillInfo.effectCode);
@@ -155,7 +174,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   sendMonsterHpUpdate(monster) {
     this.socket.write(
-      createResponse(PacketType.S_SetMonsterHp, {
+      createResponse(PacketType.S_BossSetMonsterHp, {
         monsterIdx: monster.monsterIdx,
         hp: monster.monsterHp,
       }),
@@ -163,8 +182,9 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   sendPlayerAction(targetMonsterIdxs, effectCode) {
-    this.socket.write(
-      createResponse(PacketType.S_PlayerAction, {
+    this.user.socket.write(
+      createResponse(PacketType.S_BossPlayerActionNotification, {
+        playerId: this.user.id,
         targetMonsterIdx: targetMonsterIdxs,
         actionSet: {
           animCode: ACTION_ANIMATION_CODE,
