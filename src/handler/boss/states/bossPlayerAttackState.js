@@ -82,7 +82,8 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     for (const monster of aliveMonsters) {
       const totalDamage = this.calculateTotalDamage(skillInfo, monster);
-      // 쉴드부분
+
+      // 쉴드부분=============================================================================================================고칠부분
       // 보스의 쉴드가 남아있는지 확인
       if (this.bossRoom.shieldAmount > 0) {
         const damageToShield = Math.min(totalDamage, this.bossRoom.shieldAmount);
@@ -110,56 +111,64 @@ export default class BossPlayerAttackState extends BossRoomState {
     const allMonstersDead = this.checkAllMonstersDead();
     if (allMonstersDead) {
       this.changeState(BossMonsterDeadState);
-    } else {
-      this.changeState(BossTurnChangeState);
+    } else if (this.bossRoom.bossRoomStatus !== BOSS_STATUS.BOSS_PHASE_CHANGE) {
+      this.changeState(BossPhaseState);
     }
   }
 
   async handleSingleSkill(skillInfo, disableButtons) {
-    const targetMonster = this.bossRoom.selectedMonster;
-
     const playerElement = this.user.element;
     const skillElement = skillInfo.element;
     const skillDamageRate = skillEnhancement(playerElement, skillElement);
     let userDamage = skillInfo.damage * skillDamageRate;
 
     userDamage = updateDamage(this.user, userDamage);
-    const monsterResist = checkEnemyResist(skillElement, targetMonster);
-    const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
 
-    // 쉴드부분
-    // 보스의 쉴드가 남아있는지 확인
-    if (this.bossRoom.shieldAmount > 0) {
-      const damageToShield = Math.min(totalDamage, this.shieldAmount);
-      this.shieldAmount -= damageToShield;
+    // 선택된 몬스터가 아닌 모든 몬스터에 대해 데미지를 계산
+    const aliveMonsters = this.getAliveMonsters();
 
-      const remainingDamage = totalDamage - damageToShield;
-      if (remainingDamage > 0) {
-        targetMonster.reduceHp(remainingDamage);
+    for (const monster of aliveMonsters) {
+      const monsterResist = checkEnemyResist(skillElement, monster);
+      const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
+
+      // 쉴드부분=============================================================================================================고칠부분
+      // 보스의 쉴드가 남아있는지 확인
+      if (this.bossRoom.shieldAmount > 0) {
+        const damageToShield = Math.min(totalDamage, this.bossRoom.shieldAmount);
+        this.bossRoom.shieldAmount -= damageToShield;
+
+        const remainingDamage = totalDamage - damageToShield;
+        if (remainingDamage > 0) {
+          monster.reduceHp(remainingDamage);
+        }
+      } else {
+        monster.reduceHp(totalDamage);
       }
-    } else {
-      targetMonster.reduceHp(totalDamage);
+
+      this.sendMonsterHpUpdate(monster);
+
+      const battleLogMsg =
+        skillDamageRate > 1
+          ? `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
+          : `${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
+
+      this.sendBattleLog(battleLogMsg, disableButtons);
     }
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
+    this.sendPlayerAction(
+      aliveMonsters.map((m) => m.monsterIdx),
+      skillInfo.effectCode,
+    );
 
-    this.sendMonsterHpUpdate(targetMonster);
-    this.sendPlayerAction([targetMonster.monsterIdx], skillInfo.effectCode);
-
-    const battleLogMsg =
-      skillDamageRate > 1
-        ? `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
-        : `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
-
-    this.sendBattleLog(battleLogMsg, disableButtons);
     await delay(PLAYER_ACTION_DELAY);
 
     // 보스 체력 감소 및 phase 체크
     this.updateBossPhase(); // 보스 phase 체크
-    if (targetMonster.monsterHp <= 0) {
+    if (this.checkAllMonstersDead()) {
       this.changeState(BossMonsterDeadState);
-    } else if (this.bossRoom.bossStatus != BOSS_STATUS.BOSS_PHASE_CHANGE) {
+    } else if (this.bossRoom.bossRoomStatus !== BOSS_STATUS.BOSS_PHASE_CHANGE) {
       this.changeState(BossPhaseState);
     }
   }
@@ -187,7 +196,9 @@ export default class BossPlayerAttackState extends BossRoomState {
     });
   }
 
-  sendPlayerAction(targetMonsterIdxs, effectCode) {
+  sendPlayerAction(effectCode) {
+    const aliveMonsters = this.getAliveMonsters();
+    const targetMonsterIdxs = aliveMonsters.map((m) => m.monsterIdx);
     this.users.forEach((user) => {
       user.socket.write(
         createResponse(PacketType.S_BossPlayerActionNotification, {

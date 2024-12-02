@@ -31,6 +31,8 @@ export default class BossPhaseState extends BossRoomState {
       }),
     );
 
+    //TODO : 쉴드 줄어드는 부분 ? 쉴드 까지는부분? 확인하기
+
     if (phase === 3) {
       this.createShield(boss);
     }
