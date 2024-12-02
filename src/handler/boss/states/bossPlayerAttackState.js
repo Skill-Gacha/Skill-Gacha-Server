@@ -83,6 +83,10 @@ export default class BossPlayerAttackState extends BossRoomState {
       const totalDamage = this.calculateTotalDamage(skillInfo, monster);
       monster.reduceHp(totalDamage);
       this.sendMonsterHpUpdate(monster);
+
+      // 보스 체력 감소 및 phase 체크
+      this.bossRoom.reduceBossHp(totalDamage);
+      this.checkBossPhase(); // 보스 phase 체크
     }
 
     this.sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
@@ -125,6 +129,10 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     this.sendBattleLog(battleLogMsg, disableButtons);
     await delay(PLAYER_ACTION_DELAY);
+
+    // 보스 체력 감소 및 phase 체크
+    this.bossRoom.reduceBossHp(totalDamage);
+    this.checkBossPhase(); // 보스 phase 체크
 
     if (targetMonster.monsterHp <= 0) {
       this.changeState(MonsterDeadState);
@@ -180,6 +188,24 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   checkAllMonstersDead() {
     return this.bossRoom.monsters.every((monster) => monster.monsterHp <= 0);
+  }
+
+  checkBossPhase() {
+    const boss = this.bossRoom.monsters.find((monster) => monster.monsterModel === 2029); // 보스 몬스터 확인
+    if (boss) {
+      // 현재 phase가 1일 때
+      if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
+        this.bossRoom.phase = 2; // phase를 2로 변경
+        this.changeState(BossPhaseState); // 상태 변경
+        console.log(`보스의 phase가 ${this.bossRoom.phase}phase로 변경되었습니다.`);
+      }
+      // 현재 phase가 2일 때
+      else if (boss.monsterHp <= 2000 && this.bossRoom.phase === 2) {
+        this.bossRoom.phase = 3; // phase를 3으로 변경
+        this.changeState(BossPhaseState); // 상태 변경
+        console.log(`보스의 phase가 ${this.bossRoom.phase}phase로 변경되었습니다.`);
+      }
+    }
   }
 
   async handleInput(responseCode) {
