@@ -31,6 +31,6 @@ export const cBossMatchHandler = async ({ socket, payload }) => {
       sessionManager.removeMatchingQueue(user, 'boss');
     }
   } catch (error) {
-    console.error('cBossMatchHandler: 잘못된 payload 값입니다.');
+    console.error('cBossMatchHandler: 잘못된 payload 값입니다.', error);
   }
 };
