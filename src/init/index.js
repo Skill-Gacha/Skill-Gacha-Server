@@ -5,6 +5,7 @@ import { loadProtos } from './loadProto.js';
 import { loadGameAssets } from './loadAssets.js';
 import { initRedisClient } from './redis.js';
 import { startSyncScheduler } from '../schedulers/syncScheduler.js';
+import logger from '../utils/log/logger.js';
 
 const initServer = async () => {
   try {
@@ -14,7 +15,7 @@ const initServer = async () => {
     await initRedisClient();
     await startSyncScheduler();
   } catch (e) {
-    console.error(e);
+    logger.error(e);
     process.exit(1);
   }
 };
