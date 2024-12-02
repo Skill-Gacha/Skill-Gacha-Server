@@ -13,6 +13,7 @@ import {
   updateDamage,
 } from '../../../utils/battle/calculate.js';
 import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
+import BossMonsterDeadState from './bossMonsterDeadState.js';
 
 const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
@@ -110,7 +111,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     const allMonstersDead = this.checkAllMonstersDead();
     if (allMonstersDead) {
-      this.changeState(MonsterDeadState);
+      this.changeState(BossMonsterDeadState);
     } else {
       this.changeState(BossEnemyAttackState);
     }
@@ -154,7 +155,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     this.checkBossPhase(); // 보스 phase 체크
 
     if (targetMonster.monsterHp <= 0) {
-      this.changeState(MonsterDeadState);
+      this.changeState(BossMonsterDeadState);
     } else {
       this.changeState(BossEnemyAttackState);
     }
