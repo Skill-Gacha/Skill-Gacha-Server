@@ -2,7 +2,6 @@
 
 import BossRoomState from './bossRoomState.js';
 import BossEnemyAttackState from './bossEnemyAttackState.js';
-import MonsterDeadState from './bossMonsterDeadState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
@@ -60,13 +59,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     useBuffSkill(this.user, this.socket, this.bossRoom);
 
     this.user.reduceMp(skillInfo.mana);
-    this.user.socket.write(
-      createResponse(PacketType.S_BossPlayerStatusNotification, {
-        playerId: this.user.id,
-        hp: this.user.stat.hp,
-        mp: this.user.stat.mp,
-      }),
-    );
+    this.sendPlayerStatus(this.user);
 
     this.sendPlayerAction([], skillInfo.effectCode);
     await delay(PLAYER_ACTION_DELAY);
@@ -92,20 +85,14 @@ export default class BossPlayerAttackState extends BossRoomState {
       this.sendMonsterHpUpdate(monster);
 
       // 보스 체력 감소 및 phase 체크
-      this.bossRoom.reduceBossHp(totalDamage);
+      monster.reduceHp(totalDamage);
       this.checkBossPhase(); // 보스 phase 체크
     }
 
     this.sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
 
     this.user.reduceMp(skillInfo.mana);
-    this.user.socket.write(
-      createResponse(PacketType.S_BossPlayerStatusNotification, {
-        playerId: this.user.id,
-        hp: this.user.stat.hp,
-        mp: this.user.stat.mp,
-      }),
-    );
+    this.sendPlayerStatus(this.user);
 
     await delay(PLAYER_ACTION_DELAY);
 
@@ -131,13 +118,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     targetMonster.reduceHp(totalDamage);
     this.user.reduceMp(skillInfo.mana);
-    this.user.socket.write(
-      createResponse(PacketType.S_BossPlayerStatusNotification, {
-        playerId: this.user.id,
-        hp: this.user.stat.hp,
-        mp: this.user.stat.mp,
-      }),
-    );
+    this.sendPlayerStatus(this.user);
 
     this.sendMonsterHpUpdate(targetMonster);
     this.sendPlayerAction([targetMonster.monsterIdx], skillInfo.effectCode);
@@ -151,7 +132,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     await delay(PLAYER_ACTION_DELAY);
 
     // 보스 체력 감소 및 phase 체크
-    this.bossRoom.reduceBossHp(totalDamage);
+    targetMonster.reduceHp(totalDamage);
     this.checkBossPhase(); // 보스 phase 체크
 
     if (targetMonster.monsterHp <= 0) {
@@ -174,29 +155,33 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   sendMonsterHpUpdate(monster) {
-    this.socket.write(
-      createResponse(PacketType.S_BossSetMonsterHp, {
-        monsterIdx: monster.monsterIdx,
-        hp: monster.monsterHp,
-      }),
-    );
+    this.users.forEach((user) => {
+      user.socket.write(
+        createResponse(PacketType.S_BossSetMonsterHp, {
+          monsterIdx: monster.monsterIdx,
+          hp: monster.monsterHp,
+        }),
+      );
+    });
   }
 
   sendPlayerAction(targetMonsterIdxs, effectCode) {
-    this.user.socket.write(
-      createResponse(PacketType.S_BossPlayerActionNotification, {
-        playerId: this.user.id,
-        targetMonsterIdx: targetMonsterIdxs,
-        actionSet: {
-          animCode: ACTION_ANIMATION_CODE,
-          effectCode: effectCode,
-        },
-      }),
-    );
+    this.users.forEach((user) => {
+      user.socket.write(
+        createResponse(PacketType.S_BossPlayerActionNotification, {
+          playerId: this.user.id,
+          targetMonsterIdx: targetMonsterIdxs,
+          actionSet: {
+            animCode: ACTION_ANIMATION_CODE,
+            effectCode: effectCode,
+          },
+        }),
+      );
+    });
   }
 
   sendBattleLog(message, buttons) {
-    this.socket.write(
+    this.user.socket.write(
       createResponse(PacketType.S_BossBattleLog, {
         battleLog: {
           msg: message,
@@ -227,6 +212,19 @@ export default class BossPlayerAttackState extends BossRoomState {
         console.log(`보스의 phase가 ${this.bossRoom.phase}phase로 변경되었습니다.`);
       }
     }
+  }
+
+  // 각 유저의 HP, MP 알림 전송
+  sendPlayerStatus(user) {
+    this.users.forEach((u) => {
+      u.socket.write(
+        createResponse(PacketType.S_BossPlayerStatusNotification, {
+          playerId: user.id,
+          hp: user.stat.hp,
+          mp: user.stat.mp,
+        }),
+      );
+    });
   }
 
   async handleInput(responseCode) {
