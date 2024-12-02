@@ -2,11 +2,10 @@
 
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import { AREASKILL, BOSS_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
+import { BOSS_STATUS, MAX_BUTTON_COUNT } from '../../../constants/battle.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import BossActionState from './bossActionState.js';
 import BossPlayerAttackState from './bossPlayerAttackState.js';
-import BossTargetState from './bossTargetState.js';
 import BossRoomState from './bossRoomState.js';
 
 // 스킬 선택 상태
@@ -48,14 +47,7 @@ export default class BossSkillChoiceState extends BossRoomState {
       // 선택한 스킬 인덱스 계산
       const SkillIdx = responseCode - 1;
       this.bossRoom.selectedSkill = SkillIdx;
-      const userSkillInfo = this.user.userSkills[SkillIdx];
-      if (userSkillInfo.id >= AREASKILL) {
-        this.changeState(BossPlayerAttackState);
-        return;
-      }
-
-      // 스킬 선택 후 타겟 지정
-      this.changeState(BossTargetState);
+      this.changeState(BossPlayerAttackState);
     }
   }
 }
