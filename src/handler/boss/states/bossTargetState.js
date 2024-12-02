@@ -6,11 +6,15 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { PacketType } from '../../../constants/header.js';
 import BossPlayerAttackState from './bossPlayerAttackState.js';
 
+const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 // 공격할 대상을 선택하기 위한 버튼 목록 생성
 export default class BossTargetState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.TARGET;
-    const buttons = this.createTargetButtons();
+    const buttons = this.bossRoom.monsters.map((monster) => ({
+      msg: monster.monsterName,
+      enable: monster.monsterHp > 0,
+    }));
 
     const battleLog = {
       msg: '공격할 대상을 선택해주세요.',
@@ -21,50 +25,23 @@ export default class BossTargetState extends BossRoomState {
     this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
   }
 
-  createTargetButtons() {
-    return this.bossRoom.monsters.map((monster) => ({
-      msg: monster.monsterName,
-      enable: monster.monsterHp > 0,
-    }));
-  }
-
   async handleInput(responseCode) {
-    const targetIndex = responseCode;
-    const allTargets = this.bossRoom.monsters; // 몬스터 배열
+    const selectedMonster = this.getSelectedMonster(responseCode);
 
-    if (targetIndex < 0 || targetIndex >= allTargets.length) {
-      return this.invalidTargetResponse(targetIndex);
+    if (!selectedMonster) {
+      invalidResponseCode(this.socket);
+      return;
     }
 
-    const target = allTargets[targetIndex];
-    if (target && target.monsterHp > 0) {
-      this.bossRoom.selectedMonster = target;
-      this.changeState(BossPlayerAttackState); // 공격 상태로 전환
-    } else {
-      this.invalidTargetResponse(targetIndex);
-    }
+    this.bossRoom.selectedMonster = selectedMonster;
+    this.changeState(BossPlayerAttackState);
   }
 
-  invalidTargetResponse(targetIndex) {
-    let message = '유효하지 않은 선택입니다. 다시 선택해주세요.';
-
-    // 인덱스 범위 초과 확인
-    const totalTargets = this.bossRoom.monsters.length;
-    if (targetIndex < 0 || targetIndex >= totalTargets) {
-      message = '선택한 인덱스가 유효하지 않습니다. 다시 선택해주세요.';
-    } else {
-      const target = this.bossRoom.monsters[targetIndex];
-      if (target.monsterHp === 0) {
-        message = `${target.monsterName}은(는) 이미 처치되었습니다. 다른 대상을 선택해주세요.`;
-      }
-    }
-
-    const response = createResponse(PacketType.S_BossBattleLog, {
-      msg: message,
-      typingAnimation: false,
-      btns: [],
-    });
-
-    this.user.socket.write(response);
+  getSelectedMonster(code) {
+    const monsterIdx = code - 1;
+    const monster = this.bossRoom.monsters.find(
+      (m) => m.monsterIdx === monsterIdx && m.monsterHp > 0,
+    );
+    return monster || null;
   }
 }
