@@ -17,7 +17,7 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
     return;
   }
 
-  const bossRoom = sessionManager.getBossRommByUser(user);
+  const bossRoom = sessionManager.getBossRoomByUser(user);
   console.log('bossRoom : ', bossRoom);
   if (!bossRoom) {
     console.error('cPlayerBossResponseHandler: 유저가 BOSSROOM 세션에 속해 있지 않습니다.');

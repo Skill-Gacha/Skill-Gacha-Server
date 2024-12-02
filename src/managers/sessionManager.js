@@ -155,7 +155,7 @@ class SessionManager {
     return false;
   }
 
-  getBossRommByUser(user) {
+  getBossRoomByUser(user) {
     for (let bossRoom of this.sessions.bossRooms.values()) {
       if (bossRoom.getUser(user.id)) {
         return bossRoom;

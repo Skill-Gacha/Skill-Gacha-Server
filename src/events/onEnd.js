@@ -50,7 +50,7 @@ export const onEnd = (socket) => async () => {
     }
   }
 
-  const bossRoom = sessionManager.getBossRommByUser(user);
+  const bossRoom = sessionManager.getBossRoomByUser(user);
 
   if (bossRoom) {
     try {
