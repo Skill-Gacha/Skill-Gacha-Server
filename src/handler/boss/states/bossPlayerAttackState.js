@@ -56,7 +56,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   async handleBuffSkill(skillInfo) {
     buffSkill(this.user, skillInfo.id);
-    useBuffSkill(this.user, this.socket, this.bossRoom);
+    useBuffSkill(this.user, this.user.socket, this.bossRoom);
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
@@ -71,7 +71,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     if (skillInfo.id === DEBUFF_SKILL_ID) {
       buffSkill(this.user, skillInfo.id);
-      useBuffSkill(this.user, this.socket, this.bossRoom);
+      useBuffSkill(this.user, this.user.socket, this.bossRoom);
     }
 
     this.sendPlayerAction(
