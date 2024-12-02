@@ -6,7 +6,6 @@ import { handleError } from '../utils/error/errorHandler.js';
 import { PACKET_HEADER_LENGTH, PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../constants/constants.js';
 import logger from '../utils/log/logger.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
-import { error } from 'winston';
 import CustomError from '../utils/error/customError.js';
 
 export const onData = (socket) => (data) => {

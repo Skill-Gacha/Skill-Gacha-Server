@@ -2,7 +2,6 @@
 
 import redisClient from '../../init/redis.js';
 import CustomError from '../../utils/error/customError.js';
-import { error } from 'winston';
 import { ErrorCodes } from '../../utils/error/errorCodes.js';
 
 const ITEM_KEY = 'items';
