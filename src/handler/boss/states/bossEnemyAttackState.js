@@ -17,7 +17,6 @@ const DISABLE_BUTTONS = [{ msg: '몬스터가 공격 중', enable: false }];
 export default class BossEnemyAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ENEMY_ATTACK;
-
     const boss = this.bossRoom.monsters[0];
 
     // 광역 공격만 가능 속성값도 없음
@@ -102,24 +101,37 @@ export default class BossEnemyAttackState extends BossRoomState {
     });
   }
 
-  async changeStatus(bossMonster) {
-    // 모든 유저에게 디버프 적용
-    this.users.forEach((user) => {
-      // HP, MP 바꾸기
-      const temp = user.stat.hp;
-      user.stat.hp = user.stat.mp;
-      user.stat.mp = temp;
+  async changeStatus(bossMonster, user) {
+    // HP, MP 바꾸기
+    const temp = user.stat.hp;
+    user.stat.hp = user.stat.mp;
+    user.stat.mp = temp;
 
-      this.sendPlayerStatus(user);
+    this.users.forEach((u) => {
+      u.socket.write(
+        createResponse(PacketType.S_BossPlayerStatusNotification, {
+          playerId: [user.id],
+          hp: [user.stat.hp],
+          mp: [user.stat.mp],
+        }),
+      );
 
-      // 보스 몬스터 공격 애니메이션 전송
-      this.sendMonsterAnimation(user, bossMonster, 3001);
-
-      this.createBattleLogResponse(
-        user,
-        `${bossMonster.monsterName}이(가) 당신의 HP, MP를 바꿨습니다.`,
+      u.socket.write(
+        createResponse(PacketType.S_BossMonsterAction, {
+          playerIds: [user.id],
+          actionMonsterIdx: bossMonster.monsterIdx,
+          actionSet: {
+            animCode: ATTACK_ANIMATION_CODE,
+            effectCode: 3001, // 공격 유형에 따라 이펙트 코드 정해야 됨
+          },
+        }),
       );
     });
+
+    this.createBattleLogResponse(
+      user,
+      `${bossMonster.monsterName}이(가) 당신의 HP, MP를 바꿨습니다.`,
+    );
   }
 
   // 각 유저의 HP, MP 알림 전송
@@ -153,7 +165,7 @@ export default class BossEnemyAttackState extends BossRoomState {
   sendMonsterAnimation(user, monster, effectCode) {
     user.socket.write(
       createResponse(PacketType.S_BossMonsterAction, {
-        playerIds: user.id,
+        playerIds: [this.users[0].id, this.users[1].id, this.users[2].id],
         actionMonsterIdx: monster.monsterIdx,
         actionSet: {
           animCode: ATTACK_ANIMATION_CODE,
