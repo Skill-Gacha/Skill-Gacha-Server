@@ -48,10 +48,16 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       });
       const playerIds = [playerA.id, playerB.id, playerC.id];
       const partyList = [MyStatus(playerA), MyStatus(playerB), MyStatus(playerC)];
+      const boss = {
+        monsterIdx: BOSS_IDX,
+        monsterModel: bossMonster.monsterModel,
+        monsterName: bossMonster.monsterName,
+        monsterHp: bossMonster.monsterHp,
+      };
 
-      sendBossMatchNotification(playerA, playerIds, partyList, true);
-      sendBossMatchNotification(playerB, playerIds, partyList, false);
-      sendBossMatchNotification(playerC, playerIds, partyList, false);
+      sendBossMatchNotification(playerA, playerIds, partyList, boss, true);
+      sendBossMatchNotification(playerB, playerIds, partyList, boss, false);
+      sendBossMatchNotification(playerC, playerIds, partyList, boss, false);
 
       // bossRoom.startTurnTimer();
     }
@@ -61,7 +67,8 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       // 입장 실패 패킷
       const failResponse = createResponse(PacketType.S_BossMatchNotification, {
         success: false,
-        member: [],
+        playerIds: [],
+        partyList: [],
       });
 
       sessionManager.removeMatchingQueue(user, 'boss');
@@ -88,13 +95,14 @@ const createBattleLogResponse = (enable) => ({
   })),
 });
 
-const sendBossMatchNotification = (player, playerIds, partyList, enable) => {
+const sendBossMatchNotification = (player, playerIds, partyList, monster, enable) => {
   const battleLog = createBattleLogResponse(enable);
   const response = createResponse(PacketType.S_BossMatchNotification, {
     success: true,
     playerIds,
     partyList,
     battleLog,
+    monster,
   });
   player.socket.write(response);
 };

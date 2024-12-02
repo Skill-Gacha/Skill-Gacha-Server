@@ -11,14 +11,12 @@ const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
   const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
-  console.log('responseCode : ', payload.responseCode);
   if (!user) {
     console.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
     return;
   }
 
-  const bossRoom = sessionManager.getBossRommByUser(user);
-  console.log('bossRoom : ', bossRoom);
+  const bossRoom = sessionManager.getBossRoomByUser(user);
   if (!bossRoom) {
     console.error('cPlayerBossResponseHandler: 유저가 BOSSROOM 세션에 속해 있지 않습니다.');
     return;
@@ -27,8 +25,6 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
   const isConfirmOrGameOver = [BossGameOverLoseState, BossGameOverWinState].some(
     (StateClass) => bossRoom.currentState instanceof StateClass,
   );
-
-  console.log('isConfirmOrGameOver : ', isConfirmOrGameOver);
 
   if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
     socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
@@ -46,8 +42,6 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
   bossUsers.forEach((user) => {
     user.socket.write(createResponse(PacketType.S_BossUserTurn, { plyerId: bossRoom.userTurn.id }));
   });
-
-  console.log('bossUsers : ', bossUsers);
 
   if (!bossRoom.currentState) {
     const BossActionState = (await import('./states/bossActionState.js')).default;

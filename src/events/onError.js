@@ -45,7 +45,7 @@ export const onError = (socket) => async (err) => {
     }
   }
 
-  const bossRoom = sessionManager.getBossRommByUser(user);
+  const bossRoom = sessionManager.getBossRoomByUser(user);
 
   if (bossRoom) {
     try {

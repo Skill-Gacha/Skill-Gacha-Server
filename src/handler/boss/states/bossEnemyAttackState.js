@@ -18,8 +18,6 @@ export default class BossEnemyAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ENEMY_ATTACK;
 
-    await this.handleAliveMonsters(); // 일반 몬스터 공격 처리
-
     // 일반 몬스터 공격 처리
     const aliveMonsters = this.bossRoom.monsters.filter(
       (monster, index) => monster.monsterHp > 0 && index !== 0,
@@ -42,7 +40,7 @@ export default class BossEnemyAttackState extends BossRoomState {
     }
 
     // 보스 몬스터 공격 처리
-    const boss = this.dungeon.monsters[0];
+    const boss = this.bossRoom.monsters[0];
 
     if (boss.monsterHp > 0) {
       if (this.bossRoom.phase === 1) {

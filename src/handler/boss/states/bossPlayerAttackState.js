@@ -1,7 +1,6 @@
 // src/handler/boss/states/bossPlayerAttackState.js
 
 import BossRoomState from './bossRoomState.js';
-import BossEnemyAttackState from './bossEnemyAttackState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
@@ -13,6 +12,7 @@ import {
 } from '../../../utils/battle/calculate.js';
 import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
 import BossMonsterDeadState from './bossMonsterDeadState.js';
+import BossTurnChangeState from './bossTurnChangeState.js';
 
 const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
@@ -63,7 +63,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     this.sendPlayerAction([], skillInfo.effectCode);
     await delay(PLAYER_ACTION_DELAY);
-    this.changeState(BossEnemyAttackState);
+    this.changeState(BossTurnChangeState);
   }
 
   async handleAreaSkill(skillInfo, disableButtons) {
@@ -100,7 +100,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     if (allMonstersDead) {
       this.changeState(BossMonsterDeadState);
     } else {
-      this.changeState(BossEnemyAttackState);
+      this.changeState(BossTurnChangeState);
     }
   }
 
@@ -138,7 +138,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     if (targetMonster.monsterHp <= 0) {
       this.changeState(BossMonsterDeadState);
     } else {
-      this.changeState(BossEnemyAttackState);
+      this.changeState(BossTurnChangeState);
     }
   }
 
