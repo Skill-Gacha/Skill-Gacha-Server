@@ -1,4 +1,4 @@
-// src/handler/boss/states/bossTargetState.js
+// src/handler/boss/states/bossTurnChangeState.js
 
 import { BOSS_STATUS } from '../../../constants/battle.js';
 import BossActionState from './bossActionState.js';
