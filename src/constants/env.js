@@ -1,3 +1,5 @@
+// src/constants/env.js
+
 import dotenv from 'dotenv';
 import { z } from 'zod';
 import logger from '../utils/log/logger.js';
