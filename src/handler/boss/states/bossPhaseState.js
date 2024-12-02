@@ -31,10 +31,8 @@ export default class BossPhaseState extends BossRoomState {
       }),
     );
 
-    if (phase === 1) {
-      await this.bossAreaAttack(this.bossRoom.getUsers(), boss);
-    } else if (phase === 3) {
-      await this.bossThirdPhaseAction(this.bossRoom.getUsers(), boss);
+    if (phase === 3) {
+      this.createShield(boss);
     }
     this.changeState(BossTurnChangeState);
   }
@@ -62,50 +60,28 @@ export default class BossPhaseState extends BossRoomState {
     }
   }
 
-  async bossThirdPhaseAction(boss) {
-    // 쉴드가 남아있는 경우
-    if (this.shieldAmount > 0) {
-      const message = `${boss.monsterName}의 쉴드가 ${this.shieldAmount} 만큼 남아있습니다.`;
-      this.sendBattleLog(this.user.socket, message);
+  createShield(boss) {
+    // 쉴드 생성 로직
+    this.bossRoom.shieldAmount = 1000; // 쉴드 초기화
+    const message = `${boss.monsterName}가 쉴드를 생성했습니다. 쉴드 양: ${this.shieldAmount}`;
 
-      // 모든 플레이어에게 쉴드 상태 알리기
-      for (const player of this.users) {
-        this.sendBattleLog(player.socket, message);
-      }
-      return;
+    // 모든 플레이어에게 쉴드 생성 알리기
+    this.sendBattleLog(message);
+
+    for (const player of this.users) {
+      this.sendBattleLog(player.socket, message);
     }
-
-    // 쉴드가 0이 되면 HP 감소
-    const damage = Math.floor(boss.monsterHp * 0.1);
-    let damageToShield = Math.min(damage, this.shieldAmount);
-    this.shieldAmount -= damageToShield;
-
-    let remainingDamage = damage - damageToShield;
-    if (this.shieldAmount <= 0) {
-      remainingDamage += Math.abs(this.shieldAmount);
-      this.shieldAmount = 0;
-    }
-
-    boss.monsterHp -= remainingDamage;
-
-    this.user.socket.write(
-      createResponse(PacketType.S_BossSetMonsterHp, {
-        hp: boss.monsterHp,
-      }),
-    );
   }
 
-  sendPlayerStatus() {
-    const playerIds = this.users.map((u) => u.id);
-    const hps = this.users.map((u) => u.stat.hp);
-    const mps = this.users.map((u) => u.stat.mp);
-
-    this.users.forEach((u) => {
-      u.socket.write(
-        createResponse(PacketType.S_BossPlayerStatusNotification, {
-          playerId: playerIds,
-          hp: hps,
-          mp: mps,
+  sendBattleLog(message) {
+    this.users.forEach((user) => {
+      user.socket.write(
+        createResponse(PacketType.S_BossBattleLog, {
+          battleLog: {
+            msg: message,
+            typingAnimation: false,
+            btns: DISABLE_BUTTONS,
+          },
         }),
       );
     });
