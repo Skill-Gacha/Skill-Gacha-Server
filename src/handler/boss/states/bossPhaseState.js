@@ -20,7 +20,7 @@ export default class BossPhaseState extends BossRoomState {
     this.setBossResistances(boss, phase);
 
     const randomElement = this.bossRoom.element;
-    this.socket.write(
+    this.user.socket.write(
       createResponse(PacketType.S_BossPhase, {
         randomElement,
         phase,
@@ -31,18 +31,9 @@ export default class BossPhaseState extends BossRoomState {
       }),
     );
 
-    if (phase === 1) {
-      await this.bossAreaAttack(this.bossRoom.getUsers(), boss);
-    } else if (phase === 2) {
-      if (!this.bossRoom.minionsSpawned) {
-        this.bossRoom.spawnMinions();
-        this.bossRoom.minionsSpawned = true;
-      }
-      await this.attackMinions(this.bossRoom.getUsers());
-    } else if (phase === 3) {
-      await this.bossThirdPhaseAction(this.bossRoom.getUsers(), boss);
+    if (phase === 3) {
+      this.createShield(boss);
     }
-
     this.changeState(BossTurnChangeState);
   }
 
@@ -69,39 +60,31 @@ export default class BossPhaseState extends BossRoomState {
     }
   }
 
-  async bossThirdPhaseAction(players, boss) {
-    // 쉴드가 남아있는 경우
-    if (this.bossRoom.shieldAmount > 0) {
-      this.socket.write(
+  createShield(boss) {
+    // 쉴드 생성 로직
+    this.bossRoom.shieldAmount = 1000; // 쉴드 초기화
+    const message = `${boss.monsterName}가 쉴드를 생성했습니다. 쉴드 양: ${this.shieldAmount}`;
+
+    // 모든 플레이어에게 쉴드 생성 알리기
+    this.sendBattleLog(message);
+
+    for (const player of this.users) {
+      this.sendBattleLog(player.socket, message);
+    }
+  }
+
+  sendBattleLog(message) {
+    this.users.forEach((user) => {
+      user.socket.write(
         createResponse(PacketType.S_BossBattleLog, {
           battleLog: {
-            msg: `${boss.monsterName}의 쉴드가 ${this.bossRoom.shieldAmount} 만큼 남아있습니다.`,
+            msg: message,
             typingAnimation: false,
             btns: DISABLE_BUTTONS,
           },
         }),
       );
-      return;
-    }
-
-    // 쉴드가 0이 되면 HP 감소
-    const damage = Math.floor(boss.hp * 0.1);
-    let damageToShield = Math.min(damage, this.bossRoom.shieldAmount);
-    this.bossRoom.shieldAmount -= damageToShield;
-
-    let remainingDamage = damage - damageToShield;
-    if (this.bossRoom.shieldAmount <= 0) {
-      remainingDamage += Math.abs(this.bossRoom.shieldAmount);
-      this.bossRoom.shieldAmount = 0;
-    }
-
-    boss.hp -= remainingDamage;
-
-    this.socket.write(
-      createResponse(PacketType.S_BossSetMonsterHp, {
-        hp: boss.hp,
-      }),
-    );
+    });
   }
 
   async handleInput(responseCode) {

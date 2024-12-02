@@ -10,7 +10,7 @@ import {
   skillEnhancement,
   updateDamage,
 } from '../../../utils/battle/calculate.js';
-import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
+import { buffSkill, bossBuffSkill } from '../../../utils/battle/battle.js';
 import BossMonsterDeadState from './bossMonsterDeadState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 
@@ -56,7 +56,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   async handleBuffSkill(skillInfo) {
     buffSkill(this.user, skillInfo.id);
-    useBuffSkill(this.user, this.user.socket, this.bossRoom);
+    bossBuffSkill(this.user, this.user.socket, this.bossRoom);
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
@@ -71,7 +71,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     if (skillInfo.id === DEBUFF_SKILL_ID) {
       buffSkill(this.user, skillInfo.id);
-      useBuffSkill(this.user, this.user.socket, this.bossRoom);
+      bossBuffSkill(this.user, this.socket, this.bossRoom);
     }
 
     this.sendPlayerAction(
@@ -81,11 +81,21 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     for (const monster of aliveMonsters) {
       const totalDamage = this.calculateTotalDamage(skillInfo, monster);
-      monster.reduceHp(totalDamage);
-      this.sendMonsterHpUpdate(monster);
+      // 쉴드부분
+      // 보스의 쉴드가 남아있는지 확인
+      if (this.bossRoom.shieldAmount > 0) {
+        const damageToShield = Math.min(totalDamage, this.bossRoom.shieldAmount);
+        this.bossRoom.shieldAmount -= damageToShield;
 
-      // 보스 체력 감소 및 phase 체크
-      monster.reduceHp(totalDamage);
+        const remainingDamage = totalDamage - damageToShield;
+        if (remainingDamage > 0) {
+          monster.reduceHp(remainingDamage);
+        }
+      } else {
+        monster.reduceHp(totalDamage);
+      }
+
+      this.sendMonsterHpUpdate(monster);
       this.checkBossPhase(); // 보스 phase 체크
     }
 
@@ -116,7 +126,20 @@ export default class BossPlayerAttackState extends BossRoomState {
     const monsterResist = checkEnemyResist(skillElement, targetMonster);
     const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
 
-    targetMonster.reduceHp(totalDamage);
+    // 쉴드부분
+    // 보스의 쉴드가 남아있는지 확인
+    if (this.bossRoom.shieldAmount > 0) {
+      const damageToShield = Math.min(totalDamage, this.shieldAmount);
+      this.shieldAmount -= damageToShield;
+
+      const remainingDamage = totalDamage - damageToShield;
+      if (remainingDamage > 0) {
+        targetMonster.reduceHp(remainingDamage);
+      }
+    } else {
+      targetMonster.reduceHp(totalDamage);
+    }
+
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
 
@@ -132,9 +155,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     await delay(PLAYER_ACTION_DELAY);
 
     // 보스 체력 감소 및 phase 체크
-    targetMonster.reduceHp(totalDamage);
     this.checkBossPhase(); // 보스 phase 체크
-
     if (targetMonster.monsterHp <= 0) {
       this.changeState(BossMonsterDeadState);
     } else {
@@ -215,13 +236,17 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   // 각 유저의 HP, MP 알림 전송
-  sendPlayerStatus(user) {
+  sendPlayerStatus() {
+    const playerIds = this.users.map((u) => u.id);
+    const hps = this.users.map((u) => u.stat.hp);
+    const mps = this.users.map((u) => u.stat.mp);
+
     this.users.forEach((u) => {
       u.socket.write(
         createResponse(PacketType.S_BossPlayerStatusNotification, {
-          playerId: user.id,
-          hp: user.stat.hp,
-          mp: user.stat.mp,
+          playerId: playerIds,
+          hp: hps,
+          mp: mps,
         }),
       );
     });
