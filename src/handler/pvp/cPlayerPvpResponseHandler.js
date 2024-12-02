@@ -3,9 +3,11 @@
 import sessionManager from '#managers/sessionManager.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
+import logger from '../../utils/log/logger.js';
+import { STATE_KEYS } from '../../constants/stateKeys.js';
+import stateFactory from '../states/stateFactory.js';
 import PvpFleeMessageState from './states/pvpFleeMessageState.js';
 import PvpGameOverState from './states/pvpGameOverState.js';
-import logger from '../../utils/log/logger.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
@@ -51,8 +53,9 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     opponent.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: false }));
 
     if (!pvpRoom.currentState) {
-      const PvpActionState = (await import('./states/pvpActionState.js')).default;
-      pvpRoom.currentState = new PvpActionState(pvpRoom, currentPlayer, opponent);
+      // 예시: 'action' 키로 상태 생성
+      const newState = await stateFactory.createState(STATE_KEYS.PVP_ACTION, pvpRoom, currentPlayer, opponent);
+      pvpRoom.currentState = newState;
       await pvpRoom.currentState.enter();
     }
 

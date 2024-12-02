@@ -3,6 +3,8 @@
 import sessionManager from '#managers/sessionManager.js';
 import { handleError } from '../../utils/error/errorHandler.js';
 import logger from '../../utils/log/logger.js';
+import { STATE_KEYS } from '../../constants/stateKeys.js';
+import stateFactory from '../states/stateFactory.js';
 
 export const cPlayerResponseHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
@@ -20,7 +22,7 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
   }
 
   if (!dungeon.currentState) {
-    // 초기 상태 설정
+    // 초기 상태 설정을 팩토리를 통해 수행
     const initializedDungeonState = await initializeDungeonState(dungeon, user, socket);
     if (!initializedDungeonState) return;
   }
@@ -38,8 +40,9 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
 
 const initializeDungeonState = async (dungeon, user, socket) => {
   try {
-    const MessageState = (await import('./states/messageState.js')).default;
-    dungeon.currentState = new MessageState(dungeon, user, socket);
+    // 팩토리를 통해 상태 생성
+    const newState = await stateFactory.createState(STATE_KEYS.MESSAGE, dungeon, user, socket);
+    dungeon.currentState = newState;
     await dungeon.currentState.enter();
     return true;
   } catch (error) {
