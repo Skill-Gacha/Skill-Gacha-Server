@@ -25,6 +25,7 @@
     "moment-timezone": "^0.5.46",
     "mysql2": "^3.11.3",
     "node-cron": "^3.0.3",
+    "p-limit": "^6.1.0",
     "protobufjs": "^7.4.0",
     "redis": "^4.7.0",
     "uuid": "^11.0.2",

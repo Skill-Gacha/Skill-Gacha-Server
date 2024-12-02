@@ -3,6 +3,7 @@
 import { saveRatingToDB } from '../db/rating/ratingDb.js';
 import { getAllRatingsFromRedis } from '../db/redis/ratingService.js';
 import logger from '../utils/log/logger.js';
+import pLimit from 'p-limit';
 
 export const syncRatingsToDB = async () => {
   try {
@@ -15,9 +16,17 @@ export const syncRatingsToDB = async () => {
       return;
     }
 
+    // 동시 실행 개수 제한 설정
+    const limit = pLimit(100);
+
     const savePromises = allRatings.map(({ value: nickname, score: rating }) =>
-      saveRatingToDB(nickname, rating),
+      limit(async () => {
+        await saveRatingToDB(nickname, rating);
+        logger.info(`유저 ${nickname}의 레이팅 정보 동기화 완료.`);
+      })
     );
+
+    // 모든 제한된 비동기 작업 완료 대기
     await Promise.all(savePromises);
 
     logger.info('레이팅 동기화 작업 완료.');
