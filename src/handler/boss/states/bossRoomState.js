@@ -29,11 +29,12 @@ export default class BossRoomState extends GameState {
       }
 
       // 선택된 모델로 쫄 몬스터 추가
-      selectedMinions.forEach((model) => {
+      for (let i = 0; i < selectedMinions.length; i++) {
+        const model = selectedMinions[i];
         const minionData = this.monsterData.find((monster) => monster.monsterModel === model);
         if (minionData) {
           const minionInstance = new Monster(
-            MINION_IDX, // 쫄 몬스터의 인덱스
+            i,
             minionData.monsterModel,
             minionData.monsterName,
             minionData.monsterHp,
@@ -43,7 +44,7 @@ export default class BossRoomState extends GameState {
           );
           this.addMonster(minionInstance); // 랜덤 쫄 추가
         }
-      });
+      }
       this.minionsSpawned = true;
     }
   }
