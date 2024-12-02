@@ -1,34 +1,38 @@
-CREATE TABLE `gameLogs`
-(
-    `id`        int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    `handlerId` int             NOT NULL,
-    `message`   text            NOT NULL,
-    `createdAt` timestamp       NOT NULL DEFAULT (now())
+CREATE TABLE IF NOT EXISTS `CharacterInfo` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nickname` VARCHAR(50) NOT NULL UNIQUE,
+    `element` INT NOT NULL,
+    `maxHp` FLOAT NOT NULL,
+    `maxMp` FLOAT NOT NULL,
+    `gold` INT NOT NULL DEFAULT 1000,
+    `stone` INT NOT NULL DEFAULT 10
 );
 
-CREATE TABLE `results`
-(
-    `id`            int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    `hostId`        int             NOT NULL,
-    `opponentId`    int             NOT NULL,
-    `hostScore`     int             NOT NULL,
-    `opponentScore` int             NOT NULL,
-    `createdAt`     timestamp       NOT NULL DEFAULT (now())
+CREATE TABLE IF NOT EXISTS `Skills` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nickname` VARCHAR(50) NOT NULL,
+    `skill1` INT DEFAULT NULL,
+    `skill2` INT DEFAULT NULL,
+    `skill3` INT DEFAULT NULL,
+    `skill4` INT DEFAULT NULL,
+    FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE,
+    UNIQUE KEY `unique_nickname` (`nickname`)
 );
 
-CREATE TABLE `users`
-(
-    `id`        int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    `username`  varchar(50) DEFAULT null,
-    `email`     varchar(255)    NOT NULL,
-    `password`  varchar(255)    NOT NULL,
-    `highScore` int         DEFAULT (0),
-    `createAt`  timestamp   DEFAULT (CURRENT_TIMESTAMP),
-    `updateAt`  timestamp   DEFAULT (CURRENT_TIMESTAMP)
+CREATE TABLE IF NOT EXISTS `Ratings` (
+    `nickname` VARCHAR(50) NOT NULL,
+    `rating` INT NOT NULL,
+    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`nickname`),
+    FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE
 );
 
-ALTER TABLE `results`
-    ADD CONSTRAINT `results_user_id_foreign` FOREIGN KEY (`hostId`) REFERENCES `users` (`username`);
-
-ALTER TABLE `results`
-    ADD CONSTRAINT `results_user_id_foreign` FOREIGN KEY (`opponentId`) REFERENCES `users` (`username`);
+CREATE TABLE IF NOT EXISTS `Items` (
+    `nickname` VARCHAR(50) NOT NULL,
+    `item_id` INT NOT NULL,
+    `count` INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (`nickname`, `item_id`),
+    FOREIGN KEY (`nickname`) REFERENCES `CharacterInfo` (`nickname`) ON DELETE CASCADE,
+    CHECK (`item_id` BETWEEN 4001 AND 4005),
+    CHECK (`count` >= 0)
+);

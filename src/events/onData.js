@@ -4,6 +4,9 @@ import { getHandlerByPacketType } from '../handler/index.js';
 import { packetParser } from '../utils/parser/packetParser.js';
 import { handleError } from '../utils/error/errorHandler.js';
 import { PACKET_HEADER_LENGTH, PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../constants/constants.js';
+import logger from '../utils/log/logger.js';
+import { ErrorCodes } from '../utils/error/errorCodes.js';
+import CustomError from '../utils/error/customError.js';
 
 export const onData = (socket) => (data) => {
   // 소켓 버퍼 초기화
@@ -29,15 +32,13 @@ export const onData = (socket) => (data) => {
 
     // 유효성 검사
     if (packetSize <= 0) {
-      console.error('유효하지 않은 패킷 크기:', packetSize);
+      logger.error('onData: 유효하지 않은 패킷 크기:', packetSize);
       // 버퍼에서 잘못된 부분 제거
       socket.buffer = socket.buffer.slice(offset);
       continue;
     }
 
-    // 전체 패킷이 도착했는지 확인
-    const totalPacketLength = PACKET_SIZE_LENGTH + packetSize; // PacketSize(4 bytes) + packetSize
-    if (socket.buffer.length < totalPacketLength) {
+    if (socket.buffer.length < packetSize) {
       // 아직 전체 패킷이 도착하지 않음
       break;
     }
@@ -47,11 +48,12 @@ export const onData = (socket) => (data) => {
     offset += PACKET_ID_LENGTH;
 
     // PacketData 추출
-    const dataLength = packetSize - PACKET_ID_LENGTH; // PacketId 제외한 데이터 길이
+    const dataLength = packetSize - (PACKET_SIZE_LENGTH + PACKET_ID_LENGTH); // 헤더 제외한 데이터 길이
     const packetData = socket.buffer.slice(offset, offset + dataLength);
 
     // 다음 패킷을 위해 버퍼 업데이트
-    socket.buffer = socket.buffer.slice(totalPacketLength);
+    socket.buffer = socket.buffer.slice(packetSize);
+
 
     try {
       // PacketData를 파싱
@@ -63,10 +65,12 @@ export const onData = (socket) => (data) => {
       if (handler) {
         handler({ socket, payload: messageData });
       } else {
-        console.error(`핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
+        logger.error(`onData: 핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
       }
-    } catch (e) {
-      handleError(socket, e);
+    } catch (error) {
+      logger.error('onData: 패킷 파싱 중 오류 발생.');
+      const newCustomError = new CustomError(ErrorCodes.NO_MATCHED_HANLDER, error);
+      handleError(newCustomError);
     }
   }
 };

@@ -1,0 +1,56 @@
+﻿{
+  "name": "PlayerClass",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 1001,
+      "maxHp": 500,
+      "maxMp": 300,
+      "electricResist": 30,
+      "earthResist": 0,
+      "grassResist": 20,
+      "fireResist": 20,
+      "waterResist": 50
+    },
+    {
+      "id": 1002,
+      "maxHp": 500,
+      "maxMp": 300,
+      "electricResist": 50,
+      "earthResist": 30,
+      "grassResist": 0,
+      "fireResist": 20,
+      "waterResist": 20
+    },
+    {
+      "id": 1003,
+      "maxHp": 500,
+      "maxMp": 300,
+      "electricResist": 20,
+      "earthResist": 50,
+      "grassResist": 30,
+      "fireResist": 0,
+      "waterResist": 20
+    },
+    {
+      "id": 1004,
+      "maxHp": 500,
+      "maxMp": 300,
+      "electricResist": 20,
+      "earthResist": 20,
+      "grassResist": 50,
+      "fireResist": 30,
+      "waterResist": 0
+    },
+    {
+      "id": 1005,
+      "maxHp": 500,
+      "maxMp": 300,
+      "electricResist": 0,
+      "earthResist": 20,
+      "grassResist": 20,
+      "fireResist": 50,
+      "waterResist": 30
+    }
+  ]
+}

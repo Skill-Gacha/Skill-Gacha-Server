@@ -1,19 +1,21 @@
 // src/utils/error/errorHandler.js
 
+import logger from '../log/logger.js';
 import { ErrorCodes } from './errorCodes.js';
+import CustomError from './customError.js';
 
-export const handleError = (socket, error) => {
-  let responseCode;
-  let message;
-  console.error(error);
+export const handleError = (error) => {
+  let code, message;
 
-  if (error.code) {
-    responseCode = error.code;
+  if (error instanceof CustomError) {
+    code = error.code;
     message = error.message;
-    console.error(`에러코드: ${error.code}, 메세지: ${error.message}`);
   } else {
-    responseCode = ErrorCodes.SOCKET_ERROR;
-    message = error.message;
-    console.error(`일반에러: ${error.message}`);
+    // 기본 에러 코드 및 메시지 할당
+    code = ErrorCodes.INTERNAL_SERVER_ERROR || 50000;
+    message = 'Internal Server Error';
   }
+
+  // 에러 로그 기록
+  logger.error(`${error instanceof CustomError ? 'CustomError' : 'Unhandled Error'} - Code: ${code} / Message: ${message}`, { stack: error.stack });
 };

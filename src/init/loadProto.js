@@ -4,7 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import protobuf from 'protobufjs';
-import { PacketType } from '../constants/header.js'; // Assuming this file exports PacketType
+import { PacketType } from '../constants/header.js';
+import logger from '../utils/log/logger.js';
+import CustomError from '../utils/error/customError.js';
+import { ErrorCodes } from '../utils/error/errorCodes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,18 +62,14 @@ export const loadProtos = async () => {
       if (protoMessages[packetName]) {
         protoMessagesById[packetId] = protoMessages[packetName];
       } else {
-        console.warn(`패킷 타입에 해당하는 프로토 메시지를 찾을 수 없습니다: ${packetName}`);
+        logger.warn(`패킷 타입에 해당하는 프로토 메시지를 찾을 수 없습니다: ${packetName}`);
       }
     }
 
-    console.log('All Protobuf files have been loaded.');
-  } catch (e) {
-    console.error('An error occurred while loading Protobuf files.', e);
+    logger.info('모든 프로토버프 파일 로드 완료');
+  } catch (error) {
+    throw new CustomError(ErrorCodes.PROTO_LOAD_FAILED, error);
   }
-};
-
-export const getProtoMessages = () => {
-  return { ...protoMessages };
 };
 
 export const getProtoMessagesById = (packetId) => {
