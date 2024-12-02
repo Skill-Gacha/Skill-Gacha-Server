@@ -7,6 +7,7 @@ import { PVP_STATUS } from '../../../constants/battle.js';
 import PvpState from './pvpState.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../db/redis/ratingService.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import logger from '../../../utils/log/logger.js';
 
 const RANK_CHANGE_POINTS = 10;
 
@@ -25,7 +26,7 @@ export default class PvpFleeMessageState extends PvpState {
         updatePlayerRating(this.mover.nickname, loserRating - RANK_CHANGE_POINTS),
       ]);
     } catch (error) {
-      console.error('pvpFleeMessageState: 랭크 점수 업데이트 중 오류 발생:', error);
+      logger.error('pvpFleeMessageState: 랭크 점수 업데이트 중 오류 발생:', error);
       return;
     }
 

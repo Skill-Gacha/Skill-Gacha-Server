@@ -14,14 +14,14 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
 
     if (!user) {
-      console.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
+      logger.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
       return;
     }
 
     const pvpRoom = sessionManager.getPvpByUser(user);
 
     if (!pvpRoom) {
-      console.error('cPlayerPvpResponseHandler: 유저가 PVP 세션에 속해 있지 않습니다.');
+      logger.error('cPlayerPvpResponseHandler: 유저가 PVP 세션에 속해 있지 않습니다.');
       return;
     }
 
@@ -39,7 +39,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     const currentPlayer = pvpRoom.getUserTurn() === 0 ? playerB : playerA;
 
     if (currentPlayer.nickname !== user.nickname) {
-      console.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
+      logger.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
       return;
     }
 
@@ -57,6 +57,6 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
 
     await pvpRoom.currentState.handleInput(responseCode);
   } catch (error) {
-    console.error('cPlayerPvpResponseHandler: ', error);
+    logger.error('cPlayerPvpResponseHandler: ', error);
   }
 };

@@ -50,6 +50,8 @@ export const ErrorCodes = {
   DEBUG_THROW: 987654, // 오타 수정: TRROW -> THROW
   INTERNAL_SERVER_ERROR: 50000, // 추가
   MIGRATION_FAILED: 70000,
+  
+  ABSTRACT_CLASS: 90000,
 
   OUT_OF_RANGE: 500000,
   // 추가적인 에러 코드들
