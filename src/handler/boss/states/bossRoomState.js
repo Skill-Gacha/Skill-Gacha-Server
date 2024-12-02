@@ -29,7 +29,7 @@ export default class BossRoomState extends GameState {
       }
 
       // 선택된 모델로 쫄 몬스터 추가
-      for (let i = 0; i < selectedMinions.length; i++) {
+      for (let i = 1; i < selectedMinions.length; i++) {
         const model = selectedMinions[i];
         const minionData = this.monsterData.find((monster) => monster.monsterModel === model);
         if (minionData) {

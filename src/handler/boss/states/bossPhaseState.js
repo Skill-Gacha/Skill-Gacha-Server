@@ -20,7 +20,7 @@ export default class BossPhaseState extends BossRoomState {
     this.setBossResistances(boss, phase);
 
     const randomElement = this.bossRoom.element;
-    this.socket.write(
+    this.user.socket.write(
       createResponse(PacketType.S_BossPhase, {
         randomElement,
         phase,
@@ -66,37 +66,47 @@ export default class BossPhaseState extends BossRoomState {
     }
   }
 
-  async bossThirdPhaseAction(players, boss) {
+  async bossThirdPhaseAction(boss) {
     // 쉴드가 남아있는 경우
     if (this.shieldAmount > 0) {
-      this.user.socket.write(
-        createResponse(PacketType.S_BossBattleLog, {
-          battleLog: {
-            msg: `${boss.monsterName}의 쉴드가 ${this.shieldAmount} 만큼 남아있습니다.`,
-            typingAnimation: false,
-            btns: DISABLE_BUTTONS,
-          },
-        }),
-      );
+      const message = `${boss.monsterName}의 쉴드가 ${this.shieldAmount} 만큼 남아있습니다.`;
+      this.sendBattleLog(this.user.socket, message);
+
+      // 모든 플레이어에게 쉴드 상태 알리기
+      for (const player of this.users) {
+        this.sendBattleLog(player.socket, message);
+      }
       return;
     }
 
     // 쉴드가 0이 되면 HP 감소
     const damage = Math.floor(boss.monsterHp * 0.1);
-    let damageToShield = Math.min(damage, this.bossRoom.shieldAmount);
+    let damageToShield = Math.min(damage, this.shieldAmount);
     this.shieldAmount -= damageToShield;
 
     let remainingDamage = damage - damageToShield;
-    if (this.bossRoom.shieldAmount <= 0) {
-      remainingDamage += Math.abs(this.bossRoom.shieldAmount);
+    if (this.shieldAmount <= 0) {
+      remainingDamage += Math.abs(this.shieldAmount);
       this.shieldAmount = 0;
     }
 
     boss.monsterHp -= remainingDamage;
 
-    this.socket.write(
+    this.user.socket.write(
       createResponse(PacketType.S_BossSetMonsterHp, {
         hp: boss.monsterHp,
+      }),
+    );
+  }
+
+  sendBattleLog(socket, message) {
+    socket.write(
+      createResponse(PacketType.S_BossBattleLog, {
+        battleLog: {
+          msg: message,
+          typingAnimation: false,
+          btns: DISABLE_BUTTONS,
+        },
       }),
     );
   }
