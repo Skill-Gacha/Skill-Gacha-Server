@@ -1,6 +1,9 @@
 ﻿// src/db/redis/skillService.js
 
 import redisClient from '../../init/redis.js';
+import { ErrorCodes } from '../../utils/error/errorCodes.js';
+import CustomError from '../../utils/error/customError.js';
+import logger from '../../utils/log/logger.js';
 
 const SKILL_KEY = 'skills';
 
@@ -13,7 +16,8 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
   const currentSkillSet = await getSkillsFromRedis(nickname);
 
   if (!currentSkillSet) {
-    throw new Error('skillService: 닉네임에 해당하는 스킬셋을 찾을 수 없습니다.');
+    logger.error('skillService: 닉네임에 해당하는 스킬셋을 찾을 수 없습니다.');
+    throw new CustomError(ErrorCodes.NO_VALID_SKILLSET_FOR_USER, '닉네임에 해당하는 스킬셋을 찾을 수 없습니다.');
   }
 
   let targetIdx = null;
@@ -29,12 +33,12 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
     if (replaceSkillIdx >= 1 && replaceSkillIdx <= 4) {
       targetIdx = replaceSkillIdx;
     } else {
-      throw new Error('skillService: replaceSkillIdx의 범위는 1이상 4이하여야 합니다.');
+      throw new CustomError(ErrorCodes.OUT_OF_RANGE, 'skillService: replaceSkillIdx의 범위는 1이상 4이하여야 합니다.');
     }
   }
 
   if (targetIdx == null) {
-    throw new Error('skillService: 스킬 교체 타겟 인덱스를 찾지 못했습니다.');
+    throw new CustomError(ErrorCodes.NO_VALID_REPLACE_TARGET_INDEX, '스킬 교체 타겟 인덱스를 찾지 못했습니다.');
   }
 
   currentSkillSet[`skill${targetIdx}`] = rewardSkillId;
@@ -47,7 +51,7 @@ export const saveRewardSkillsToRedis = async (nickname, rewardSkillId, replaceSk
   const key = `${SKILL_KEY}:${nickname}`;
   await redisClient.hSet(key, updatedSkills);
 
-  console.log(`${nickname}의 스킬 업데이트 완료:`, updatedSkills);
+  logger.info(`${nickname}의 스킬 업데이트 완료:`, updatedSkills);
 };
 
 export const getSkillsFromRedis = async (nickname) => {

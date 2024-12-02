@@ -1,6 +1,9 @@
 ﻿// src/db/redis/itemService.js
 
 import redisClient from '../../init/redis.js';
+import CustomError from '../../utils/error/customError.js';
+import { error } from 'winston';
+import { ErrorCodes } from '../../utils/error/errorCodes.js';
 
 const ITEM_KEY = 'items';
 
@@ -33,7 +36,7 @@ export const getItemsFromRedis = async (nickname) => {
 
 export const updateItemCountInRedis = async (nickname, itemId, delta) => {
   if (itemId < 4001 || itemId > 4005) {
-    throw new Error('itemService: itemId는 4001 이상 4005 이하이어야 합니다.');
+    throw new CustomError(ErrorCodes.OUT_OF_RANGE, 'itemId는 4001 이상 4005 이하이어야 합니다.');
   }
 
   const key = `${ITEM_KEY}:${nickname}`;
