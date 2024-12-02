@@ -5,15 +5,16 @@ import redisClient from './redis.js';
 import { USER_QUERIES } from '../db/user/user.queries.js';
 import { SKILL_QUERIES } from '../db/skill/skillQueries.js';
 import { RATING_QUERIES } from '../db/rating/ratingQueries.js';
+import logger from '../utils/log/logger.js';
 
 // 초기화 함수
 const initializeRedis = async () => {
   try {
-    console.log('Redis 초기화 시작...');
+    logger.info('Redis 초기화 시작...');
 
     // 모든 유저의 닉네임을 가져옵니다.
     const [users] = await dbPool.query(USER_QUERIES.GET_ALL_USERNICKNAMES);
-    console.log(`총 유저 수: ${users.length}`);
+    logger.info(`총 유저 수: ${users.length}`);
 
     // 각 유저의 스킬과 레이팅을 병렬로 처리
     await Promise.all(users.map(async (user) => {
@@ -34,9 +35,9 @@ const initializeRedis = async () => {
           // Redis에 스킬 정보 저장 (Hash)
           const skillKey = `skills:${nickname}`;
           await redisClient.hSet(skillKey, skillsData);
-          console.log(`Redis에 스킬 정보 저장: ${skillKey}`);
+          logger.info(`Redis에 스킬 정보 저장: ${skillKey}`);
         } else {
-          console.warn(`initializeRedis: 유저 ${nickname}의 스킬 정보를 찾을 수 없습니다.`);
+          logger.warn(`initializeRedis: 유저 ${nickname}의 스킬 정보를 찾을 수 없습니다.`);
         }
 
         // 레이팅 정보 가져오기
@@ -50,17 +51,17 @@ const initializeRedis = async () => {
             score: rating,
             value: nickname,
           });
-          console.log(`Redis에 레이팅 정보 저장: ${nickname} (레이팅: ${rating})`);
+          logger.info(`Redis에 레이팅 정보 저장: ${nickname} (레이팅: ${rating})`);
         } else {
-          console.warn(`initializeRedis: 유저 ${nickname}의 레이팅 정보를 찾을 수 없습니다.`);
+          logger.warn(`initializeRedis: 유저 ${nickname}의 레이팅 정보를 찾을 수 없습니다.`);
         }
       } catch (userError) {
-        console.error(`initializeRedis: 유저 ${nickname} 초기화 중 오류 발생:`, userError);
+        logger.error(`initializeRedis: 유저 ${nickname} 초기화 중 오류 발생:`, userError);
       }
     }));
 
-    console.log('Redis 초기화 완료.');
+    logger.info('Redis 초기화 완료.');
   } catch (error) {
-    console.error('initializeRedis: Redis 초기화 중 오류 발생:', error);
+    logger.error('initializeRedis: Redis 초기화 중 오류 발생:', error);
   }
 };
