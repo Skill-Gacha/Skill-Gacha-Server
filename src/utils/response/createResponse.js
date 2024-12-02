@@ -2,13 +2,14 @@
 
 import { PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../../constants/constants.js';
 import { getProtoMessagesById } from '../../init/loadProto.js';
+import logger from '../log/logger.js';
 
 export const createResponse = (packetId, data = null) => {
   // 패킷 ID로 메시지 타입 가져오기
   const messageType = getProtoMessagesById(packetId);
 
   if (!messageType) {
-    throw new Error(`지원되지 않는 PacketId입니다: ${packetId}`);
+    logger.error(`지원되지 않는 PacketId입니다: ${packetId}`);
   }
 
   // PacketData 인코딩
@@ -16,7 +17,7 @@ export const createResponse = (packetId, data = null) => {
   try {
     packetData = messageType.encode(data).finish();
   } catch (error) {
-    console.error('인코딩 실패:', error);
+    logger.error('인코딩 실패:', error);
     throw error;
   }
 
