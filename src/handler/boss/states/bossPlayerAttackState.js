@@ -13,6 +13,7 @@ import {
 import { buffSkill, bossBuffSkill } from '../../../utils/battle/battle.js';
 import BossMonsterDeadState from './bossMonsterDeadState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
+import BossPhaseState from './bossPhaseState.js';
 
 const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
