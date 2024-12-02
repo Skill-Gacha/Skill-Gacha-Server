@@ -2,14 +2,15 @@
 
 import redisClient from '../init/redis.js';
 import { saveItemToDB } from '../db/item/itemDb.js';
+import logger from '../utils/log/logger.js';
 
 export const syncItemsToDB = async () => {
   try {
-    console.log('아이템 동기화 작업 시작...');
+    logger.info('아이템 동기화 작업 시작...');
 
     const keys = await redisClient.keys('items:*');
     if (keys.length === 0) {
-      console.log('동기화할 아이템 정보가 없습니다.');
+      logger.info('동기화할 아이템 정보가 없습니다.');
       return;
     }
 
@@ -27,8 +28,8 @@ export const syncItemsToDB = async () => {
     });
     await Promise.all(syncPromises);
 
-    console.log('아이템 동기화 작업 완료.');
+    logger.info('아이템 동기화 작업 완료.');
   } catch (error) {
-    console.error('syncItems: 아이템 동기화 중 에러 발생:', error);
+    logger.error('syncItems: 아이템 동기화 중 에러 발생:', error);
   }
 };
