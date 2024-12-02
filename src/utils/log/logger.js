@@ -4,14 +4,6 @@ import moment from 'moment-timezone';
 import fs from 'fs-extra';
 import path from 'path';
 
-// 사용자 정의 에러 클래스
-class CustomError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.code = code;
-  }
-}
-
 // 로그 포맷 설정
 const { combine, timestamp, printf, errors } = winston.format;
 
@@ -105,7 +97,6 @@ const scheduleMidnightRotation = () => {
     scheduleMidnightRotation();
   }, msUntilMidnight + 1000); // 정확히 자정에 실행되도록 1초 여유
 };
-
 
 // 자정 회전 스케줄 시작
 scheduleMidnightRotation();
