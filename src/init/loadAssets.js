@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { MAX_SKILL_REWARD, SKILL_RANK } from '../constants/battle.js';
 import CustomError from '../utils/error/customError.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
+import logger from '../utils/log/logger.js';
 
 // import.meta.url은 현재 모듈의 URL을 나타내는 문자열
 // fileURLToPath는 URL 문자열을 파일 시스템의 경로로 변환
@@ -50,7 +51,7 @@ export const loadGameAssets = async () => {
     gameAssets = { playerCharacter, MonsterData, skillData, productData };
     gameAssets = { playerCharacter, MonsterData, skillData, productData };
 
-    console.log('게임 애샛 로드 완료');
+    logger.info('게임 애샛 로드 완료');
   } catch (error) {
     throw new Error('loadAssets: 게임 애샛 로드 실패: ' + error.message);
   }
