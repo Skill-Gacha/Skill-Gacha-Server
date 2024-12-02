@@ -174,7 +174,7 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   sendMonsterHpUpdate(monster) {
-    this.socket.write(
+    this.user.socket.write(
       createResponse(PacketType.S_BossSetMonsterHp, {
         monsterIdx: monster.monsterIdx,
         hp: monster.monsterHp,
@@ -196,7 +196,7 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   sendBattleLog(message, buttons) {
-    this.socket.write(
+    this.user.socket.write(
       createResponse(PacketType.S_BossBattleLog, {
         battleLog: {
           msg: message,
