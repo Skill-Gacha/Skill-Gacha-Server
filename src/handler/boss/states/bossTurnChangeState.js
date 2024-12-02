@@ -35,11 +35,6 @@ export default class BossTurnChangeState extends BossRoomState {
 
     this.bossRoom.userTurn = this.user;
 
-    // 턴 구분 패킷 전송
-    this.users.forEach((user) => {
-      user.socket.write(createResponse(PacketType.S_BossUserTurn, { playerId: this.user.id }));
-    });
-
     this.changeState(BossActionState);
   }
 
