@@ -28,9 +28,9 @@ export default class BossIncreaseManaState extends BossRoomState {
 
     // 모든 유저에게 HP, MP 변화 알림
     const hpResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: this.user.id,
-      hp: this.user.stat.hp,
-      mp: this.user.stat.mp,
+      playerId: [this.user.id],
+      hp: [this.user.stat.hp],
+      mp: [this.user.stat.mp],
     });
 
     this.users.forEach((user) => {
