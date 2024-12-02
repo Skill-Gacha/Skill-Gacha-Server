@@ -4,12 +4,13 @@ import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { getProductData } from '../../../init/loadAssets.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import logger from '../../../utils/log/logger.js';
 
 export const cOpenStoreHandler = async ({ socket }) => {
   try {
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
-      throw new Error('cOpenStoreHandler: 유저를 찾을 수 없습니다.');
+      logger.error('cOpenStoreHandler: 유저를 찾을 수 없습니다.');
     }
 
     const products = getProductData();
@@ -32,6 +33,6 @@ export const cOpenStoreHandler = async ({ socket }) => {
 
     user.socket.write(openStoreResponse);
   } catch (error) {
-    console.error(`cOpenStoreHandler 에러 발생: ${error.message}`);
+    logger.error(`cOpenStoreHandler 에러 발생: ${error.message}`);
   }
 };

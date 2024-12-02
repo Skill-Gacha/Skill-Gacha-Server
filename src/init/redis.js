@@ -3,6 +3,9 @@
 import { createClient } from 'redis';
 import dotenv from 'dotenv';
 import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
+import logger from '../utils/log/logger.js';
+import CustomError from '../utils/error/customError.js';
+import { ErrorCodes } from '../utils/error/errorCodes.js';
 
 dotenv.config();
 
@@ -22,13 +25,16 @@ const redisClient = createClient({
  * 레디스 클라이언트 초기화
  */
 export const initRedisClient = async () => {
-  redisClient.on('error', (err) => {
-    console.log('Redis Client Error', err);
-  });
+  try {
+    redisClient.on('error', (err) => {
+    });
 
-  await redisClient.connect();
+    await redisClient.connect();
 
-  console.log('Redis 초기화 완료');
+    logger.info('Redis 초기화 완료');
+  } catch (error) {
+    throw new CustomError(ErrorCodes.REDIS_INIT_FAILED, 'Redis 초기화 실패');
+  }
 };
 
 export default redisClient;

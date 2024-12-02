@@ -2,14 +2,15 @@
 
 import redisClient from '../init/redis.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
+import logger from '../utils/log/logger.js';
 
 export const syncSkillsToDB = async () => {
   try {
-    console.log('스킬 동기화 작업 시작...');
+    logger.info('스킬 동기화 작업 시작...');
 
     const keys = await redisClient.keys('skills:*');
     if (keys.length === 0) {
-      console.log('동기화할 스킬 정보가 없습니다.');
+      logger.info('동기화할 스킬 정보가 없습니다.');
       return;
     }
 
@@ -28,8 +29,8 @@ export const syncSkillsToDB = async () => {
     });
     await Promise.all(syncPromises);
 
-    console.log('스킬 동기화 작업 완료.');
+    logger.info('스킬 동기화 작업 완료.');
   } catch (error) {
-    console.error('syncSkills: 스킬 동기화 중 에러 발생:', error);
+    logger.error('syncSkills: 스킬 동기화 중 에러 발생:', error);
   }
 };

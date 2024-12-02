@@ -3,9 +3,10 @@
 import { onData } from './onData.js';
 import { onEnd } from './onEnd.js';
 import { onError } from './onError.js';
+import logger from '../utils/log/logger.js';
 
 export const onConnection = (socket) => {
-  console.log(`Client connected from: ${socket.remoteAddress}:${socket.remotePort}`);
+  logger.info(`Client connected from: ${socket.remoteAddress}:${socket.remotePort}`);
 
   socket.buffer = Buffer.alloc(0);
 

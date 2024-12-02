@@ -1,13 +1,16 @@
 // src/utils/db/testConnection.js
 
 import dbPool from '../../db/database.js';
+import logger from '../log/logger.js';
+import CustomError from '../error/customError.js';
+import { ErrorCodes } from '../error/errorCodes.js';
 
 const testConnection = async () => {
   try {
     const [rows] = await dbPool.query(`SELECT 1 + 1 AS solution`);
-    console.log(`테스트 쿼리 결과: ${rows[0].solution}`);
+    logger.info(`테스트 쿼리 결과: ${rows[0].solution}`);
   } catch (e) {
-    console.error(`testConnection: 테스트 쿼리 실행 오류, `, e);
+    throw new CustomError(ErrorCodes.DB_TEST_QUERY_FAILED, 'testConnection: 테스트 쿼리 실행 오류');
   }
 };
 

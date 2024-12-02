@@ -4,6 +4,9 @@ import { getHandlerByPacketType } from '../handler/index.js';
 import { packetParser } from '../utils/parser/packetParser.js';
 import { handleError } from '../utils/error/errorHandler.js';
 import { PACKET_HEADER_LENGTH, PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../constants/constants.js';
+import logger from '../utils/log/logger.js';
+import { ErrorCodes } from '../utils/error/errorCodes.js';
+import CustomError from '../utils/error/customError.js';
 
 export const onData = (socket) => (data) => {
   // 소켓 버퍼 초기화
@@ -29,7 +32,7 @@ export const onData = (socket) => (data) => {
 
     // 유효성 검사
     if (packetSize <= 0) {
-      console.error('onData: 유효하지 않은 패킷 크기:', packetSize);
+      logger.error('onData: 유효하지 않은 패킷 크기:', packetSize);
       // 버퍼에서 잘못된 부분 제거
       socket.buffer = socket.buffer.slice(offset);
       continue;
@@ -62,11 +65,12 @@ export const onData = (socket) => (data) => {
       if (handler) {
         handler({ socket, payload: messageData });
       } else {
-        console.error(`onData: 핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
+        logger.error(`onData: 핸들러를 찾을 수 없습니다: PacketId ${packetId}`);
       }
     } catch (error) {
-      console.error('onData: 패킷 파싱 중 오류 발생:');
-      handleError(error);
+      logger.error('onData: 패킷 파싱 중 오류 발생.');
+      const newCustomError = new CustomError(ErrorCodes.NO_MATCHED_HANLDER, error);
+      handleError(newCustomError);
     }
   }
 };

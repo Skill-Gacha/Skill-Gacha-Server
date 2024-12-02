@@ -20,11 +20,15 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
+    "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
+    "moment-timezone": "^0.5.46",
     "mysql2": "^3.11.3",
     "node-cron": "^3.0.3",
     "protobufjs": "^7.4.0",
     "redis": "^4.7.0",
-    "uuid": "^11.0.2"
+    "uuid": "^11.0.2",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }
