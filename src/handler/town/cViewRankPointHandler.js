@@ -4,6 +4,7 @@ import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
 import { getTopRatingsWithPlayer } from '../../db/redis/ratingService.js';
+import logger from '../../utils/log/logger.js';
 
 const RANK_RANGE = 10;
 
@@ -11,7 +12,7 @@ export const cViewRankPointHandler = async ({ socket }) => {
   try {
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
-      console.error('cViewRankPointHandler: 유저를 찾을 수 없습니다.');
+      logger.error('cViewRankPointHandler: 유저를 찾을 수 없습니다.');
       return;
     }
 
@@ -22,7 +23,7 @@ export const cViewRankPointHandler = async ({ socket }) => {
     const myRankInfo = topRatings.find((rank) => rank.value === user.nickname);
 
     if (!myRankInfo) {
-      console.error('cViewRankPointHandler: 대상 유저의 랭킹 정보를 찾을 수 없습니다.');
+      logger.error('cViewRankPointHandler: 대상 유저의 랭킹 정보를 찾을 수 없습니다.');
       return;
     }
 
@@ -45,6 +46,6 @@ export const cViewRankPointHandler = async ({ socket }) => {
       }),
     );
   } catch (error) {
-    console.error(`cViewRankPointHandler: S_ViewRankPoint 패킷 전송중 오류 발생: ${error.message}`);
+    logger.error(`cViewRankPointHandler: S_ViewRankPoint 패킷 전송중 오류 발생: ${error.message}`);
   }
 };
