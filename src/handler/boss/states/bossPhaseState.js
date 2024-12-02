@@ -5,8 +5,8 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import BossRoomState from './bossRoomState.js';
-import BossPlayerAttackState from './bossPlayerAttackState.js';
 import { RESISTANCE_KEYS } from '../../../utils/battle/calculate.js';
+import BossTurnChangeState from './bossTurnChangeState.js';
 
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
 
@@ -24,7 +24,7 @@ export default class BossPhaseState extends BossRoomState {
       createResponse(PacketType.S_BossPhase, {
         randomElement,
         phase,
-        monsterIdx: this.bossRoom.monsters.map((monster) => ({
+        monsterIdx: this.bossRoom.monsters.slice(1).map((monster) => ({
           monsterIdx: monster.monsterIdx,
           hp: monster.monsterHp,
         })),
@@ -43,7 +43,7 @@ export default class BossPhaseState extends BossRoomState {
       await this.bossThirdPhaseAction(this.bossRoom.getUsers(), boss);
     }
 
-    this.changeState(BossPlayerAttackState);
+    this.changeState(BossTurnChangeState);
   }
 
   setBossResistances(boss, phase) {
