@@ -10,7 +10,7 @@ import {
   skillEnhancement,
   updateDamage,
 } from '../../../utils/battle/calculate.js';
-import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
+import { buffSkill, bossBuffSkill } from '../../../utils/battle/battle.js';
 import BossMonsterDeadState from './bossMonsterDeadState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 
@@ -56,7 +56,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   async handleBuffSkill(skillInfo) {
     buffSkill(this.user, skillInfo.id);
-    useBuffSkill(this.user, this.socket, this.bossRoom);
+    bossBuffSkill(this.user, this.socket, this.bossRoom);
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
@@ -71,7 +71,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     if (skillInfo.id === DEBUFF_SKILL_ID) {
       buffSkill(this.user, skillInfo.id);
-      useBuffSkill(this.user, this.socket, this.bossRoom);
+      bossBuffSkill(this.user, this.socket, this.bossRoom);
     }
 
     this.sendPlayerAction(
@@ -215,13 +215,17 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   // 각 유저의 HP, MP 알림 전송
-  sendPlayerStatus(user) {
+  sendPlayerStatus() {
+    const playerIds = this.users.map((u) => u.id);
+    const hps = this.users.map((u) => u.stat.hp);
+    const mps = this.users.map((u) => u.stat.mp);
+
     this.users.forEach((u) => {
       u.socket.write(
         createResponse(PacketType.S_BossPlayerStatusNotification, {
-          playerId: user.id,
-          hp: user.stat.hp,
-          mp: user.stat.mp,
+          playerId: playerIds,
+          hp: hps,
+          mp: mps,
         }),
       );
     });

@@ -95,16 +95,20 @@ export default class BossPhaseState extends BossRoomState {
     );
   }
 
-  sendBattleLog(socket, message) {
-    socket.write(
-      createResponse(PacketType.S_BossBattleLog, {
-        battleLog: {
-          msg: message,
-          typingAnimation: false,
-          btns: DISABLE_BUTTONS,
-        },
-      }),
-    );
+  sendPlayerStatus() {
+    const playerIds = this.users.map((u) => u.id);
+    const hps = this.users.map((u) => u.stat.hp);
+    const mps = this.users.map((u) => u.stat.mp);
+
+    this.users.forEach((u) => {
+      u.socket.write(
+        createResponse(PacketType.S_BossPlayerStatusNotification, {
+          playerId: playerIds,
+          hp: hps,
+          mp: mps,
+        }),
+      );
+    });
   }
 
   async handleInput(responseCode) {
