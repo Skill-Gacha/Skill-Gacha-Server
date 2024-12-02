@@ -1,6 +1,9 @@
 // src/handler/boss/states/bossTargetState.js
 
 import { BOSS_STATUS } from '../../../constants/battle.js';
+import { PacketType } from '../../../constants/header.js';
+import { createResponse } from '../../../utils/response/createResponse.js';
+import BossActionState from './bossActionState.js';
 import BossEnemyAttackState from './bossEnemyAttackState.js';
 import BossRoomState from './bossRoomState.js';
 
@@ -29,6 +32,10 @@ export default class BossTurnChangeState extends BossRoomState {
       currentIdx = (currentIdx + 1) % this.users.length;
       this.user = this.users[currentIdx];
     } while (this.user.isDead);
+
+    this.bossRoom.userTurn = this.user;
+
+    this.changeState(BossActionState);
   }
 
   async handleInput(responseCode) {}

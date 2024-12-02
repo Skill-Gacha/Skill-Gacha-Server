@@ -54,7 +54,6 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         monsterName: bossMonster.monsterName,
         monsterHp: bossMonster.monsterHp,
       };
-
       sendBossMatchNotification(playerA, playerIds, partyList, boss, true);
       sendBossMatchNotification(playerB, playerIds, partyList, boss, false);
       sendBossMatchNotification(playerC, playerIds, partyList, boss, false);
