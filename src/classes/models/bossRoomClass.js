@@ -16,6 +16,8 @@ class BossRoomClass extends BaseSession {
     this.phase = 1;
     this.minionsSpawned = false; //한번만 소환하려고 추가
 
+    this.previousResistance = null;
+
     // 전역 턴 타이머 추가
     this.turnTimer = null;
 
