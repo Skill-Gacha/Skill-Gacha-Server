@@ -39,7 +39,7 @@ export default class BossSkillChoiceState extends BossRoomState {
   async handleInput(responseCode) {
     // responseCode 유효성 검사)
     if (responseCode < 1 || responseCode > MAX_BUTTON_COUNT) {
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.user.socket);
     }
 
     if (responseCode > this.user.userSkills.length) {

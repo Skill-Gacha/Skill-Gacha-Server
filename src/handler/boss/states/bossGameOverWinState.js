@@ -30,10 +30,10 @@ export default class BossGameOverWinState extends BossRoomState {
     if (responseCode === 0) {
       // ScreenText기 때문에 0을 받아야 함
       const sLeaveDungeonResponse = createResponse(PacketType.S_LeaveDungeon, {});
-      this.socket.write(sLeaveDungeonResponse);
+      this.user.socket.write(sLeaveDungeonResponse);
     } else {
       // responseCode 유효성 검사
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.user.socket);
     }
   }
 }

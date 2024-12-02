@@ -39,7 +39,7 @@ export default class BossActionState extends BossRoomState {
       this.user.turnOff = true;
     }
     if (!SelectedState) {
-      invalidResponseCode(user.socket);
+      invalidResponseCode(this.user.socket);
       return;
     }
     this.changeState(SelectedState);
