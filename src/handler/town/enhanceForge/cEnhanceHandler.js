@@ -6,19 +6,20 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { getNextRankAndSameElement, getSkillById } from '../../../init/loadAssets.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 import { cEnhanceUiHandler } from './cEnhanceUiHandler.js';
+import logger from '../../../utils/log/logger.js';
 
 export const cEnhanceHandler = async ({ socket, payload }) => {
   try {
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
-      throw new Error('cEnhanceHandler: 사용자를 찾을 수 없습니다.');
+      logger.error('cEnhanceHandler: 사용자를 찾을 수 없습니다.');
     }
 
     const { skillCode } = payload;
 
     const currentSkill = getSkillById(skillCode);
     if (!currentSkill) {
-      throw new Error('cEnhanceHandler: 잘못된 스킬 코드입니다.');
+      logger.error('cEnhanceHandler: 잘못된 스킬 코드입니다.');
     }
 
     const { requiredStone, requiredGold, successRate, downgradeRate } = getEnhanceRequirements(
@@ -27,7 +28,7 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
 
     // 자원 확인
     if (!hasSufficientResources(user, requiredStone, requiredGold)) {
-      console.error('cEnhanceHandler: 자원이 부족합니다.');
+      logger.error('cEnhanceHandler: 자원이 부족합니다.');
       return sendEnhanceResponse(socket, false);
     }
 
@@ -47,7 +48,7 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
       return sendEnhanceResponse(socket, false);
     }
   } catch (error) {
-    console.error(`cEnhanceHandler 에러 발생: ${error.message}`);
+    logger.error(`cEnhanceHandler 에러 발생: ${error.message}`);
     return sendEnhanceResponse(socket, false);
   }
 };
