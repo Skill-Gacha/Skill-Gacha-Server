@@ -2,7 +2,7 @@
 
 import { PVP_TURN_TIMEOUT_LIMIT } from '../../constants/battle.js';
 import BaseSession from './baseSession.js';
-import { getGameAssets } from '../init/loadAssets.js';
+import { getGameAssets } from '../../init/loadAssets.js';
 // 매칭 큐를 통해 게임이 잡힌 유저 2명의 대한 방
 class BossRoomClass extends BaseSession {
   constructor(bossRoomId) {
@@ -39,12 +39,6 @@ class BossRoomClass extends BaseSession {
 
   addMonster(monster) {
     this.monsters.push(monster);
-  }
-
-  // 보스 몬스터 추가
-  setBoss() {
-    const boss = this.monsterData.find((monster) => monster.monsterModel === 2029); // 보스 몬스터
-    if (boss) this.addMonster(boss); // 보스 몬스터 추가
   }
 
   // // 턴 타이머 시작

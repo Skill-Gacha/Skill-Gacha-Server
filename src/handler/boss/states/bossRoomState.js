@@ -9,6 +9,8 @@ export default class BossRoomState extends GameState {
     this.user = this.bossRoom.userTurn;
     this.users = this.bossRoom.getUsers();
     this.element = null;
+    this.shieldAmount = 1000;
+    this.minionsSpawned = false; //한번만 소환하려고 추가
   }
 
   // 쫄 몬스터 랜덤 생성
