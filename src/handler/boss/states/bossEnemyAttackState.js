@@ -120,7 +120,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       user.stat.downResist = false; // 디버프 초기화
 
       this.sendPlayerStatus(user);
-      this.sendMonsterAnimation(user, bossMonster, 1);
+      this.sendMonsterAnimation(user, bossMonster, 3001);
 
       this.createBattleLogResponse(
         user,
@@ -139,7 +139,7 @@ export default class BossEnemyAttackState extends BossRoomState {
     this.users.forEach((user) => {
       // 디버프 상태로 전환
       user.stat.downResist = true;
-      this.sendMonsterAnimation(user, bossMonster, 2);
+      this.sendMonsterAnimation(user, bossMonster, 3001);
 
       this.createBattleLogResponse(
         user,
@@ -159,7 +159,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       this.sendPlayerStatus(user);
 
       // 보스 몬스터 공격 애니메이션 전송
-      this.sendMonsterAnimation(user, bossMonster, 3);
+      this.sendMonsterAnimation(user, bossMonster, 3001);
 
       this.createBattleLogResponse(
         user,
