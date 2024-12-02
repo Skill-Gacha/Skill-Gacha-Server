@@ -16,7 +16,7 @@ export default class BossActionState extends BossRoomState {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ACTION;
     if (this.bossRoom.gameStart) {
       const battleLog = {
-        msg: '행동을 선택해주세요.',
+        msg: '당신의 차례입니다, 행동을 선택해주세요.',
         typingAnimation: false,
         btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: true })),
       };

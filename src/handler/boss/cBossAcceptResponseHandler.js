@@ -45,6 +45,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       bossRoom.addMonster(bossMonsterInstance);
       matchedPlayers.forEach((user) => {
         sDespawnHandler(user);
+        user.socket.write(createResponse(PacketType.S_BossUserTurn, { playerId: playerA.id }));
       });
       const playerIds = [playerA.id, playerB.id, playerC.id];
       const partyList = [MyStatus(playerA), MyStatus(playerB), MyStatus(playerC)];
@@ -54,7 +55,6 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         monsterName: bossMonster.monsterName,
         monsterHp: bossMonster.monsterHp,
       };
-
       sendBossMatchNotification(playerA, playerIds, partyList, boss, true);
       sendBossMatchNotification(playerB, playerIds, partyList, boss, false);
       sendBossMatchNotification(playerC, playerIds, partyList, boss, false);
