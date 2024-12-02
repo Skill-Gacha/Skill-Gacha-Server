@@ -71,7 +71,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     if (skillInfo.id === DEBUFF_SKILL_ID) {
       buffSkill(this.user, skillInfo.id);
-      useBuffSkill(this.user, this.socket, this.bossRoom);
+      bossBuffSkill(this.user, this.socket, this.bossRoom);
     }
 
     this.sendPlayerAction(
