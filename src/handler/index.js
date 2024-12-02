@@ -18,6 +18,7 @@ import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
 import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
 import { cEnhanceHandler } from './town/enhanceForge/cEnhanceHandler.js';
 import { cEnhanceUiHandler } from './town/enhanceForge/cEnhanceUiHandler.js';
+import { handleError } from '../utils/error/errorHandler.js';
 
 // 핸들러 매핑
 const handlers = {
@@ -84,10 +85,11 @@ const handlers = {
 
 export const getHandlerByPacketType = (packetType) => {
   if (!handlers[packetType] || !handlers[packetType].handler) {
-    throw new CustomError(
+    const newCustomError =  new CustomError(
       ErrorCodes.UNKNOWN_HANDLER_ID,
       `PacketType ID에 해당하는 핸들러를 찾을 수 없습니다: ${packetType}`,
     );
+    handleError(newCustomError);
   }
   return handlers[packetType].handler;
 };
