@@ -5,7 +5,7 @@ import BossRoomState from './bossRoomState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import BossGameOverWinState from './bossGameOverWinState.js';
-import BossEnemyAttackState from './bossEnemyAttackStateTest.js';
+import BossEnemyAttackState from './bossEnemyAttackState.js';
 
 export default class BossMonsterDeadState extends BossRoomState {
   async enter() {
