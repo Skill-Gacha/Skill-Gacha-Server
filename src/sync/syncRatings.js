@@ -22,7 +22,6 @@ export const syncRatingsToDB = async () => {
     const savePromises = allRatings.map(({ value: nickname, score: rating }) =>
       limit(async () => {
         await saveRatingToDB(nickname, rating);
-        logger.info(`유저 ${nickname}의 레이팅 정보 동기화 완료.`);
       })
     );
 
