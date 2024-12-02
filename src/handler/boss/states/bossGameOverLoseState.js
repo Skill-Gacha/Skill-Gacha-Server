@@ -33,7 +33,7 @@ export default class BossGameOverLoseState extends BossRoomState {
       this.socket.write(sLeaveDungeonResponse);
     } else {
       // responseCode 유효성 검사
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.user.socket);
     }
   }
 }
