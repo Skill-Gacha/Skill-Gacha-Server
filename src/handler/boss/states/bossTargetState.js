@@ -4,17 +4,11 @@ import { BOSS_STATUS } from '../../../constants/battle.js';
 import BossRoomState from './bossRoomState.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { PacketType } from '../../../constants/header.js';
+import BossPlayerAttackState from './bossPlayerAttackState.js';
 
 // 공격할 대상을 선택하기 위한 버튼 목록 생성
 export default class BossTargetState extends BossRoomState {
   async enter() {
-    // 보스룸 인스턴스 생성 및 몬스터 추가
-    if (!this.bossRoom) {
-      this.bossRoom = new BossRoomClass(this.bossRoom.id); // 보스룸 생성
-      this.bossRoom.setBoss(); //보스
-      this.bossRoom.spawnMinions(); //쫄생성
-    }
-
     this.bossRoom.bossStatus = BOSS_STATUS.TARGET;
     const buttons = this.createTargetButtons();
 
@@ -24,7 +18,7 @@ export default class BossTargetState extends BossRoomState {
       btns: buttons,
     };
 
-    this.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
+    this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
   }
 
   createTargetButtons() {
@@ -45,7 +39,7 @@ export default class BossTargetState extends BossRoomState {
     const target = allTargets[targetIndex];
     if (target && target.monsterHp > 0) {
       this.bossRoom.selectedMonster = target;
-      this.changeState(PlayerAttackState); // 공격 상태로 전환
+      this.changeState(BossPlayerAttackState); // 공격 상태로 전환
     } else {
       this.invalidTargetResponse(targetIndex);
     }
@@ -71,6 +65,6 @@ export default class BossTargetState extends BossRoomState {
       btns: [],
     });
 
-    this.socket.write(response);
+    this.user.socket.write(response);
   }
 }
