@@ -12,11 +12,6 @@ class CustomError extends Error {
   }
 }
 
-// 에러 코드 정의
-const ErrorCodes = {
-  DEBUG_THROW: 'DEBUG_THROW',
-};
-
 // 로그 포맷 설정
 const { combine, timestamp, printf, errors } = winston.format;
 
@@ -116,4 +111,3 @@ const scheduleMidnightRotation = () => {
 scheduleMidnightRotation();
 
 export default logger;
-export { CustomError, ErrorCodes };
