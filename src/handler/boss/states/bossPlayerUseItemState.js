@@ -57,9 +57,9 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const existingHp = this.user.stat.hp;
     this.user.increaseHpMp(100, 0);
     const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: this.user.id,
-      hp: this.user.stat.hp,
-      mp: this.user.stat.mp,
+      playerId: [this.user.id],
+      hp: [this.user.stat.hp],
+      mp: [this.user.stat.mp],
     });
 
     this.users.forEach((user) => {
@@ -80,9 +80,9 @@ export default class BossPlayerUseItemState extends BossRoomState {
     this.user.increaseHpMp(0, 60);
 
     const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: this.user.id,
-      hp: this.user.stat.hp,
-      mp: this.user.stat.mp,
+      playerId: [this.user.id],
+      hp: [this.user.stat.hp],
+      mp: [this.user.stat.mp],
     });
 
     this.users.forEach((user) => {
@@ -109,9 +109,9 @@ export default class BossPlayerUseItemState extends BossRoomState {
     this.user.stat.berserk = true;
 
     const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: this.user.id,
-      hp: this.user.stat.hp,
-      mp: this.user.stat.mp,
+      playerId: [this.user.id],
+      hp: [this.user.stat.hp],
+      mp: [this.user.stat.mp],
     });
 
     this.users.forEach((user) => {
@@ -150,9 +150,9 @@ export default class BossPlayerUseItemState extends BossRoomState {
 
     // HP, MP 업데이트
     const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: this.user.id,
-      hp: this.user.stat.hp,
-      mp: this.user.stat.mp,
+      playerId: [this.user.id],
+      hp: [this.user.stat.hp],
+      mp: [this.user.stat.mp],
     });
 
     this.users.forEach((user) => {

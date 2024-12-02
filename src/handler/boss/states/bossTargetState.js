@@ -6,8 +6,6 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import { PacketType } from '../../../constants/header.js';
 import BossPlayerAttackState from './bossPlayerAttackState.js';
 
-const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
-// 공격할 대상을 선택하기 위한 버튼 목록 생성
 export default class BossTargetState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.TARGET;
