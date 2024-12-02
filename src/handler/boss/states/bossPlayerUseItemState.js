@@ -16,7 +16,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.USE_ITEM;
 
-    const selectedItemId = this.pvpRoom.selectedItem + 4000; // Assuming item IDs start at 4001
+    const selectedItemId = this.bossRoom.selectedItem + 4000; // Assuming item IDs start at 4001
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {

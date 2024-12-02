@@ -17,6 +17,7 @@ export default class BossTurnChangeState extends BossRoomState {
     if (allComplete) {
       this.users.forEach((user) => (user.completeTurn = false));
       this.changeState(BossEnemyAttackState);
+      return;
     }
 
     // 다른 유저로 턴 넘기기
