@@ -16,7 +16,6 @@ const envSchema = z.object({
     .string()
     .min(1, 'PORT는 필수 값입니다.')
     .refine((val) => !isNaN(Number(val)), 'PORT는 숫자여야 합니다.'),
-  CLIENT_VERSION: z.string().min(1, 'CLIENT_VERSION은 필수 값입니다.'),
 
   // SQL_DB
   DB_NAME: z.string().min(1, 'DB_NAME은 필수 값입니다.'),
@@ -42,7 +41,7 @@ const parsedEnv = envSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
   logger.error('환경변수 검증에 실패했습니다. 아래 내용을 확인하세요:');
-  logger.error(parsedEnv.error.format());
+  logger.error(JSON.stringify(parsedEnv.error.errors, null, 2));
   process.exit(1);
 }
 
