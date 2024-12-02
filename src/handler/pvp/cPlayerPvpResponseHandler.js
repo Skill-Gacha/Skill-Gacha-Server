@@ -5,6 +5,7 @@ import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
 import PvpFleeMessageState from './states/pvpFleeMessageState.js';
 import PvpGameOverState from './states/pvpGameOverState.js';
+import logger from '../../utils/log/logger.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
@@ -55,6 +56,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
       await pvpRoom.currentState.enter();
     }
 
+    sessionManager.handleUserActivity(user.id);
     await pvpRoom.currentState.handleInput(responseCode);
   } catch (error) {
     logger.error('cPlayerPvpResponseHandler: ', error);

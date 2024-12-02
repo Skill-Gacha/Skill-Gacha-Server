@@ -27,6 +27,7 @@ export const cPlayerResponseHandler = async ({ socket, payload }) => {
 
   const responseCode = payload.responseCode !== undefined ? payload.responseCode : 0;
 
+  sessionManager.handleUserActivity(user.id);
   try {
     await dungeon.currentState.handleInput(responseCode);
   } catch (error) {
