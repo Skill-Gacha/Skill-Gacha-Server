@@ -31,7 +31,6 @@ export const syncItemsToDB = async () => {
             })
           );
           await Promise.all(saveItemPromises);
-          logger.info(`유저 ${nickname}의 아이템 정보 동기화 완료.`);
         }
       })
     );
