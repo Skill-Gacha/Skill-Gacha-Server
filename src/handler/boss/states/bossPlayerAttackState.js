@@ -97,7 +97,7 @@ export default class BossPlayerAttackState extends BossRoomState {
       }
 
       this.sendMonsterHpUpdate(monster);
-      this.checkBossPhase(); // 보스 phase 체크
+      this.updateBossPhase(); // 보스 phase 체크
     }
 
     this.sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
@@ -156,11 +156,11 @@ export default class BossPlayerAttackState extends BossRoomState {
     await delay(PLAYER_ACTION_DELAY);
 
     // 보스 체력 감소 및 phase 체크
-    this.checkBossPhase(); // 보스 phase 체크
+    this.updateBossPhase(); // 보스 phase 체크
     if (targetMonster.monsterHp <= 0) {
       this.changeState(BossMonsterDeadState);
-    } else {
-      this.changeState(BossTurnChangeState);
+    } else if (this.bossRoom.bossStatus != BOSS_STATUS.BOSS_PHASE_CHANGE) {
+      this.changeState(BossPhaseState);
     }
   }
 
@@ -218,7 +218,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     return this.bossRoom.monsters.every((monster) => monster.monsterHp <= 0);
   }
 
-  checkBossPhase() {
+  updateBossPhase() {
     const boss = this.bossRoom.monsters.find((monster) => monster.monsterModel === 2029); // 보스 몬스터 확인
     if (boss) {
       // 현재 phase가 1일 때
