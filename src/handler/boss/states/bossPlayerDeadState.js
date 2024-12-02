@@ -8,7 +8,7 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 export default class BossPlayerDeadState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.PLAYER_DEAD;
-    const deadUsers = users.filter((u) => u.stat.hp <= 0 && !u.isDead);
+    const deadUsers = this.users.filter((u) => u.stat.hp <= 0 && !u.isDead);
 
     // 플레이어 사망 로직 전달
     const playerDeadBattleLogResponse = createResponse(PacketType.S_BossBattleLog, {
