@@ -2,7 +2,7 @@
 
 import { DUNGEON_DEAD_RESOURCES } from '../../constants/battle.js';
 
-const RESISTANCE_KEYS = {
+export const RESISTANCE_KEYS = {
   1001: 'electricResist',
   1002: 'earthResist',
   1003: 'grassResist',
