@@ -4,15 +4,16 @@ import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import { MAX_PLAYER } from '../constants/pvp.js';
+import logger from '../utils/log/logger.js';
 
 // 싱글톤 클래스
 class SessionManager {
   constructor() {
     if (SessionManager.instance) {
-      console.log(`기존 세션 관리자 인스턴스 반환`);
+      logger.info(`기존 세션 관리자 인스턴스 반환`);
       return SessionManager.instance;
     }
-    console.log(`세션 관리자 생성`);
+    logger.info(`세션 관리자 생성`);
     this.sessions = {
       town: new Town(10000),
       dungeons: new Map(),
@@ -26,7 +27,6 @@ class SessionManager {
 
   // **사용자 관리**
   addUser(user) {
-    console.log(`유저 ${user.id}가 세션에 추가되었습니다.`);
     this.users.set(user.id, user);
     this.sessions.town.addUser(user); // 기본적으로 마을 세션에 추가
   }
@@ -49,7 +49,7 @@ class SessionManager {
       }
     }
 
-    console.error('소켓을 찾을 수 없음');
+    logger.info('소켓을 찾을 수 없음');
     return null;
   }
 
@@ -57,7 +57,6 @@ class SessionManager {
   createDungeon(sessionId, dungeonCode) {
     const dungeon = new Dungeon(sessionId, dungeonCode);
     this.sessions.dungeons.set(sessionId, dungeon);
-    console.log('던전 생성 확인 ');
     return dungeon;
   }
 
@@ -108,7 +107,7 @@ class SessionManager {
         try {
           user.socket.write(packet);
         } catch (error) {
-          console.error('패킷 전송 중 오류 발생:', error);
+          logger.error('패킷 전송 중 오류 발생:', error);
         }
       }
     });
@@ -119,7 +118,7 @@ class SessionManager {
     const existingUser = this.matchingQueue.find((existUser) => existUser.id === user.id);
 
     if (existingUser) {
-      console.log('이미 매칭중인 유저입니다.');
+      logger.info('이미 매칭중인 유저입니다.');
       return;
     }
 
@@ -134,10 +133,10 @@ class SessionManager {
     const userIndex = this.matchingQueue.findIndex((u) => (u.id === user.id));
     if (userIndex !== -1) {
       this.matchingQueue.splice(userIndex, 1);
-      console.log('매칭큐에서 유저를 지워줍니다');
+      logger.info('매칭큐에서 유저를 지워줍니다');
       return;
     }
-    console.log('매칭큐에 유저가 존재하지 않습니다');
+    logger.info('매칭큐에 유저가 존재하지 않습니다');
   }
 
   getPvpByUser(user) {
