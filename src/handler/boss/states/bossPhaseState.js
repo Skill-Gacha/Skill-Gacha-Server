@@ -37,11 +37,9 @@ export default class BossPhaseState extends BossRoomState {
       if (!this.bossRoom.minionsSpawned) {
         this.bossRoom.spawnMinions();
       }
-      await this.attackMinions(this.bossRoom.getUsers());
     } else if (phase === 3) {
       await this.bossThirdPhaseAction(this.bossRoom.getUsers(), boss);
     }
-
     this.changeState(BossTurnChangeState);
   }
 
@@ -71,7 +69,7 @@ export default class BossPhaseState extends BossRoomState {
   async bossThirdPhaseAction(players, boss) {
     // 쉴드가 남아있는 경우
     if (this.shieldAmount > 0) {
-      this.socket.write(
+      this.user.socket.write(
         createResponse(PacketType.S_BossBattleLog, {
           battleLog: {
             msg: `${boss.monsterName}의 쉴드가 ${this.shieldAmount} 만큼 남아있습니다.`,
@@ -84,7 +82,7 @@ export default class BossPhaseState extends BossRoomState {
     }
 
     // 쉴드가 0이 되면 HP 감소
-    const damage = Math.floor(boss.hp * 0.1);
+    const damage = Math.floor(boss.monsterHp * 0.1);
     let damageToShield = Math.min(damage, this.bossRoom.shieldAmount);
     this.shieldAmount -= damageToShield;
 
@@ -94,11 +92,11 @@ export default class BossPhaseState extends BossRoomState {
       this.shieldAmount = 0;
     }
 
-    boss.hp -= remainingDamage;
+    boss.monsterHp -= remainingDamage;
 
     this.socket.write(
       createResponse(PacketType.S_BossSetMonsterHp, {
-        hp: boss.hp,
+        hp: boss.monsterHp,
       }),
     );
   }
