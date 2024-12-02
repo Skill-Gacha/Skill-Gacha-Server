@@ -29,7 +29,7 @@ export default class BossTargetState extends BossRoomState {
     const selectedMonster = this.getSelectedMonster(responseCode);
 
     if (!selectedMonster) {
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.user.socket);
       return;
     }
 
