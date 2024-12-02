@@ -45,10 +45,10 @@ export default class BossEnemyAttackState extends BossRoomState {
     }
 
     // 무적 버프 초기화 및 턴 종료
-    this.changeState(BossIncreaseManaState);
     this.users.forEach((user) => {
       user.stat.protect = false;
     });
+    this.changeState(BossIncreaseManaState);
   }
 
   async bossAttackPlayers(bossMonster) {
@@ -74,7 +74,6 @@ export default class BossEnemyAttackState extends BossRoomState {
 
       this.sendPlayerStatus(user);
       this.sendMonsterAnimation(user, bossMonster, 3001);
-
       this.createBattleLogResponse(
         user,
         `${bossMonster.monsterName}이(가) 당신을 공격하여 ${damage}의 피해를 입었습니다.`,

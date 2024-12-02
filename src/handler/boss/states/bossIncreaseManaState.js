@@ -4,6 +4,7 @@ import { BOSS_STATUS } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { delay } from '../../../utils/delay.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import BossActionState from './bossActionState.js';
 import BossRoomState from './bossRoomState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 
@@ -20,17 +21,18 @@ export default class BossIncreaseManaState extends BossRoomState {
 
     // 턴 넘기기를 사용했을 때
     if (this.user.turnOff === true) {
-      this.handleRecovery([this.user]);
+      this.updateUsersStatus([this.user]);
       this.user.turnOff = false;
+      await delay(3000); // 시간제한이 없어서 임시로 설정
+      this.changeState(BossTurnChangeState);
     }
 
     // 보스의 공격이 진행된 후
     else {
-      this.handleRecovery(this.users);
+      this.updateUsersStatus(this.users);
+      await delay(3000);
+      this.changeState(BossActionState);
     }
-
-    await delay(5000); // 시간제한이 없어서 임시로 설정
-    this.changeState(BossTurnChangeState);
 
     // 5초 후에 handleInput(1)을 자동으로 호출하는 타이머 설정
     // this.timeoutId = setTimeout(() => {
@@ -38,7 +40,7 @@ export default class BossIncreaseManaState extends BossRoomState {
     // }, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT); // ms
   }
 
-  handleRecovery(users) {
+  updateUsersStatus(users) {
     const statusResponse = this.createStatusResponse(users);
 
     users.forEach((user) => {
