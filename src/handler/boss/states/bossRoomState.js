@@ -9,7 +9,7 @@ export default class BossRoomState extends GameState {
     this.user = this.bossRoom.userTurn;
     this.users = this.bossRoom.getUsers();
     this.element = null; //보스의 속성
-    this.shieldAmount = 0; // 쉴드
+    this.shieldAmount = 1000; // 쉴드
     this.minionsSpawned = false; //한번만 소환하려고 추가
   }
 
@@ -19,20 +19,32 @@ export default class BossRoomState extends GameState {
     if (this.phase === 2) {
       const minionModels = [2025, 2026, 2027, 2028]; // 쫄 몬스터 모델
       const numMinions = 2; // 항상 2마리 생성
-      const selectedMinions = []; // 선택된 쫄 몬스터 모델을 저장할 배열
+      const selectedMinions = new Set(); // 선택된 쫄 몬스터 모델을 저장할 Set
 
-      for (let i = 0; i < numMinions; i++) {
+      while (selectedMinions.size < numMinions) {
         // 랜덤 인덱스 생성
         const randomIndex = Math.floor(Math.random() * minionModels.length);
         const minionModel = minionModels[randomIndex];
-        selectedMinions.push(minionModel); // 선택된 모델 추가
+        selectedMinions.add(minionModel); // 선택된 모델 추가
       }
 
       // 선택된 모델로 쫄 몬스터 추가
       selectedMinions.forEach((model) => {
-        const minion = this.monsterData.find((monster) => monster.monsterModel === model);
-        if (minion) this.addMonster(minion); // 랜덤 쫄 추가
+        const minionData = this.monsterData.find((monster) => monster.monsterModel === model);
+        if (minionData) {
+          const minionInstance = new Monster(
+            MINION_IDX, // 쫄 몬스터의 인덱스
+            minionData.monsterModel,
+            minionData.monsterName,
+            minionData.monsterHp,
+            minionData.monsterAtk,
+            minionData.monsterEffectCode,
+            minionData,
+          );
+          this.addMonster(minionInstance); // 랜덤 쫄 추가
+        }
       });
+      this.minionsSpawned = true;
     }
   }
 }

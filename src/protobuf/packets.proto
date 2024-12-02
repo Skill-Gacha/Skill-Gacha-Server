@@ -342,6 +342,7 @@ message S_BossMatchNotification {
   repeated int32 playerIds = 2;
   repeated PlayerStatus partyList = 3;
   optional BattleLog battleLog = 4;
+  optional MonsterStatus monsterStatus = 5;
 }
 
 message C_BossPlayerResponse {
