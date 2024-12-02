@@ -33,10 +33,6 @@ export default class BossPhaseState extends BossRoomState {
 
     if (phase === 1) {
       await this.bossAreaAttack(this.bossRoom.getUsers(), boss);
-    } else if (phase === 2) {
-      if (!this.bossRoom.minionsSpawned) {
-        this.bossRoom.spawnMinions();
-      }
     } else if (phase === 3) {
       await this.bossThirdPhaseAction(this.bossRoom.getUsers(), boss);
     }
