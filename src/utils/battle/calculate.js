@@ -1,6 +1,6 @@
 // src/utils/battle/calculate.js
 
-import { DUNGEON_DEAD_RESOURCES } from '../../constants/battle.js';
+import { DAMAGE_RATE_MAP, DUNGEON_DEAD_RESOURCES } from '../../constants/battle.js';
 import logger from '../log/logger.js';
 
 const RESISTANCE_KEYS = {
@@ -13,9 +13,13 @@ const RESISTANCE_KEYS = {
 
 export const skillEnhancement = (playerElement, skillElement) => {
   try {
-    return playerElement === skillElement ? 1.5 : 1;
+    if (DAMAGE_RATE_MAP[playerElement] && DAMAGE_RATE_MAP[playerElement][skillElement]) {
+      return DAMAGE_RATE_MAP[playerElement][skillElement];
+    }
+    return 1;
   } catch (error) {
     logger.error('calculate: 속성 일치 여부 확인 중 오류 발생', error);
+    return 1;
   }
 };
 
