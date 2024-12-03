@@ -16,9 +16,9 @@ const DISABLE_BUTTONS = [{ msg: '몬스터가 공격 중', enable: false }];
 const BOSS_INDEX = 0;
 const BOSS_SINGLE_ATTAK = 1;
 const BOSS_AREA_ATTAK = 2;
-const BOSS_ATTAK_EFFECT = 3032;
-const BOSS_DOWN_RESIST_EFFECT = 3033;
-const BOSS_CHANGE_STATUS_EFFECT = 3034;
+const BOSS_CHANGE_STATUS_EFFECT = 3032;
+const BOSS_ATTAK_EFFECT = 3033;
+const BOSS_DOWN_RESIST_EFFECT = 3034;
 
 export default class BossEnemyAttackState extends BossRoomState {
   async enter() {
