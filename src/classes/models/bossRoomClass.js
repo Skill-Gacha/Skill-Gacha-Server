@@ -37,6 +37,10 @@ class BossRoomClass extends BaseSession {
     this.monsters.push(monster);
   }
 
+  removeUser(user) {
+    this.users.delete(user.id);
+  }
+
   // // 턴 타이머 시작
   // startTurnTimer() {
   //   this.clearTurnTimer(); // 기존 타이머가 있으면 취소
