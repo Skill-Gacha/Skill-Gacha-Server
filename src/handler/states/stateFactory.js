@@ -8,7 +8,7 @@ class StateFactory {
         const module = await import('../dungeon/states/messageState.js');
         return module.default;
       },
-      
+
       // PvP
       pvpAction: async () => {
         const module = await import('../pvp/states/pvpActionState.js');

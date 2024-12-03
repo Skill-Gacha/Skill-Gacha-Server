@@ -5,7 +5,7 @@ import EnemyAttackState from './enemyAttackState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import ItemChoiceState from './ItemChoiceState.js';
+import ItemChoiceState from './itemChoiceState.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { ITEM_TYPES } from '../../../constants/items.js';

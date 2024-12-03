@@ -28,7 +28,7 @@ const envSchema = z.object({
     .refine((val) => !isNaN(Number(val)), 'DB_PORT는 숫자여야 합니다.'),
 
   // REDIS
-  REDIS_PASSWORD: z.string().min(1, 'REDIS_PASSWORD는 필수 값입니다.'),
+  REDIS_PASSWORD: z.string().optional(),
   REDIS_HOST: z.string().min(1, 'REDIS_HOST는 필수 값입니다.'),
   REDIS_PORT: z
     .string()
