@@ -33,11 +33,5 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
     return;
   }
 
-  if (!bossRoom.currentState) {
-    const BossActionState = (await import('./states/bossActionState.js')).default;
-    bossRoom.currentState = new BossActionState(bossRoom, bossRoom.userTurn);
-    await bossRoom.currentState.enter();
-  }
-
   await bossRoom.currentState.handleInput(responseCode);
 };

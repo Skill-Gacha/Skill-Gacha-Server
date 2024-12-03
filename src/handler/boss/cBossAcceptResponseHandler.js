@@ -62,7 +62,11 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         );
       });
 
-      // bossRoom.startTurnTimer();
+      if (!bossRoom.currentState) {
+        const BossActionState = (await import('./states/bossActionState.js')).default;
+        bossRoom.currentState = new BossActionState(bossRoom, bossRoom.userTurn);
+        await bossRoom.currentState.enter();
+      }
     }
 
     // 거절했을 때 처리
