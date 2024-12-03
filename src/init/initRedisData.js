@@ -63,7 +63,7 @@ const initializeRedis = async () => {
         } catch (userError) {
           logger.error(`initializeRedis: 유저 ${nickname} 초기화 중 오류 발생:`, userError);
         }
-      }),
+      })
     );
 
     // 모든 제한된 비동기 작업 완료 대기

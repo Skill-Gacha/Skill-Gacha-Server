@@ -37,14 +37,14 @@ export const initRedisClient = async () => {
     } catch (error) {
       attempt += 1;
       logger.error(
-        `Redis 초기화 실패 (${attempt} / ${MAX_RETRIES}): ${error.message}`,
+        `Redis 초기화 실패 (${attempt} / ${MAX_RETRIES}): ${error.message}`
       );
 
       if (attempt >= MAX_RETRIES) {
         logger.error('최대 재시도 회수에 도달했습니다. Redis 초기화에 실패했습니다.');
         throw new CustomError(
           ErrorCodes.REDIS_INIT_FAILED,
-          'Redis 초기화 실패',
+          'Redis 초기화 실패'
         );
       }
 
