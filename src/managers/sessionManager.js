@@ -1,4 +1,4 @@
-﻿// src/managers/sessionManager.js
+﻿﻿// src/managers/sessionManager.js
 
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
@@ -9,10 +9,10 @@ import BossRoomClass from '../classes/models/bossRoomClass.js';
 class SessionManager {
   constructor() {
     if (SessionManager.instance) {
-      logger.info(`기존 세션 관리자 인스턴스 반환`);
+      console.log(`기존 세션 관리자 인스턴스 반환`);
       return SessionManager.instance;
     }
-    logger.info(`세션 관리자 생성`);
+    console.log(`세션 관리자 생성`);
     this.sessions = {
       town: new Town(10000),
       dungeons: new Map(),
@@ -23,56 +23,21 @@ class SessionManager {
     this.bossMatchingQueue = [];
     this.users = new Map();
     SessionManager.instance = this;
+    Object.freeze(this);
   }
 
   // **사용자 관리**
   addUser(user) {
+    console.log(`유저 ${user.id}가 세션에 추가되었습니다.`);
     this.users.set(user.id, user);
-    this.socketToUser.set(user.socket, user); // 소켓 맵에 추가
     this.sessions.town.addUser(user); // 기본적으로 마을 세션에 추가
-    user.lastActivity = Date.now();
   }
 
   removeUser(userId) {
-    const user = this.users.get(userId);
-    if (!user) {
-      logger.info(`사용자 ${userId}를 찾을 수 없습니다.`);
-      return;
-    }
-
     this.users.delete(userId);
-    this.socketToUser.delete(user.socket); // 소켓 맵에서 제거
-
-    // 모든 던전 세션에서 사용자 제거
-    this.sessions.dungeons.forEach((dungeon) => {
-      if (dungeon.removeUser(userId)) {
-        logger.info(`던전 세션에서 사용자 ${userId} 제거`);
-        // 던전 세션이 비어있다면 클렌징
-        if (dungeon.isEmpty()) {
-          logger.info(`던전 세션 ${dungeon.id}이 비어있어 제거합니다.`);
-          this.removeDungeon(dungeon.id);
-        }
-      }
-    });
-
-    // PvP 방에서 사용자 제거
-    this.sessions.pvpRooms.forEach((pvp) => {
-      if (pvp.removeUser(userId)) {
-        logger.info(`PvP 방 세션에서 사용자 ${userId} 제거`);
-        // PvP 방이 비어있다면 클렌징
-        if (pvp.isEmpty()) {
-          logger.info(`PvP 방 세션 ${pvp.id}이 비어있어 제거합니다.`);
-          this.removePvpRoom(pvp.id);
-        }
-      }
-    });
-
-    // 마을 세션에서 사용자 제거
-    if (this.sessions.town.removeUser(userId)) {
-      logger.info(`마을 세션에서 사용자 ${userId} 제거`);
-    }
-
-    logger.info(`사용자 ${userId}가 모든 세션에서 제거되었습니다.`);
+    // 모든 세션에서 사용자 제거
+    this.sessions.dungeons.forEach((dungeon) => dungeon.removeUser(userId));
+    this.sessions.town.removeUser(userId);
   }
 
   getUser(userId) {
@@ -80,25 +45,21 @@ class SessionManager {
   }
 
   getUserBySocket(socket) {
-    const user = this.socketToUser.get(socket);
-    if (!user) {
-      logger.info('소켓을 찾을 수 없음');
+    for (let user of this.users.values()) {
+      if (user.socket === socket) {
+        return user;
+      }
     }
-    return user || null;
+
+    console.error('소켓을 찾을 수 없음');
+    return null;
   }
 
   // **던전 세션 관리**
   createDungeon(sessionId, dungeonCode) {
     const dungeon = new Dungeon(sessionId, dungeonCode);
-    dungeon.lastActivity = Date.now();
     this.sessions.dungeons.set(sessionId, dungeon);
-
-    // 타임아웃 설정
-    dungeon.timeout = setTimeout(() => {
-      logger.info(`던전 세션 ${sessionId} 타임아웃으로 클렌징`);
-      this.removeDungeon(sessionId);
-    }, this.sessionTimeout);
-
+    console.log('던전 생성 확인 ');
     return dungeon;
   }
 
@@ -107,12 +68,7 @@ class SessionManager {
   }
 
   removeDungeon(sessionId) {
-    const dungeon = this.sessions.dungeons.get(sessionId);
-    if (dungeon) {
-      clearTimeout(dungeon.timeout);
-      this.sessions.dungeons.delete(sessionId);
-      logger.info(`던전 세션 ${sessionId}이 제거되었습니다.`);
-    }
+    this.sessions.dungeons.delete(sessionId);
   }
 
   // **마을 세션 관리**
@@ -120,21 +76,24 @@ class SessionManager {
     return this.sessions.town;
   }
 
-  // 사용자 세션 조회 (마을 / 던전 / PvP)
+  // 사용자 세션 조회 (마을 또는 던전)
+  // 사용자가 현재 속한 세션을 가져옴
+  // 마을에 있으면 타운 세션 정보, 던전에 있으면 던전 세션 정보 가져옴
+
   getSessionByUserId(userId) {
     // 유저가 Town에 있으면 Town 세션 반환
     if (this.sessions.town.getUser(userId)) {
       return this.sessions.town;
     }
 
-    // 유저가 Dungeon에 있으면 Dungeon 세션 반환
+    // 유저가 Dungeon 있으면 Dungeon 세션 반환
     for (let dungeon of this.sessions.dungeons.values()) {
       if (dungeon.getUser(userId)) {
         return dungeon;
       }
     }
 
-    // 유저가 PvP에 있으면 PvP 세션 반환
+    // 유저가 pvp에 있으면 Pvp 세션 반환
     for (let pvp of this.sessions.pvpRooms.values()) {
       if (pvp.getUser(userId)) {
         return pvp;
@@ -144,13 +103,14 @@ class SessionManager {
   }
 
   // 세션 내 사용자에게 패킷 브로드캐스트
+  // 세션에 따라 달라지므로 타운이 될 수도 있고 던전이 될 수도 있음
   broadcastToSession(session, packet, excludeUserId = null) {
     session.users.forEach((user) => {
       if (user.id !== excludeUserId) {
         try {
           user.socket.write(packet);
         } catch (error) {
-          logger.error('패킷 전송 중 오류 발생:', error);
+          console.error('패킷 전송 중 오류 발생:', error);
         }
       }
     });
@@ -162,7 +122,7 @@ class SessionManager {
     const existingUser = matchingQueue.find((existUser) => existUser.id === user.id);
 
     if (existingUser) {
-      logger.info('이미 매칭중인 유저입니다.');
+      console.log('이미 매칭중인 유저입니다.');
       return;
     }
 
@@ -183,7 +143,7 @@ class SessionManager {
       console.log('매칭큐에서 유저를 지워줍니다');
       return;
     }
-    logger.info('매칭큐에 유저가 존재하지 않습니다');
+    console.log('매칭큐에 유저가 존재하지 않습니다');
   }
 
   getPvpByUser(user) {
@@ -206,15 +166,7 @@ class SessionManager {
 
   createPvpRoom(sessionId) {
     const pvpRoom = new PvpRoomClass(sessionId);
-    pvpRoom.lastActivity = Date.now();
     this.sessions.pvpRooms.set(sessionId, pvpRoom);
-
-    // 타임아웃 설정
-    pvpRoom.timeout = setTimeout(() => {
-      logger.info(`PvP 방 세션 ${sessionId} 타임아웃으로 클렌징`);
-      this.removePvpRoom(sessionId);
-    }, this.sessionTimeout);
-
     return pvpRoom;
   }
 
