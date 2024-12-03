@@ -6,9 +6,13 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import BossRoomState from './bossRoomState.js';
 import { ELEMENT_KEYS, RESISTANCE_KEYS } from '../../../utils/battle/calculate.js';
+import { getElementById } from '../../../init/loadAssets.js';
+import { elementResist } from '../../../utils/packet/playerPacket.js';
 
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
 const BOSS_MONSTER_MODEL = 2029;
+const MIN_ELEMENT_CODE_OFFSET = 1001;
+const MAX_ELEMENT_CODE_OFFSET = 1005;
 
 export default class BossPhaseState extends BossRoomState {
   async enter() {
@@ -17,18 +21,15 @@ export default class BossPhaseState extends BossRoomState {
     const boss = this.bossRoom.monsters.find(
       (monster) => monster.monsterModel === BOSS_MONSTER_MODEL,
     );
+
     const phase = this.bossRoom.phase;
-    this.setBossResistances(boss, phase);
+    const randomElement = this.bossRandomElement();
+    console.log('asdf', randomElement);
 
-    const randomElement = this.randomElement();
-    this.setBossElement(randomElement);
-
+    this.setBossResistances(boss, randomElement, phase);
     this.users.forEach((user) => {
       user.socket.write(createResponse(PacketType.S_BossPhase, { randomElement, phase }));
     });
-
-    console.log('랜덤 속성?: ', randomElement);
-    console.log('페이즈?: ', phase);
 
     if (phase === 3 && !this.bossRoom.shieldActivated) {
       this.createShield(boss);
@@ -37,43 +38,30 @@ export default class BossPhaseState extends BossRoomState {
   }
 
   // 보스의 속성을 무작위로 변경하는 메서드
-  randomElement() {
-    const elementKeys = Object.keys(ELEMENT_KEYS);
-    const randomIndex = Math.floor(Math.random() * elementKeys.length);
-    return elementKeys[randomIndex]; // 무작위 속성 반환
-  }
-
-  // 보스의 속성을 설정하는 메서드
-  setBossElement(elementcode) {
-    const elementKeys = Object.keys(ELEMENT_KEYS);
-    this.element = elementKeys[elementcode - 1]; // 보스의 속성 업데이트
+  bossRandomElement() {
+    return Math.floor(
+      Math.random() * (MAX_ELEMENT_CODE_OFFSET - MIN_ELEMENT_CODE_OFFSET) + MIN_ELEMENT_CODE_OFFSET,
+    );
   }
 
   // 보스 저항 설정 메서드
-  setBossResistances(boss, phase) {
-    const resistanceKeys = Object.keys(RESISTANCE_KEYS);
-    let selectedResistanceKey;
-
-    if (phase === 2) {
-      const randomIndex = Math.floor(Math.random() * resistanceKeys.length);
-      selectedResistanceKey = resistanceKeys[randomIndex];
-      this.setBossElement(randomIndex + 1); // 페이즈 2에서 속성 설정
-      boss.resistance = selectedResistanceKey;
-
-      console.log('보스속성 2페:', boss.resistance);
-    } else if (phase === 3) {
-      const previousResistance = this.bossRoom.previousResistance;
-      const filteredResistanceKeys = resistanceKeys.filter((key) => key !== previousResistance);
-      const randomIndex = Math.floor(Math.random() * filteredResistanceKeys.length);
-      selectedResistanceKey = filteredResistanceKeys[randomIndex];
-      this.setBossElement(resistanceKeys.indexOf(selectedResistanceKey) + 1); // 페이즈 3에서 속성 설정
-      boss.resistance = selectedResistanceKey;
-
-      console.log('보스속성 3페:', boss.resistance);
+  setBossResistances(boss, randomElement, phase) {
+    const chosenElement = getElementById(randomElement);
+    if (!chosenElement) {
+      console.error('bossPhaseState: 존재하지 않는 속성 ID입니다.');
+      return;
     }
+    if (phase === 2) {
+      boss.resistances = elementResist(chosenElement);
+      console.log('보스속성 2페:', boss.resistances);
+    } else if (phase === 3) {
+      const previousElement = this.bossRoom.previousElement;
 
-    if (selectedResistanceKey) {
-      this.bossRoom.previousResistance = selectedResistanceKey; // 이전 저항 업데이트
+      if (previousElement === randomElement) {
+        randomElement = bossRandomElement();
+      }
+      boss.resistances = elementResist(chosenElement);
+      console.log('보스속성 3페:', boss.resistances);
     }
   }
 
