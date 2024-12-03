@@ -9,6 +9,5 @@ export default class BossRoomState extends GameState {
     this.user = this.bossRoom.userTurn;
     this.users = this.bossRoom.getUsers();
     this.element = null; //보스의 속성
-    this.shieldAmount = 0; // 쉴드 초기화
   }
 }

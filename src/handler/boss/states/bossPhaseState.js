@@ -19,7 +19,7 @@ export default class BossPhaseState extends BossRoomState {
 
     this.setBossResistances(boss, phase);
 
-    const randomElement = this.bossRoom.element;
+    const randomElement = this.element;
     this.user.socket.write(
       createResponse(PacketType.S_BossPhase, {
         randomElement,
@@ -33,8 +33,9 @@ export default class BossPhaseState extends BossRoomState {
 
     //TODO : 쉴드 줄어드는 부분 ? 쉴드 까지는부분? 확인하기
 
-    if (phase === 3) {
+    if (phase === 3 && !this.bossRoom.shieldCreated) {
       this.createShield(boss);
+      this.bossRoom.shieldCreated = true; // 쉴드가 생성되었음을 기록
     }
     this.changeState(BossTurnChangeState);
   }
@@ -76,14 +77,13 @@ export default class BossPhaseState extends BossRoomState {
   }
   createShield(boss) {
     // 쉴드 생성 로직
-    this.bossRoom.shieldAmount = 1000; // 쉴드 초기화
-    const message = `${boss.monsterName}가 쉴드를 생성했습니다. 쉴드 양: ${this.bossRoom.shieldAmount}`;
+    this.bossRoom.shield = { remainingHits: 5 }; // 쉴드 초기화
+    const message = `${boss.monsterName}가 쉴드를 생성했습니다. 쉴드가 ${this.bossRoom.shield.remainingHits}회 공격을 막습니다.`;
 
     // 모든 플레이어에게 쉴드 생성 알리기
     this.sendBattleLog(message);
 
     for (const player of this.users) {
-      // 각 플레이어에게 메시지를 전송하기 위해 sendBattleLog를 호출합니다.
       this.sendBattleLog(message, player.socket);
     }
   }

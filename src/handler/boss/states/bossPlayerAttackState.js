@@ -83,33 +83,38 @@ export default class BossPlayerAttackState extends BossRoomState {
     for (const monster of aliveMonsters) {
       const totalDamage = this.calculateTotalDamage(skillInfo, monster);
 
-      // 쉴드부분=============================================================================================================고칠부분
-      // 보스의 쉴드가 남아있는지 확인
-      if (this.bossRoom.shieldAmount > 0) {
-        const damageToShield = Math.min(totalDamage, this.bossRoom.shieldAmount);
-        this.bossRoom.shieldAmount -= damageToShield;
-
-        const remainingDamage = totalDamage - damageToShield;
-        if (remainingDamage > 0) {
-          monster.reduceHp(remainingDamage);
-        }
+      // 쉴드가 있는지 확인
+      if (this.bossRoom.shield && this.bossRoom.shield.remainingHits > 0) {
+        // 쉴드가 남아있다면
+        this.bossRoom.shield.remainingHits -= 1; // 쉴드의 남은 공격 횟수 감소
+        console.log(
+          `쉴드가 공격을 막았습니다. 남은 공격 횟수: ${this.bossRoom.shield.remainingHits}`,
+        );
+        // 몬스터에게 피해를 주지 않음
       } else {
+        // 쉴드가 남아있지 않다면 몬스터에게 피해를 줌
         monster.reduceHp(totalDamage);
+        this.sendMonsterHpUpdate(monster); // 몬스터 체력 업데이트
       }
-
-      this.sendMonsterHpUpdate(monster);
-      this.updateBossPhase(); // 보스 phase 체크
     }
+    console.log(`현재 쉴드 상태: ${JSON.stringify(this.bossRoom.shield)}`);
 
-    this.sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
+    // 쉴드가 남아있지 않아서 피해를 주었을 때의 로그 메시지
+    const battleLogMsg =
+      this.bossRoom.shield.remainingHits === 0
+        ? '광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.'
+        : '모든 몬스터의 공격이 쉴드에 의해 막혔습니다.';
+
+    this.sendBattleLog(battleLogMsg, disableButtons);
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
 
     await delay(PLAYER_ACTION_DELAY);
 
-    const allMonstersDead = this.checkAllMonstersDead();
-    if (allMonstersDead) {
+    // 보스 체력 감소 및 phase 체크
+    this.updateBossPhase(); // 보스 phase 체크
+    if (this.checkAllMonstersDead()) {
       this.changeState(BossMonsterDeadState);
     } else if (this.bossRoom.bossRoomStatus !== BOSS_STATUS.BOSS_PHASE_CHANGE) {
       this.changeState(BossPhaseState);
@@ -131,28 +136,34 @@ export default class BossPlayerAttackState extends BossRoomState {
       const monsterResist = checkEnemyResist(skillElement, monster);
       const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
 
-      // 쉴드부분=============================================================================================================고칠부분
-      // 보스의 쉴드가 남아있는지 확인
-      if (this.bossRoom.shieldAmount > 0) {
-        const damageToShield = Math.min(totalDamage, this.bossRoom.shieldAmount);
-        this.bossRoom.shieldAmount -= damageToShield;
-
-        const remainingDamage = totalDamage - damageToShield;
-        if (remainingDamage > 0) {
-          monster.reduceHp(remainingDamage);
-        }
+      // 쉴드가 있는지 확인
+      if (this.bossRoom.shield && this.bossRoom.shield.remainingHits > 0) {
+        // 쉴드가 남아있는 경우
+        this.bossRoom.shield.remainingHits -= 1; // 쉴드의 남은 공격 횟수 감소
+        console.log(
+          `쉴드가 공격을 막았습니다. 남은 공격 횟수: ${this.bossRoom.shield.remainingHits}`,
+        );
+        // 몬스터에게 피해를 주지 않음
       } else {
+        // 쉴드가 남아있지 않으면 몬스터에게 피해를 줌
         monster.reduceHp(totalDamage);
+        this.sendMonsterHpUpdate(monster); // 몬스터 체력 업데이트
       }
 
-      this.sendMonsterHpUpdate(monster);
-
-      const battleLogMsg =
-        skillDamageRate > 1
-          ? `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
-          : `${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
-
-      this.sendBattleLog(battleLogMsg, disableButtons);
+      // 피해를 입혔을 때의 로그 메시지
+      if (this.bossRoom.shield.remainingHits === 0) {
+        const battleLogMsg =
+          skillDamageRate > 1
+            ? `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
+            : `${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
+        this.sendBattleLog(battleLogMsg, disableButtons);
+      } else {
+        // 쉴드가 막았을 경우의 로그
+        this.sendBattleLog(
+          `${monster.monsterName}의 공격이 쉴드에 의해 막혔습니다.`,
+          disableButtons,
+        );
+      }
     }
 
     this.user.reduceMp(skillInfo.mana);
