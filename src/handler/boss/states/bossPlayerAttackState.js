@@ -14,7 +14,6 @@ import { buffSkill, bossBuffSkill } from '../../../utils/battle/battle.js';
 import BossMonsterDeadState from './bossMonsterDeadState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 import BossPhaseState from './bossPhaseState.js';
-import BossEnemyAttackState from './bossEnemyAttackState.js';
 
 const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
@@ -74,7 +73,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     if (skillInfo.id === DEBUFF_SKILL_ID) {
       buffSkill(this.user, skillInfo.id);
-      bossBuffSkill(this.user, this.socket, this.bossRoom);
+      bossBuffSkill(this.user, this.user.socket, this.bossRoom);
     }
 
     // 모든 몬스터에 대한 타겟 인덱스 생성
@@ -103,7 +102,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     // 쉴드가 남아있지 않아서 피해를 주었을 때의 로그 메시지
     const battleLogMsg =
-      this.bossRoom.shieldCount === 0
+      this.bossRoom.shieldCount === 5
         ? '광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.'
         : '모든 몬스터의 공격이 쉴드에 의해 막혔습니다.';
 
@@ -160,7 +159,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
       // 피해를 입혔을 때의 로그 메시지
       const battleLogMsg =
-        this.bossRoom.shieldCount === 0
+        this.bossRoom.shieldCount === 5
           ? skillDamageRate > 1
             ? `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
             : `${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
