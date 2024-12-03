@@ -35,7 +35,7 @@ export default class BossItemChoiceState extends BossRoomState {
       btns: buttons,
     };
 
-    const choiceItemBattlelogResponse = createResponse(PacketType.S_PvpBattleLog, { battleLog });
+    const choiceItemBattlelogResponse = createResponse(PacketType.S_BossBattleLog, { battleLog });
     this.user.socket.write(choiceItemBattlelogResponse);
   }
 
@@ -52,7 +52,7 @@ export default class BossItemChoiceState extends BossRoomState {
       const itemIdx = responseCode;
       this.bossRoom.selectedItem = itemIdx;
 
-      // 스킬 선택 후 플레이어 어택 상태로 전환
+      // 아이템 선택 후 아이템 사용 상태로 전환
       this.changeState(BossPlayerUseItemState);
     }
   }
