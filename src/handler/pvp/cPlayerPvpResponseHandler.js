@@ -36,7 +36,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     const [playerA, playerB] = Array.from(pvpRoom.users.values());
-    const currentPlayer = pvpRoom.getUserTurn() === 0 ? playerB : playerA;
+    const currentPlayer = pvpRoom.getUserTurn() === 0 ? playerA : playerB;
 
     if (currentPlayer.nickname !== user.nickname) {
       console.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');

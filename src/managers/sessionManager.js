@@ -171,6 +171,7 @@ class SessionManager {
   }
 
   removePvpRoom(sessionId) {
+    console.log(`PvPRoom ${sessionId} 제거`);
     this.sessions.pvpRooms.delete(sessionId);
   }
 
