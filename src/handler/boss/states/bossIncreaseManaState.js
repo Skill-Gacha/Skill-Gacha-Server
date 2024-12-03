@@ -42,7 +42,6 @@ export default class BossIncreaseManaState extends BossRoomState {
 
   updateUsersStatus(users) {
     const aliveUsers = users.filter((user) => !user.isDead);
-    console.log('누구누구 살았니?', aliveUsers);
 
     // 살아있는 유저만 체력 회복
     aliveUsers.forEach((user) => {
