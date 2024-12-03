@@ -22,7 +22,7 @@ export const syncRatingsToDB = async () => {
     const savePromises = allRatings.map(({ value: nickname, score: rating }) =>
       limit(async () => {
         await saveRatingToDB(nickname, rating);
-      })
+      }),
     );
 
     // 모든 제한된 비동기 작업 완료 대기

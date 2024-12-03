@@ -57,10 +57,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         playerB.nickname,
         lastKoreanA,
         isPlayerAFirstAttack,
-        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.'
+        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.',
       ),
       isPlayerAFirstAttack,
-      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false]
+      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false],
     ),
   });
 
@@ -73,10 +73,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         playerA.nickname,
         lastKoreanB,
         isPlayerBFirstAttack,
-        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.'
+        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.',
       ),
       isPlayerBFirstAttack,
-      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false]
+      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false],
     ),
   });
 
