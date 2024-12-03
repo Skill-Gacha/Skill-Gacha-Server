@@ -77,24 +77,23 @@ export default class BossPlayerAttackState extends BossRoomState {
       bossBuffSkill(this.user, this.socket, this.bossRoom);
     }
 
-    this.sendPlayerAction(
-      aliveMonsters.map((m) => m.monsterIdx),
-      skillInfo.effectCode,
-    );
+    // 모든 몬스터에 대한 타겟 인덱스 생성
+    const targetMonsterIdxs = aliveMonsters.map((m) => m.monsterIdx);
+
+    this.sendPlayerAction(targetMonsterIdxs, skillInfo.effectCode); // 플레이어 액션 전송
 
     for (const monster of aliveMonsters) {
       const totalDamage = this.calculateTotalDamage(skillInfo, monster);
 
       // 쉴드가 있는지 확인
       if (this.bossRoom.shieldActivated && this.bossRoom.shieldCount > 0) {
-        // 쉴드가 남아있다면
+        // 쉴드가 남아있는 경우
         this.bossRoom.shieldCount -= 1; // 쉴드의 남은 공격 횟수 감소
         this.sendBarrierCount(this.bossRoom.shieldCount);
         console.log(`쉴드가 공격을 막았습니다. 남은 공격 횟수: ${this.bossRoom.shieldCount}`);
         // 몬스터에게 피해를 주지 않음
       } else {
-        // 쉴드가 남아있지 않다면 몬스터에게 피해를 줌
-
+        // 쉴드가 남아있지 않으면 몬스터에게 피해를 줌
         monster.reduceHp(totalDamage);
         this.sendMonsterHpUpdate(monster); // 몬스터 체력 업데이트
       }
@@ -134,8 +133,13 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     userDamage = updateDamage(this.user, userDamage);
 
-    // 선택된 몬스터가 아닌 모든 몬스터에 대해 데미지를 계산
+    // 모든 살아있는 몬스터 가져오기
     const aliveMonsters = this.getAliveMonsters();
+
+    // 모든 몬스터에 대한 타겟 인덱스 생성
+    const targetMonsterIdxs = aliveMonsters.map((m) => m.monsterIdx);
+
+    this.sendPlayerAction(targetMonsterIdxs, skillInfo.effectCode); // 플레이어 액션 전송
 
     for (const monster of aliveMonsters) {
       const monsterResist = checkEnemyResist(skillElement, monster);
@@ -155,42 +159,32 @@ export default class BossPlayerAttackState extends BossRoomState {
       }
 
       // 피해를 입혔을 때의 로그 메시지
-      if (this.bossRoom.shieldCount === 0) {
-        const battleLogMsg =
-          skillDamageRate > 1
+      const battleLogMsg =
+        this.bossRoom.shieldCount === 0
+          ? skillDamageRate > 1
             ? `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
-            : `${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
-        this.sendBattleLog(battleLogMsg, disableButtons);
-      } else {
-        // 쉴드가 막았을 경우의 로그
-        this.sendBattleLog(
-          `${monster.monsterName}의 공격이 쉴드에 의해 막혔습니다.`,
-          disableButtons,
-        );
-      }
+            : `${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
+          : `${monster.monsterName}의 공격이 쉴드에 의해 막혔습니다.`;
+
+      this.sendBattleLog(battleLogMsg, disableButtons);
     }
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
-    this.sendPlayerAction(
-      aliveMonsters.map((m) => m.monsterIdx),
-      skillInfo.effectCode,
-    );
 
     await delay(PLAYER_ACTION_DELAY);
 
     // 보스 체력 감소 및 phase 체크
     this.updateBossPhase(); // 보스 phase 체크
 
+    // 보스 체력 확인 및 상태 변경
     if (this.checkAllMonstersDead()) {
       this.changeState(BossMonsterDeadState);
+    } else if (aliveMonsters[0].hp <= 0) {
+      // 보스 체력이 0 이하인지 체크
+      this.changeState(BossMonsterDeadState); // 보스가 죽었을 때 상태 변경
     } else {
-      if (this.bossHp <= 0) {
-        // 보스 체력이 0 이하인지 체크
-        this.changeState(BossMonsterDeadState); // 보스가 죽었을 때 상태 변경
-      } else {
-        this.changeState(BossTurnChangeState); // 보스가 살아있고 공격 상태로 변경
-      }
+      this.changeState(BossTurnChangeState); // 보스가 살아있고 공격 상태로 변경
     }
   }
 
@@ -227,9 +221,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     });
   }
 
-  sendPlayerAction(effectCode) {
-    const aliveMonsters = this.getAliveMonsters();
-    const targetMonsterIdxs = aliveMonsters.map((m) => m.monsterIdx);
+  sendPlayerAction(targetMonsterIdxs, effectCode) {
     this.users.forEach((user) => {
       user.socket.write(
         createResponse(PacketType.S_BossPlayerActionNotification, {

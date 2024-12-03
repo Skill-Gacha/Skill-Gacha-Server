@@ -208,15 +208,15 @@ export const pvpUseBuffSkill = (user, stopper) => {
 };
 
 export const bossBuffSkill = (user, socket, bossRoom) => {
-  const disableButtons = bossRoom.monsters.map((monster) => ({
-    msg: monster.monsterName,
-    enable: false,
-  }));
-
   const users = bossRoom.getUsers();
   const playerIds = users.map((u) => u.id);
   const hps = users.map((u) => u.stat.hp);
   const mps = users.map((u) => u.stat.mp);
+
+  const disableButtons = bossRoom.monsters.map((monster) => ({
+    msg: monster.monsterName,
+    enable: false,
+  }));
 
   switch (user.stat.buff) {
     case 1:
