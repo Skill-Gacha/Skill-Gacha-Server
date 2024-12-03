@@ -14,6 +14,7 @@ import DungeonState from './dungeonState.js';
 import GameOverWinState from './gameOverWinState.js';
 import SkillChangeState from './skillChangeState.js';
 import { updateUserResource } from '../../../db/user/userDb.js';
+import logger from '../../../utils/log/logger.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 
@@ -27,7 +28,7 @@ export default class RewardState extends DungeonState {
       this.user.increaseResource(gold, stone);
       await updateUserResource(this.user.nickname, this.user.gold, this.user.stone);
     } catch (error) {
-      console.error('RewardState: 자원 증가 중 오류 발생:', error);
+      logger.error('RewardState: 자원 증가 중 오류 발생:', error);
       invalidResponseCode(this.socket);
       return;
     }
@@ -43,7 +44,7 @@ export default class RewardState extends DungeonState {
         try {
           await updateItemCountInRedis(this.user.nickname, item, 1);
         } catch (error) {
-          console.error('RewardState: 아이템 업데이트 중 오류 발생:', error);
+          logger.error('RewardState: 아이템 업데이트 중 오류 발생:', error);
           invalidResponseCode(this.socket);
           return;
         }
@@ -116,7 +117,7 @@ export default class RewardState extends DungeonState {
           await saveRewardSkillsToRedis(this.user.nickname, rewardSkillId, null);
           this.changeState(GameOverWinState);
         } catch (error) {
-          console.error('RewardState: 스킬 저장 중 오류 발생:', error);
+          logger.error('RewardState: 스킬 저장 중 오류 발생:', error);
           invalidResponseCode(this.socket);
         }
       }

@@ -17,7 +17,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   const user = sessionManager.getUserBySocket(socket);
 
   if (!user) {
-    console.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
+    logger.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
     return;
   }
 
@@ -37,7 +37,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     sDespawnHandler(playerA);
     sDespawnHandler(playerB);
   } catch (error) {
-    console.error('cPlayerMatchHandler: 디스폰 처리 중 오류 발생:', error);
+    logger.error('cPlayerMatchHandler: 디스폰 처리 중 오류 발생:', error);
     return;
   }
 

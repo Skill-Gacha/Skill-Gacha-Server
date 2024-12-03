@@ -1,6 +1,7 @@
 // src/utils/battle/calculate.js
 
-import { DUNGEON_DEAD_RESOURCES } from '../../constants/battle.js';
+import { DAMAGE_RATE_MAP, DUNGEON_DEAD_RESOURCES } from '../../constants/battle.js';
+import logger from '../log/logger.js';
 
 export const RESISTANCE_KEYS = {
   1001: 'electricResist',
@@ -12,16 +13,20 @@ export const RESISTANCE_KEYS = {
 
 export const skillEnhancement = (playerElement, skillElement) => {
   try {
-    return playerElement === skillElement ? 1.5 : 1;
+    if (DAMAGE_RATE_MAP[playerElement] && DAMAGE_RATE_MAP[playerElement][skillElement]) {
+      return DAMAGE_RATE_MAP[playerElement][skillElement];
+    }
+    return 1;
   } catch (error) {
-    console.error('calculate: 속성 일치 여부 확인 중 오류 발생', error);
+    logger.error('calculate: 속성 일치 여부 확인 중 오류 발생', error);
+    return 1;
   }
 };
 
 export const checkEnemyResist = (skillElement, target) => {
   const resistKey = RESISTANCE_KEYS[skillElement];
   if (!resistKey) {
-    throw new Error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
+    logger.error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
   }
   return target.resistances[resistKey] || 0;
 };
@@ -29,7 +34,7 @@ export const checkEnemyResist = (skillElement, target) => {
 export const checkStopperResist = (skillElement, target) => {
   const resistKey = RESISTANCE_KEYS[skillElement];
   if (!resistKey) {
-    throw new Error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
+    logger.error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
   }
   return target.stat.resistances[resistKey] || 0;
 };
@@ -61,7 +66,7 @@ export const deadResource = (user, dungeonCode) => {
   const resource = DUNGEON_DEAD_RESOURCES[dungeonCode];
 
   if (!resource) {
-    console.error(`던전코드가 이상합니다.: ${dungeonCode}`);
+    logger.error(`던전코드가 이상합니다.: ${dungeonCode}`);
     return;
   }
 

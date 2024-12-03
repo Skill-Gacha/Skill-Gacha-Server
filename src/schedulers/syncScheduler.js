@@ -4,6 +4,7 @@ import cron from 'node-cron';
 import { syncSkillsToDB } from '../sync/syncSkills.js';
 import { syncRatingsToDB } from '../sync/syncRatings.js';
 import { syncItemsToDB } from '../sync/syncItems.js';
+import logger from '../utils/log/logger.js';
 
 const SYNC_INTERVAL_IN_MIN = 5;
 
@@ -20,12 +21,12 @@ export const startSyncScheduler = () => {
   //
   // 0 12 * * * -> 매일 정오(12:00)에 실행 
   cron.schedule(`*/${SYNC_INTERVAL_IN_MIN} * * * *`, async () => {
-    console.log('동기화 작업 시작...');
+    logger.info('동기화 작업 시작...');
     await syncSkillsToDB();
     await syncRatingsToDB();
     await syncItemsToDB();
-    console.log('동기화 작업 완료');
+    logger.info('동기화 작업 완료');
   });
 
-  console.log(`동기화 스케줄러가 시작되었습니다. (매 ${SYNC_INTERVAL_IN_MIN}분마다 실행)`);
+  logger.info(`동기화 스케줄러가 시작되었습니다. (매 ${SYNC_INTERVAL_IN_MIN}분마다 실행)`);
 };

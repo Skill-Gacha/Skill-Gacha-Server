@@ -11,6 +11,7 @@ import { MyStatus } from '../../utils/battle/battle.js';
 import { DUNGEON_CODE } from '../../constants/battle.js';
 import { elementResist } from '../../utils/packet/playerPacket.js';
 import { handleError } from '../../utils/error/errorHandler.js';
+import logger from '../../utils/log/logger.js';
 
 const MONSTERS_PER_DUNGEON_DELIMITER = 7;
 const MIN_MONSTERS = 1;
@@ -21,7 +22,7 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
 
   if (!user) {
-    console.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
+    logger.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
     return;
   }
 
@@ -62,9 +63,9 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
 
     socket.write(enterDungeonPayload);
 
-    console.log(`유저 ${user.id}가 던전 ${actualDungeonCode}에 입장하였습니다.`);
+    logger.info(`유저 ${user.id}가 던전 ${actualDungeonCode}에 입장하였습니다.`);
   } catch (error) {
-    console.error('cEnterDungeonHandler 처리 중 오류 발생:', error);
+    logger.error('cEnterDungeonHandler 처리 중 오류 발생:', error);
     handleError(error);
   }
 };
