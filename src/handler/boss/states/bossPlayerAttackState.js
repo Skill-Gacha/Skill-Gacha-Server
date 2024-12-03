@@ -14,11 +14,13 @@ import { buffSkill, bossBuffSkill } from '../../../utils/battle/battle.js';
 import BossMonsterDeadState from './bossMonsterDeadState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 import BossPhaseState from './bossPhaseState.js';
+import BossEnemyAttackState from './bossEnemyAttackState.js';
 
 const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
 const DEBUFF_SKILL_ID = DEBUFF;
 const PLAYER_ACTION_DELAY = 1000;
+const BOSS_MONSTER_MODEL = 2029;
 
 export default class BossPlayerAttackState extends BossRoomState {
   async enter() {
@@ -114,6 +116,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     // 보스 체력 감소 및 phase 체크
     this.updateBossPhase(); // 보스 phase 체크
+
     const allMonstersDead = this.checkAllMonstersDead();
     if (allMonstersDead) {
       this.changeState(BossMonsterDeadState);
@@ -184,9 +187,9 @@ export default class BossPlayerAttackState extends BossRoomState {
     } else {
       if (this.bossHp <= 0) {
         // 보스 체력이 0 이하인지 체크
-        this.changeState(BossDeadState); // 보스가 죽었을 때 상태 변경
+        this.changeState(BossMonsterDeadState); // 보스가 죽었을 때 상태 변경
       } else {
-        this.changeState(BossEnemyAttackState); // 보스가 살아있고 공격 상태로 변경
+        this.changeState(BossTurnChangeState); // 보스가 살아있고 공격 상태로 변경
       }
     }
   }
@@ -248,7 +251,9 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   updateBossPhase() {
-    const boss = this.bossRoom.monsters.find((monster) => monster.monsterModel === 2029); // 보스 몬스터 확인
+    const boss = this.bossRoom.monsters.find(
+      (monster) => monster.monsterModel === BOSS_MONSTER_MODEL,
+    );
     if (boss) {
       // 현재 phase가 1일 때
       if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
