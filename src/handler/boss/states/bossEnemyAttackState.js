@@ -19,6 +19,7 @@ const BOSS_AREA_ATTAK = 2;
 const BOSS_CHANGE_STATUS_EFFECT = 3032;
 const BOSS_ATTAK_EFFECT = 3033;
 const BOSS_DOWN_RESIST_EFFECT = 3034;
+const BOSS_BASIC_DAMAGE = 0.5;
 
 export default class BossEnemyAttackState extends BossRoomState {
   async enter() {
@@ -75,11 +76,11 @@ export default class BossEnemyAttackState extends BossRoomState {
     );
 
     aliveUsers.forEach((user) => {
-      let damage = bossMonster.monsterAtk;
+      let damage = bossMonster.monsterAtk * BOSS_BASIC_DAMAGE;
 
-      if (this.element) {
-        const userResist = checkStopperResist(this.element, user);
-        damage = Math.floor(damage * ((100 - userResist) / 100));
+      if (this.bossRoom.previousElement) {
+        const userResist = checkStopperResist(this.bossRoom.previousElement, user);
+        damage = Math.floor(bossMonster.monsterAtk * ((100 - userResist) / 100));
       }
 
       if (user.stat.downResist) {
