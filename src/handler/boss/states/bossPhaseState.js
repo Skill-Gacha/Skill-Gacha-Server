@@ -58,7 +58,7 @@ export default class BossPhaseState extends BossRoomState {
       const previousElement = this.bossRoom.previousElement;
 
       if (previousElement === randomElement) {
-        randomElement = bossRandomElement();
+        randomElement = this.bossRandomElement();
       }
       boss.resistances = elementResist(chosenElement);
       console.log('보스속성 3페:', boss.resistances);
