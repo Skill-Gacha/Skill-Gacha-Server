@@ -33,15 +33,9 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
     return;
   }
 
-  // 보스룸에 있는 모든 유저에게 턴 정보 전송
-  const bossUsers = bossRoom.getUsers();
-  bossUsers.forEach((user) => {
-    user.socket.write(createResponse(PacketType.S_BossUserTurn, { plyerId: bossRoom.userTurn.id }));
-  });
-
   if (!bossRoom.currentState) {
     const BossActionState = (await import('./states/bossActionState.js')).default;
-    bossRoom.currentState = new BossActionState(bossRoom);
+    bossRoom.currentState = new BossActionState(bossRoom, bossRoom.userTurn);
     await bossRoom.currentState.enter();
   }
 

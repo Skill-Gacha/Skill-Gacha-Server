@@ -24,8 +24,6 @@ export default class BossPhaseState extends BossRoomState {
     this.setBossElement(randomElement);
     this.user.socket.write(createResponse(PacketType.S_BossPhase, { randomElement, phase }));
 
-    console.log('랜덤 속성?: ', randomElement);
-    console.log('페이즈?: ', phase);
     //TODO : 쉴드 줄어드는 부분 ? 쉴드 까지는부분? 확인하기
 
     if (phase === 3) {
