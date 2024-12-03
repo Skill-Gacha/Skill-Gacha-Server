@@ -11,6 +11,14 @@ export const RESISTANCE_KEYS = {
   1005: 'waterResist',
 };
 
+export const ELEMENT_KEYS = {
+  1001: 'electric',
+  1002: 'earth',
+  1003: 'grass',
+  1004: 'fire',
+  1005: 'water',
+};
+
 export const skillEnhancement = (playerElement, skillElement) => {
   try {
     if (DAMAGE_RATE_MAP[playerElement] && DAMAGE_RATE_MAP[playerElement][skillElement]) {

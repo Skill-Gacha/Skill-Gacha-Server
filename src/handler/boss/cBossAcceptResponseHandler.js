@@ -43,9 +43,6 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       const bossRoom = sessionManager.createBossRoom(uuidv4());
       bossRoom.setUsers(playerA, playerB, playerC);
       bossRoom.addMonster(bossMonsterInstance);
-      matchedPlayers.forEach((user) => {
-        sDespawnHandler(user);
-      });
       const playerIds = [playerA.id, playerB.id, playerC.id];
       const partyList = [MyStatus(playerA), MyStatus(playerB), MyStatus(playerC)];
       const boss = {
@@ -54,9 +51,16 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         monsterName: bossMonster.monsterName,
         monsterHp: bossMonster.monsterHp,
       };
-      sendBossMatchNotification(playerA, playerIds, partyList, boss, true);
-      sendBossMatchNotification(playerB, playerIds, partyList, boss, false);
-      sendBossMatchNotification(playerC, playerIds, partyList, boss, false);
+      matchedPlayers.forEach((user) => {
+        sDespawnHandler(user);
+        sendBossMatchNotification(
+          user,
+          playerIds,
+          partyList,
+          boss,
+          user.id === playerA.id ? true : false,
+        );
+      });
 
       // bossRoom.startTurnTimer();
     }
