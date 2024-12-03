@@ -221,10 +221,11 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   sendPlayerAction(targetMonsterIdxs, effectCode) {
+    const playerIds = this.users.map((user) => user.id); // 각 사용자 ID 수집
     this.users.forEach((user) => {
       user.socket.write(
         createResponse(PacketType.S_BossPlayerActionNotification, {
-          playerId: this.user.id,
+          playerId: playerIds,
           targetMonsterIdx: targetMonsterIdxs,
           actionSet: {
             animCode: ACTION_ANIMATION_CODE,
