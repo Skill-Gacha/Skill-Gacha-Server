@@ -89,6 +89,7 @@ export const onEnd = (socket) => async () => {
     // DB에 저장이 완료되면 레디스에서도 제거
     await deleteSkillsFromRedis(nickname);
     await deleteItemsFromRedis(nickname);
+    logger.info(`onEnd: Redis에서 ${nickname}의 데이터 정리 완료`)
   } catch (error) {
     logger.error(`onEnd: ${nickname} 접속 종료 처리 중 문제 발생.`, error);
     const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_END, error);
