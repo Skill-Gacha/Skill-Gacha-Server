@@ -8,6 +8,5 @@ export default class BossRoomState extends GameState {
     this.bossRoom = session;
     this.user = this.bossRoom.userTurn;
     this.users = this.bossRoom.getUsers();
-    this.element = null; //보스의 속성
   }
 }
