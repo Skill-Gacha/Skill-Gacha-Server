@@ -5,7 +5,7 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import BossRoomState from './bossRoomState.js';
-import { ELEMENT_KEYS } from '../../../utils/battle/calculate.js';
+import { ELEMENT_KEYS, RESISTANCE_KEYS } from '../../../utils/battle/calculate.js';
 
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
 const BOSS_MONSTER_MODEL = 2029;
@@ -30,12 +30,12 @@ export default class BossPhaseState extends BossRoomState {
     console.log('랜덤 속성?: ', randomElement);
     console.log('페이즈?: ', phase);
 
-    if (phase === 3 && !this.bossRoom.shieldCreated) {
+    if (phase === 3 && !this.bossRoom.shieldActivated) {
       this.createShield(boss);
-      this.bossRoom.shieldCreated = true; // 쉴드가 생성되었음을 기록
+      this.bossRoom.shieldActivated = true; // 쉴드가 생성되었음을 기록
     }
-    //this.changeState(BossTurnChangeState);
   }
+
   // 보스의 속성을 무작위로 변경하는 메서드
   randomElement() {
     const elementKeys = Object.keys(ELEMENT_KEYS);
@@ -51,7 +51,7 @@ export default class BossPhaseState extends BossRoomState {
 
   // 보스 저항 설정 메서드
   setBossResistances(boss, phase) {
-    const resistanceKeys = Object.keys(ELEMENT_KEYS);
+    const resistanceKeys = Object.keys(RESISTANCE_KEYS);
     let selectedResistanceKey;
 
     if (phase === 2) {
@@ -59,23 +59,26 @@ export default class BossPhaseState extends BossRoomState {
       selectedResistanceKey = resistanceKeys[randomIndex];
       this.setBossElement(randomIndex + 1); // 페이즈 2에서 속성 설정
       boss.resistance = selectedResistanceKey;
+
+      console.log('보스속성 2페:', boss.resistance);
     } else if (phase === 3) {
       const previousResistance = this.bossRoom.previousResistance;
       const filteredResistanceKeys = resistanceKeys.filter((key) => key !== previousResistance);
       const randomIndex = Math.floor(Math.random() * filteredResistanceKeys.length);
       selectedResistanceKey = filteredResistanceKeys[randomIndex];
-      this.setBossElement(randomIndex + 1); // 페이즈 3에서 속성 설정
+      this.setBossElement(resistanceKeys.indexOf(selectedResistanceKey) + 1); // 페이즈 3에서 속성 설정
       boss.resistance = selectedResistanceKey;
+
+      console.log('보스속성 3페:', boss.resistance);
     }
 
     if (selectedResistanceKey) {
       this.bossRoom.previousResistance = selectedResistanceKey; // 이전 저항 업데이트
     }
   }
+
   createShield(boss) {
-    // 쉴드 생성 로직
-    this.bossRoom.shield = { remainingHits: 5 }; // 쉴드 초기화
-    const message = `${boss.monsterName}가 쉴드를 생성했습니다. 쉴드가 ${this.bossRoom.shield.remainingHits}회 공격을 막습니다.`;
+    const message = `${boss.monsterName}가 쉴드를 생성했습니다. 쉴드가 ${this.bossRoom.shieldCount}회 공격을 막습니다.`;
 
     // 모든 플레이어에게 쉴드 생성 알리기
     this.sendBattleLog(message);
