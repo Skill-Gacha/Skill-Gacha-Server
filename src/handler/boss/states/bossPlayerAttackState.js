@@ -114,10 +114,11 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     // 보스 체력 감소 및 phase 체크
     this.updateBossPhase(); // 보스 phase 체크
-    if (this.checkAllMonstersDead()) {
+    const allMonstersDead = this.checkAllMonstersDead();
+    if (allMonstersDead) {
       this.changeState(BossMonsterDeadState);
-    } else if (this.bossRoom.bossRoomStatus !== BOSS_STATUS.BOSS_PHASE_CHANGE) {
-      this.changeState(BossPhaseState);
+    } else {
+      this.changeState(BossTurnChangeState);
     }
   }
 
@@ -177,10 +178,16 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     // 보스 체력 감소 및 phase 체크
     this.updateBossPhase(); // 보스 phase 체크
+
     if (this.checkAllMonstersDead()) {
       this.changeState(BossMonsterDeadState);
-    } else if (this.bossRoom.bossRoomStatus !== BOSS_STATUS.BOSS_PHASE_CHANGE) {
-      this.changeState(BossPhaseState);
+    } else {
+      if (this.bossHp <= 0) {
+        // 보스 체력이 0 이하인지 체크
+        this.changeState(BossDeadState); // 보스가 죽었을 때 상태 변경
+      } else {
+        this.changeState(BossEnemyAttackState); // 보스가 살아있고 공격 상태로 변경
+      }
     }
   }
 
