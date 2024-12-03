@@ -5,50 +5,47 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import BossRoomState from './bossRoomState.js';
-import { RESISTANCE_KEYS } from '../../../utils/battle/calculate.js';
+import { ELEMENT_KEYS, RESISTANCE_KEYS } from '../../../utils/battle/calculate.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
+const BOSS_MONSTER_MODEL = 2029;
 
 export default class BossPhaseState extends BossRoomState {
   async enter() {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.BOSS_PHASE_CHANGE;
 
+    const boss = this.bossRoom.monsters.find(
+      (monster) => monster.monsterModel === BOSS_MONSTER_MODEL,
+    );
     const phase = this.bossRoom.phase;
-    const boss = this.bossRoom.monsters.find((monster) => monster.monsterModel === 2029);
-
     this.setBossResistances(boss, phase);
 
-    const randomElement = this.bossRoom.element;
-    this.user.socket.write(
-      createResponse(PacketType.S_BossPhase, {
-        randomElement,
-        phase,
-        monsterIdx: this.bossRoom.monsters.slice(1).map((monster) => ({
-          monsterIdx: monster.monsterIdx,
-          hp: monster.monsterHp,
-        })),
-      }),
-    );
+    const randomElement = this.randomElement();
+    this.setBossElement(randomElement);
+    this.user.socket.write(createResponse(PacketType.S_BossPhase, { randomElement, phase }));
 
+    console.log('랜덤 속성?: ', randomElement);
+    console.log('페이즈?: ', phase);
     //TODO : 쉴드 줄어드는 부분 ? 쉴드 까지는부분? 확인하기
 
     if (phase === 3) {
       this.createShield(boss);
     }
+
     this.changeState(BossTurnChangeState);
   }
-  // 보스의 속성을 무작위로 초기화하는 메서드
-  initializeElement() {
-    const resistanceKeys = Object.keys(RESISTANCE_KEYS);
-    const randomIndex = Math.floor(Math.random() * resistanceKeys.length);
-    return resistanceKeys[randomIndex]; // 무작위 속성 반환
+  // 보스의 속성을 무작위로 변경하는 메서드
+  randomElement() {
+    const elementKeys = Object.keys(ELEMENT_KEYS);
+    const randomIndex = Math.floor(Math.random() * elementKeys.length);
+    return elementKeys[randomIndex]; // 무작위 속성 반환
   }
 
   // 보스의 속성을 설정하는 메서드
-  setBossElement(elementIndex) {
-    const resistanceKeys = Object.keys(RESISTANCE_KEYS);
-    this.element = resistanceKeys[elementIndex - 1]; // 보스의 속성 업데이트
+  setBossElement(elementcode) {
+    const elementKeys = Object.keys(ELEMENT_KEYS);
+    this.element = elementKeys[elementcode - 1]; // 보스의 속성 업데이트
   }
 
   // 보스 저항 설정 메서드
@@ -120,7 +117,5 @@ export default class BossPhaseState extends BossRoomState {
     }
   }
 
-  async handleInput(responseCode) {
-    invalidResponseCode(responseCode);
-  }
+  async handleInput(responseCode) {}
 }
