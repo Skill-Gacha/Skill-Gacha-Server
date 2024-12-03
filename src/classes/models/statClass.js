@@ -10,7 +10,7 @@ class Stat {
     this.berserk = false;
     this.dangerPotion = false;
     this.protect = false;
-    this.debuff = false; // 저항력 0으로 만들어주기?
+    this.downResist = false;
 
     this.resistances = {
       electricResist: resists.electricResist,

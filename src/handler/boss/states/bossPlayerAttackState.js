@@ -269,13 +269,11 @@ export default class BossPlayerAttackState extends BossRoomState {
       if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
         this.bossRoom.phase = 2; // phase를 2로 변경
         this.changeState(BossPhaseState); // 상태 변경
-        console.log(`보스의 phase가 ${this.bossRoom.phase}phase로 변경되었습니다.`);
       }
       // 현재 phase가 2일 때
       else if (boss.monsterHp <= 2000 && this.bossRoom.phase === 2) {
         this.bossRoom.phase = 3; // phase를 3으로 변경
         this.changeState(BossPhaseState); // 상태 변경
-        console.log(`보스의 phase가 ${this.bossRoom.phase}phase로 변경되었습니다.`);
       }
     }
   }
