@@ -17,6 +17,9 @@ class User {
     this.gold = gold;
     this.stone = stone;
     this.turnOff = false;
+    this.isDead = false;
+    this.downResist = false;
+    this.completeTurn = false;
   }
 
   reduceHp(damage) {

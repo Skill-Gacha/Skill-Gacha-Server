@@ -3,7 +3,7 @@
 import { DAMAGE_RATE_MAP, DUNGEON_DEAD_RESOURCES } from '../../constants/battle.js';
 import logger from '../log/logger.js';
 
-const RESISTANCE_KEYS = {
+export const RESISTANCE_KEYS = {
   1001: 'electricResist',
   1002: 'earthResist',
   1003: 'grassResist',

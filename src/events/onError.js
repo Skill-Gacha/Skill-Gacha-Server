@@ -44,14 +44,33 @@ export const onError = (socket) => async (err) => {
       });
 
       winner.socket.write(victoryMessage); // 승리 메시지 전송
-
-      // 매칭큐 및 세션 정리
-      sessionManager.removeMatchingQueue(user);
-      sessionManager.removePvpRoom(pvpRoom.sessionId);
     } catch (error) {
       logger.error('onError: PVP 강제종료 처리중 에러:', error);
       const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error);
       handleError(newCustomeError);
+    }
+  }
+
+  const bossRoom = sessionManager.getBossRoomByUser(user);
+
+  if (bossRoom) {
+    try {
+      // 모든 유저에게 게임오버 메시지 전달
+      const users = bossRoom.getUsers();
+      const gameOverMessage = createResponse(PacketType.S_ScreenText, {
+        screenText: {
+          msg: '탈주자가 생겨 마을로 이동됩니다.',
+          typingAnimation: false,
+        },
+      });
+
+      bossRoom.removeUser(user);
+
+      users.forEach((user) => {
+        user.socket.write(gameOverMessage);
+      });
+    } catch (error) {
+      console.error('onEnd: BOSS 강제종료 처리중 에러:', error);
     }
   }
 

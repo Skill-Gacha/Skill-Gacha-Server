@@ -23,16 +23,14 @@ export default class TargetState extends DungeonState {
       btns: buttons,
     };
 
-    this.socket.write(
-      createResponse(PacketType.S_BattleLog, { battleLog }),
-    );
+    this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
   }
 
   async handleInput(responseCode) {
     const selectedMonster = this.getSelectedMonster(responseCode);
 
     if (!selectedMonster) {
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.user.socket);
       return;
     }
 
@@ -42,7 +40,9 @@ export default class TargetState extends DungeonState {
 
   getSelectedMonster(code) {
     const monsterIdx = code - 1;
-    const monster = this.dungeon.monsters.find((m) => m.monsterIdx === monsterIdx && m.monsterHp > 0);
+    const monster = this.dungeon.monsters.find(
+      (m) => m.monsterIdx === monsterIdx && m.monsterHp > 0,
+    );
     return monster || null;
   }
 }

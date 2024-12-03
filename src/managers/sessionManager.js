@@ -3,8 +3,7 @@
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
-import { MAX_PLAYER } from '../constants/pvp.js';
-import logger from '../utils/log/logger.js';
+import BossRoomClass from '../classes/models/bossRoomClass.js';
 
 // 싱글톤 클래스
 class SessionManager {
@@ -18,14 +17,11 @@ class SessionManager {
       town: new Town(10000),
       dungeons: new Map(),
       pvpRooms: new Map(),
+      bossRooms: new Map(),
     };
-    this.matchingQueue = [];
-    this.users = new Map(); // userId -> user
-    this.socketToUser = new Map(); // socket -> user
-    this.sessionTimeout = 300000;
-    this.userTimeout = 300000;
-    this.cleansingInterval = 60000;
-    this.startCleansingInterval();
+    this.pvpMatchingQueue = [];
+    this.bossMatchingQueue = [];
+    this.users = new Map();
     SessionManager.instance = this;
   }
 
@@ -160,31 +156,31 @@ class SessionManager {
     });
   }
 
-  // ** 1 대 1 PvP 매칭 관리 **
-  addMatchingQueue(user) {
-    const existingUser = this.matchingQueue.find((existUser) => existUser.id === user.id);
+  // ** 1 대 1 pvp 매칭 관리**
+  addMatchingQueue(user, maxPlayer, queueType) {
+    const matchingQueue = queueType === 'pvp' ? this.pvpMatchingQueue : this.bossMatchingQueue;
+    const existingUser = matchingQueue.find((existUser) => existUser.id === user.id);
 
     if (existingUser) {
       logger.info('이미 매칭중인 유저입니다.');
       return;
     }
 
-    user.matchingAddedAt = Date.now();
-    this.matchingQueue.push(user);
-
-    if (this.matchingQueue.length === MAX_PLAYER) {
-      const matchedUsers = this.matchingQueue.splice(0, MAX_PLAYER);
-      // 매칭된 유저들에 대한 추가 로직 (PvP 방 생성 등)을 여기에 추가할 수 있습니다.
-      return matchedUsers;
+    matchingQueue.push(user);
+    if (matchingQueue.length === maxPlayer) {
+      console.log('다 찼습니다.');
+      return matchingQueue.splice(0, maxPlayer);
     }
     return null;
   }
 
-  removeMatchingQueue(user) {
-    const userIndex = this.matchingQueue.findIndex((u) => u.id === user.id);
+  removeMatchingQueue(user, queueType) {
+    const matchingQueue = queueType === 'pvp' ? this.pvpMatchingQueue : this.bossMatchingQueue;
+    const userIndex = matchingQueue.findIndex((u) => u.id === user.id);
+
     if (userIndex !== -1) {
-      this.matchingQueue.splice(userIndex, 1);
-      logger.info('매칭큐에서 유저를 지워줍니다');
+      matchingQueue.splice(userIndex, 1);
+      console.log('매칭큐에서 유저를 지워줍니다');
       return;
     }
     logger.info('매칭큐에 유저가 존재하지 않습니다');
@@ -196,7 +192,16 @@ class SessionManager {
         return pvp;
       }
     }
-    return null;
+    return false;
+  }
+
+  getBossRoomByUser(user) {
+    for (let bossRoom of this.sessions.bossRooms.values()) {
+      if (bossRoom.getUser(user.id)) {
+        return bossRoom;
+      }
+    }
+    return false;
   }
 
   createPvpRoom(sessionId) {
@@ -214,64 +219,27 @@ class SessionManager {
   }
 
   removePvpRoom(sessionId) {
-    const pvpRoom = this.sessions.pvpRooms.get(sessionId);
-    if (pvpRoom) {
-      clearTimeout(pvpRoom.timeout);
-      this.sessions.pvpRooms.delete(sessionId);
-      logger.info(`PvP 방 세션 ${sessionId}이 제거되었습니다.`);
-    }
+    this.sessions.pvpRooms.delete(sessionId);
   }
 
-  // **세션 클렌징 로직**
-  startCleansingInterval() {
-    setInterval(() => {
-      const now = Date.now();
-
-      // 던전 세션 클렌징
-      this.sessions.dungeons.forEach((dungeon, sessionId) => {
-        if (now - dungeon.lastActivity > this.sessionTimeout) {
-          logger.info(`던전 세션 ${sessionId} 클렌징`);
-          this.removeDungeon(sessionId);
-        }
-      });
-
-      // PvP 방 클렌징
-      this.sessions.pvpRooms.forEach((pvp, sessionId) => {
-        if (now - pvp.lastActivity > this.sessionTimeout) {
-          logger.info(`PvP 방 세션 ${sessionId} 클렌징`);
-          this.removePvpRoom(sessionId);
-        }
-      });
-
-      // 사용자 클렌징
-      this.users.forEach((user, userId) => {
-        if (now - user.lastActivity > this.userTimeout) {
-          logger.info(`사용자 ${userId} 클렌징`);
-          this.removeUser(userId);
-        }
-      });
-
-      // 매칭 큐 클렌징
-      this.matchingQueue = this.matchingQueue.filter(user => {
-        if (now - user.matchingAddedAt > this.userTimeout) {
-          logger.info(`매칭 큐에서 사용자 ${user.id} 제거`);
-          return false;
-        }
-        return true;
-      });
-
-    }, this.cleansingInterval);
+  removeBossRoom(sessionId) {
+    this.sessions.bossRooms.delete(sessionId);
   }
 
-  // 사용자 활동 시 타이머 갱신
-  handleUserActivity(userId) {
-    const session = this.getSessionByUserId(userId);
-    if (session) {
-      session.lastActivity = Date.now();
-    }
-    const user = this.getUser(userId);
-    if (user) {
-      user.lastActivity = Date.now();
+  createBossRoom(sessionId) {
+    const bossRoom = new BossRoomClass(sessionId);
+    this.sessions.bossRooms.set(sessionId, bossRoom);
+    return bossRoom;
+  }
+
+  getMatchingQueue(queueType) {
+    if (queueType === 'boss') {
+      return this.bossMatchingQueue;
+    } else if (queueType === 'pvp') {
+      return this.pvpMatchingQueue;
+    } else {
+      console.error(`유효하지 않은 큐 타입: ${queueType}`);
+      return [];
     }
   }
 }
