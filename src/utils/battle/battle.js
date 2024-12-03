@@ -237,7 +237,6 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
 
     case 2:
       const existHp = user.stat.hp;
-      const users = bossRoom.getUsers();
       user.increaseHpMp(user.stat.maxHp * 0.3, 0); // 최대 체력의 30% 회복
 
       try {
