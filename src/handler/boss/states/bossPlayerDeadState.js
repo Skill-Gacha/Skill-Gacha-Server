@@ -9,7 +9,6 @@ import BossGameOverLoseState from './bossGameOverLoseState.js';
 export default class BossPlayerDeadState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.PLAYER_DEAD;
-    const deadUsers = this.users.filter((u) => u.stat.hp <= 0 && !u.isDead);
 
     // 유저의 체력이 모두 0이 됐을 때
     if (this.users.every((user) => user.stat.hp <= 0)) {
@@ -27,6 +26,8 @@ export default class BossPlayerDeadState extends BossRoomState {
         ],
       },
     });
+
+    const deadUsers = this.users.filter((u) => u.stat.hp <= 0 && !u.isDead);
 
     deadUsers.forEach((user) => {
       user.socket.write(playerDeadBattleLogResponse);
