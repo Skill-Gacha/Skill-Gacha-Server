@@ -10,15 +10,20 @@ import { checkStopperResist } from '../../../utils/battle/calculate.js';
 import { delay } from '../../../utils/delay.js';
 import BossGameOverLoseState from './bossGameOverLoseState.js';
 
-const ATTACK_ANIMATION_CODE = 0;
 const DEATH_ANIMATION_CODE = 1;
 const ATTACK_DELAY = 1000;
 const DISABLE_BUTTONS = [{ msg: '몬스터가 공격 중', enable: false }];
+const BOSS_INDEX = 0;
+const BOSS_SINGLE_ATTAK = 1;
+const BOSS_AREA_ATTAK = 2;
+const BOSS_ATTAK_EFFECT = 3032;
+const BOSS_DOWN_RESIST_EFFECT = 3033;
+const BOSS_CHANGE_STATUS_EFFECT = 3034;
 
 export default class BossEnemyAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ENEMY_ATTACK;
-    const boss = this.bossRoom.monsters[0];
+    const boss = this.bossRoom.monsters[BOSS_INDEX];
 
     // 광역 공격만 가능 속성값도 없음
     if (this.bossRoom.phase === 1) {
@@ -62,7 +67,12 @@ export default class BossEnemyAttackState extends BossRoomState {
   async bossAttackPlayers(bossMonster) {
     // 모든 유저에게 공격
     const aliveUsers = this.users.filter((user) => !user.isDead);
-    const monsterAction = this.createMonsterAnimation(aliveUsers, bossMonster, 3001);
+    const monsterAction = this.createMonsterAnimation(
+      aliveUsers,
+      bossMonster,
+      BOSS_AREA_ATTAK,
+      BOSS_ATTAK_EFFECT,
+    );
 
     aliveUsers.forEach((user) => {
       let damage = bossMonster.monsterAtk;
@@ -102,7 +112,12 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   async downResist(bossMonster) {
     // 모든 유저에게 디버프 적용
-    const monsterAction = this.createMonsterAnimation(this.users, bossMonster, 3001);
+    const monsterAction = this.createMonsterAnimation(
+      this.users,
+      bossMonster,
+      BOSS_AREA_ATTAK,
+      BOSS_DOWN_RESIST_EFFECT,
+    );
     const aliveUsers = this.users.filter((user) => !user.isDead);
     aliveUsers.forEach((user) => {
       // 디버프 상태로 전환
@@ -122,7 +137,12 @@ export default class BossEnemyAttackState extends BossRoomState {
     user.stat.hp = user.stat.mp;
     user.stat.mp = temp;
     const statusResponse = this.createStatusResponse([user]);
-    const monsterAction = this.createMonsterAnimation([user], bossMonster, 3001);
+    const monsterAction = this.createMonsterAnimation(
+      [user],
+      bossMonster,
+      BOSS_SINGLE_ATTAK,
+      BOSS_CHANGE_STATUS_EFFECT,
+    );
 
     this.users.forEach((u) => {
       u.socket.write(statusResponse);
@@ -158,13 +178,13 @@ export default class BossEnemyAttackState extends BossRoomState {
   }
 
   // 몬스터 애니메이션 전송
-  createMonsterAnimation(users, monster, effectCode) {
+  createMonsterAnimation(users, monster, animCode, effectCode) {
     return createResponse(PacketType.S_BossMonsterAction, {
       playerIds: users.map((user) => user.id),
       actionMonsterIdx: monster.monsterIdx,
       actionSet: {
-        animCode: ATTACK_ANIMATION_CODE,
-        effectCode, // 공격 유형에 따라 이펙트 코드 정해야 됨
+        animCode,
+        effectCode,
       },
     });
   }
