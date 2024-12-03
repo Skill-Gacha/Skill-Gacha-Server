@@ -5,8 +5,7 @@ import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import BossRoomState from './bossRoomState.js';
-import { ELEMENT_KEYS, RESISTANCE_KEYS } from '../../../utils/battle/calculate.js';
-import BossTurnChangeState from './bossTurnChangeState.js';
+import { ELEMENT_KEYS } from '../../../utils/battle/calculate.js';
 
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
 const BOSS_MONSTER_MODEL = 2029;
@@ -52,7 +51,7 @@ export default class BossPhaseState extends BossRoomState {
 
   // 보스 저항 설정 메서드
   setBossResistances(boss, phase) {
-    const resistanceKeys = Object.keys(RESISTANCE_KEYS);
+    const resistanceKeys = Object.keys(ELEMENT_KEYS);
     let selectedResistanceKey;
 
     if (phase === 2) {

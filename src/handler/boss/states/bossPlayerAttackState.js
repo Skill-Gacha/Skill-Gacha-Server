@@ -217,6 +217,17 @@ export default class BossPlayerAttackState extends BossRoomState {
     });
   }
 
+  sendBarrierCount() {
+    const barrierCount = this.bossRoom.shield ? this.bossRoom.shield.remainingHits : 0;
+    this.users.forEach((user) => {
+      user.socket.write(
+        createResponse(PacketType.S_BossBarrierCount, {
+          barrierCount: barrierCount,
+        }),
+      );
+    });
+  }
+
   sendPlayerAction(effectCode) {
     const aliveMonsters = this.getAliveMonsters();
     const targetMonsterIdxs = aliveMonsters.map((m) => m.monsterIdx);
