@@ -83,12 +83,6 @@ export default class PlayerUseItemState extends DungeonState {
     const existingMp = this.user.stat.mp;
     this.user.increaseHpMp(0, 60);
 
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerMp, {
-        mp: this.user.stat.mp,
-      }),
-    );
-
     const battleLog = {
       msg: `MP 회복 포션을 사용하여 MP를 ${this.user.stat.mp - existingMp} 회복했습니다.`,
       typingAnimation: false,
@@ -159,7 +153,7 @@ export default class PlayerUseItemState extends DungeonState {
 
   async usePanacea() {
     // 상태 이상 status 해제
-    this.user.downResist = false;
+    this.user.stat.downResist = false;
 
     const battleLog = {
       msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,

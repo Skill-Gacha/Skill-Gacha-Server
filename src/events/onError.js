@@ -65,6 +65,7 @@ export const onError = (socket) => async (err) => {
       });
 
       bossRoom.removeUser(user);
+      bossRoom.clearTurnTimer();
 
       users.forEach((user) => {
         user.socket.write(gameOverMessage);

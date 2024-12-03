@@ -8,6 +8,7 @@ import BossRoomState from './bossRoomState.js';
 export default class BossGameOverWinState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.GAME_OVER_WIN;
+    this.bossRoom.clearTurnTimer();
 
     this.users.forEach((user) => {
       user.isDead = false;

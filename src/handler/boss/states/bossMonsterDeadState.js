@@ -9,11 +9,12 @@ import { delay } from '../../../utils/delay.js';
 
 const DEATH_ANIMATION_CODE = 4;
 const DEFEAT_DELAY = 4000;
+const BOSS_INDEX = 0;
 
 export default class BossMonsterDeadState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.MONSTER_DEAD;
-    const boss = this.bossRoom.monsters[0];
+    const boss = this.bossRoom.monsters[BOSS_INDEX];
 
     // 보스 몬스터에 사망 애니메이션 전송
     this.users.forEach((user) => {

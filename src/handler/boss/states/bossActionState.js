@@ -14,6 +14,7 @@ const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 
 export default class BossActionState extends BossRoomState {
   enter() {
+    this.bossRoom.startTurnTimer();
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ACTION;
     if (this.bossRoom.gameStart) {
       if (this.user.isDead === true) {

@@ -89,7 +89,6 @@ export default class BossPlayerAttackState extends BossRoomState {
         // 쉴드가 남아있는 경우
         this.bossRoom.shieldCount -= 1; // 쉴드의 남은 공격 횟수 감소
         this.sendBarrierCount(this.bossRoom.shieldCount);
-        console.log(`쉴드가 공격을 막았습니다. 남은 공격 횟수: ${this.bossRoom.shieldCount}`);
         // 몬스터에게 피해를 주지 않음
       } else {
         // 쉴드가 남아있지 않으면 몬스터에게 피해를 줌
@@ -97,8 +96,6 @@ export default class BossPlayerAttackState extends BossRoomState {
         this.sendMonsterHpUpdate(monster); // 몬스터 체력 업데이트
       }
     }
-
-    console.log(`현재 쉴드 상태:`, this.bossRoom.shieldActivated);
 
     // 쉴드가 남아있지 않아서 피해를 주었을 때의 로그 메시지
     const battleLogMsg =
@@ -261,13 +258,11 @@ export default class BossPlayerAttackState extends BossRoomState {
       if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
         this.bossRoom.phase = 2; // phase를 2로 변경
         this.changeState(BossPhaseState); // 상태 변경
-        console.log(`보스의 phase가 ${this.bossRoom.phase}phase로 변경되었습니다.`);
       }
       // 현재 phase가 2일 때
       else if (boss.monsterHp <= 2000 && this.bossRoom.phase === 2) {
         this.bossRoom.phase = 3; // phase를 3으로 변경
         this.changeState(BossPhaseState); // 상태 변경
-        console.log(`보스의 phase가 ${this.bossRoom.phase}phase로 변경되었습니다.`);
       }
     }
   }
