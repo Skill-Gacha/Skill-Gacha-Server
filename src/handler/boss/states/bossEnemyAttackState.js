@@ -8,6 +8,7 @@ import BossIncreaseManaState from './bossIncreaseManaState.js';
 import BossPlayerDeadState from './bossPlayerDeadState.js';
 import { checkStopperResist } from '../../../utils/battle/calculate.js';
 import { delay } from '../../../utils/delay.js';
+import BossGameOverLoseState from './bossGameOverLoseState.js';
 
 const ATTACK_ANIMATION_CODE = 0;
 const DEATH_ANIMATION_CODE = 1;
@@ -44,6 +45,12 @@ export default class BossEnemyAttackState extends BossRoomState {
       }
     }
 
+    // 유저의 체력이 모두 0이 됐을 때
+    if (this.users.every((user) => user.stat.hp <= 0)) {
+      this.changeState(BossGameOverLoseState);
+      return;
+    }
+
     // 무적 버프 초기화 및 턴 종료
     await delay(ATTACK_DELAY);
     this.users.forEach((user) => {
@@ -54,8 +61,10 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   async bossAttackPlayers(bossMonster) {
     // 모든 유저에게 공격
-    const monsterAction = this.createMonsterAnimation(this.users, bossMonster, 3001);
-    this.users.forEach((user) => {
+    const aliveUsers = this.users.filter((user) => !user.isDead);
+    const monsterAction = this.createMonsterAnimation(aliveUsers, bossMonster, 3001);
+
+    aliveUsers.forEach((user) => {
       let damage = bossMonster.monsterAtk;
 
       if (this.element) {
@@ -80,7 +89,7 @@ export default class BossEnemyAttackState extends BossRoomState {
         `${bossMonster.monsterName}이 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
       );
 
-      if (user.stat.hp <= 0) {
+      if (user.stat.hp <= 0 && aliveUsers.length !== 1) {
         this.handlePlayerDeath(user);
         return;
       }
@@ -94,7 +103,8 @@ export default class BossEnemyAttackState extends BossRoomState {
   async downResist(bossMonster) {
     // 모든 유저에게 디버프 적용
     const monsterAction = this.createMonsterAnimation(this.users, bossMonster, 3001);
-    this.users.forEach((user) => {
+    const aliveUsers = this.users.filter((user) => !user.isDead);
+    aliveUsers.forEach((user) => {
       // 디버프 상태로 전환
       user.stat.downResist = true;
       user.socket.write(monsterAction);

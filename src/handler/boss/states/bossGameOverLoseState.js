@@ -3,12 +3,15 @@
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { BOSS_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import BossRoomState from './bossRoomState.js';
 
 export default class BossGameOverLoseState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.GAME_OVER_LOSE;
+
+    this.users.forEach((user) => {
+      user.isDead = false;
+    });
 
     // 패배 메시지 모든 유저에게 전송
     const loseResponse = createResponse(PacketType.S_ScreenText, {
