@@ -14,7 +14,7 @@ COPY . .
 # 포트 노출
 EXPOSE 5555
 
-CMD ["ls -lsrta"]
+# CMD ["ls", "-lsrta"]
 
 # 애플리케이션 실행
 CMD ["npx", "pm2-runtime", "start", "ecosystem.config.cjs"]
