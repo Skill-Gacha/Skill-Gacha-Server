@@ -4,7 +4,6 @@ import { BOSS_STATUS } from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import BossRoomState from './bossRoomState.js';
-import { ELEMENT_KEYS, RESISTANCE_KEYS } from '../../../utils/battle/calculate.js';
 import { getElementById } from '../../../init/loadAssets.js';
 import { elementResist } from '../../../utils/packet/playerPacket.js';
 
@@ -23,7 +22,7 @@ export default class BossPhaseState extends BossRoomState {
 
     const phase = this.bossRoom.phase;
     const randomElement = this.bossRandomElement();
-    console.log('asdf', randomElement);
+    this.bossRoom.previousElement = randomElement; // 보스 속성 부여
 
     this.setBossResistances(boss, randomElement, phase);
     this.users.forEach((user) => {
@@ -52,15 +51,13 @@ export default class BossPhaseState extends BossRoomState {
     }
     if (phase === 2) {
       boss.resistances = elementResist(chosenElement);
-      console.log('보스속성 2페:', boss.resistances);
     } else if (phase === 3) {
       const previousElement = this.bossRoom.previousElement;
 
       if (previousElement === randomElement) {
-        randomElement = bossRandomElement();
+        randomElement = this.bossRandomElement();
       }
       boss.resistances = elementResist(chosenElement);
-      console.log('보스속성 3페:', boss.resistances);
     }
   }
 
