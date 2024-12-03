@@ -14,12 +14,10 @@ class BossRoomClass extends BaseSession {
     this.selectedItem = null;
     this.gameStart = false;
     this.phase = 1;
+    this.previousResistance = null;
+    this.shieldCount = 5;
 
-    this.shield = {
-      remainingHits: 0, // 남은 공격 횟수
-    };
-
-    this.shieldCreated = false; // 쉴드가 생성되었는지 여부를 추적하는 플래그 추가
+    this.shieldActivated = false; // 쉴드가 생성되었는지 여부를 추적하는 플래그 추가
 
     // 전역 턴 타이머 추가
     this.turnTimer = null;
