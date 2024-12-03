@@ -1,3 +1,0 @@
-﻿CREATE USER 'exporter'@'%' IDENTIFIED BY 'exporter';
-GRANT PROCESS, REPLICATION CLIENT ON *.* TO 'exporter'@'%';
-FLUSH PRIVILEGES;

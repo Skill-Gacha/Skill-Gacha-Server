@@ -28,11 +28,11 @@ export const syncItemsToDB = async () => {
               const itemId = parseInt(itemKey.replace('item', ''), 10);
               const itemCount = parseInt(count, 10);
               await saveItemToDB(nickname, itemId, itemCount);
-            }),
+            })
           );
           await Promise.all(saveItemPromises);
         }
-      }),
+      })
     );
 
     // 모든 제한된 비동기 작업 완료 대기

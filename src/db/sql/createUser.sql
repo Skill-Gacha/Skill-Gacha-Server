@@ -1,3 +1,0 @@
-﻿CREATE USER 'user'@'%' IDENTIFIED BY 'user';
-GRANT ALL PRIVILEGES ON gacha_db.* TO 'user'@'%';
-FLUSH PRIVILEGES;
