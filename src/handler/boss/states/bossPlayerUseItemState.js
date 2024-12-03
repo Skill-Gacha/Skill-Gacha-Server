@@ -11,12 +11,14 @@ import BossTurnChangeState from './bossTurnChangeState.js';
 import BossItemChoiceState from './bossItemChoiceState.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
+const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
+const BASE_ITEM_CODE_OFFSET = 4000;
 
 export default class BossPlayerUseItemState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.USE_ITEM;
 
-    const selectedItemId = this.bossRoom.selectedItem + 4000; // Assuming item IDs start at 4001
+    const selectedItemId = this.bossRoom.selectedItem + BASE_ITEM_CODE_OFFSET; // Assuming item IDs start at 4001
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {
@@ -43,7 +45,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
         await this.usePanacea();
         break;
       default:
-        console.error(`PvpUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
+        console.error(`BossUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
         invalidResponseCode(this.user.socket);
         return;
     }
@@ -184,6 +186,15 @@ export default class BossPlayerUseItemState extends BossRoomState {
   async handleInput(responseCode) {
     if (responseCode === 1) {
       this.changeState(BossTurnChangeState);
+
+      const battleLog = {
+        msg: ' ',
+        typingAnimation: false,
+        btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
+      };
+
+      const response = createResponse(PacketType.S_BossBattleLog, { battleLog });
+      this.user.socket.write(response);
     } else {
       // 유효하지 않은 응답 처리
       invalidResponseCode(this.user.socket);

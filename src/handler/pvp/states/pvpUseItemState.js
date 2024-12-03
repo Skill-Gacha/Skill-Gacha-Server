@@ -9,6 +9,7 @@ import { PVP_STATUS } from '../../../constants/battle.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { ITEM_TYPES } from '../../../constants/items.js';
+import logger from '../../../utils/log/logger.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 const BASE_ITEM_CODE_OFFSET = 4000;
@@ -21,7 +22,7 @@ export default class PvpUseItemState extends PvpState {
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {
-      console.error(`PvpUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
+      logger.error(`PvpUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
       invalidResponseCode(this.mover.socket);
       return;
     }
@@ -45,7 +46,7 @@ export default class PvpUseItemState extends PvpState {
           await this.usePanacea();
           break;
         default:
-          console.error(`PvpUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
+          logger.error(`PvpUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
           invalidResponseCode(this.mover.socket);
           return;
       }
@@ -54,7 +55,7 @@ export default class PvpUseItemState extends PvpState {
       await updateItemCountInRedis(this.mover.nickname, selectedItemId, -1);
       await this.mover.updateItem(this.mover.nickname);
     } catch (error) {
-      console.error('PvpUseItemState: 아이템 사용 중 오류 발생:', error);
+      logger.error('PvpUseItemState: 아이템 사용 중 오류 발생:', error);
       invalidResponseCode(this.mover.socket);
     }
   }

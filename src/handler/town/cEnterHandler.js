@@ -14,6 +14,7 @@ import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
 import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
+import logger from '../../utils/log/logger.js';
 
 const SKILL_OFFSET = 1000;
 
@@ -24,14 +25,14 @@ export const cEnterHandler = async ({ socket, payload }) => {
     // 입력값 검증
     const validation = validatePayload(payload);
     if (!validation) {
-      console.warn(`cEnterHandler: 잘못된 입력값입니다. 닉네임: ${nickname}, 속성ID: ${elementId}`);
+      logger.error(`cEnterHandler: 잘못된 입력값입니다. 닉네임: ${nickname}, 속성ID: ${elementId}`);
       return;
     }
 
     // 속성 유효성 검사
     const chosenElement = getElementById(elementId);
     if (!chosenElement) {
-      console.error('cEnterHandler: 존재하지 않는 속성 ID입니다.');
+      logger.error('cEnterHandler: 존재하지 않는 속성 ID입니다.');
       return;
     }
 
@@ -54,7 +55,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
     // 다른 플레이어에게 나를 알림
     await sSpawnHandler(user);
   } catch (error) {
-    console.error('cEnterHandler 에러:', error);
+    logger.error('cEnterHandler 에러:', error);
   }
 };
 
@@ -76,7 +77,7 @@ const validatePayload = (payload) => {
 const handleExistingUser = async (user, nickname, chosenElement) => {
   try {
     user.resetHpMp();
-    console.log(`cEnterHandler: 유저 ${user.id}가 이미 세션에 존재합니다.`);
+    logger.info(`cEnterHandler: 유저 ${user.id}가 이미 세션에 존재합니다.`);
 
     const currentSession = sessionManager.getSessionByUserId(user.id);
     if (currentSession !== sessionManager.getTown()) {
@@ -89,7 +90,7 @@ const handleExistingUser = async (user, nickname, chosenElement) => {
       ]);
 
       user.userSkills = loadUserSkills(skillsFromRedis);
-      console.log(`cEnterHandler: 유저 ${user.id}가 마을 세션으로 이동되었습니다.`);
+      logger.info(`cEnterHandler: 유저 ${user.id}가 마을 세션으로 이동되었습니다.`);
 
       if (!itemsFromRedis) {
         const initializedItems = initializeItems();
@@ -100,7 +101,7 @@ const handleExistingUser = async (user, nickname, chosenElement) => {
       }
     }
   } catch (error) {
-    console.error(`cEnterHandler: handleExistingUser 에러; 유저 ID: ${user.id}:`, error);
+    logger.error(`cEnterHandler: handleExistingUser 에러; 유저 ID: ${user.id}:`, error);
     throw error;
   }
 };
@@ -152,7 +153,7 @@ const handleConnectingUser = async (nickname, classId, chosenElement, socket) =>
 
     return user;
   } catch (error) {
-    console.error(`cEnterHandler: handleNewOrReturningUser 에러; 닉네임: ${nickname}:`, error);
+    logger.error(`cEnterHandler: handleNewOrReturningUser 에러; 닉네임: ${nickname}:`, error);
     throw error;
   }
 };
@@ -185,7 +186,7 @@ const createNewUser = async (nickname, classId, chosenElement) => {
 
     return await findUserNickname(nickname);
   } catch (error) {
-    console.error(`cEnterHandler: createNewUser 에러; 닉네임: ${nickname}:`, error);
+    logger.error(`cEnterHandler: createNewUser 에러; 닉네임: ${nickname}:`, error);
     throw error;
   }
 };
@@ -210,7 +211,7 @@ const spawnOtherUsers = async (user) => {
       user.socket.write(spawnResponse);
     }
   } catch (error) {
-    console.error(`cEnterHandler: notifyOtherUsers 에러; 유저ID: ${user.id}:`, error);
+    logger.error(`cEnterHandler: notifyOtherUsers 에러; 유저ID: ${user.id}:`, error);
     throw error;
   }
 };

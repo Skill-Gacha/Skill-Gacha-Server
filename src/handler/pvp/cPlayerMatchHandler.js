@@ -17,7 +17,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   const user = sessionManager.getUserBySocket(socket);
 
   if (!user) {
-    console.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
+    logger.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
     return;
   }
 
@@ -37,13 +37,15 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     sDespawnHandler(playerA);
     sDespawnHandler(playerB);
   } catch (error) {
-    console.error('cPlayerMatchHandler: 디스폰 처리 중 오류 발생:', error);
+    logger.error('cPlayerMatchHandler: 디스폰 처리 중 오류 발생:', error);
     return;
   }
 
   const dungeonCode = Math.floor(Math.random() * DUNGEON_CODE_RANGE + 1) + DUNGEON_CODE_BASE;
   pvpRoom.initializeTurn();
-  const isFirstAttack = pvpRoom.getUserTurn();
+  const isPlayerAFirstAttack = pvpRoom.getUserTurn() === 0;
+  const isPlayerBFirstAttack = pvpRoom.getUserTurn() === 1;
+
 
   const lastKoreanA = checkBatchim(playerB.nickname) ? '과' : '와';
   const lastKoreanB = checkBatchim(playerA.nickname) ? '과' : '와';
@@ -53,9 +55,14 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     playerData: MyStatus(playerA),
     opponentData: OpponentStatus(playerB),
     battleLog: createBattleLogResponse(
-      generateBattleLog(playerB.nickname, lastKoreanA, isFirstAttack, '선공입니다.'),
-      isFirstAttack,
-      [true, true, true, true],
+      generateBattleLog(
+        playerB.nickname,
+        lastKoreanA,
+        isPlayerAFirstAttack,
+        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.'
+      ),
+      isPlayerAFirstAttack,
+      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false]
     ),
   });
 
@@ -64,9 +71,14 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     playerData: MyStatus(playerB),
     opponentData: OpponentStatus(playerA),
     battleLog: createBattleLogResponse(
-      generateBattleLog(playerA.nickname, lastKoreanB, !isFirstAttack, '후공입니다.'),
-      !isFirstAttack,
-      [false, false, false, false],
+      generateBattleLog(
+        playerA.nickname,
+        lastKoreanB,
+        isPlayerBFirstAttack,
+        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.'
+      ),
+      isPlayerBFirstAttack,
+      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false]
     ),
   });
 

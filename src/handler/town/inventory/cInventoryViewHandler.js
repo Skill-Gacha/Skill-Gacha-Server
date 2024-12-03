@@ -4,12 +4,13 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
 import { getProductData } from '../../../init/loadAssets.js';
+import logger from '../../../utils/log/logger.js';
 
 export const cInventoryViewHandler = async ({ socket }) => {
   try {
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
-      throw new Error('cInventoryViewHandler: 사용자를 찾을 수 없습니다.');
+      logger.error('cInventoryViewHandler: 사용자를 찾을 수 없습니다.');
     }
 
     // 모든 제품 데이터 가져오기
@@ -32,6 +33,6 @@ export const cInventoryViewHandler = async ({ socket }) => {
 
     socket.write(inventoryResponse);
   } catch (error) {
-    console.error(`cInventoryViewHandler: 인벤토리 조회 중 오류 발생: ${error.message}`);
+    logger.error(`cInventoryViewHandler: 인벤토리 조회 중 오류 발생: ${error.message}`);
   }
 };

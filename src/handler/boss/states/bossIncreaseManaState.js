@@ -23,14 +23,14 @@ export default class BossIncreaseManaState extends BossRoomState {
     if (this.user.turnOff === true) {
       this.updateUsersStatus([this.user]);
       this.user.turnOff = false;
-      await delay(3000); // 시간제한이 없어서 임시로 설정
+      await delay(2000); // 시간제한이 없어서 임시로 설정
       this.changeState(BossTurnChangeState);
     }
 
     // 보스의 공격이 진행된 후
     else {
       this.updateUsersStatus(this.users);
-      await delay(3000);
+      await delay(2000);
       this.changeState(BossActionState);
     }
 
@@ -41,11 +41,10 @@ export default class BossIncreaseManaState extends BossRoomState {
   }
 
   updateUsersStatus(users) {
-    const statusResponse = this.createStatusResponse(users);
+    const aliveUsers = users.filter((user) => !user.isDead);
 
-    users.forEach((user) => {
-      // 상태 알림 생성 및 전송
-      user.socket.write(statusResponse);
+    // 살아있는 유저만 체력 회복
+    aliveUsers.forEach((user) => {
       const existingHp = user.stat.hp;
       const existingMp = user.stat.mp;
 
@@ -54,11 +53,9 @@ export default class BossIncreaseManaState extends BossRoomState {
       const randomMp = this.getRandomInt(MP_RECOVERY_MIN, MP_RECOVERY_MAX);
       user.increaseHpMp(randomHp, randomMp);
 
-      // 배틀 로그 생성 및 전송
-      const battleLogMsg = `턴을 넘기셔서 체력이 ${user.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${user.stat.mp - existingMp}만큼 회복하였습니다.`;
-
       // 턴을 넘긴 경우, 해당 유저만 배틀 로그
       if (users.length === 1) {
+        const battleLogMsg = `턴을 넘기셔서 체력이 ${user.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${user.stat.mp - existingMp}만큼 회복하였습니다.`;
         const battleLogResponse = this.createBattleLogResponse(battleLogMsg);
         user.socket.write(battleLogResponse);
       }
@@ -68,8 +65,15 @@ export default class BossIncreaseManaState extends BossRoomState {
     if (users.length > 1) {
       const battleLogMsg = `모든 유저가 체력과 마나를 회복했습니다.`;
       const battleLogResponse = this.createBattleLogResponse(battleLogMsg);
-      users.forEach((user) => user.socket.write(battleLogResponse));
+      aliveUsers.forEach((user) => user.socket.write(battleLogResponse));
     }
+
+    const statusResponse = this.createStatusResponse(users);
+
+    // 상태 알림 생성 및 전송은 모두에게
+    this.users.forEach((user) => {
+      user.socket.write(statusResponse);
+    });
   }
 
   getRandomInt = (min, max) => {

@@ -32,7 +32,6 @@ class BossRoomClass extends BaseSession {
 
     // 첫번째 유저가 첫번째 순서
     this.userTurn = playerA;
-    this.gameStart = true;
   }
 
   getUsers() {

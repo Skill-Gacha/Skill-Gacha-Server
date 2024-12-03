@@ -3,6 +3,7 @@
 import { buffs } from '../../constants/battle.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../response/createResponse.js';
+import logger from '../log/logger.js';
 
 // 자신
 export const MyStatus = (my) => {
@@ -32,7 +33,7 @@ export const buffSkill = (user, skillId) => {
   if (buffs[skillId]) {
     user.stat.buff = buffs[skillId];
   } else {
-    console.error(`알 수 없는 ID: ${skillId}`);
+    logger.error(`알 수 없는 ID: ${skillId}`);
   }
 };
 
@@ -55,7 +56,7 @@ export const useBuffSkill = (user, socket, dungeon) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
@@ -75,7 +76,7 @@ export const useBuffSkill = (user, socket, dungeon) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
@@ -95,7 +96,7 @@ export const useBuffSkill = (user, socket, dungeon) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
@@ -112,12 +113,12 @@ export const useBuffSkill = (user, socket, dungeon) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
     default:
-      console.warn(`유저에게 버프가 존재하지 않습니다.: ${user.stat.buff}`);
+      logger.warn(`유저에게 버프가 존재하지 않습니다.: ${user.stat.buff}`);
       break;
   }
 };
@@ -138,7 +139,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
@@ -159,7 +160,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
@@ -179,7 +180,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
@@ -196,12 +197,12 @@ export const pvpUseBuffSkill = (user, stopper) => {
           }),
         );
       } catch (error) {
-        console.error('소켓 쓰기 중 오류 발생:', error);
+        logger.error('소켓 쓰기 중 오류 발생:', error);
       }
       break;
 
     default:
-      console.warn(`유저에게 버프가 존재하지 않습니다.: ${user.stat.buff}`);
+      logger.info(`유저에게 버프가 존재하지 않습니다.: ${user.stat.buff}`);
       break;
   }
 };

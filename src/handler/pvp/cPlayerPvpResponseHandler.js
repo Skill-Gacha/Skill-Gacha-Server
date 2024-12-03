@@ -3,6 +3,9 @@
 import sessionManager from '#managers/sessionManager.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
+import logger from '../../utils/log/logger.js';
+import { STATE_KEYS } from '../../constants/stateKeys.js';
+import stateFactory from '../states/stateFactory.js';
 import PvpFleeMessageState from './states/pvpFleeMessageState.js';
 import PvpGameOverState from './states/pvpGameOverState.js';
 
@@ -14,14 +17,14 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
 
     if (!user) {
-      console.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
+      logger.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
       return;
     }
 
     const pvpRoom = sessionManager.getPvpByUser(user);
 
     if (!pvpRoom) {
-      console.error('cPlayerPvpResponseHandler: 유저가 PVP 세션에 속해 있지 않습니다.');
+      logger.error('cPlayerPvpResponseHandler: 유저가 PVP 세션에 속해 있지 않습니다.');
       return;
     }
 
@@ -36,10 +39,10 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     const [playerA, playerB] = Array.from(pvpRoom.users.values());
-    const currentPlayer = pvpRoom.getUserTurn() === 0 ? playerB : playerA;
+    const currentPlayer = pvpRoom.getUserTurn() === 0 ? playerA : playerB;
 
     if (currentPlayer.nickname !== user.nickname) {
-      console.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
+      logger.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
       return;
     }
 
@@ -50,13 +53,15 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     opponent.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: false }));
 
     if (!pvpRoom.currentState) {
-      const PvpActionState = (await import('./states/pvpActionState.js')).default;
-      pvpRoom.currentState = new PvpActionState(pvpRoom, currentPlayer, opponent);
+      // 예시: 'action' 키로 상태 생성
+      const newState = await stateFactory.createState(STATE_KEYS.PVP_ACTION, pvpRoom, currentPlayer, opponent);
+      pvpRoom.currentState = newState;
       await pvpRoom.currentState.enter();
     }
 
+    sessionManager.handleUserActivity(user.id);
     await pvpRoom.currentState.handleInput(responseCode);
   } catch (error) {
-    console.error('cPlayerPvpResponseHandler: ', error);
+    logger.error('cPlayerPvpResponseHandler: ', error);
   }
 };

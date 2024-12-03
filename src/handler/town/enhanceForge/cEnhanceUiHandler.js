@@ -3,12 +3,13 @@
 import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import logger from '../../../utils/log/logger.js';
 
 export const cEnhanceUiHandler = async ({ socket }) => {
   try {
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
-      throw new Error('cEnhanceUiHandler: 사용자를 찾을 수 없습니다.');
+      logger.error('cEnhanceUiHandler: 사용자를 찾을 수 없습니다.');
     }
 
     // 사용자의 스킬 코드 목록 생성
@@ -23,6 +24,6 @@ export const cEnhanceUiHandler = async ({ socket }) => {
     // 응답 패킷 생성 및 전송
     socket.write(createResponse(PacketType.S_EnhanceUiResponse, enhanceUiData));
   } catch (error) {
-    console.error(`cEnhanceUiHandler 에러 발생: ${error.message}`);
+    logger.error(`cEnhanceUiHandler 에러 발생: ${error.message}`);
   }
 };

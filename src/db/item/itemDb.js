@@ -2,6 +2,9 @@
 
 import dbPool from '../database.js';
 import { ITEM_QUERIES } from './itemQueries.js';
+import CustomError from '../../utils/error/customError.js';
+import { ErrorCodes } from '../../utils/error/errorCodes.js';
+import logger from '../../utils/log/logger.js';
 
 export const getItemsFromDB = async (nickname) => {
   try {
@@ -18,8 +21,8 @@ export const getItemsFromDB = async (nickname) => {
     }
     return itemsArray;
   } catch (error) {
-    console.error('itemDb: DB에서 아이템 정보 가져오기 실패:', error);
-    throw error;
+    logger.error('itemDb: DB에서 아이템 정보 가져오기 실패');
+    throw new CustomError(ErrorCodes.FETCH_ITEM_DATA_FROM_DB_FAILED, error);
   }
 };
 
@@ -27,7 +30,7 @@ export const saveItemToDB = async (nickname, itemId, count) => {
   try {
     await dbPool.query(ITEM_QUERIES.INSERT_OR_UPDATE_ITEM, [nickname, itemId, count, count]);
   } catch (error) {
-    console.error('itemDb: DB에 아이템 저장 실패:', error);
-    throw error;
+    logger.error('itemDb: DB에 아이템 저장 실패.');
+    throw new CustomError(ErrorCodes.SAVE_ITEM_DATA_TO_DB_FAILED, error);
   }
 };

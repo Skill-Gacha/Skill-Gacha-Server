@@ -49,7 +49,7 @@ export default class PvpPlayerAttackState extends PvpState {
       totalDamage = 1;
       this.stopper.stat.protect = false;
     }
-
+    
     this.applyDamage(totalDamage, userSkillInfo.mana);
 
     this.sendStatusUpdates();

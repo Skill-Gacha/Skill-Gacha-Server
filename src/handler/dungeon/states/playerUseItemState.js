@@ -9,6 +9,7 @@ import ItemChoiceState from './itemChoiceState.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { ITEM_TYPES } from '../../../constants/items.js';
+import logger from '../../../utils/log/logger.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 const BASE_ITEM_CODE_OFFSET = 4000;
@@ -21,7 +22,7 @@ export default class PlayerUseItemState extends DungeonState {
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {
-      console.error(`PlayerUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
+      logger.error(`PlayerUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
       invalidResponseCode(this.socket);
       return;
     }
@@ -44,7 +45,7 @@ export default class PlayerUseItemState extends DungeonState {
         await this.usePanacea();
         break;
       default:
-        console.error(`PlayerUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
+        logger.error(`PlayerUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
         invalidResponseCode(this.socket);
         return;
     }
@@ -54,7 +55,7 @@ export default class PlayerUseItemState extends DungeonState {
       await updateItemCountInRedis(this.user.nickname, selectedItemId, -1);
       await this.user.updateItem(this.user.nickname);
     } catch (error) {
-      console.error('PlayerUseItemState: 아이템 수량 업데이트 중 오류 발생:', error);
+      logger.error('PlayerUseItemState: 아이템 수량 업데이트 중 오류 발생:', error);
       invalidResponseCode(this.socket);
     }
   }

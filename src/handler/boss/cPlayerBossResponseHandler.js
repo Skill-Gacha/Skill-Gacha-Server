@@ -3,8 +3,6 @@
 import sessionManager from '#managers/sessionManager.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
-import BossGameOverLoseState from './states/bossGameOverLoseState.js';
-import BossGameOverWinState from './states/bossGameOverWinState.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
@@ -22,11 +20,7 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
     return;
   }
 
-  const isConfirmOrGameOver = [BossGameOverLoseState, BossGameOverWinState].some(
-    (StateClass) => bossRoom.currentState instanceof StateClass,
-  );
-
-  if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
+  if (responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
     socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
     bossRoom.removeUser(user);
     const remainingUsers = bossRoom.getUsers();

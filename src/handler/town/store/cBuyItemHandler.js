@@ -6,6 +6,7 @@ import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { getProductById } from '../../../init/loadAssets.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { updateUserResource } from '../../../db/user/userDb.js';
+import logger from '../../../utils/log/logger.js';
 
 export const cBuyItemHandler = async ({ socket, payload }) => {
   try {
@@ -13,12 +14,12 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
 
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
-      throw new Error('cBuyItemHandler: 사용자 정보를 찾을 수 없습니다.');
+      logger.error('cBuyItemHandler: 사용자 정보를 찾을 수 없습니다.');
     }
 
     const product = getProductById(itemId);
     if (!product) {
-      throw new Error('cBuyItemHandler: 유효한 아이템 정보가 아닙니다.');
+      logger.error('cBuyItemHandler: 유효한 아이템 정보가 아닙니다.');
     }
 
     // 자원 및 아이템 확인
@@ -47,7 +48,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
     // 응답 전송
     sendBuyItemResponse(socket, true, itemId, user.gold, userItem ? userItem.count : 1);
   } catch (error) {
-    console.error(`cBuyItemHandler 에러 발생: ${error.message}`);
+    logger.error(`cBuyItemHandler 에러 발생: ${error.message}`);
     sendBuyItemResponse(socket, false);
   }
 };

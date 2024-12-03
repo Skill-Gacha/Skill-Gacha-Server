@@ -1,6 +1,9 @@
 ﻿// src/db/redis/ratingService.js
 
 import redisClient from '../../init/redis.js';
+import CustomError from '../../utils/error/customError.js';
+import { ErrorCodes } from '../../utils/error/errorCodes.js';
+import logger from '../../utils/log/logger.js';
 
 const RATING_KEY = 'pvp_rating';
 
@@ -62,11 +65,10 @@ export const getTopRatingsWithPlayer = async (nickname, topN) => {
 
     return topRatings;
   } catch (error) {
-    console.error('ratingService: getTopRatingsWithPlayer: 레이팅 정보를 가져오는 중 오류 발생', error);
-    throw error;
+    logger.error('ratingService: getTopRatingsWithPlayer: 레이팅 정보를 가져오는 중 오류 발생');
+    throw new CustomError(ErrorCodes.FETCH_RATING_DATA_FROM_REDIS_FAILED, error);
   }
 };
-
 
 export const getPlayerRank = async (nickname) => {
   const rank = await redisClient.zRevRank(RATING_KEY, nickname);
@@ -77,7 +79,7 @@ export const getAllRatingsFromRedis = async () => {
   try {
     return await redisClient.zRangeWithScores(RATING_KEY, 0, -1);
   } catch (error) {
-    console.error('ratingService: Redis로부터 레이팅 정보 가져오기 실패:', error);
-    throw error;
+    logger.error('ratingService: Redis로부터 레이팅 정보 가져오기 실패.');
+    throw new CustomError(ErrorCodes.FETCH_RATING_DATA_FROM_REDIS_FAILED, error);
   }
 };

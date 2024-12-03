@@ -4,12 +4,13 @@ import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
+import logger from '../../utils/log/logger.js';
 
 export const sSpawnHandler = async (newUser) => {
   try {
     const session = sessionManager.getSessionByUserId(newUser.id);
     if (!session) {
-      throw new Error('sSpawnHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
+      logger.error('sSpawnHandler: 사용자가 속한 세션을 찾을 수 없습니다.');
     }
 
     // 새로운 사용자 정보 생성
@@ -21,7 +22,7 @@ export const sSpawnHandler = async (newUser) => {
     // 기존 사용자들에게 전송 (자신을 제외)
     broadcastToSession(session, spawnResponse, newUser.id);
   } catch (error) {
-    console.error(`sSpawnHandler 에러 발생: ${error.message}`);
+    logger.error(`sSpawnHandler 에러 발생: ${error.message}`);
   }
 };
 
@@ -31,7 +32,7 @@ const broadcastToSession = (session, payload, excludeUserId) => {
       try {
         targetUser.socket.write(payload);
       } catch (error) {
-        console.error(`sSpawnHandler: S_Spawn 패킷 전송중 오류 발생 ${targetUser.id}: ${error.message}`);
+        logger.error(`sSpawnHandler: S_Spawn 패킷 전송중 오류 발생 ${targetUser.id}: ${error.message}`);
       }
     }
   });
