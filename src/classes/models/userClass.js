@@ -38,6 +38,14 @@ class User {
     this.stat.mp = Math.min(this.stat.mp + mp, this.stat.maxMp);
   }
 
+  changeHpMp() {
+    const temp = this.stat.hp;
+    this.stat.hp = this.stat.mp;
+    this.stat.mp = temp;
+    this.stat.hp = Math.min(this.stat.hp, this.stat.maxHp);
+    this.stat.mp = Math.min(this.stat.mp, this.stat.maxMp);
+  }
+
   resetHpMp() {
     this.stat.hp = this.stat.maxHp;
     this.stat.mp = this.stat.maxMp;

@@ -134,9 +134,7 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   async changeStatus(bossMonster, user) {
     // HP, MP 바꾸기
-    const temp = user.stat.hp;
-    user.stat.hp = user.stat.mp;
-    user.stat.mp = temp;
+    user.changeHpMp();
     const statusResponse = this.createStatusResponse([user]);
     const monsterAction = this.createMonsterAnimation(
       [user],
