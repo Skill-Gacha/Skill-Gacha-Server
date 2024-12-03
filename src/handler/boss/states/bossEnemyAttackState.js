@@ -7,9 +7,11 @@ import { createResponse } from '../../../utils/response/createResponse.js';
 import BossIncreaseManaState from './bossIncreaseManaState.js';
 import BossPlayerDeadState from './bossPlayerDeadState.js';
 import { checkStopperResist } from '../../../utils/battle/calculate.js';
+import { delay } from '../../../utils/delay.js';
 
 const ATTACK_ANIMATION_CODE = 0;
 const DEATH_ANIMATION_CODE = 1;
+const ATTACK_DELAY = 1000;
 const DISABLE_BUTTONS = [{ msg: '몬스터가 공격 중', enable: false }];
 
 export default class BossEnemyAttackState extends BossRoomState {
@@ -43,6 +45,7 @@ export default class BossEnemyAttackState extends BossRoomState {
     }
 
     // 무적 버프 초기화 및 턴 종료
+    await delay(ATTACK_DELAY);
     this.users.forEach((user) => {
       user.stat.protect = false;
     });
@@ -51,7 +54,6 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   async bossAttackPlayers(bossMonster) {
     // 모든 유저에게 공격
-    const statusResponse = this.createStatusResponse(this.users);
     const monsterAction = this.createMonsterAnimation(this.users, bossMonster, 3001);
     this.users.forEach((user) => {
       let damage = bossMonster.monsterAtk;
@@ -72,17 +74,20 @@ export default class BossEnemyAttackState extends BossRoomState {
       user.reduceHp(damage);
       user.stat.downResist = false; // 디버프 초기화
 
-      user.socket.write(statusResponse);
       user.socket.write(monsterAction);
       this.createBattleLogResponse(
         user,
-        `${bossMonster.monsterName}이(가) 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
+        `${bossMonster.monsterName}이 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
       );
 
       if (user.stat.hp <= 0) {
         this.handlePlayerDeath(user);
         return;
       }
+    });
+    const statusResponse = this.createStatusResponse(this.users);
+    this.users.forEach((user) => {
+      user.socket.write(statusResponse);
     });
   }
 
@@ -96,7 +101,7 @@ export default class BossEnemyAttackState extends BossRoomState {
 
       this.createBattleLogResponse(
         user,
-        `${bossMonster.monsterName}이(가) 당신의 저항력을 떨어트렸습니다.`,
+        `${bossMonster.monsterName}이 당신의 저항력을 떨어트렸습니다.`,
       );
     });
   }
@@ -114,10 +119,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       u.socket.write(monsterAction);
     });
 
-    this.createBattleLogResponse(
-      user,
-      `${bossMonster.monsterName}이(가) 당신의 HP, MP를 바꿨습니다.`,
-    );
+    this.createBattleLogResponse(user, `${bossMonster.monsterName}이 당신의 HP, MP를 바꿨습니다.`);
   }
 
   // 각 유저의 HP, MP 데이터 만들기
