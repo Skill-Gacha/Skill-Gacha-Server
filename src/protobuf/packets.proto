@@ -75,6 +75,7 @@ enum MsgId {
   S_BOSS_MONSTER_ACTION = 65;
   S_BOSS_PHASE = 66;
   S_BOSS_USER_TURN = 67;
+  S_BOSS_BARRIER_COUNT = 68;
 }
 
 // 패킷 정의 목록
@@ -383,6 +384,10 @@ message S_BossPhase {
 
 message S_BossUserTurn {
   int32 playerId = 1;
+}
+
+message S_BossBarrierCount {
+  int32 barrierCount = 1;
 }
 
 // 커스텀 메세지
