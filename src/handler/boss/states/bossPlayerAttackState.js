@@ -109,7 +109,6 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     this.updateBossPhase(boss);
     this.checkMonsterStates();
-    console.log('영혼 분쇄', skillInfo);
   }
 
   handleDamage(monster, totalDamage) {
