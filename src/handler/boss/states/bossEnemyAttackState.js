@@ -94,8 +94,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       user.reduceHp(damage);
       user.stat.downResist = false; // 디버프 초기화
 
-      user.socket.write(monsterAction);
-      this.createBattleLogResponse(
+      this.sendBattleLogResponse(
         user,
         `${bossMonster.monsterName}이 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
       );
@@ -106,8 +105,10 @@ export default class BossEnemyAttackState extends BossRoomState {
       }
     });
     const statusResponse = this.createStatusResponse(this.users);
+
     this.users.forEach((user) => {
       user.socket.write(statusResponse);
+      user.socket.write(monsterAction);
     });
   }
 
@@ -120,15 +121,18 @@ export default class BossEnemyAttackState extends BossRoomState {
       BOSS_AREA_ATTAK,
       BOSS_DOWN_RESIST_EFFECT,
     );
+
     aliveUsers.forEach((user) => {
       // 디버프 상태로 전환
       user.stat.downResist = true;
-      user.socket.write(monsterAction);
-
-      this.createBattleLogResponse(
+      this.sendBattleLogResponse(
         user,
         `${bossMonster.monsterName}이 당신의 저항력을 떨어트렸습니다.`,
       );
+    });
+
+    this.users.forEach((user) => {
+      user.socket.write(monsterAction);
     });
   }
 
@@ -148,7 +152,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       u.socket.write(monsterAction);
     });
 
-    this.createBattleLogResponse(user, `${bossMonster.monsterName}이 당신의 HP, MP를 바꿨습니다.`);
+    this.sendBattleLogResponse(user, `${bossMonster.monsterName}이 당신의 HP, MP를 바꿨습니다.`);
   }
 
   // 각 유저의 HP, MP 데이터 만들기
@@ -189,7 +193,7 @@ export default class BossEnemyAttackState extends BossRoomState {
   }
 
   // 배틀로그 전송
-  createBattleLogResponse(user, msg) {
+  sendBattleLogResponse(user, msg) {
     user.socket.write(
       createResponse(PacketType.S_BossBattleLog, {
         battleLog: {
