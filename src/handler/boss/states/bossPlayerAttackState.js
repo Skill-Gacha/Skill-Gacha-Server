@@ -33,6 +33,7 @@ export default class BossPlayerAttackState extends BossRoomState {
       msg: monster.monsterName,
       enable: false,
     }));
+
     if (this.isBuffSkill(userSkillInfo)) {
       await this.handleBuffSkill(userSkillInfo);
     } else if (this.isAreaSkill(userSkillInfo)) {
@@ -52,10 +53,6 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   async handleBuffSkill(skillInfo) {
-    if (skillInfo.id === DEBUFF_SKILL_ID) {
-      buffSkill(this.user, skillInfo.id);
-      bossBuffSkill(this.user, this.user.socket, this.bossRoom);
-    }
     // 모든 파티원에게 버프 적용
     this.users.forEach((user) => {
       if (user.stat.hp > 0) {
@@ -64,9 +61,6 @@ export default class BossPlayerAttackState extends BossRoomState {
         bossBuffSkill(user, user.socket, this.bossRoom);
       }
     });
-
-    buffSkill(this.user, skillInfo.id);
-    bossBuffSkill(this.user, this.user.socket, this.bossRoom);
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
@@ -115,6 +109,7 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     this.updateBossPhase(boss);
     this.checkMonsterStates();
+    console.log('영혼 분쇄', skillInfo);
   }
 
   handleDamage(monster, totalDamage) {
