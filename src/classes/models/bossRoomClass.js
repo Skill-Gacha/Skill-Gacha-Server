@@ -104,7 +104,7 @@ class BossRoomClass extends BaseSession {
     this.bossStatus = new BossTurnChangeState(this, currentPlayer);
     this.bossStatus.enter();
 
-    // 새로운 턴 타이머는 `BossTurnChangeState`에서 처리됨
+    // 새로운 턴 타이머는 `BossActionState`에서 처리됨
   }
 }
 
