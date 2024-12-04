@@ -33,16 +33,16 @@ export default class BossEnemyAttackState extends BossRoomState {
 
     // 광역기 & 저항력 약화 디버프 & 속성
     else if (this.bossRoom.phase === 2) {
-      Math.random() < 0.5 ? await this.bossAttackPlayers(boss) : await this.downResist(boss);
+      Math.random() < 0.7 ? await this.bossAttackPlayers(boss) : await this.downResist(boss);
     }
 
     // 광역기 & 저항력 약화 디버프 & 속성 & 유저 HP, MP 바꾸는 디버프
     else if (this.bossRoom.phase === 3) {
-      const randomChoice = Math.floor(Math.random() * 3);
+      const randomChoice = Math.random();
 
-      if (randomChoice === 0) {
+      if (randomChoice < 0.5) {
         await this.bossAttackPlayers(boss);
-      } else if (randomChoice === 1) {
+      } else if (randomChoice < 0.75) {
         await this.downResist(boss);
       } else {
         const aliveUsers = this.users.filter((user) => user.stat.hp > 0);
