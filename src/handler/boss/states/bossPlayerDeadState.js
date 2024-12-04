@@ -4,6 +4,11 @@ import { BOSS_STATUS } from '../../../constants/battle.js';
 import BossRoomState from './bossRoomState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
+import BossGameOverLoseState from './bossGameOverLoseState.js';
+import { delay } from '../../../utils/delay.js';
+
+const GAMEOVER_DELAY = 4000;
+const BOSS_USER_COUNT = 3;
 
 export default class BossPlayerDeadState extends BossRoomState {
   async enter() {
@@ -20,12 +25,17 @@ export default class BossPlayerDeadState extends BossRoomState {
       },
     });
 
-    const deadUsers = this.users.filter((u) => u.stat.hp <= 0 && !u.isDead);
+    const deadUsers = this.users.filter((u) => u.stat.hp <= 0);
 
     deadUsers.forEach((user) => {
       user.socket.write(playerDeadBattleLogResponse);
       user.isDead = true;
     });
+
+    if (deadUsers.length === BOSS_USER_COUNT) {
+      await delay(GAMEOVER_DELAY);
+      this.changeState(BossGameOverLoseState);
+    }
   }
 
   async handleInput(responseCode) {}

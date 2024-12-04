@@ -8,10 +8,9 @@ import BossIncreaseManaState from './bossIncreaseManaState.js';
 import BossPlayerDeadState from './bossPlayerDeadState.js';
 import { checkStopperResist } from '../../../utils/battle/calculate.js';
 import { delay } from '../../../utils/delay.js';
-import BossGameOverLoseState from './bossGameOverLoseState.js';
 
 const DEATH_ANIMATION_CODE = 1;
-const ATTACK_DELAY = 1000;
+const ATTACK_DELAY = 2500;
 const DISABLE_BUTTONS = [{ msg: '몬스터가 공격 중', enable: false }];
 const BOSS_INDEX = 0;
 const BOSS_SINGLE_ATTAK = 1;
@@ -49,12 +48,6 @@ export default class BossEnemyAttackState extends BossRoomState {
         const randomUser = aliveUsers[Math.floor(Math.random() * aliveUsers.length)];
         await this.changeStatus(boss, randomUser);
       }
-    }
-
-    // 유저의 체력이 모두 0이 됐을 때
-    if (this.users.every((user) => user.stat.hp <= 0)) {
-      this.changeState(BossGameOverLoseState);
-      return;
     }
 
     // 무적 버프 초기화 및 턴 종료
@@ -99,7 +92,7 @@ export default class BossEnemyAttackState extends BossRoomState {
         `${bossMonster.monsterName}이 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
       );
 
-      if (user.stat.hp <= 0 && aliveUsers.length !== 1) {
+      if (user.stat.hp <= 0) {
         this.handlePlayerDeath(user);
         return;
       }
