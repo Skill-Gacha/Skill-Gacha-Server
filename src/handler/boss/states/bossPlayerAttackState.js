@@ -136,15 +136,19 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   getBattleLogMessage() {
-    return this.bossRoom.shieldCount === 5
-      ? `${this.user.nickname}이(가) 광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.`
-      : `모든 몬스터의 공격이 쉴드에 의해 막혔습니다.`;
+    if (this.bossRoom.shieldCount === 5) {
+      return `${this.user.nickname}이(가) 광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.`;
+    } else {
+      return `모든 몬스터의 공격이 쉴드에 의해 막혔습니다.`;
+    }
   }
 
   getDamageLogMessage(monster, totalDamage) {
-    return this.bossRoom.shieldCount === 5
-      ? `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
-      : `${monster.monsterName}의 공격이 쉴드에 의해 막혔습니다.`;
+    if (this.bossRoom.shieldCount === 5) {
+      return `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
+    } else {
+      return `${monster.monsterName}의 공격이 쉴드에 의해 막혔습니다.`;
+    }
   }
 
   checkMonsterStates() {
