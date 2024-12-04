@@ -33,11 +33,6 @@ export default class BossIncreaseManaState extends BossRoomState {
       await delay(2000);
       this.changeState(BossActionState);
     }
-
-    // 5초 후에 handleInput(1)을 자동으로 호출하는 타이머 설정
-    // this.timeoutId = setTimeout(() => {
-    //   this.handleInput(1);
-    // }, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT); // ms
   }
 
   updateUsersStatus(users) {
