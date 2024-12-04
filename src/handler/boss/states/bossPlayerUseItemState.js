@@ -10,7 +10,6 @@ import { ITEM_TYPES } from '../../../constants/items.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 import BossItemChoiceState from './bossItemChoiceState.js';
 
-const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 const BASE_ITEM_CODE_OFFSET = 4000;
 
@@ -53,6 +52,8 @@ export default class BossPlayerUseItemState extends BossRoomState {
     // 아이템 수량 업데이트
     await updateItemCountInRedis(this.user.nickname, selectedItemId, -1);
     await this.user.updateItem(this.user.nickname);
+
+    this.changeState(BossTurnChangeState);
   }
 
   async useHpPotion() {
@@ -71,7 +72,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const battleLog = {
       msg: `HP 회복 포션을 사용하여 HP를 ${this.user.stat.hp - existingHp} 회복했습니다.`,
       typingAnimation: false,
-      btns: BUTTON_CONFIRM,
+      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
     };
 
     this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
@@ -94,7 +95,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const battleLog = {
       msg: `MP 회복 포션을 사용하여 MP를 ${this.user.stat.mp - existingMp} 회복했습니다.`,
       typingAnimation: false,
-      btns: BUTTON_CONFIRM,
+      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
     };
 
     this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
@@ -123,7 +124,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const battleLog = {
       msg: `광포화 포션을 사용하여 HP가 50 감소하고, 일시적으로 공격력이 2.5배 증가했습니다.`,
       typingAnimation: false,
-      btns: BUTTON_CONFIRM,
+      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
     };
 
     this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
@@ -164,7 +165,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const battleLog = {
       msg: battleLogMsg,
       typingAnimation: false,
-      btns: BUTTON_CONFIRM,
+      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
     };
 
     this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
@@ -177,27 +178,11 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const battleLog = {
       msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
       typingAnimation: false,
-      btns: BUTTON_CONFIRM,
+      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
     };
 
     this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
   }
 
-  async handleInput(responseCode) {
-    if (responseCode === 1) {
-      this.changeState(BossTurnChangeState);
-
-      const battleLog = {
-        msg: ' ',
-        typingAnimation: false,
-        btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
-      };
-
-      const response = createResponse(PacketType.S_BossBattleLog, { battleLog });
-      this.user.socket.write(response);
-    } else {
-      // 유효하지 않은 응답 처리
-      invalidResponseCode(this.user.socket);
-    }
-  }
+  async handleInput(responseCode) {}
 }
