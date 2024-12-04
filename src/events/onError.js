@@ -26,6 +26,9 @@ export const onError = (socket) => async (err) => {
       const loser = user;
       const winner = [...pvpRoom.users.values()].find((user) => user.id !== loser.id);
 
+      // 타이머 종료
+      pvpRoom.clearTurnTimer();
+
       const [winnerRating, loserRating] = await Promise.all([
         getPlayerRatingFromRedis(winner.nickname),
         getPlayerRatingFromRedis(loser.nickname),
