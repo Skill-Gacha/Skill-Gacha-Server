@@ -28,16 +28,15 @@ export default class BossTurnChangeState extends BossRoomState {
     // 유저의 모든 턴을 마쳤을 때
     const aliveUsers = this.users.filter((user) => !user.isDead);
     const allComplete = aliveUsers.every((user) => user.completeTurn);
+    this.bossRoom.userTurn = this.user;
 
     if (allComplete) {
       this.users.forEach((user) => (user.completeTurn = false));
-      this.bossRoom.userTurn = this.user;
       await delay(1000);
       this.changeState(BossEnemyAttackState);
       return;
     }
 
-    this.bossRoom.userTurn = this.user;
     this.changeState(BossActionState);
   }
 
