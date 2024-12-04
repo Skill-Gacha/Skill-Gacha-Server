@@ -137,8 +137,8 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   getBattleLogMessage() {
     return this.bossRoom.shieldCount === 5
-      ? '광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.'
-      : '모든 몬스터의 공격이 쉴드에 의해 막혔습니다.';
+      ? `${this.user.nickname}이(가) 광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.`
+      : `모든 몬스터의 공격이 쉴드에 의해 막혔습니다.`;
   }
 
   getDamageLogMessage(monster, totalDamage) {
@@ -205,17 +205,18 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   sendBattleLog(message, buttons) {
-    this.user.socket.write(
-      createResponse(PacketType.S_BossBattleLog, {
-        battleLog: {
-          msg: message,
-          typingAnimation: false,
-          btns: buttons,
-        },
-      }),
-    );
+    this.users.forEach((user) => {
+      user.socket.write(
+        createResponse(PacketType.S_BossBattleLog, {
+          battleLog: {
+            msg: message,
+            typingAnimation: false,
+            btns: buttons,
+          },
+        }),
+      );
+    });
   }
-
   checkAllMonstersDead() {
     return this.bossRoom.monsters.every((monster) => monster.monsterHp <= 0);
   }
