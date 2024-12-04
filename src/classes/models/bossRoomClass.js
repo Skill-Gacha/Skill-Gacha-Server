@@ -90,6 +90,11 @@ class BossRoomClass extends BaseSession {
     const players = Array.from(this.users.values());
     const currentPlayer = players.find((user) => this.userTurn.id === user.id);
 
+    if (!currentPlayer) {
+      console.log('현재 플레이어를 찾을 수 없습니다.');
+      return;
+    }
+
     const battleLog = {
       msg: '시간 초과로 턴이 넘어갑니다.',
       typingAnimation: false,
