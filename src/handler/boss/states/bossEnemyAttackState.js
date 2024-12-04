@@ -113,13 +113,13 @@ export default class BossEnemyAttackState extends BossRoomState {
 
   async downResist(bossMonster) {
     // 모든 유저에게 디버프 적용
+    const aliveUsers = this.users.filter((user) => !user.isDead);
     const monsterAction = this.createMonsterAnimation(
-      this.users,
+      aliveUsers,
       bossMonster,
       BOSS_AREA_ATTAK,
       BOSS_DOWN_RESIST_EFFECT,
     );
-    const aliveUsers = this.users.filter((user) => !user.isDead);
     aliveUsers.forEach((user) => {
       // 디버프 상태로 전환
       user.stat.downResist = true;
