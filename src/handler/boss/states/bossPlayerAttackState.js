@@ -122,15 +122,13 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   getBattleLogMessage(monster, totalDamage) {
-    if (this.phase === 3) {
-      if (this.bossRoom.shieldCount === 5) {
-        return `${this.user.nickname}이(가) ${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
-      } else {
+    if (this.bossRoom.phase === 3) {
+      if (this.bossRoom.shieldCount > 0) {
         return `${this.user.nickname}의 공격이 쉴드에 의해 막혔습니다.`;
       }
-    } else {
-      return `${this.user.nickname}이(가) ${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
+      this.bossRoom.shieldActivated = false;
     }
+    return `${this.user.nickname}이(가) ${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
   }
 
   checkMonsterStates() {
