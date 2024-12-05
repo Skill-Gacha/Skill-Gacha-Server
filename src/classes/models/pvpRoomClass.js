@@ -70,7 +70,7 @@ class PvpRoomClass extends BaseSession {
     currentPlayer.socket.write(timeoutMessage);
 
     // `PvpIncreaseManaState`로 상태 전환하여 턴을 넘김
-    this.currentState = new PvpIncreaseManaState(this, opponent, currentPlayer);
+    this.currentState = new PvpIncreaseManaState(this, currentPlayer, opponent);
     this.currentState.enter();
 
     // 새로운 턴 타이머는 `PvpIncreaseManaState`에서 처리됨
