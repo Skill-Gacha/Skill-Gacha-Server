@@ -135,11 +135,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     // 기본 피해 메시지
     let battleLogMessage = `${this.user.nickname}이(가) ${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
 
-    // DEBUFF_SKILL_ID 사용 시 저항력 감소 메시지 추가
-    if (this.isBuffSkill(this.user.selectedSkill)) {
-      return `${monster.monsterName}의 저항력을 깎았습니다!`;
-    }
-
     return battleLogMessage;
   }
 
