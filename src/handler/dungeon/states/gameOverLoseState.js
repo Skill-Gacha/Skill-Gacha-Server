@@ -17,12 +17,12 @@ export default class GameOverLoseState extends DungeonState {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.GAME_OVER_LOSE;
 
     // 유저 버프 초기화
-    user.buff = null;
-    user.battleCry = false;
-    user.berserk = false;
-    user.dangerPotion = false;
-    user.protect = false;
-    user.downResist = false;
+    this.user.buff = null;
+    this.user.battleCry = false;
+    this.user.berserk = false;
+    this.user.dangerPotion = false;
+    this.user.protect = false;
+    this.user.downResist = false;
 
     // 아이템 현황 레디스에 저장
     await saveItemsToRedis(this.user.nickname, this.user.items);

@@ -16,12 +16,12 @@ export default class PvpGameOverState extends PvpState {
     this.pvpRoom.pvpStatus = PVP_STATUS.GAME_OVER;
 
     // 유저 버프 초기화
-    user.buff = null;
-    user.battleCry = false;
-    user.berserk = false;
-    user.dangerPotion = false;
-    user.protect = false;
-    user.downResist = false;
+    this.user.buff = null;
+    this.user.battleCry = false;
+    this.user.berserk = false;
+    this.user.dangerPotion = false;
+    this.user.protect = false;
+    this.user.downResist = false;
 
     try {
       const [winnerRating, loserRating] = await Promise.all([
