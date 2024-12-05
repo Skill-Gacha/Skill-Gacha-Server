@@ -128,7 +128,6 @@ class SessionManager {
 
     matchingQueue.push(user);
     if (matchingQueue.length === maxPlayer) {
-      console.log('다 찼습니다.');
       return matchingQueue.splice(0, maxPlayer);
     }
     return null;
