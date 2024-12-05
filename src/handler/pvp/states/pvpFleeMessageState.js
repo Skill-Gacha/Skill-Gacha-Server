@@ -51,10 +51,12 @@ export default class PvpFleeMessageState extends PvpState {
   handleInput(responseCode) {
     if (responseCode === 0) {
       const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
-      this.mover.socket.write(leaveResponse);
-      this.stopper.socket.write(leaveResponse);
-      this.pvpRoom.clearTurnTimer();
-      sessionManager.removePvpRoom(this.pvpRoom.sessionId);
+      if (this.pvpRoom) {
+        this.mover.socket.write(leaveResponse);
+        this.stopper.socket.write(leaveResponse);
+        this.pvpRoom.clearTurnTimer();
+        sessionManager.removePvpRoom(this.pvpRoom.sessionId);
+      }
     } else {
       invalidResponseCode(this.mover.socket);
     }
