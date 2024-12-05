@@ -39,7 +39,7 @@ export default class RewardState extends DungeonState {
 
     if (item !== null) {
       const userHasItem = this.user.items.find((i) => i.itemId === item);
-      if (userHasItem && userHasItem.count > 0) {
+      if (userHasItem && userHasItem.count !== 1 && userHasItem.count >= 0) {
         msg += `\n일정 확률로 아이템을 획득하였습니다!`;
         try {
           await updateItemCountInRedis(this.user.nickname, item, 1);
