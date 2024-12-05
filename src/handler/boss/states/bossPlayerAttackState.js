@@ -75,7 +75,7 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   async handleAreaSkill(skillInfo, disableButtons, boss) {
-    this.sendPlayerAction(boss.monsterIdx, skillInfo.effectCode);
+    this.sendPlayerAction([boss.monsterIdx], skillInfo.effectCode);
     const totalDamage = this.calculateTotalDamage(skillInfo, boss);
 
     this.handleDamage(boss, totalDamage);
@@ -98,7 +98,7 @@ export default class BossPlayerAttackState extends BossRoomState {
       skillInfo.damage * skillEnhancement(playerElement, skillElement),
     );
 
-    this.sendPlayerAction(boss.monsterIdx, skillInfo.effectCode);
+    this.sendPlayerAction([boss.monsterIdx], skillInfo.effectCode);
 
     const monsterResist = checkEnemyResist(skillElement, boss);
     const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
@@ -183,7 +183,7 @@ export default class BossPlayerAttackState extends BossRoomState {
       user.socket.write(
         createResponse(PacketType.S_BossPlayerActionNotification, {
           playerId: this.user.id,
-          targetMonsterIdx: [targetMonsterIdxs],
+          targetMonsterIdx: targetMonsterIdxs,
           actionSet: {
             animCode: ACTION_ANIMATION_CODE,
             effectCode: effectCode,
