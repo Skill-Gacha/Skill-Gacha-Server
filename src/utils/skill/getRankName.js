@@ -13,7 +13,7 @@ export const getRankName = (rank) => {
     case SKILL_RANK.UNIQUE:
       return '유니크';
     case SKILL_RANK.LEGENDARY:
-      return '전설';
+      return '레전더리';
     default:
       return 'UNKNOWN';
   }

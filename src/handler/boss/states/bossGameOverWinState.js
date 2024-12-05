@@ -10,8 +10,15 @@ export default class BossGameOverWinState extends BossRoomState {
     this.bossRoom.bossStatus = BOSS_STATUS.GAME_OVER_WIN;
     this.bossRoom.clearTurnTimer();
 
+    // 유저 버프 초기화
     this.users.forEach((user) => {
       user.isDead = false;
+      user.buff = null;
+      user.battleCry = false;
+      user.berserk = false;
+      user.dangerPotion = false;
+      user.protect = false;
+      user.downResist = false;
     });
 
     // 승리 메시지 모든 유저에게 전송
