@@ -56,6 +56,9 @@ class PvpRoomClass extends BaseSession {
   onTurnTimeout() {
     const players = Array.from(this.users.values());
     const currentPlayer = players[this.userTurn];
+    if (!currentPlayer) {
+      return;
+    }
     const opponent = players[this.userTurn === PLAYER_A ? PLAYER_B : PLAYER_A];
 
     // 시간 초과 메시지 전송

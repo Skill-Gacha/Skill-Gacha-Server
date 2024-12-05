@@ -75,6 +75,7 @@ enum MsgId {
   S_BOSS_MONSTER_ACTION = 65;
   S_BOSS_PHASE = 66;
   S_BOSS_USER_TURN = 67;
+  S_BOSS_BARRIER_COUNT = 68;
 }
 
 // 패킷 정의 목록
@@ -354,9 +355,9 @@ message S_BossBattleLog {
 }
 
 message S_BossPlayerStatusNotification {
-  int32 playerId = 1;
-  int32 hp = 2;
-  int32 mp = 3;
+  repeated int32 playerId = 1;
+  repeated int32 hp = 2;
+  repeated int32 mp = 3;
 }
 
 message S_BossSetMonsterHp {
@@ -379,11 +380,14 @@ message S_BossMonsterAction {
 message S_BossPhase {
   int32 randomElement = 1;
   int32 phase = 2;
-  repeated MonsterStatus monsterIdx = 3;
 }
 
 message S_BossUserTurn {
   int32 playerId = 1;
+}
+
+message S_BossBarrierCount {
+  int32 barrierCount = 1;
 }
 
 // 커스텀 메세지

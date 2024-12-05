@@ -93,11 +93,6 @@ export default class PvpUseItemState extends PvpState {
         mp: this.mover.stat.mp,
       }),
     );
-    this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyMp, {
-        mp: this.stopper.stat.mp,
-      }),
-    );
 
     const battleLog = {
       msg: `MP 회복 포션을 사용하여 MP를 ${this.mover.stat.mp - existingMp} 회복했습니다.`,
@@ -146,7 +141,10 @@ export default class PvpUseItemState extends PvpState {
       this.mover.reduceHp(this.mover.stat.hp - 1);
       battleLogMsg = `위험한 포션의 부작용으로 HP가 1만 남게 되었습니다.`;
     } else if (dangerRandomNum < 50) {
-      this.mover.increaseHpMp(this.mover.stat.maxHp - this.mover.stat.hp, this.mover.stat.maxMp - this.mover.stat.mp);
+      this.mover.increaseHpMp(
+        this.mover.stat.maxHp - this.mover.stat.hp,
+        this.mover.stat.maxMp - this.mover.stat.mp,
+      );
       battleLogMsg = `위험한 포션을 사용하여 HP와 MP가 최대치로 회복되었습니다.`;
     } else if (dangerRandomNum < 75) {
       this.mover.stat.dangerPotion = true;
@@ -177,10 +175,8 @@ export default class PvpUseItemState extends PvpState {
   }
 
   async usePanacea() {
-    // 모든 상태 이상 해제
-    this.mover.stat.berserk = false;
-    this.mover.stat.protect = false;
-    this.mover.stat.dangerPotion = false;
+    // 상태 이상 status 해제
+    this.user.stat.downResist = false;
 
     const battleLog = {
       msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,

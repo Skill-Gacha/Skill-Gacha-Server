@@ -23,7 +23,7 @@ export const onEnd = (socket) => async () => {
     logger.error('onEnd: 유저를 찾을 수 없습니다.');
     return;
   }
-  const { nickname, gold, stone } = user;
+  const { nickname } = user;
   const pvpRoom = sessionManager.getPvpByUser(user);
 
   if (pvpRoom) {
@@ -31,6 +31,9 @@ export const onEnd = (socket) => async () => {
       // 강제 종료한 유저가 패배
       const loser = user;
       const winner = [...pvpRoom.users.values()].find((user) => user.id !== loser.id);
+
+      // 타이머 종료
+      pvpRoom.clearTurnTimer();
 
       const [winnerRating, loserRating] = await Promise.all([
         getPlayerRatingFromRedis(winner.nickname),
@@ -49,12 +52,32 @@ export const onEnd = (socket) => async () => {
         },
       });
       winner.socket.write(victoryMessage); // 승리 메시지 전송
-
-      // 매칭큐 및 세션 정리
-      sessionManager.removeMatchingQueue(user);
-      this.pvpRoom.clearTurnTimer();
     } catch (error) {
       logger.error('onEnd: PVP 강제종료 처리중 에러:', error);
+    }
+  }
+
+  const bossRoom = sessionManager.getBossRoomByUser(user);
+
+  if (bossRoom) {
+    try {
+      // 모든 유저에게 게임오버 메시지 전달
+      const users = bossRoom.getUsers();
+      const gameOverMessage = createResponse(PacketType.S_ScreenText, {
+        screenText: {
+          msg: '탈주자가 생겨 마을로 이동됩니다.',
+          typingAnimation: false,
+        },
+      });
+
+      bossRoom.removeUser(user);
+      bossRoom.clearTurnTimer();
+
+      users.forEach((user) => {
+        user.socket.write(gameOverMessage);
+      });
+    } catch (error) {
+      console.error('onEnd: BOSS 강제종료 처리중 에러:', error);
     }
   }
 

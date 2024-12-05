@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { MyStatus, OpponentStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import checkBatchim from '../../utils/korean/checkBatchim.js';
+import { MAX_PLAYER } from '../../constants/pvp.js';
 
 const DUNGEON_CODE_BASE = 5000;
 const DUNGEON_CODE_RANGE = 3;
@@ -22,7 +23,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
   socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
-  const matchedPlayers = sessionManager.addMatchingQueue(user);
+  const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
 
   if (!matchedPlayers) return;
 
