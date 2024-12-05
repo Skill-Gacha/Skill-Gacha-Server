@@ -27,13 +27,13 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
       logger.error('cPlayerPvpResponseHandler: 유저가 PVP 세션에 속해 있지 않습니다.');
       return;
     }
-
-    const isConfirmOrGameOver = [PvpFleeMessageState, PvpGameOverState].some(
+    
+    const isConfirmOrGameOver = [PvpFleeMessageState].some(
       (StateClass) => pvpRoom.currentState instanceof StateClass,
     );
 
     if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
-      socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
+      pvpRoom.users.forEach((user) => user.socket.write(createResponse(PacketType.S_LeaveDungeon, {})));
       sessionManager.removePvpRoom(pvpRoom.sessionId);
       return;
     }
