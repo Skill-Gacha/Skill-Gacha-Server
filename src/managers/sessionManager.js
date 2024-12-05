@@ -26,8 +26,8 @@ class SessionManager {
     this.bossMatchingQueue = [];
     this.users = new Map(); // userId -> user
     this.socketToUser = new Map(); // socket -> user
-    this.sessionTimeout = 300000; // 5분
-    this.userTimeout = 300000; // 5분
+    this.sessionTimeout = 1800000; // 30분
+    this.userTimeout = 1800000; // 30분
     this.cleansingInterval = 60000; // 1분
     this.startCleansingInterval();
     SessionManager.instance = this;
