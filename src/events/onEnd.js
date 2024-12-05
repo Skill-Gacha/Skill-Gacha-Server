@@ -112,7 +112,7 @@ export const onEnd = (socket) => async () => {
     // DB에 저장이 완료되면 레디스에서도 제거
     await deleteSkillsFromRedis(nickname);
     await deleteItemsFromRedis(nickname);
-    logger.info(`onEnd: Redis에서 ${nickname}의 데이터 정리 완료`)
+    logger.info(`onEnd: Redis에서 ${nickname}의 데이터 정리 완료`);
   } catch (error) {
     logger.error(`onEnd: ${nickname} 접속 종료 처리 중 문제 발생.`, error);
     const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_END, error);
@@ -125,6 +125,10 @@ export const onEnd = (socket) => async () => {
 
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
+
+    // PVP나 보스 매칭큐에서 유저 제거
+    sessionManager.removeMatchingQueue(user);
+    sessionManager.removeMatchingQueue(user, 'boss');
 
     logger.info(`유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {
