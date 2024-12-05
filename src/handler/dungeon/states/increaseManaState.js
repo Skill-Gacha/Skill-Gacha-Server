@@ -44,6 +44,8 @@ export default class IncreaseManaState extends DungeonState {
         btns: BUTTON_CONFIRM,
       },
     });
+
+    this.dungeon.lastActivity = Date.now();
     this.socket.write(increaseManaBattleLogResponse);
   }
 

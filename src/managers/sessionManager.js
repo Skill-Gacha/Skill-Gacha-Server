@@ -49,9 +49,6 @@ class SessionManager {
       return;
     }
 
-    this.users.delete(userId);
-    this.socketToUser.delete(user.socket); // 소켓 맵에서 제거
-
     // 모든 던전 세션에서 사용자 제거
     this.sessions.dungeons.forEach((dungeon) => {
       if (dungeon.removeUser(userId)) {
@@ -92,6 +89,9 @@ class SessionManager {
     if (this.sessions.town.removeUser(userId)) {
       logger.info(`마을 세션에서 사용자 ${userId} 제거`);
     }
+
+    this.socketToUser.delete(user.socket); // 소켓 맵에서 제거
+    this.users.delete(userId);
 
     logger.info(`사용자 ${userId}가 모든 세션에서 제거되었습니다.`);
   }
@@ -302,6 +302,7 @@ class SessionManager {
 
   createBossRoom(sessionId) {
     const bossRoom = new BossRoomClass(sessionId);
+    bossRoom.lastActivity = Date.now();
     this.sessions.bossRooms.set(sessionId, bossRoom);
     return bossRoom;
   }
