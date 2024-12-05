@@ -106,8 +106,8 @@ class BossRoomClass extends BaseSession {
     currentPlayer.socket.write(timeoutMessage);
 
     // `BossTurnChangeState`로 상태 전환하여 턴을 넘김
-    this.bossStatus = new BossTurnChangeState(this, currentPlayer);
-    this.bossStatus.enter();
+    this.currentState = new BossTurnChangeState(this, currentPlayer);
+    this.currentState.enter();
 
     // 새로운 턴 타이머는 `BossActionState`에서 처리됨
   }
