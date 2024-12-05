@@ -45,6 +45,7 @@ export const useBuffSkill = (user, socket, dungeon) => {
 
   switch (user.stat.buff) {
     case 1:
+      user.stat.battleCry = true;
       try {
         socket.write(
           createResponse(PacketType.S_BattleLog, {
@@ -128,6 +129,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
 
   switch (user.stat.buff) {
     case 1:
+      user.stat.battleCry = true;
       try {
         user.socket.write(
           createResponse(PacketType.S_PvpBattleLog, {
@@ -220,6 +222,7 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
 
   switch (user.stat.buff) {
     case 1:
+      user.stat.battleCry = true;
       try {
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
