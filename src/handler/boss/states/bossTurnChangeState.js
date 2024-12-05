@@ -32,6 +32,7 @@ export default class BossTurnChangeState extends BossRoomState {
 
     if (allComplete) {
       this.users.forEach((user) => (user.completeTurn = false));
+      this.bossRoom.clearTurnTimer();
       await delay(1000);
       this.changeState(BossEnemyAttackState);
       return;
