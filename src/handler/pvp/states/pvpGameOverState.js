@@ -15,6 +15,14 @@ export default class PvpGameOverState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.GAME_OVER;
 
+    // 유저 버프 초기화
+    user.buff = null;
+    user.battleCry = false;
+    user.berserk = false;
+    user.dangerPotion = false;
+    user.protect = false;
+    user.downResist = false;
+
     try {
       const [winnerRating, loserRating] = await Promise.all([
         getPlayerRatingFromRedis(this.mover.nickname),
@@ -52,10 +60,12 @@ export default class PvpGameOverState extends PvpState {
   handleInput(responseCode) {
     if (responseCode === 0) {
       const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
-      this.mover.socket.write(leaveResponse);
-      this.stopper.socket.write(leaveResponse);
-      this.pvpRoom.clearTurnTimer();
-      sessionManager.removePvpRoom(this.pvpRoom.sessionId);
+      if (this.pvpRoom) {
+        this.mover.socket.write(leaveResponse);
+        this.stopper.socket.write(leaveResponse);
+        this.pvpRoom.clearTurnTimer();
+        sessionManager.removePvpRoom(this.pvpRoom.sessionId);
+      }
     } else {
       invalidResponseCode(this.mover.socket);
     }
