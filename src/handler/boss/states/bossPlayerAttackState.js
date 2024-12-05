@@ -86,7 +86,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     await delay(PLAYER_ACTION_DELAY);
 
     this.updateBossPhase(boss);
-    this.checkMonsterStates();
+    this.checkMonsterStates(boss);
   }
 
   async handleSingleSkill(skillInfo, disableButtons, boss) {
@@ -111,7 +111,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     await delay(PLAYER_ACTION_DELAY);
 
     this.updateBossPhase(boss);
-    this.checkMonsterStates();
+    this.checkMonsterStates(boss);
   }
 
   handleDamage(monster, totalDamage) {
@@ -138,8 +138,8 @@ export default class BossPlayerAttackState extends BossRoomState {
     return battleLogMessage;
   }
 
-  checkMonsterStates() {
-    if (this.checkAllMonstersDead()) {
+  checkMonsterStates(boss) {
+    if (boss.monsterHp <= 0) {
       this.changeState(BossMonsterDeadState);
     } else {
       this.changeState(BossTurnChangeState);
@@ -205,10 +205,6 @@ export default class BossPlayerAttackState extends BossRoomState {
         }),
       );
     });
-  }
-
-  checkAllMonstersDead() {
-    return this.bossRoom.monsters.every((monster) => monster.monsterHp <= 0);
   }
 
   updateBossPhase(boss) {
