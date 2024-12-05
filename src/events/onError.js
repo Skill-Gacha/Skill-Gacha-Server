@@ -84,6 +84,18 @@ export const onError = (socket) => async (err) => {
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
 
+    // 유저 버프 초기화
+    user.buff = null;
+    user.battleCry = false;
+    user.berserk = false;
+    user.dangerPotion = false;
+    user.protect = false;
+    user.downResist = false;
+
+    // PVP나 보스 매칭큐에서 유저 제거
+    sessionManager.removeMatchingQueue(user);
+    sessionManager.removeMatchingQueue(user, 'boss');
+
     logger.info(`onError: 유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {
     logger.error('onError: 처리 중 오류 발생:', error);

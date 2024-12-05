@@ -15,6 +15,14 @@ export default class PvpGameOverState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.GAME_OVER;
 
+    // 유저 버프 초기화
+    user.buff = null;
+    user.battleCry = false;
+    user.berserk = false;
+    user.dangerPotion = false;
+    user.protect = false;
+    user.downResist = false;
+
     try {
       const [winnerRating, loserRating] = await Promise.all([
         getPlayerRatingFromRedis(this.mover.nickname),
