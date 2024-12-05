@@ -46,10 +46,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   const isPlayerAFirstAttack = pvpRoom.getUserTurn() === 0;
   const isPlayerBFirstAttack = pvpRoom.getUserTurn() === 1;
 
-
   const lastKoreanA = checkBatchim(playerB.nickname) ? '과' : '와';
   const lastKoreanB = checkBatchim(playerA.nickname) ? '과' : '와';
 
+  
   const responseA = createResponse(PacketType.S_PlayerMatchNotification, {
     dungeonCode,
     playerData: MyStatus(playerA),
