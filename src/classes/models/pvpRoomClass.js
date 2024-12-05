@@ -57,7 +57,6 @@ class PvpRoomClass extends BaseSession {
     const players = Array.from(this.users.values());
     const currentPlayer = players[this.userTurn];
     if (!currentPlayer) {
-      console.log('현재 플레이어를 찾을 수 없습니다.');
       return;
     }
     const opponent = players[this.userTurn === PLAYER_A ? PLAYER_B : PLAYER_A];
