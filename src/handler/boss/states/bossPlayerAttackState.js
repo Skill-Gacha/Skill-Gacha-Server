@@ -183,7 +183,7 @@ export default class BossPlayerAttackState extends BossRoomState {
       user.socket.write(
         createResponse(PacketType.S_BossPlayerActionNotification, {
           playerId: this.user.id,
-          targetMonsterIdx: targetMonsterIdxs,
+          targetMonsterIdx: [targetMonsterIdxs],
           actionSet: {
             animCode: ACTION_ANIMATION_CODE,
             effectCode: effectCode,
