@@ -10,7 +10,7 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
   const user = sessionManager.getUserBySocket(socket);
   const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
   if (!user) {
-    console.error('cPlayerPvpResponseHandler: 유저를 찾을 수 없습니다.');
+    console.error('cPlayerBossResponseHandler: 유저를 찾을 수 없습니다.');
     return;
   }
 
