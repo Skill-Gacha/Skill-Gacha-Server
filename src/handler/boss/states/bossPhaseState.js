@@ -49,8 +49,10 @@ export default class BossPhaseState extends BossRoomState {
       console.error('bossPhaseState: 존재하지 않는 속성 ID입니다.');
       return;
     }
+
     if (phase === 2) {
       boss.resistances = elementResist(chosenElement);
+      this.bossRoom.previousElement = randomElement;
     } else if (phase === 3) {
       const previousElement = this.bossRoom.previousElement;
 
