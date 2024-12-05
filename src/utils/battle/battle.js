@@ -208,15 +208,15 @@ export const pvpUseBuffSkill = (user, stopper) => {
 };
 
 export const bossBuffSkill = (user, socket, bossRoom) => {
-  const disableButtons = bossRoom.monsters.map((monster) => ({
-    msg: monster.monsterName,
-    enable: false,
-  }));
-
   const users = bossRoom.getUsers();
   const playerIds = users.map((u) => u.id);
   const hps = users.map((u) => u.stat.hp);
   const mps = users.map((u) => u.stat.mp);
+
+  const disableButtons = bossRoom.monsters.map((monster) => ({
+    msg: monster.monsterName,
+    enable: false,
+  }));
 
   switch (user.stat.buff) {
     case 1:
@@ -224,7 +224,7 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
             battleLog: {
-              msg: '전투의 함성! 공격력이 두 배로 증가했습니다!',
+              msg: `전투의 함성! \n아군의 공격력이 두 배로 증가했습니다!`,
               typingAnimation: false,
               btns: disableButtons,
             },
@@ -253,7 +253,7 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
             battleLog: {
-              msg: `치유의 손길! 체력이 ${user.stat.hp - existHp}만큼 회복되었습니다!`,
+              msg: `치유의 손길! \n체력이 ${user.stat.hp - existHp}만큼 회복되었습니다!`,
               typingAnimation: false,
               btns: disableButtons,
             },
@@ -281,7 +281,7 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
             battleLog: {
-              msg: `구원의 손길! 마나가 ${user.stat.mp - existMp}만큼 회복되었습니다!`,
+              msg: `구원의 손길! \n마나가 ${user.stat.mp - existMp}만큼 회복되었습니다!`,
               typingAnimation: false,
               btns: disableButtons,
             },
@@ -298,7 +298,7 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
             battleLog: {
-              msg: '영혼 분쇄! 상대방의 공격력이 쇄약해졌습니다!',
+              msg: `영혼 분쇄! \n상대방의 공격력이 쇄약해졌습니다!`,
               typingAnimation: false,
               btns: disableButtons,
             },

@@ -1,5 +1,4 @@
 // src/handler/boss/states/bossPlayerAttackState.js
-
 import BossRoomState from './bossRoomState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
@@ -19,12 +18,13 @@ const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
 const DEBUFF_SKILL_ID = DEBUFF;
 const PLAYER_ACTION_DELAY = 1000;
-const BOSS_MONSTER_MODEL = 2029;
+const BOSS_INDEX = 0;
 
 export default class BossPlayerAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.PLAYER_ATTACK;
 
+    const boss = this.bossRoom.monsters[BOSS_INDEX];
     const selectedSkillIdx = this.bossRoom.selectedSkill;
     const userSkillInfo = this.user.userSkills[selectedSkillIdx];
 
@@ -36,20 +36,19 @@ export default class BossPlayerAttackState extends BossRoomState {
 
     if (this.isBuffSkill(userSkillInfo)) {
       await this.handleBuffSkill(userSkillInfo);
-      return;
+    } else if (this.isAreaSkill(userSkillInfo)) {
+      await this.handleAreaSkill(userSkillInfo, disableButtons, boss);
+    } else {
+      // 단일 스킬 처리
+      await this.handleSingleSkill(userSkillInfo, disableButtons, boss);
     }
-
-    if (this.isAreaSkill(userSkillInfo)) {
-      await this.handleAreaSkill(userSkillInfo, disableButtons);
-      return;
-    }
-
-    // 단일 스킬 처리
-    await this.handleSingleSkill(userSkillInfo, disableButtons);
   }
 
   isBuffSkill(skillInfo) {
-    return skillInfo.id >= BUFF_SKILL_THRESHOLD;
+    if (!skillInfo) {
+      return false;
+    }
+    return skillInfo.id >= BUFF_SKILL_THRESHOLD || skillInfo.id === DEBUFF_SKILL_ID;
   }
 
   isAreaSkill(skillInfo) {
@@ -57,148 +56,104 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   async handleBuffSkill(skillInfo) {
-    buffSkill(this.user, skillInfo.id);
-    bossBuffSkill(this.user, this.user.socket, this.bossRoom);
+    // 모든 파티원에게 버프 적용
+    this.users.forEach((user) => {
+      if (user.stat.hp > 0) {
+        // 살아있는 플레이어에게만 버프 적용
+        buffSkill(user, skillInfo.id);
+        bossBuffSkill(user, user.socket, this.bossRoom);
+      }
+    });
 
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
-
     this.sendPlayerAction([], skillInfo.effectCode);
+
     await delay(PLAYER_ACTION_DELAY);
+
     this.changeState(BossTurnChangeState);
   }
 
-  async handleAreaSkill(skillInfo, disableButtons) {
-    const aliveMonsters = this.getAliveMonsters();
+  async handleAreaSkill(skillInfo, disableButtons, boss) {
+    this.sendPlayerAction(boss.monsterIdx, skillInfo.effectCode);
+    const totalDamage = this.calculateTotalDamage(skillInfo, boss);
 
-    if (skillInfo.id === DEBUFF_SKILL_ID) {
-      buffSkill(this.user, skillInfo.id);
-      bossBuffSkill(this.user, this.user.socket, this.bossRoom);
-    }
-
-    this.sendPlayerAction(
-      aliveMonsters.map((m) => m.monsterIdx),
-      skillInfo.effectCode,
-    );
-
-    for (const monster of aliveMonsters) {
-      const totalDamage = this.calculateTotalDamage(skillInfo, monster);
-
-      // 쉴드가 있는지 확인
-      if (this.bossRoom.shieldActivated && this.bossRoom.shieldCount > 0) {
-        // 쉴드가 남아있다면
-        this.bossRoom.shieldCount -= 1; // 쉴드의 남은 공격 횟수 감소
-        this.sendBarrierCount(this.bossRoom.shieldCount);
-        // 몬스터에게 피해를 주지 않음
-      } else {
-        // 쉴드가 남아있지 않다면 몬스터에게 피해를 줌
-
-        monster.reduceHp(totalDamage);
-        this.sendMonsterHpUpdate(monster); // 몬스터 체력 업데이트
-      }
-    }
-
-    // 쉴드가 남아있지 않아서 피해를 주었을 때의 로그 메시지
-    const battleLogMsg =
-      this.bossRoom.shieldCount === 5
-        ? '광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.'
-        : '모든 몬스터의 공격이 쉴드에 의해 막혔습니다.';
-
-    this.sendBattleLog(battleLogMsg, disableButtons);
-
+    this.handleDamage(boss, totalDamage);
+    this.sendBattleLog(this.getBattleLogMessage(boss, totalDamage), disableButtons);
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
 
     await delay(PLAYER_ACTION_DELAY);
 
-    // 보스 체력 감소 및 phase 체크
-    this.updateBossPhase(); // 보스 phase 체크
+    this.updateBossPhase(boss);
+    this.checkMonsterStates();
+  }
 
-    const allMonstersDead = this.checkAllMonstersDead();
-    if (allMonstersDead) {
+  async handleSingleSkill(skillInfo, disableButtons, boss) {
+    const playerElement = this.user.element;
+    const skillElement = skillInfo.element;
+
+    let userDamage = updateDamage(
+      this.user,
+      skillInfo.damage * skillEnhancement(playerElement, skillElement),
+    );
+
+    this.sendPlayerAction(boss.monsterIdx, skillInfo.effectCode);
+
+    const monsterResist = checkEnemyResist(skillElement, boss);
+    const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
+
+    this.handleDamage(boss, totalDamage);
+    this.sendBattleLog(this.getBattleLogMessage(boss, totalDamage), disableButtons);
+    this.user.reduceMp(skillInfo.mana);
+    this.sendPlayerStatus(this.user);
+
+    await delay(PLAYER_ACTION_DELAY);
+
+    this.updateBossPhase(boss);
+    this.checkMonsterStates();
+  }
+
+  handleDamage(monster, totalDamage) {
+    if (this.bossRoom.shieldActivated && this.bossRoom.shieldCount > 0 && totalDamage !== 0) {
+      this.bossRoom.shieldCount -= 1;
+      this.sendBarrierCount(this.bossRoom.shieldCount);
+    } else {
+      monster.reduceHp(totalDamage);
+      this.sendMonsterHpUpdate(monster);
+    }
+  }
+
+  getBattleLogMessage(monster, totalDamage) {
+    if (this.bossRoom.phase === 3) {
+      if (this.bossRoom.shieldCount > 0) {
+        return `${this.user.nickname}의 공격이 쉴드에 의해 막혔습니다.`;
+      }
+      this.bossRoom.shieldActivated = false;
+    }
+
+    // 기본 피해 메시지
+    let battleLogMessage = `${this.user.nickname}이(가) ${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
+
+    return battleLogMessage;
+  }
+
+  checkMonsterStates() {
+    if (this.checkAllMonstersDead()) {
       this.changeState(BossMonsterDeadState);
     } else {
       this.changeState(BossTurnChangeState);
     }
   }
 
-  async handleSingleSkill(skillInfo, disableButtons) {
-    const playerElement = this.user.element;
-    const skillElement = skillInfo.element;
-    const skillDamageRate = skillEnhancement(playerElement, skillElement);
-    let userDamage = skillInfo.damage * skillDamageRate;
-
-    userDamage = updateDamage(this.user, userDamage);
-
-    // 선택된 몬스터가 아닌 모든 몬스터에 대해 데미지를 계산
-    const aliveMonsters = this.getAliveMonsters();
-
-    for (const monster of aliveMonsters) {
-      const monsterResist = checkEnemyResist(skillElement, monster);
-      const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
-
-      // 쉴드가 있는지 확인
-      if (this.bossRoom.shieldActivated && this.bossRoom.shieldCount > 0) {
-        // 쉴드가 남아있는 경우
-        this.bossRoom.shieldCount -= 1; // 쉴드의 남은 공격 횟수 감소
-        this.sendBarrierCount(this.bossRoom.shieldCount);
-        console.log(`쉴드가 공격을 막았습니다. 남은 공격 횟수: ${this.bossRoom.shieldCount}`);
-        // 몬스터에게 피해를 주지 않음
-      } else {
-        // 쉴드가 남아있지 않으면 몬스터에게 피해를 줌
-        monster.reduceHp(totalDamage);
-        this.sendMonsterHpUpdate(monster); // 몬스터 체력 업데이트
-      }
-
-      // 피해를 입혔을 때의 로그 메시지
-      if (this.bossRoom.shieldCount === 0) {
-        const battleLogMsg =
-          skillDamageRate > 1
-            ? `효과는 굉장했다! \n${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
-            : `${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
-        this.sendBattleLog(battleLogMsg, disableButtons);
-      } else {
-        // 쉴드가 막았을 경우의 로그
-        this.sendBattleLog(
-          `${monster.monsterName}의 공격이 쉴드에 의해 막혔습니다.`,
-          disableButtons,
-        );
-      }
-    }
-
-    this.user.reduceMp(skillInfo.mana);
-    this.sendPlayerStatus(this.user);
-    this.sendPlayerAction(
-      aliveMonsters.map((m) => m.monsterIdx),
-      skillInfo.effectCode,
-    );
-
-    await delay(PLAYER_ACTION_DELAY);
-
-    // 보스 체력 감소 및 phase 체크
-    this.updateBossPhase(); // 보스 phase 체크
-
-    if (this.checkAllMonstersDead()) {
-      this.changeState(BossMonsterDeadState);
-    } else {
-      if (this.bossHp <= 0) {
-        // 보스 체력이 0 이하인지 체크
-        this.changeState(BossMonsterDeadState); // 보스가 죽었을 때 상태 변경
-      } else {
-        this.changeState(BossTurnChangeState); // 보스가 살아있고 공격 상태로 변경
-      }
-    }
-  }
-
-  getAliveMonsters() {
-    return this.bossRoom.monsters.filter((monster) => monster.monsterHp > 0);
-  }
-
   calculateTotalDamage(skillInfo, monster) {
     const skillDamageRate = skillEnhancement(this.user.element, skillInfo.element);
+
     let userDamage = skillInfo.damage * skillDamageRate;
+
     userDamage = updateDamage(this.user, userDamage);
     const monsterResist = checkEnemyResist(skillInfo.element, monster);
+
     return Math.floor(userDamage * ((100 - monsterResist) / 100));
   }
 
@@ -223,9 +178,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     });
   }
 
-  sendPlayerAction(effectCode) {
-    const aliveMonsters = this.getAliveMonsters();
-    const targetMonsterIdxs = aliveMonsters.map((m) => m.monsterIdx);
+  sendPlayerAction(targetMonsterIdxs, effectCode) {
     this.users.forEach((user) => {
       user.socket.write(
         createResponse(PacketType.S_BossPlayerActionNotification, {
@@ -241,45 +194,37 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   sendBattleLog(message, buttons) {
-    this.user.socket.write(
-      createResponse(PacketType.S_BossBattleLog, {
-        battleLog: {
-          msg: message,
-          typingAnimation: false,
-          btns: buttons,
-        },
-      }),
-    );
+    this.users.forEach((user) => {
+      user.socket.write(
+        createResponse(PacketType.S_BossBattleLog, {
+          battleLog: {
+            msg: message,
+            typingAnimation: false,
+            btns: buttons,
+          },
+        }),
+      );
+    });
   }
 
   checkAllMonstersDead() {
     return this.bossRoom.monsters.every((monster) => monster.monsterHp <= 0);
   }
 
-  updateBossPhase() {
-    const boss = this.bossRoom.monsters.find(
-      (monster) => monster.monsterModel === BOSS_MONSTER_MODEL,
-    );
-    if (boss) {
-      // 현재 phase가 1일 때
-      if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
-        this.bossRoom.phase = 2; // phase를 2로 변경
-        this.changeState(BossPhaseState); // 상태 변경
-      }
-      // 현재 phase가 2일 때
-      else if (boss.monsterHp <= 2000 && this.bossRoom.phase === 2) {
-        this.bossRoom.phase = 3; // phase를 3으로 변경
-        this.changeState(BossPhaseState); // 상태 변경
-      }
+  updateBossPhase(boss) {
+    if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
+      this.bossRoom.phase = 2; // phase를 2로 변경
+      this.changeState(BossPhaseState); // 상태 변경
+    } else if (boss.monsterHp <= 2000 && this.bossRoom.phase === 2) {
+      this.bossRoom.phase = 3; // phase를 3으로 변경
+      this.changeState(BossPhaseState); // 상태 변경
     }
   }
 
-  // 각 유저의 HP, MP 알림 전송
   sendPlayerStatus() {
     const playerIds = this.users.map((u) => u.id);
     const hps = this.users.map((u) => u.stat.hp);
     const mps = this.users.map((u) => u.stat.mp);
-
     this.users.forEach((u) => {
       u.socket.write(
         createResponse(PacketType.S_BossPlayerStatusNotification, {
