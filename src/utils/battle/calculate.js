@@ -50,7 +50,7 @@ export const checkStopperResist = (skillElement, target) => {
 // 스팀팩 효과 및 위험한 포션
 export const updateDamage = (user, userDamage) => {
   let multiplier = 0; // 초기 배율 값
-  if (user.stat.buff === 1 && user.stat.battleCry) {
+  if (user.stat.battleCry) {
     multiplier += 2; // "전투의 함성" 버프가 있으면 데미지 2배 증가
   }
   if (user.stat.berserk) {
