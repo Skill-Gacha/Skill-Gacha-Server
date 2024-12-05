@@ -94,7 +94,12 @@ class BossRoomClass extends BaseSession {
       return;
     }
 
-    if (currentPlayer.turnOff === true) {
+    // 유저가 타임아웃 직전 행동하면 로그 쏘지 못하게 방지
+    if (currentPlayer.turnOff) {
+      return;
+    }
+
+    if (currentPlayer.completeTurn) {
       return;
     }
 

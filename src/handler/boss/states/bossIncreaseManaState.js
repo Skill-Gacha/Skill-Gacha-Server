@@ -21,6 +21,7 @@ export default class BossIncreaseManaState extends BossRoomState {
 
     // 턴 넘기기를 사용했을 때
     if (this.user.turnOff === true) {
+      this.user.completeTurn = true;
       this.updateUsersStatus([this.user]);
       await delay(2000); // 시간제한이 없어서 임시로 설정
       this.user.turnOff = false;

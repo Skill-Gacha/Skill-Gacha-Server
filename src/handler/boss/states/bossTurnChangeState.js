@@ -9,7 +9,6 @@ import BossRoomState from './bossRoomState.js';
 export default class BossTurnChangeState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.TURN_CHANGE;
-    this.user.completeTurn = true;
 
     // 다른 유저로 턴 넘기기
     let currentIdx = this.users.findIndex((user) => user.id === this.user.id);
@@ -37,7 +36,7 @@ export default class BossTurnChangeState extends BossRoomState {
       this.changeState(BossEnemyAttackState);
       return;
     }
-    
+
     this.bossRoom.lastActivity = Date.now();
 
     this.changeState(BossActionState);

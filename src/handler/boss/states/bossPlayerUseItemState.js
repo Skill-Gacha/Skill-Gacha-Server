@@ -16,6 +16,7 @@ const BASE_ITEM_CODE_OFFSET = 4000;
 export default class BossPlayerUseItemState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.USE_ITEM;
+    this.user.completeTurn = true;
 
     const selectedItemId = this.bossRoom.selectedItem + BASE_ITEM_CODE_OFFSET; // Assuming item IDs start at 4001
     const itemEffect = ITEM_TYPES[selectedItemId];

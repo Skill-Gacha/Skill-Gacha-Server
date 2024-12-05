@@ -23,6 +23,7 @@ const BOSS_INDEX = 0;
 export default class BossPlayerAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.PLAYER_ATTACK;
+    this.user.completeTurn = true;
 
     const boss = this.bossRoom.monsters[BOSS_INDEX];
     const selectedSkillIdx = this.bossRoom.selectedSkill;
