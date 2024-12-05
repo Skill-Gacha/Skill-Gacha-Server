@@ -1,0 +1,142 @@
+﻿version: '3.8'
+
+services:
+  nodejs:
+    build: .
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysqld_exporter:
+        condition: service_healthy
+      redis_exporter:
+        condition: service_healthy
+      node_exporter:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "3406:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./src/db/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", "mysql -u${DB_USER} -p${DB_PASSWORD} -e 'SELECT 1'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app-network
+
+  mysqld_exporter:
+    image: prom/mysqld-exporter:latest
+    command:
+      - "--mysqld.username=exporter:exporter"
+      - "--mysqld.address=mysql:3306"
+    ports:
+      - "9104:9104"
+    depends_on:
+      - mysql
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9104/metrics" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    command: redis-server --bind 0.0.0.0 --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379" # 확인용 포트 매핑
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mysqld_exporter
+      - redis_exporter
+      - node_exporter
+    networks:
+      - app-network
+
+  redis_exporter:
+    image: oliver006/redis_exporter:latest
+    command: --redis.addr=redis:6379 --redis.password=${REDIS_PASSWORD}
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9121/metrics" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/host/rootfs'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9100/metrics" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+  
+  
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  grafana-storage:
