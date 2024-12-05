@@ -78,15 +78,18 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         partyList: [],
       });
 
-      sessionManager.removeMatchingQueue(user, 'boss');
+      sessionManager.removeAcceptQueueInUser(user);
       user.socket.write(failResponse);
 
       // 먼저 수락한 유저도 매칭큐에서 제거 및 입장 실패 패킷 전송
-      const matchingQueue = sessionManager.getMatchingQueue('boss');
-      matchingQueue.forEach((user) => {
+      const acceptQueue = sessionManager.getAcceptQueue();
+      for (let i = 0; i < acceptQueue.length; i++) {
+        const user = acceptQueue[i];
         user.socket.write(failResponse);
         sessionManager.removeMatchingQueue(user, 'boss');
-      });
+        sessionManager.removeAcceptQueueInUser(user);
+        i--;
+      }
     }
   } catch (error) {
     console.error('cBossAcceptResponseHandler: 오류입니다.', error);

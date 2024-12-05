@@ -21,6 +21,7 @@ class SessionManager {
       bossRooms: new Map(),
     };
     this.matchingQueue = [];
+    this.acceptQueue = [];
     this.pvpMatchingQueue = [];
     this.bossMatchingQueue = [];
     this.users = new Map(); // userId -> user
@@ -203,6 +204,12 @@ class SessionManager {
     user.matchingAddedAt = Date.now();
     matchingQueue.push(user);
 
+    if (matchingQueue.length >= maxPlayer && queueType === 'boss') {
+      const matchedUsers = matchingQueue.splice(0, maxPlayer);
+      this.acceptQueue.push(...matchedUsers);
+      return matchedUsers;
+    }
+
     if (matchingQueue.length >= maxPlayer) {
       const matchedUsers = matchingQueue.splice(0, maxPlayer);
       // 매칭된 유저들에 대한 추가 로직 (PvP 방 생성 등)을 여기에 추가할 수 있습니다.
@@ -225,6 +232,18 @@ class SessionManager {
     return false;
   }
 
+  removeAcceptQueueInUser(user) {
+    const userIndex = this.acceptQueue.findIndex((u) => u.id === user.id);
+
+    if (userIndex !== -1) {
+      this.acceptQueue.splice(userIndex, 1);
+      logger.info('AcceptQueue에서 유저를 지웠습니다.');
+      return true;
+    }
+    logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
+    return false;
+  }
+
   getMatchingQueue(queueType) {
     if (queueType === 'boss') {
       return this.bossMatchingQueue;
@@ -234,6 +253,10 @@ class SessionManager {
       logger.error(`유효하지 않은 큐 타입: ${queueType}`);
       return [];
     }
+  }
+
+  getAcceptQueue() {
+    return this.acceptQueue;
   }
 
   getPvpByUser(user) {
@@ -333,7 +356,7 @@ class SessionManager {
       ['pvp', 'boss'].forEach((queueType) => {
         const matchingQueue = this.getMatchingQueue(queueType);
         const originalLength = matchingQueue.length;
-        this.matchingQueue = matchingQueue.filter(user => {
+        this.matchingQueue = matchingQueue.filter((user) => {
           if (now - user.matchingAddedAt > this.userTimeout) {
             logger.info(`매칭 큐에서 사용자 ${user.id} 제거`);
             return false;
@@ -344,7 +367,6 @@ class SessionManager {
           logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 완료`);
         }
       });
-
     }, this.cleansingInterval);
   }
 
