@@ -59,46 +59,20 @@ export default class BossPlayerUseItemState extends BossRoomState {
   async useHpPotion() {
     const existingHp = this.user.stat.hp;
     this.user.increaseHpMp(100, 0);
-    const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: [this.user.id],
-      hp: [this.user.stat.hp],
-      mp: [this.user.stat.mp],
-    });
+    this.sendStatusUpdate();
 
-    this.users.forEach((user) => {
-      user.socket.write(statusResponse);
-    });
-
-    const battleLog = {
-      msg: `HP 회복 포션을 사용하여 HP를 ${this.user.stat.hp - existingHp} 회복했습니다.`,
-      typingAnimation: false,
-      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
-    };
-
-    this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
+    this.sendBattleLogResponse(
+      `${this.user.nickname}님이 HP 회복 포션을 사용하여 HP를 ${this.user.stat.hp - existingHp} 회복했습니다.`,
+    );
   }
 
   async useMpPotion() {
     const existingMp = this.user.stat.mp;
     this.user.increaseHpMp(0, 60);
-
-    const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: [this.user.id],
-      hp: [this.user.stat.hp],
-      mp: [this.user.stat.mp],
-    });
-
-    this.users.forEach((user) => {
-      user.socket.write(statusResponse);
-    });
-
-    const battleLog = {
-      msg: `MP 회복 포션을 사용하여 MP를 ${this.user.stat.mp - existingMp} 회복했습니다.`,
-      typingAnimation: false,
-      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
-    };
-
-    this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
+    this.sendStatusUpdate();
+    this.sendBattleLogResponse(
+      `${this.user.nickname}님이 MP 회복 포션을 사용하여 MP를 ${this.user.stat.mp - existingMp} 회복했습니다.`,
+    );
   }
 
   async useBerserkPotion() {
@@ -110,24 +84,10 @@ export default class BossPlayerUseItemState extends BossRoomState {
 
     this.user.reduceHp(50);
     this.user.stat.berserk = true;
-
-    const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: [this.user.id],
-      hp: [this.user.stat.hp],
-      mp: [this.user.stat.mp],
-    });
-
-    this.users.forEach((user) => {
-      user.socket.write(statusResponse);
-    });
-
-    const battleLog = {
-      msg: `광포화 포션을 사용하여 HP가 50 감소하고, 일시적으로 공격력이 2.5배 증가했습니다.`,
-      typingAnimation: false,
-      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
-    };
-
-    this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
+    this.sendStatusUpdate();
+    this.sendBattleLogResponse(
+      `${this.user.nickname}님이 광포화 포션을 사용하여 HP가 50 감소하고, 일시적으로 공격력이 2.5배 증가했습니다.`,
+    );
   }
 
   async useDangerPotion() {
@@ -136,22 +96,36 @@ export default class BossPlayerUseItemState extends BossRoomState {
 
     if (dangerRandomNum < 25) {
       this.user.reduceHp(this.user.stat.hp - 1);
-      battleLogMsg = `위험한 포션의 부작용으로 HP가 1만 남게 되었습니다.`;
+      battleLogMsg = `${this.user.nickname}님이 위험한 포션의 부작용으로 HP가 1만 남게 되었습니다.`;
     } else if (dangerRandomNum < 50) {
       this.user.increaseHpMp(
         this.user.stat.maxHp - this.user.stat.hp,
         this.user.stat.maxMp - this.user.stat.mp,
       );
-      battleLogMsg = `위험한 포션을 사용하여 HP와 MP가 최대치로 회복되었습니다.`;
+      battleLogMsg = `${this.user.nickname}님이 위험한 포션을 사용하여 HP와 MP가 최대치로 회복되었습니다.`;
     } else if (dangerRandomNum < 75) {
       this.user.stat.dangerPotion = true;
-      battleLogMsg = `위험한 포션을 사용하여 일시적으로 공격력이 5배 증가했습니다.`;
+      battleLogMsg = `${this.user.nickname}님이 위험한 포션을 사용하여 일시적으로 공격력이 5배 증가했습니다.`;
     } else {
       this.user.stat.protect = true;
-      battleLogMsg = `위험한 포션을 사용하여 일시적으로 무적 상태가 되었습니다.`;
+      battleLogMsg = `${this.user.nickname}님이 위험한 포션을 사용하여 일시적으로 무적 상태가 되었습니다.`;
     }
 
     // HP, MP 업데이트
+    this.sendStatusUpdate();
+    this.sendBattleLogResponse(battleLogMsg);
+  }
+
+  async usePanacea() {
+    // 상태 이상 status 해제
+    this.user.stat.downResist = false;
+    this.sendBattleLogResponse(
+      `${this.user.nickname}님이 만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
+    );
+  }
+
+  // HP, MP 패킷 전송 함수
+  sendStatusUpdate() {
     const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
       playerId: [this.user.id],
       hp: [this.user.stat.hp],
@@ -161,27 +135,19 @@ export default class BossPlayerUseItemState extends BossRoomState {
     this.users.forEach((user) => {
       user.socket.write(statusResponse);
     });
-
-    const battleLog = {
-      msg: battleLogMsg,
-      typingAnimation: false,
-      btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
-    };
-
-    this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
   }
 
-  async usePanacea() {
-    // 상태 이상 status 해제
-    this.user.stat.downResist = false;
-
+  // 배틀로그 전송 함수
+  sendBattleLogResponse(msg) {
     const battleLog = {
-      msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
+      msg,
       typingAnimation: false,
       btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
     };
 
-    this.user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
+    this.users.forEach((user) => {
+      user.socket.write(createResponse(PacketType.S_BossBattleLog, { battleLog }));
+    });
   }
 
   async handleInput(responseCode) {}
