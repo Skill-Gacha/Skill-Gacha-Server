@@ -93,7 +93,6 @@ export default class PlayerAttackState extends DungeonState {
 
     if (skillInfo.id !== DEBUFF_SKILL_ID) {
       this.user.stat.buff = null;
-      this.user.stat.battleCry = false;
     }
 
     const allMonstersDead = this.checkAllMonstersDead();
@@ -132,7 +131,6 @@ export default class PlayerAttackState extends DungeonState {
     await delay(PLAYER_ACTION_DELAY);
 
     this.user.stat.buff = null;
-    this.user.stat.battleCry = false;
 
     if (targetMonster.monsterHp <= 0) {
       this.changeState(MonsterDeadState);
