@@ -9,7 +9,7 @@ import {
   skillEnhancement,
   updateDamage,
 } from '../../../utils/battle/calculate.js';
-import { buffSkill, bossBuffSkill } from '../../../utils/battle/battle.js';
+import { buffSkill, bossBuffOrDebuffSkill } from '../../../utils/battle/battle.js';
 import BossMonsterDeadState from './bossMonsterDeadState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
 import BossPhaseState from './bossPhaseState.js';
@@ -23,7 +23,6 @@ const BOSS_INDEX = 0;
 export default class BossPlayerAttackState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.PLAYER_ATTACK;
-    this.user.completeTurn = true;
 
     const boss = this.bossRoom.monsters[BOSS_INDEX];
     const selectedSkillIdx = this.bossRoom.selectedSkill;
@@ -35,8 +34,8 @@ export default class BossPlayerAttackState extends BossRoomState {
       enable: false,
     }));
 
-    if (this.isBuffSkill(userSkillInfo)) {
-      await this.handleBuffSkill(userSkillInfo);
+    if (this.isBuffOrDebuffSkill(userSkillInfo)) {
+      await this.handleBuffOrDebuffSkill(userSkillInfo);
     } else if (this.isAreaSkill(userSkillInfo)) {
       await this.handleAreaSkill(userSkillInfo, disableButtons, boss);
     } else {
@@ -45,29 +44,28 @@ export default class BossPlayerAttackState extends BossRoomState {
     }
   }
 
-  isBuffSkill(skillInfo) {
+  isBuffOrDebuffSkill(skillInfo) {
     if (!skillInfo) {
       return false;
     }
-    return skillInfo.id >= BUFF_SKILL_THRESHOLD || skillInfo.id === DEBUFF_SKILL_ID;
+    return skillInfo.id >= DEBUFF_SKILL_ID;
   }
 
   isAreaSkill(skillInfo) {
     return skillInfo.id >= AREASKILL;
   }
 
-  async handleBuffSkill(skillInfo) {
+  async handleBuffOrDebuffSkill(skillInfo) {
     // 모든 파티원에게 버프 적용
+    this.user.reduceMp(skillInfo.mana);
     this.users.forEach((user) => {
       if (user.stat.hp > 0) {
         // 살아있는 플레이어에게만 버프 적용
         buffSkill(user, skillInfo.id);
-        bossBuffSkill(user, user.socket, this.bossRoom);
+        bossBuffOrDebuffSkill(user, user.socket, this.bossRoom);
       }
     });
 
-    this.user.reduceMp(skillInfo.mana);
-    this.sendPlayerStatus(this.user);
     this.sendPlayerAction([], skillInfo.effectCode);
 
     await delay(PLAYER_ACTION_DELAY);

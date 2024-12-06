@@ -104,6 +104,16 @@ export const useBuffSkill = (user, socket, dungeon) => {
     case 4:
       user.stat.protect = true;
       try {
+        users.forEach((u) => {
+          u.socket.write(
+            createResponse(PacketType.S_BossPlayerStatusNotification, {
+              playerId: playerIds,
+              hp: hps,
+              mp: mps,
+            }),
+          );
+        });
+
         socket.write(
           createResponse(PacketType.S_BattleLog, {
             battleLog: {
@@ -209,7 +219,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
   }
 };
 
-export const bossBuffSkill = (user, socket, bossRoom) => {
+export const bossBuffOrDebuffSkill = (user, socket, bossRoom) => {
   const users = bossRoom.getUsers();
   const playerIds = users.map((u) => u.id);
   const hps = users.map((u) => u.stat.hp);
@@ -224,6 +234,16 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
     case 1:
       user.stat.battleCry = true;
       try {
+        users.forEach((u) => {
+          u.socket.write(
+            createResponse(PacketType.S_BossPlayerStatusNotification, {
+              playerId: playerIds,
+              hp: hps,
+              mp: mps,
+            }),
+          );
+        });
+
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
             battleLog: {
@@ -281,6 +301,7 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
             }),
           );
         });
+
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
             battleLog: {
@@ -298,6 +319,16 @@ export const bossBuffSkill = (user, socket, bossRoom) => {
     case 4:
       user.stat.protect = true;
       try {
+        users.forEach((u) => {
+          u.socket.write(
+            createResponse(PacketType.S_BossPlayerStatusNotification, {
+              playerId: playerIds,
+              hp: hps,
+              mp: mps,
+            }),
+          );
+        });
+
         socket.write(
           createResponse(PacketType.S_BossBattleLog, {
             battleLog: {
