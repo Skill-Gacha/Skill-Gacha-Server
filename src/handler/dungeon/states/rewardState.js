@@ -49,6 +49,7 @@ export default class RewardState extends DungeonState {
         msg += `\n일정 확률로 아이템을 획득하였습니다!`;
         try {
           await updateItemCountInRedis(this.user.nickname, item, 1);
+          userHasItem.count += 1;
         } catch (error) {
           logger.error('RewardState: 아이템 업데이트 중 오류 발생:', error);
           invalidResponseCode(this.socket);
