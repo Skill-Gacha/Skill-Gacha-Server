@@ -19,6 +19,7 @@ export default class BossGameOverWinState extends BossRoomState {
       user.dangerPotion = false;
       user.protect = false;
       user.downResist = false;
+      user.completeTurn = false;
     });
 
     // 승리 메시지 모든 유저에게 전송
