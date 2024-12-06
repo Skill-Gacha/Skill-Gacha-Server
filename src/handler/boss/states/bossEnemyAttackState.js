@@ -94,7 +94,6 @@ export default class BossEnemyAttackState extends BossRoomState {
 
       if (user.stat.hp <= 0) {
         this.handlePlayerDeath(user);
-        return;
       }
     });
     const statusResponse = this.createStatusResponse(this.users);
