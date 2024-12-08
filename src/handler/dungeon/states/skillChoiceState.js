@@ -31,18 +31,17 @@ export default class SkillChoiceState extends DungeonState {
       btns: buttons,
     };
 
-    this.socket.write(
-      createResponse(PacketType.S_BattleLog, { battleLog }),
-    );
+    this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
   }
 
   async handleInput(responseCode) {
     if (!this.isValidResponseCode(responseCode)) {
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.user.socket);
       return;
     }
 
-    if (responseCode === this.user.userSkills.length + 1) { // 뒤로 가기 버튼
+    if (responseCode === this.user.userSkills.length + 1) {
+      // 뒤로 가기 버튼
       this.changeState(ActionState);
       return;
     }

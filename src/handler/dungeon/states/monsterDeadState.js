@@ -23,7 +23,7 @@ export default class MonsterDeadState extends DungeonState {
 
     if (aliveMonstersCount === 0) {
       // 모든 몬스터가 사망한 경우 클리어이므로 보상 상태로 전환
-      this.changeState(RewardState);
+      await this.changeState(RewardState);
     } else {
       // 아직 살아있는 몬스터가 있으면 적 공격 상태로 전환
       this.changeState(EnemyAttackState);

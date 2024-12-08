@@ -1,6 +1,7 @@
 // src/classes/models/dungeonClass.js
 
 import { DUNGEON_RESOURCES } from '../../constants/battle.js';
+import { ITEM_ID } from '../../constants/items.js';
 import { getRandomRewardSkills } from '../../init/loadAssets.js';
 import BaseSession from './baseSession.js';
 import Reward from './rewardClass.js';
@@ -46,9 +47,9 @@ class Dungeon extends BaseSession {
   generateRandomItem() {
     const random = Math.random();
     if (random < 0.02) {
-      return 4004; // 2프로 확률로 이상한 물약
+      return ITEM_ID.DANGER_POTION; // 2프로 확률로 이상한 물약
     } else if (random < 0.12) {
-      return 4005; // 10프로 확률로 만병통치약
+      return ITEM_ID.PANACEA; // 10프로 확률로 만병통치약
     }
     return null;
   }

@@ -21,8 +21,8 @@ export default class GameState {
     throw new CustomError(ErrorCodes.ABSTRACT_CLASS, 'handleInput()을 구현해야 합니다.');
   }
 
-  changeState(StateClass) {
+  async changeState(StateClass) {
     this.session.currentState = new StateClass(this.session, this.user, this.socket);
-    this.session.currentState.enter();
+    await this.session.currentState.enter();
   }
 }

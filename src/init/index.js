@@ -16,7 +16,7 @@ const initServer = async () => {
     await initRedisClient();
     await startSyncScheduler();
   } catch (e) {
-    throw new CustomError(ErrorCodes.INITIALIZE_FAILED, '서버 초기화 실패');
+    throw new CustomError(ErrorCodes.INITIALIZE_FAILED, `서버 초기화 실패: ${e}`);
   }
 };
 

@@ -66,6 +66,7 @@ export default class PvpTurnChangeState extends PvpState {
     // 타이머 관리
     this.pvpRoom.clearTurnTimer();
     this.pvpRoom.startTurnTimer();
+    this.pvpRoom.lastActivity = Date.now();
   }
 
   handleInput(responseCode) {

@@ -28,32 +28,38 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
       return;
     }
 
+    // PvpFleeMessageState와 PvpGameOverState 모두 확인
     const isConfirmOrGameOver = [PvpFleeMessageState, PvpGameOverState].some(
       (StateClass) => pvpRoom.currentState instanceof StateClass,
     );
 
     if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
-      socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
+      pvpRoom.users.forEach((user) => user.socket.write(createResponse(PacketType.S_LeaveDungeon, {})));
       sessionManager.removePvpRoom(pvpRoom.sessionId);
       return;
     }
 
-    const [playerA, playerB] = Array.from(pvpRoom.users.values());
-    const currentPlayer = pvpRoom.getUserTurn() === 0 ? playerB : playerA;
+    let currentPlayer;
+    let opponent;
+    
+    // isConfirmOrGameOver가 false인 경우에만 턴 검사 수행
+    if (!isConfirmOrGameOver) {
+      const [playerA, playerB] = Array.from(pvpRoom.users.values());
+      currentPlayer = pvpRoom.getUserTurn() === 0 ? playerA : playerB;
 
-    if (currentPlayer.nickname !== user.nickname) {
-      logger.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
-      return;
+      if (currentPlayer.nickname !== user.nickname) {
+        logger.error('cPlayerPvpResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
+        return;
+      }
+
+      // 턴 정보 클라이언트에게 전송
+      currentPlayer.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: true }));
+
+      opponent = currentPlayer === playerA ? playerB : playerA;
+      opponent.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: false }));
     }
 
-    // 턴 정보 클라이언트에게 전송
-    currentPlayer.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: true }));
-
-    const opponent = currentPlayer === playerA ? playerB : playerA;
-    opponent.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: false }));
-
     if (!pvpRoom.currentState) {
-      // 예시: 'action' 키로 상태 생성
       const newState = await stateFactory.createState(STATE_KEYS.PVP_ACTION, pvpRoom, currentPlayer, opponent);
       pvpRoom.currentState = newState;
       await pvpRoom.currentState.enter();

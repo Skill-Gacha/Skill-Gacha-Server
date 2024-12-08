@@ -1,10 +1,10 @@
 ﻿// src/managers/sessionManager.js
-
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import { MAX_PLAYER } from '../constants/pvp.js';
 import logger from '../utils/log/logger.js';
+import BossRoomClass from '../classes/models/bossRoomClass.js';
 
 // 싱글톤 클래스
 class SessionManager {
@@ -18,19 +18,24 @@ class SessionManager {
       town: new Town(10000),
       dungeons: new Map(),
       pvpRooms: new Map(),
+      bossRooms: new Map(),
     };
     this.matchingQueue = [];
+    this.acceptQueue = [];
+    this.pvpMatchingQueue = [];
+    this.bossMatchingQueue = [];
     this.users = new Map(); // userId -> user
     this.socketToUser = new Map(); // socket -> user
-    this.sessionTimeout = 300000;
-    this.userTimeout = 300000;
-    this.cleansingInterval = 60000;
+    this.sessionTimeout = 1800000; // 30분
+    this.userTimeout = 1800000; // 30분
+    this.cleansingInterval = 60000; // 1분
     this.startCleansingInterval();
     SessionManager.instance = this;
   }
 
   // **사용자 관리**
   addUser(user) {
+    logger.info(`유저 ${user.id}가 세션에 추가되었습니다.`);
     this.users.set(user.id, user);
     this.socketToUser.set(user.socket, user); // 소켓 맵에 추가
     this.sessions.town.addUser(user); // 기본적으로 마을 세션에 추가
@@ -43,9 +48,6 @@ class SessionManager {
       logger.info(`사용자 ${userId}를 찾을 수 없습니다.`);
       return;
     }
-
-    this.users.delete(userId);
-    this.socketToUser.delete(user.socket); // 소켓 맵에서 제거
 
     // 모든 던전 세션에서 사용자 제거
     this.sessions.dungeons.forEach((dungeon) => {
@@ -71,10 +73,25 @@ class SessionManager {
       }
     });
 
+    // 보스 방에서 사용자 제거
+    this.sessions.bossRooms.forEach((bossRoom) => {
+      if (bossRoom.removeUser(userId)) {
+        logger.info(`보스 방 세션에서 사용자 ${userId} 제거`);
+        // 보스 방이 비어있다면 클렌징
+        if (bossRoom.isEmpty()) {
+          logger.info(`보스 방 세션 ${bossRoom.id}이 비어있어 제거합니다.`);
+          this.removeBossRoom(bossRoom.id);
+        }
+      }
+    });
+
     // 마을 세션에서 사용자 제거
     if (this.sessions.town.removeUser(userId)) {
       logger.info(`마을 세션에서 사용자 ${userId} 제거`);
     }
+
+    this.socketToUser.delete(user.socket); // 소켓 맵에서 제거
+    this.users.delete(userId);
 
     logger.info(`사용자 ${userId}가 모든 세션에서 제거되었습니다.`);
   }
@@ -87,8 +104,14 @@ class SessionManager {
     const user = this.socketToUser.get(socket);
     if (!user) {
       logger.info('소켓을 찾을 수 없음');
+      for (let user of this.users.values()) {
+        if (user.socket === socket) {
+          return user;
+        }
+      }
+      return null;
     }
-    return user || null;
+    return user;
   }
 
   // **던전 세션 관리**
@@ -124,7 +147,7 @@ class SessionManager {
     return this.sessions.town;
   }
 
-  // 사용자 세션 조회 (마을 / 던전 / PvP)
+  // 사용자 세션 조회
   getSessionByUserId(userId) {
     // 유저가 Town에 있으면 Town 세션 반환
     if (this.sessions.town.getUser(userId)) {
@@ -144,6 +167,14 @@ class SessionManager {
         return pvp;
       }
     }
+
+    // 유저가 BossRoom에 있으면 BossRoom 세션 반환
+    for (let bossRoom of this.sessions.bossRooms.values()) {
+      if (bossRoom.getUser(userId)) {
+        return bossRoom;
+      }
+    }
+
     return null;
   }
 
@@ -160,40 +191,87 @@ class SessionManager {
     });
   }
 
-  // ** 1 대 1 PvP 매칭 관리 **
-  addMatchingQueue(user) {
-    const existingUser = this.matchingQueue.find((existUser) => existUser.id === user.id);
+  // **매칭 큐 관리**
+  addMatchingQueue(user, maxPlayer = MAX_PLAYER, queueType = 'pvp') {
+    const matchingQueue = this.getMatchingQueue(queueType);
+    const existingUser = matchingQueue.find((existUser) => existUser.id === user.id);
 
     if (existingUser) {
       logger.info('이미 매칭중인 유저입니다.');
-      return;
+      return null;
     }
 
     user.matchingAddedAt = Date.now();
-    this.matchingQueue.push(user);
+    matchingQueue.push(user);
 
-    if (this.matchingQueue.length === MAX_PLAYER) {
-      const matchedUsers = this.matchingQueue.splice(0, MAX_PLAYER);
+    if (matchingQueue.length >= maxPlayer && queueType === 'boss') {
+      const matchedUsers = matchingQueue.splice(0, maxPlayer);
+      this.acceptQueue.push(...matchedUsers);
+      return matchedUsers;
+    }
+
+    if (matchingQueue.length >= maxPlayer) {
+      const matchedUsers = matchingQueue.splice(0, maxPlayer);
       // 매칭된 유저들에 대한 추가 로직 (PvP 방 생성 등)을 여기에 추가할 수 있습니다.
       return matchedUsers;
     }
+
     return null;
   }
 
-  removeMatchingQueue(user) {
-    const userIndex = this.matchingQueue.findIndex((u) => u.id === user.id);
+  removeMatchingQueue(user, queueType = 'pvp') {
+    const matchingQueue = this.getMatchingQueue(queueType);
+    const userIndex = matchingQueue.findIndex((u) => u.id === user.id);
+
     if (userIndex !== -1) {
-      this.matchingQueue.splice(userIndex, 1);
-      logger.info('매칭큐에서 유저를 지워줍니다');
-      return;
+      matchingQueue.splice(userIndex, 1);
+      logger.info('매칭큐에서 유저를 지웠습니다.');
+      return true;
     }
-    logger.info('매칭큐에 유저가 존재하지 않습니다');
+    logger.info('매칭큐에 유저가 존재하지 않습니다.');
+    return false;
+  }
+
+  removeAcceptQueueInUser(user) {
+    const userIndex = this.acceptQueue.findIndex((u) => u.id === user.id);
+
+    if (userIndex !== -1) {
+      this.acceptQueue.splice(userIndex, 1);
+      logger.info('AcceptQueue에서 유저를 지웠습니다.');
+      return true;
+    }
+    logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
+    return false;
+  }
+
+  getMatchingQueue(queueType) {
+    if (queueType === 'boss') {
+      return this.bossMatchingQueue;
+    } else if (queueType === 'pvp') {
+      return this.pvpMatchingQueue;
+    } else {
+      logger.error(`유효하지 않은 큐 타입: ${queueType}`);
+      return [];
+    }
+  }
+
+  getAcceptQueue() {
+    return this.acceptQueue;
   }
 
   getPvpByUser(user) {
     for (let pvp of this.sessions.pvpRooms.values()) {
       if (pvp.getUser(user.id)) {
         return pvp;
+      }
+    }
+    return null;
+  }
+
+  getBossRoomByUser(user) {
+    for (let bossRoom of this.sessions.bossRooms.values()) {
+      if (bossRoom.getUser(user.id)) {
+        return bossRoom;
       }
     }
     return null;
@@ -222,6 +300,22 @@ class SessionManager {
     }
   }
 
+  createBossRoom(sessionId) {
+    const bossRoom = new BossRoomClass(sessionId);
+    bossRoom.lastActivity = Date.now();
+    this.sessions.bossRooms.set(sessionId, bossRoom);
+    return bossRoom;
+  }
+
+  removeBossRoom(sessionId) {
+    const bossRoom = this.sessions.bossRooms.get(sessionId);
+    if (bossRoom) {
+      clearTimeout(bossRoom.timeout);
+      this.sessions.bossRooms.delete(sessionId);
+      logger.info(`보스 방 세션 ${sessionId}이 제거되었습니다.`);
+    }
+  }
+
   // **세션 클렌징 로직**
   startCleansingInterval() {
     setInterval(() => {
@@ -243,6 +337,14 @@ class SessionManager {
         }
       });
 
+      // 보스 방 클렌징
+      this.sessions.bossRooms.forEach((bossRoom, sessionId) => {
+        if (now - bossRoom.lastActivity > this.sessionTimeout) {
+          logger.info(`보스 방 세션 ${sessionId} 클렌징`);
+          this.removeBossRoom(sessionId);
+        }
+      });
+
       // 사용자 클렌징
       this.users.forEach((user, userId) => {
         if (now - user.lastActivity > this.userTimeout) {
@@ -252,14 +354,20 @@ class SessionManager {
       });
 
       // 매칭 큐 클렌징
-      this.matchingQueue = this.matchingQueue.filter(user => {
-        if (now - user.matchingAddedAt > this.userTimeout) {
-          logger.info(`매칭 큐에서 사용자 ${user.id} 제거`);
-          return false;
+      ['pvp', 'boss'].forEach((queueType) => {
+        const matchingQueue = this.getMatchingQueue(queueType);
+        const originalLength = matchingQueue.length;
+        this.matchingQueue = matchingQueue.filter((user) => {
+          if (now - user.matchingAddedAt > this.userTimeout) {
+            logger.info(`매칭 큐에서 사용자 ${user.id} 제거`);
+            return false;
+          }
+          return true;
+        });
+        if (matchingQueue.length !== originalLength) {
+          logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 완료`);
         }
-        return true;
       });
-
     }, this.cleansingInterval);
   }
 

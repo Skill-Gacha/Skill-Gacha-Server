@@ -26,6 +26,9 @@ export const onError = (socket) => async (err) => {
       const loser = user;
       const winner = [...pvpRoom.users.values()].find((user) => user.id !== loser.id);
 
+      // 타이머 종료
+      pvpRoom.clearTurnTimer();
+
       const [winnerRating, loserRating] = await Promise.all([
         getPlayerRatingFromRedis(winner.nickname),
         getPlayerRatingFromRedis(loser.nickname),
@@ -44,14 +47,34 @@ export const onError = (socket) => async (err) => {
       });
 
       winner.socket.write(victoryMessage); // 승리 메시지 전송
-
-      // 매칭큐 및 세션 정리
-      sessionManager.removeMatchingQueue(user);
-      sessionManager.removePvpRoom(pvpRoom.sessionId);
     } catch (error) {
       logger.error('onError: PVP 강제종료 처리중 에러:', error);
       const newCustomeError = new CustomError(ErrorCodes.FAILED_TO_PROCESS_ERROR, error);
       handleError(newCustomeError);
+    }
+  }
+
+  const bossRoom = sessionManager.getBossRoomByUser(user);
+
+  if (bossRoom) {
+    try {
+      // 모든 유저에게 게임오버 메시지 전달
+      const users = bossRoom.getUsers();
+      const gameOverMessage = createResponse(PacketType.S_ScreenText, {
+        screenText: {
+          msg: '탈주자가 생겨 마을로 이동됩니다.',
+          typingAnimation: false,
+        },
+      });
+
+      bossRoom.removeUser(user);
+      bossRoom.clearTurnTimer();
+
+      users.forEach((user) => {
+        user.socket.write(gameOverMessage);
+      });
+    } catch (error) {
+      console.error('onEnd: BOSS 강제종료 처리중 에러:', error);
     }
   }
 
@@ -60,6 +83,20 @@ export const onError = (socket) => async (err) => {
 
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
+
+    // 유저 버프 초기화
+    user.isDead = false;
+    user.buff = null;
+    user.battleCry = false;
+    user.berserk = false;
+    user.dangerPotion = false;
+    user.protect = false;
+    user.downResist = false;
+    user.completeTurn = false;
+
+    // PVP나 보스 매칭큐에서 유저 제거
+    sessionManager.removeMatchingQueue(user);
+    sessionManager.removeMatchingQueue(user, 'boss');
 
     logger.info(`onError: 유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {

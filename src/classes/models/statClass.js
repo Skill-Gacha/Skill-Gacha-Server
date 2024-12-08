@@ -7,9 +7,11 @@ class Stat {
     this.mp = mp;
     this.maxMp = maxMp;
     this.buff = null;
+    this.battleCry = false;
     this.berserk = false;
     this.dangerPotion = false;
     this.protect = false;
+    this.downResist = false;
 
     this.resistances = {
       electricResist: resists.electricResist,

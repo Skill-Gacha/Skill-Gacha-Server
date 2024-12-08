@@ -17,6 +17,8 @@ class User {
     this.gold = gold;
     this.stone = stone;
     this.turnOff = false;
+    this.isDead = false;
+    this.completeTurn = false;
   }
 
   reduceHp(damage) {
@@ -33,6 +35,14 @@ class User {
 
     // maxMp를 초과하지 않도록 제한
     this.stat.mp = Math.min(this.stat.mp + mp, this.stat.maxMp);
+  }
+
+  changeHpMp() {
+    const temp = this.stat.hp;
+    this.stat.hp = this.stat.mp;
+    this.stat.mp = temp;
+    this.stat.hp = Math.min(this.stat.hp, this.stat.maxHp);
+    this.stat.mp = Math.min(this.stat.mp, this.stat.maxMp);
   }
 
   resetHpMp() {

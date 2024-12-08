@@ -68,4 +68,5 @@ export const PacketType = {
   S_BossMonsterAction: 65,
   S_BossPhase: 66,
   S_BossUserTurn: 67,
+  S_BossBarrierCount: 68,
 };

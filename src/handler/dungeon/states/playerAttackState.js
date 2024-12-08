@@ -7,7 +7,11 @@ import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { delay } from '../../../utils/delay.js';
 import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS } from '../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../utils/battle/calculate.js';
+import {
+  checkEnemyResist,
+  skillEnhancement,
+  updateDamage,
+} from '../../../utils/battle/calculate.js';
 import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
 
 const ACTION_ANIMATION_CODE = 0;
@@ -55,9 +59,7 @@ export default class PlayerAttackState extends DungeonState {
     useBuffSkill(this.user, this.socket, this.dungeon);
 
     this.user.reduceMp(skillInfo.mana);
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }),
-    );
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     this.sendPlayerAction([], skillInfo.effectCode);
     await delay(PLAYER_ACTION_DELAY);
@@ -72,7 +74,10 @@ export default class PlayerAttackState extends DungeonState {
       useBuffSkill(this.user, this.socket, this.dungeon);
     }
 
-    this.sendPlayerAction(aliveMonsters.map((m) => m.monsterIdx), skillInfo.effectCode);
+    this.sendPlayerAction(
+      aliveMonsters.map((m) => m.monsterIdx),
+      skillInfo.effectCode,
+    );
 
     for (const monster of aliveMonsters) {
       const totalDamage = this.calculateTotalDamage(skillInfo, monster);
@@ -83,10 +88,12 @@ export default class PlayerAttackState extends DungeonState {
     this.sendBattleLog('광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
 
     this.user.reduceMp(skillInfo.mana);
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }),
-    );
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
     await delay(PLAYER_ACTION_DELAY);
+
+    if (skillInfo.id !== DEBUFF_SKILL_ID) {
+      this.user.stat.buff = null;
+    }
 
     const allMonstersDead = this.checkAllMonstersDead();
     if (allMonstersDead) {
@@ -110,19 +117,20 @@ export default class PlayerAttackState extends DungeonState {
 
     targetMonster.reduceHp(totalDamage);
     this.user.reduceMp(skillInfo.mana);
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }),
-    );
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     this.sendMonsterHpUpdate(targetMonster);
     this.sendPlayerAction([targetMonster.monsterIdx], skillInfo.effectCode);
 
-    const battleLogMsg = skillDamageRate > 1
-      ? `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
-      : `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
+    const battleLogMsg =
+      skillDamageRate > 1
+        ? `효과는 굉장했다! \n${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`
+        : `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
 
     this.sendBattleLog(battleLogMsg, disableButtons);
     await delay(PLAYER_ACTION_DELAY);
+
+    this.user.stat.buff = null;
 
     if (targetMonster.monsterHp <= 0) {
       this.changeState(MonsterDeadState);

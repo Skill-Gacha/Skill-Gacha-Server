@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { MyStatus, OpponentStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import checkBatchim from '../../utils/korean/checkBatchim.js';
+import { MAX_PLAYER } from '../../constants/pvp.js';
 
 const DUNGEON_CODE_BASE = 5000;
 const DUNGEON_CODE_RANGE = 3;
@@ -22,7 +23,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
   socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
-  const matchedPlayers = sessionManager.addMatchingQueue(user);
+  const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
 
   if (!matchedPlayers) return;
 
@@ -42,19 +43,26 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
   const dungeonCode = Math.floor(Math.random() * DUNGEON_CODE_RANGE + 1) + DUNGEON_CODE_BASE;
   pvpRoom.initializeTurn();
-  const isFirstAttack = pvpRoom.getUserTurn();
+  const isPlayerAFirstAttack = pvpRoom.getUserTurn() === 0;
+  const isPlayerBFirstAttack = pvpRoom.getUserTurn() === 1;
 
   const lastKoreanA = checkBatchim(playerB.nickname) ? '과' : '와';
   const lastKoreanB = checkBatchim(playerA.nickname) ? '과' : '와';
 
+  
   const responseA = createResponse(PacketType.S_PlayerMatchNotification, {
     dungeonCode,
     playerData: MyStatus(playerA),
     opponentData: OpponentStatus(playerB),
     battleLog: createBattleLogResponse(
-      generateBattleLog(playerB.nickname, lastKoreanA, isFirstAttack, '선공입니다.'),
-      isFirstAttack,
-      [true, true, true, true],
+      generateBattleLog(
+        playerB.nickname,
+        lastKoreanA,
+        isPlayerAFirstAttack,
+        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.'
+      ),
+      isPlayerAFirstAttack,
+      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false]
     ),
   });
 
@@ -63,9 +71,14 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     playerData: MyStatus(playerB),
     opponentData: OpponentStatus(playerA),
     battleLog: createBattleLogResponse(
-      generateBattleLog(playerA.nickname, lastKoreanB, !isFirstAttack, '후공입니다.'),
-      !isFirstAttack,
-      [false, false, false, false],
+      generateBattleLog(
+        playerA.nickname,
+        lastKoreanB,
+        isPlayerBFirstAttack,
+        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.'
+      ),
+      isPlayerBFirstAttack,
+      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false]
     ),
   });
 

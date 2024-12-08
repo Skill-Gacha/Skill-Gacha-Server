@@ -5,7 +5,7 @@ import EnemyAttackState from './enemyAttackState.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import ItemChoiceState from './ItemChoiceState.js';
+import ItemChoiceState from './itemChoiceState.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
 import { ITEM_TYPES } from '../../../constants/items.js';
@@ -131,7 +131,10 @@ export default class PlayerUseItemState extends DungeonState {
       this.user.reduceHp(this.user.stat.hp - 1);
       battleLogMsg = `위험한 포션의 부작용으로 HP가 1만 남게 되었습니다.`;
     } else if (dangerRandomNum < 50) {
-      this.user.increaseHpMp(this.user.stat.maxHp - this.user.stat.hp, this.user.stat.maxMp - this.user.stat.mp);
+      this.user.increaseHpMp(
+        this.user.stat.maxHp - this.user.stat.hp,
+        this.user.stat.maxMp - this.user.stat.mp,
+      );
       battleLogMsg = `위험한 포션을 사용하여 HP와 MP가 최대치로 회복되었습니다.`;
     } else if (dangerRandomNum < 75) {
       this.user.stat.dangerPotion = true;
@@ -142,12 +145,8 @@ export default class PlayerUseItemState extends DungeonState {
     }
 
     // HP, MP 업데이트
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerHp, { hp: this.user.stat.hp }),
-    );
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }),
-    );
+    this.socket.write(createResponse(PacketType.S_SetPlayerHp, { hp: this.user.stat.hp }));
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     const battleLog = {
       msg: battleLogMsg,
@@ -159,7 +158,8 @@ export default class PlayerUseItemState extends DungeonState {
   }
 
   async usePanacea() {
-    // 디버프 관련 로직 보완 필요
+    // 상태 이상 status 해제
+    this.user.stat.downResist = false;
 
     const battleLog = {
       msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
@@ -168,12 +168,8 @@ export default class PlayerUseItemState extends DungeonState {
     };
 
     this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerHp, { hp: this.user.stat.hp }),
-    );
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }),
-    );
+    this.socket.write(createResponse(PacketType.S_SetPlayerHp, { hp: this.user.stat.hp }));
+    this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
   }
 
   async handleInput(responseCode) {

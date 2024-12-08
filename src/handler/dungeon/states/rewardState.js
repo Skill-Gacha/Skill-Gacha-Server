@@ -1,6 +1,12 @@
 // src/handler/dungeon/states/rewardState.js
 
-import { CONFIRM_TYPE, DUNGEON_STATUS, MAX_REWARD_BUTTON, MAX_SKILL_COUNT, STONE } from '../../../constants/battle.js';
+import {
+  CONFIRM_TYPE,
+  DUNGEON_STATUS,
+  MAX_REWARD_BUTTON,
+  MAX_SKILL_COUNT,
+  STONE,
+} from '../../../constants/battle.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
@@ -39,10 +45,11 @@ export default class RewardState extends DungeonState {
 
     if (item !== null) {
       const userHasItem = this.user.items.find((i) => i.itemId === item);
-      if (userHasItem && userHasItem.count > 0) {
+      if (userHasItem && userHasItem.count !== 1 && userHasItem.count === 0) {
         msg += `\n일정 확률로 아이템을 획득하였습니다!`;
         try {
           await updateItemCountInRedis(this.user.nickname, item, 1);
+          userHasItem.count += 1;
         } catch (error) {
           logger.error('RewardState: 아이템 업데이트 중 오류 발생:', error);
           invalidResponseCode(this.socket);
@@ -82,7 +89,8 @@ export default class RewardState extends DungeonState {
       return;
     }
 
-    if (responseCode === MAX_REWARD_BUTTON) { // 포기하기 버튼
+    if (responseCode === MAX_REWARD_BUTTON) {
+      // 포기하기 버튼
       this.changeState(ConfirmState);
       await this.dungeon.currentState.setConfirm(
         CONFIRM_TYPE.GIVEUP,
@@ -102,13 +110,15 @@ export default class RewardState extends DungeonState {
     this.dungeon.stoneCount = stoneCount;
 
     if (this.user.userSkills.length >= MAX_SKILL_COUNT) {
-      if (existingSkill) {  // 이미 있는 스킬일 경우
+      if (existingSkill) {
+        // 이미 있는 스킬일 경우
         this.changeState(ConfirmState);
         await setConfirmForDuplicateSkill(this.dungeon, stoneCount);
       } else {
         this.changeState(SkillChangeState);
       }
-    } else {  // 스킬 슬롯에 여유가 있는 경우
+    } else {
+      // 스킬 슬롯에 여유가 있는 경우
       if (existingSkill) {
         this.changeState(ConfirmState);
         await setConfirmForDuplicateSkill(this.dungeon, stoneCount);
