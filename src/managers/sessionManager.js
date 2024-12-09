@@ -6,6 +6,8 @@ import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import { MAX_PLAYER } from '../constants/pvp.js';
 import logger from '../utils/log/logger.js';
 import BossRoomClass from '../classes/models/bossRoomClass.js';
+import Queue from 'bull';
+import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
 
 class SessionManager {
   constructor() {
@@ -17,8 +19,12 @@ class SessionManager {
       bossRooms: new Map(),
     };
     this.acceptQueue = [];
-    this.pvpMatchingQueue = [];
-    this.bossMatchingQueue = [];
+    this.pvpMatchingQueue = new Queue('pvpMatchingQueue', {
+      redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
+    });
+    this.bossMatchingQueue = new Queue('bossMatchingQueue', {
+      redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
+    });
     this.users = new Map(); // userId -> user
     this.socketToUser = new Map(); // socket -> user
     this.sessionTimeout = 1800000; // 30분
@@ -186,9 +192,10 @@ class SessionManager {
   }
 
   // **매칭 큐 관리**
-  addMatchingQueue(user, maxPlayer = MAX_PLAYER, queueType = 'pvp') {
+  async addMatchingQueue(user, maxPlayer = MAX_PLAYER, queueType = 'pvp') {
     const matchingQueue = this.getMatchingQueue(queueType);
-    const existingUser = matchingQueue.find((existUser) => existUser.id === user.id);
+    const waitingJobs = await matchingQueue.getJobs('waiting'); // 대기 중인 모든 작업을 가져옴
+    const existingUser = waitingJobs.find((job) => job.data.id === user.id);
 
     if (existingUser) {
       logger.info('이미 매칭중인 유저입니다.');
@@ -196,16 +203,32 @@ class SessionManager {
     }
 
     user.matchingAddedAt = Date.now();
-    matchingQueue.push(user);
 
-    if (matchingQueue.length >= maxPlayer && queueType === 'boss') {
-      const matchedUsers = matchingQueue.splice(0, maxPlayer);
-      this.acceptQueue.push(...matchedUsers);
+    // 유저를 큐에 추가
+    await matchingQueue.add(user);
+    const updateWaitingJobs = await matchingQueue.getJobs('waiting');
+
+    if (updateWaitingJobs.length >= maxPlayer && queueType === 'boss') {
+      const matchedJobs = updateWaitingJobs.splice(0, maxPlayer);
+      this.acceptQueue.push(...matchedJobs);
+      const matchedUsers = matchedJobs.map((job) => job.data);
+      // 매칭된 유저들을 큐에서 제거
+      await Promise.all(
+        matchedJobs.map(async (job) => {
+          await job.remove();
+        }),
+      );
       return matchedUsers;
     }
 
-    if (matchingQueue.length >= maxPlayer) {
-      const matchedUsers = matchingQueue.splice(0, maxPlayer);
+    if (updateWaitingJobs.length >= maxPlayer) {
+      const matchedJobs = updateWaitingJobs.splice(0, maxPlayer);
+      const matchedUsers = matchedJobs.map((job) => job.data);
+      await Promise.all(
+        matchedJobs.map(async (job) => {
+          await job.remove();
+        }),
+      );
       // 매칭된 유저들에 대한 추가 로직 (PvP 방 생성 등)을 여기에 추가할 수 있습니다.
       return matchedUsers;
     }
@@ -213,12 +236,13 @@ class SessionManager {
     return null;
   }
 
-  removeMatchingQueue(user, queueType = 'pvp') {
+  async removeMatchingQueue(user, queueType = 'pvp') {
     const matchingQueue = this.getMatchingQueue(queueType);
-    const userIndex = matchingQueue.findIndex((u) => u.id === user.id);
+    const waitingJobs = await matchingQueue.getJobs('waiting');
+    const userJob = waitingJobs.find((job) => job.data.id === user.id);
 
-    if (userIndex !== -1) {
-      matchingQueue.splice(userIndex, 1);
+    if (userJob) {
+      await userJob.remove();
       logger.info('매칭큐에서 유저를 지웠습니다.');
       return true;
     }
@@ -226,11 +250,12 @@ class SessionManager {
     return false;
   }
 
-  removeAcceptQueueInUser(user) {
-    const userIndex = this.acceptQueue.findIndex((u) => u.id === user.id);
+  async removeAcceptQueueInUser(user) {
+    const waitingJobs = await this.acceptQueue.getJobs('waiting');
+    const userJob = waitingJobs.find((job) => job.data.id === user.id);
 
-    if (userIndex !== -1) {
-      this.acceptQueue.splice(userIndex, 1);
+    if (userJob) {
+      await userJob.remove();
       logger.info('AcceptQueue에서 유저를 지웠습니다.');
       return true;
     }
@@ -311,8 +336,8 @@ class SessionManager {
   }
 
   // **세션 클렌징 로직**
-  startCleansingInterval() {
-    setInterval(() => {
+  async startCleansingInterval() {
+    setInterval(async () => {
       const now = Date.now();
 
       // 던전 세션 클렌징
@@ -348,20 +373,25 @@ class SessionManager {
       });
 
       // 매칭 큐 클렌징
-      ['pvp', 'boss'].forEach((queueType) => {
+      for (const queueType of ['pvp', 'boss']) {
         const matchingQueue = this.getMatchingQueue(queueType);
-        const originalLength = matchingQueue.length;
-        this.matchingQueue = matchingQueue.filter((user) => {
+        const waitingJobs = await matchingQueue.getJobs('waiting'); // 대기 중인 작업 가져오기
+
+        const jobsToRemove = waitingJobs.filter((job) => {
+          const user = job.data;
           if (now - user.matchingAddedAt > this.userTimeout) {
             logger.info(`매칭 큐에서 사용자 ${user.id} 제거`);
-            return false;
+            return true;
           }
-          return true;
+          return false;
         });
-        if (matchingQueue.length !== originalLength) {
+
+        await Promise.all(jobsToRemove.map((job) => job.remove())); // 작업 제거
+
+        if (jobsToRemove.length > 0) {
           logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 완료`);
         }
-      });
+      }
     }, this.cleansingInterval);
   }
 

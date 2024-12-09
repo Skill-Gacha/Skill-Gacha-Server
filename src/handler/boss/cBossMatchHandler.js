@@ -19,7 +19,7 @@ export const cBossMatchHandler = async ({ socket, payload }) => {
   try {
     // 포탈에 들어왔을 때 처리
     if (isIn) {
-      const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
+      const matchedPlayers = await sessionManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
 
       // 수락 여부 묻기

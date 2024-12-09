@@ -26,8 +26,11 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
   socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
-  const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
-  if (!matchedPlayers) return;
+  const matchedPlayers = await sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
+  if (!matchedPlayers) {
+    logger.info('매칭 대기 중입니다.');
+    return;
+  }
 
   const [playerA, playerB] = matchedPlayers;
   const pvpRoom = sessionManager.createPvpRoom(uuidv4());
