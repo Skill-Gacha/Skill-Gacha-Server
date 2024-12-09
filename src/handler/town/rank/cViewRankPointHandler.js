@@ -1,10 +1,10 @@
 // src/handler/town/cViewRankPointHandler.js
 
-import { PacketType } from '../../constants/header.js';
-import { createResponse } from '../../utils/response/createResponse.js';
+import { PacketType } from '../../../constants/header.js';
+import { createResponse } from '../../../utils/response/createResponse.js';
 import sessionManager from '#managers/sessionManager.js';
-import { getTopRatingsWithPlayer } from '../../db/redis/ratingService.js';
-import logger from '../../utils/log/logger.js';
+import { getTopRatingsWithPlayer } from '../../../db/redis/ratingService.js';
+import logger from '../../../utils/log/logger.js';
 
 const RANK_RANGE = 10;
 

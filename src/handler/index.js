@@ -13,7 +13,7 @@ import { cPlayerMatchHandler } from './pvp/cPlayerMatchHandler.js';
 import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
 import { cOpenStoreHandler } from './town/store/cOpenStoreHandler.js';
 import { cBuyItemHandler } from './town/store/cBuyItemHandler.js';
-import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
+import { cViewRankPointHandler } from './town/rank/cViewRankPointHandler.js';
 import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
 import { cEnhanceHandler } from './town/enhanceForge/cEnhanceHandler.js';
 import { cEnhanceUiHandler } from './town/enhanceForge/cEnhanceUiHandler.js';
