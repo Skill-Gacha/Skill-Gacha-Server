@@ -22,7 +22,7 @@ export default class PvpItemChoiceState extends PvpState {
     const buttons = this.mover.items.map((item) => ({
       msg: `${itemsName[item.itemId - 4001]}(보유 수량: ${item.count})`,
       enable:
-        item.itemId === 4003 ? !this.mover.stat.berserk && item.count !== 0 : item.count !== 0,
+        item.itemId === 4003 ? !this.mover.stat.stimPack && item.count !== 0 : item.count !== 0,
     }));
 
     buttons.push({
@@ -47,7 +47,7 @@ export default class PvpItemChoiceState extends PvpState {
       invalidResponseCode(this.socket);
     }
 
-    if (responseCode > this.user.items.length) {
+    if (responseCode > this.user.inventory.items.length) {
       this.changeState(PvpActionState);
     } else {
       // 선택한 아이템 인덱스 계산

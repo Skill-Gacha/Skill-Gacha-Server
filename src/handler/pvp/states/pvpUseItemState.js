@@ -36,8 +36,8 @@ export default class PvpUseItemState extends PvpState {
         case 'MP_POTION':
           await this.useMpPotion();
           break;
-        case 'BERSERK_POTION':
-          await this.useBerserkPotion();
+        case 'STIMPACK_POTION':
+          await this.useStimPackPotion();
           break;
         case 'DANGER_POTION':
           await this.useDangerPotion();
@@ -103,15 +103,15 @@ export default class PvpUseItemState extends PvpState {
     this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
   }
 
-  async useBerserkPotion() {
-    if (this.mover.stat.hp <= 20 || this.mover.stat.berserk) {
+  async useStimPackPotion() {
+    if (this.mover.stat.hp <= 20 || this.mover.stat.stimPack) {
       // 아이템 선택 상태로 돌아가기
       this.changeState(PvpItemChoiceState);
       return;
     }
 
     this.mover.reduceHp(50);
-    this.mover.stat.berserk = true;
+    this.mover.stat.stimPack = true;
 
     this.mover.socket.write(
       createResponse(PacketType.S_SetPvpPlayerHp, {

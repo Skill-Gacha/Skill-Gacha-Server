@@ -23,7 +23,7 @@ export default class BossItemChoiceState extends BossRoomState {
     const itemsName = itemsData.map((itemData) => itemData.name);
 
     // 버튼은 플레이어가 보유한 아이템들로 생성
-    const buttons = this.user.items.map((item) => ({
+    const buttons = this.user.inventory.map((item) => ({
       msg: `${itemsName[item.itemId - BASE_ITEM_ID_OFFSET]}(보유 수량: ${item.count})`,
       enable: this.isItemUsable(item),
     }));
