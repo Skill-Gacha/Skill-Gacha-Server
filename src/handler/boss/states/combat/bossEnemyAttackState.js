@@ -179,5 +179,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       }),
     );
   }
-  async handleInput(responseCode) {}
+
+  async handleInput(responseCode) {
+  }
 }

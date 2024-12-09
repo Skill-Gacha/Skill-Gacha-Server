@@ -1,10 +1,9 @@
 // src/handler/boss/states/action/bossItemChoiceState.js
 
-import { BOSS_STATUS } from '../../../../constants/battle.js';
+import { BOSS_STATUS, MAX_BUTTON_COUNT } from '../../../../constants/battle.js';
 import BossRoomState from '../base/bossRoomState.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
-import { MAX_BUTTON_COUNT } from '../../../../constants/battle.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import { getProductData } from '../../../../init/loadAssets.js';
 import BossActionState from './bossActionState.js';

@@ -29,5 +29,6 @@ export default class PvpEnemyDeadState extends PvpState {
     this.changeState(PvpGameOverState);
   }
 
-  handleInput(responseCode) {}
+  handleInput(responseCode) {
+  }
 }

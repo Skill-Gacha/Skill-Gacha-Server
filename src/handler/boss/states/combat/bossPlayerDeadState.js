@@ -37,5 +37,6 @@ export default class BossPlayerDeadState extends BossRoomState {
     }
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

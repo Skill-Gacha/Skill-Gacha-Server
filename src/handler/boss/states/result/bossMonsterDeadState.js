@@ -34,5 +34,6 @@ export default class BossMonsterDeadState extends BossRoomState {
     this.changeState(BossGameOverWinState);
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

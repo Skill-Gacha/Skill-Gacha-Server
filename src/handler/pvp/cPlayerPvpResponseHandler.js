@@ -44,7 +44,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
 
     let currentPlayer;
     let opponent;
-    
+
     // isConfirmOrGameOver가 false인 경우에만 턴 검사 수행
     if (!isConfirmOrGameOver) {
       const [playerA, playerB] = Array.from(pvpRoom.users.values());

@@ -144,5 +144,6 @@ export default class BossPlayerUseItemState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

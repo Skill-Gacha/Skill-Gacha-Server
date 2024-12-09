@@ -9,8 +9,7 @@ export const initLocator = async () => {
     const sessionManagerInstance = new SessionManager();
     serviceLocator.register(SessionManager, sessionManagerInstance);
     // 다른 서비스가 있다면 추가
-  }
-  catch (e) {
+  } catch (e) {
     handleError(e);
   }
-}
+};

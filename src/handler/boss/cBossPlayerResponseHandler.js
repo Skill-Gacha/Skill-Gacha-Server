@@ -34,7 +34,7 @@ export const cBossPlayerResponseHandler = async ({ socket, payload }) => {
     console.error('cBossPlayerResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
     return;
   }
-  
+
   sessionManager.handleUserActivity(user.id);
   await bossRoom.currentState.handleInput(responseCode);
 };
