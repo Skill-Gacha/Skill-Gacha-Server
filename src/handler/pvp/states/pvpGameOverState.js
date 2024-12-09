@@ -18,14 +18,14 @@ export default class PvpGameOverState extends PvpState {
     // 유저 버프 초기화
     this.mover.buff = null;
     this.mover.battleCry = false;
-    this.mover.berserk = false;
+    this.mover.stimPack = false;
     this.mover.dangerPotion = false;
     this.mover.protect = false;
     this.mover.downResist = false;
 
     this.stopper.buff = null;
     this.stopper.battleCry = false;
-    this.stopper.berserk = false;
+    this.stopper.stimPack = false;
     this.stopper.dangerPotion = false;
     this.stopper.protect = false;
     this.stopper.downResist = false;
