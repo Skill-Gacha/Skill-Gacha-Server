@@ -26,7 +26,7 @@ export default class GameOverLoseState extends DungeonState {
     this.user.downResist = false;
 
     // 아이템 현황 레디스에 저장
-    await saveItemsToRedis(this.user.nickname, this.user.items);
+    await saveItemsToRedis(this.user.nickname, this.user.inventory.items);
 
     // 패배 메시지 전송
     this.socket.write(
