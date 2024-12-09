@@ -1,4 +1,5 @@
 ﻿// src/managers/sessionManager.js
+
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
@@ -6,13 +7,8 @@ import { MAX_PLAYER } from '../constants/pvp.js';
 import logger from '../utils/log/logger.js';
 import BossRoomClass from '../classes/models/bossRoomClass.js';
 
-// 싱글톤 클래스
 class SessionManager {
   constructor() {
-    if (SessionManager.instance) {
-      logger.info(`기존 세션 관리자 인스턴스 반환`);
-      return SessionManager.instance;
-    }
     logger.info(`세션 관리자 생성`);
     this.sessions = {
       town: new Town(10000),
@@ -20,7 +16,6 @@ class SessionManager {
       pvpRooms: new Map(),
       bossRooms: new Map(),
     };
-    this.matchingQueue = [];
     this.acceptQueue = [];
     this.pvpMatchingQueue = [];
     this.bossMatchingQueue = [];
@@ -30,7 +25,6 @@ class SessionManager {
     this.userTimeout = 1800000; // 30분
     this.cleansingInterval = 60000; // 1분
     this.startCleansingInterval();
-    SessionManager.instance = this;
   }
 
   // **사용자 관리**
@@ -384,5 +378,4 @@ class SessionManager {
   }
 }
 
-const sessionManager = new SessionManager();
-export default sessionManager;
+export default SessionManager;

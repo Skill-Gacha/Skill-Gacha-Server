@@ -7,6 +7,7 @@ import { initRedisClient } from './redis.js';
 import { startSyncScheduler } from '../schedulers/syncScheduler.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import CustomError from '../utils/error/customError.js';
+import { initLocator } from './initServiceLocator.js';
 
 const initServer = async () => {
   try {
@@ -14,6 +15,7 @@ const initServer = async () => {
     await loadGameAssets();
     await testConnection();
     await initRedisClient();
+    await initLocator();
     await startSyncScheduler();
   } catch (e) {
     throw new CustomError(ErrorCodes.INITIALIZE_FAILED, `서버 초기화 실패: ${e}`);
