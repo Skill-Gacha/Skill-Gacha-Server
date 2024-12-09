@@ -32,12 +32,15 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     // PvpFleeMessageState와 PvpGameOverState 모두 확인
+    //TODO : PvpFleeMessageState 삭제하기
     const isConfirmOrGameOver = [PvpFleeMessageState, PvpGameOverState].some(
       (StateClass) => pvpRoom.currentState instanceof StateClass,
     );
 
     if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
-      pvpRoom.users.forEach((user) => user.socket.write(createResponse(PacketType.S_LeaveDungeon, {})));
+      pvpRoom.users.forEach((user) =>
+        user.socket.write(createResponse(PacketType.S_LeaveDungeon, {})),
+      );
       sessionManager.removePvpRoom(pvpRoom.sessionId);
       return;
     }
@@ -62,7 +65,12 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     if (!pvpRoom.currentState) {
-      const newState = await stateFactory.createState(STATE_KEYS.PVP_ACTION, pvpRoom, currentPlayer, opponent);
+      const newState = await stateFactory.createState(
+        STATE_KEYS.PVP_ACTION,
+        pvpRoom,
+        currentPlayer,
+        opponent,
+      );
       pvpRoom.currentState = newState;
       await pvpRoom.currentState.enter();
     }
