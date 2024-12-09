@@ -44,7 +44,6 @@ class Item {
   // 사용할 아이템
   async useItem(itemId, user) {
     const itemEffect = ITEM_TYPES[itemId];
-    console.log('스팀팩 코드 확인 : ', itemId);
     //아이템 사용 로직 분기
     switch (itemEffect) {
       //  HP 회복 포션
