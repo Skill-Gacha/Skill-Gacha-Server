@@ -5,8 +5,6 @@ import { PacketType } from '../../constants/header.js';
 import logger from '../../utils/log/logger.js';
 import { STATE_KEYS } from '../../constants/stateKeys.js';
 import stateFactory from '../states/stateFactory.js';
-
-import PvpFleeMessageState from './states/flee/pvpFleeMessageState.js';
 import PvpGameOverState from './states/result/pvpGameOverState.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
@@ -33,9 +31,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
 
     // PvpFleeMessageState와 PvpGameOverState 모두 확인
     //TODO : PvpFleeMessageState 삭제하기
-    const isConfirmOrGameOver = [PvpFleeMessageState, PvpGameOverState].some(
-      (StateClass) => pvpRoom.currentState instanceof StateClass,
-    );
+    const isConfirmOrGameOver = pvpRoom.currentState instanceof PvpGameOverState;
 
     if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
       pvpRoom.users.forEach((user) =>
