@@ -12,7 +12,7 @@ import PlayerUseItemState from '../combat/playerUseItemState.js';
 const BUTTON_BACK = '뒤로 가기';
 const BACK_BUTTON_POSITION = 6;
 const BASE_ITEM_ID_OFFSET = 4001;
-const BERSERK_POTION_ID = 4003;
+const STIMPACK_POTION_ID = 4003;
 
 export default class ItemChoiceState extends DungeonState {
   async enter() {
@@ -59,8 +59,8 @@ export default class ItemChoiceState extends DungeonState {
   }
 
   isItemUsable(item) {
-    if (item.itemId === BERSERK_POTION_ID) {
-      return !this.user.stat.berserk && item.count > 0;
+    if (item.itemId === STIMPACK_POTION_ID) {
+      return !this.user.stat.stimPack && item.count > 0;
     }
     return item.count > 0;
   }

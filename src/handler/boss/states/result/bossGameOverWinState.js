@@ -14,7 +14,7 @@ export default class BossGameOverWinState extends BossRoomState {
       user.isDead = false;
       user.buff = null;
       user.battleCry = false;
-      user.berserk = false;
+      user.stimPack = false;
       user.dangerPotion = false;
       user.protect = false;
       user.downResist = false;
@@ -33,6 +33,5 @@ export default class BossGameOverWinState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }

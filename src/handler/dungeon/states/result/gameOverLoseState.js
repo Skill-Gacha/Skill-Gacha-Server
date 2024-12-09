@@ -20,7 +20,7 @@ export default class GameOverLoseState extends DungeonState {
     // 유저 버프 초기화
     this.user.buff = null;
     this.user.battleCry = false;
-    this.user.berserk = false;
+    this.user.stimPack = false;
     this.user.dangerPotion = false;
     this.user.protect = false;
     this.user.downResist = false;

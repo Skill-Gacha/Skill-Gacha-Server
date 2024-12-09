@@ -35,8 +35,8 @@ export default class PlayerUseItemState extends DungeonState {
       case 'MP_POTION':
         await this.useMpPotion();
         break;
-      case 'BERSERK_POTION':
-        await this.useBerserkPotion();
+      case 'STIMPACK_POTION':
+        await this.useStimPackPotion();
         break;
       case 'DANGER_POTION':
         await this.useDangerPotion();
@@ -98,15 +98,15 @@ export default class PlayerUseItemState extends DungeonState {
     this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
   }
 
-  async useBerserkPotion() {
-    if (this.user.stat.hp <= 20 || this.user.stat.berserk) {
+  async useStimPackPotion() {
+    if (this.user.stat.hp <= 20 || this.user.stat.stimPack) {
       // 아이템 선택 상태로 돌아가기
       this.changeState(ItemChoiceState);
       return; // 함수 종료
     }
 
     this.user.reduceHp(50);
-    this.user.stat.berserk = true;
+    this.user.stat.stimPack = true;
 
     this.socket.write(
       createResponse(PacketType.S_SetPlayerHp, {

@@ -34,8 +34,8 @@ export default class BossPlayerUseItemState extends BossRoomState {
       case 'MP_POTION':
         await this.useMpPotion();
         break;
-      case 'BERSERK_POTION':
-        await this.useBerserkPotion();
+      case 'STIMPACK_POTION':
+        await this.useStimPackPotion();
         break;
       case 'DANGER_POTION':
         await this.useDangerPotion();
@@ -74,14 +74,14 @@ export default class BossPlayerUseItemState extends BossRoomState {
     );
   }
 
-  async useBerserkPotion() {
-    if (this.user.stat.hp <= 20 || this.user.stat.berserk) {
+  async useStimPackPotion() {
+    if (this.user.stat.hp <= 20 || this.user.stat.stimPack) {
       this.changeState(BossItemChoiceState);
       return;
     }
 
     this.user.reduceHp(50);
-    this.user.stat.berserk = true;
+    this.user.stat.stimPack = true;
     this.sendStatusUpdate();
     this.sendBattleLogResponse(
       `${this.user.nickname}님이 광포화 포션을 사용하여 HP가 50 감소하고, 일시적으로 공격력이 2.5배 증가했습니다.`,
@@ -144,6 +144,5 @@ export default class BossPlayerUseItemState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }

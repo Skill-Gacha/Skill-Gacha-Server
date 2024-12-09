@@ -19,7 +19,7 @@ export default class PvpItemChoiceState extends PvpState {
     const buttons = this.mover.items.map((item) => ({
       msg: `${itemsName[item.itemId - 4001]}(보유 수량: ${item.count})`,
       enable:
-        item.itemId === 4003 ? !this.mover.stat.berserk && item.count !== 0 : item.count !== 0,
+        item.itemId === 4003 ? !this.mover.stat.stimPack && item.count !== 0 : item.count !== 0,
     }));
 
     buttons.push({
@@ -51,4 +51,3 @@ export default class PvpItemChoiceState extends PvpState {
     }
   }
 }
-
