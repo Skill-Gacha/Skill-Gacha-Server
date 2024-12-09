@@ -341,7 +341,7 @@
     {
       "monsterModel": 2029,
       "monsterName": "Null Dragon",
-      "monsterHp": 6000,
+      "monsterHp": 4010,
       "monsterAtk": 100,
       "monsterEffectCode": 3001,
       "electricResist": 30,
