@@ -1,12 +1,12 @@
 ﻿// src/handler/pvp/states/pvpConfirmState.js
 
 import PvpState from '../base/pvpState.js';
-import PvpFleeMessageState from '../flee/pvpFleeMessageState.js';
 import PvpActionState from '../action/pvpActionState.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { CONFIRM_TYPE, PVP_STATUS } from '../../../../constants/battle.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import PvpGameOverState from '../result/pvpGameOverState.js';
 
 const CONFIRM_BUTTONS = [
   { msg: '예', enable: true },
@@ -37,7 +37,8 @@ export default class PvpConfirmState extends PvpState {
     switch (this.confirmType) {
       case CONFIRM_TYPE.FLEE:
         if (responseCode === 1) {
-          this.changeState(PvpFleeMessageState);
+          [this.mover, this.stopper] = [this.stopper, this.mover];
+          this.changeState(PvpGameOverState);
         } else if (responseCode === 2) {
           this.changeState(PvpActionState);
         } else {
