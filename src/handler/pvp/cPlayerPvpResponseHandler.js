@@ -1,6 +1,5 @@
 // src/handler/pvp/cPlayerPvpResponseHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
 import logger from '../../utils/log/logger.js';
@@ -9,11 +8,14 @@ import stateFactory from '../states/stateFactory.js';
 
 import PvpFleeMessageState from './states/flee/pvpFleeMessageState.js';
 import PvpGameOverState from './states/result/pvpGameOverState.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
 export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const user = sessionManager.getUserBySocket(socket);
     const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
 
@@ -42,7 +44,7 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
 
     let currentPlayer;
     let opponent;
-    
+
     // isConfirmOrGameOver가 false인 경우에만 턴 검사 수행
     if (!isConfirmOrGameOver) {
       const [playerA, playerB] = Array.from(pvpRoom.users.values());

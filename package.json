@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "imports": {
-    "#managers/*": "./src/managers/*"
+    "#managers/*": "./src/managers/*",
+    "#locator/*": "./src/locator/*"
   },
   "scripts": {
     "dev": "nodemon src/server.js",

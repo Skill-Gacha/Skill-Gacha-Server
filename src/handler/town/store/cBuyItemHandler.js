@@ -1,15 +1,17 @@
 // src/handler/town/store/cBuyItemHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { getProductById } from '../../../init/loadAssets.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { updateUserResource } from '../../../db/user/userDb.js';
 import logger from '../../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cBuyItemHandler = async ({ socket, payload }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const { itemId } = payload;
 
     const user = sessionManager.getUserBySocket(socket);

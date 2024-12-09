@@ -1,11 +1,13 @@
 // src/handler/boss/cBossMatchHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { MAX_PLAYER } from '../../constants/boss.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cBossMatchHandler = async ({ socket, payload }) => {
+  const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
   const { isIn } = payload;
 

@@ -2,12 +2,14 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '#managers/sessionManager.js';
 import { playerData } from '../../utils/packet/playerPacket.js';
 import logger from '../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const sSpawnHandler = async (newUser) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const session = sessionManager.getSessionByUserId(newUser.id);
     if (!session) {
       logger.error('sSpawnHandler: 사용자가 속한 세션을 찾을 수 없습니다.');

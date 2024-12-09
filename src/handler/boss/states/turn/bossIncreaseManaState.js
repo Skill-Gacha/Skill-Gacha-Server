@@ -85,5 +85,6 @@ export default class BossIncreaseManaState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

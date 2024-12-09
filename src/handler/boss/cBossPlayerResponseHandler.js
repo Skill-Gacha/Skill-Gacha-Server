@@ -1,22 +1,24 @@
-// src/handler/boss/cPlayerBossResponseHandler.js
+// src/handler/boss/cBossPlayerResponseHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
-export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
+export const cBossPlayerResponseHandler = async ({ socket, payload }) => {
+  const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
   const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
   if (!user) {
-    console.error('cPlayerBossResponseHandler: 유저를 찾을 수 없습니다.');
+    console.error('cBossPlayerResponseHandler: 유저를 찾을 수 없습니다.');
     return;
   }
 
   const bossRoom = sessionManager.getBossRoomByUser(user);
   if (!bossRoom) {
-    console.error('cPlayerBossResponseHandler: 유저가 BOSSROOM 세션에 속해 있지 않습니다.');
+    console.error('cBossPlayerResponseHandler: 유저가 BOSSROOM 세션에 속해 있지 않습니다.');
     return;
   }
 
@@ -29,10 +31,10 @@ export const cPlayerBossResponseHandler = async ({ socket, payload }) => {
   }
 
   if (bossRoom.userTurn !== user) {
-    console.error('cPlayerBossResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
+    console.error('cBossPlayerResponseHandler: 현재 차례가 아닌 유저의 응답입니다.');
     return;
   }
-  
+
   sessionManager.handleUserActivity(user.id);
   await bossRoom.currentState.handleInput(responseCode);
 };

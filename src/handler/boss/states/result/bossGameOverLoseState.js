@@ -33,5 +33,6 @@ export default class BossGameOverLoseState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

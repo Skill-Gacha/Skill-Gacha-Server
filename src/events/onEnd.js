@@ -1,7 +1,7 @@
 // src/events/onEnd.js
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
-import sessionManager from '#managers/sessionManager.js';
+import SessionManager from '#managers/sessionManager.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
 import { saveRatingToDB } from '../db/rating/ratingDb.js';
 import { deleteSkillsFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
@@ -14,9 +14,11 @@ import logger from '../utils/log/logger.js';
 import CustomError from '../utils/error/customError.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import { handleError } from '../utils/error/errorHandler.js';
+import serviceLocator from '#locator/serviceLocator.js';
 
 export const onEnd = (socket) => async () => {
   logger.info('클라이언트 연결이 종료되었습니다.');
+  const sessionManager = serviceLocator.get(SessionManager);
 
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {

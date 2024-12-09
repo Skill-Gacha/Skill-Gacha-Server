@@ -1,6 +1,5 @@
 // src/handler/boss/cBossAcceptResponseHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,12 +8,15 @@ import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import { MAX_PLAYER } from '../../constants/boss.js';
 import { getGameAssets } from '../../init/loadAssets.js';
 import Monster from '../../classes/models/monsterClass.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 const BOSS_NUMBER = 28;
 const BOSS_IDX = 0;
 
 export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
+  const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
   const { accept } = payload;
 

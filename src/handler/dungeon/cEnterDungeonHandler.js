@@ -2,7 +2,6 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '#managers/sessionManager.js';
 import { v4 as uuidv4 } from 'uuid';
 import Monster from '../../classes/models/monsterClass.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
@@ -12,6 +11,8 @@ import { DUNGEON_CODE } from '../../constants/battle.js';
 import { elementResist } from '../../utils/packet/playerPacket.js';
 import { handleError } from '../../utils/error/errorHandler.js';
 import logger from '../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const MONSTERS_PER_DUNGEON_DELIMITER = 7;
 const MIN_MONSTERS = 1;
@@ -19,6 +20,7 @@ const MAX_MONSTERS = 3;
 
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
+  const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
 
   if (!user) {

@@ -1,12 +1,14 @@
 ﻿// src/handler/dungeon/cPlayerResponseHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { handleError } from '../../utils/error/errorHandler.js';
 import logger from '../../utils/log/logger.js';
 import { STATE_KEYS } from '../../constants/stateKeys.js';
 import stateFactory from '../states/stateFactory.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cPlayerResponseHandler = async ({ socket, payload }) => {
+  const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
 
   if (!user) {

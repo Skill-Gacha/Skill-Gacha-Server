@@ -1,6 +1,6 @@
 // src/handler/town/cEnterHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
+import serviceLocator from '#locator/serviceLocator.js';
 import { PacketType } from '../../constants/header.js';
 import { createUser, findUserNickname } from '../../db/user/userDb.js';
 import { getElementById, getSkillById } from '../../init/loadAssets.js';
@@ -15,11 +15,14 @@ import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
 import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
 import logger from '../../utils/log/logger.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const SKILL_OFFSET = 1000;
 
+
 export const cEnterHandler = async ({ socket, payload }) => {
   const { nickname, class: elementId } = payload;
+  const sessionManager = serviceLocator.get(SessionManager);
 
   try {
     // 입력값 검증
@@ -76,6 +79,7 @@ const validatePayload = (payload) => {
 
 const handleExistingUser = async (user, nickname, chosenElement) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     user.resetHpMp();
     logger.info(`cEnterHandler: 유저 ${user.id}가 이미 세션에 존재합니다.`);
 
@@ -200,6 +204,7 @@ const loadUserSkills = (skillsData) => {
 
 const spawnOtherUsers = async (user) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const townSession = sessionManager.getTown();
     const otherUsers = Array.from(townSession.users.values()).filter(
       (u) => u.id !== user.id,

@@ -102,5 +102,6 @@ export default class BossPhaseState extends BossRoomState {
     }
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

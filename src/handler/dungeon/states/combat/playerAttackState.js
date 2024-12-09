@@ -7,11 +7,7 @@ import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { delay } from '../../../../utils/delay.js';
 import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS } from '../../../../constants/battle.js';
-import {
-  checkEnemyResist,
-  skillEnhancement,
-  updateDamage,
-} from '../../../../utils/battle/calculate.js';
+import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { buffSkill, useBuffSkill } from '../../../../utils/battle/battle.js';
 
 const ACTION_ANIMATION_CODE = 0;
@@ -133,6 +129,7 @@ export default class PlayerAttackState extends DungeonState {
     this.user.stat.buff = null;
 
     if (targetMonster.monsterHp <= 0) {
+      targetMonster.isDead = true;
       this.changeState(MonsterDeadState);
     } else {
       this.changeState(EnemyAttackState);

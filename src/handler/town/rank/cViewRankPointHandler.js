@@ -2,14 +2,16 @@
 
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import sessionManager from '#managers/sessionManager.js';
 import { getTopRatingsWithPlayer } from '../../../db/redis/ratingService.js';
 import logger from '../../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const RANK_RANGE = 10;
 
 export const cViewRankPointHandler = async ({ socket }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
       logger.error('cViewRankPointHandler: 유저를 찾을 수 없습니다.');

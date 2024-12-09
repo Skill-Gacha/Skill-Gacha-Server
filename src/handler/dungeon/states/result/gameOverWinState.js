@@ -1,12 +1,13 @@
 ﻿// src/handler/dungeon/states/gameOverWinState.js
 
 import DungeonState from '../base/dungeonState.js';
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import { saveItemsToRedis } from '../../../../db/redis/itemService.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const RESPONSE_CODE = {
   SCREEN_TEXT_DONE: 0,
@@ -47,6 +48,7 @@ export default class GameOverWinState extends DungeonState {
   }
 
   endDungeonSession() {
+    const sessionManager = serviceLocator.get(SessionManager);
     sessionManager.removeDungeon(this.dungeon.sessionId);
     this.socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
   }
