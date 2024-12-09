@@ -28,180 +28,60 @@ export default class PvpUseItemState extends PvpState {
     }
 
     try {
-      // 아이템 사용 로직 분기
-      switch (itemEffect) {
-        case 'HP_POTION':
-          await this.useHpPotion();
-          break;
-        case 'MP_POTION':
-          await this.useMpPotion();
-          break;
-        case 'STIMPACK_POTION':
-          await this.useStimPackPotion();
-          break;
-        case 'DANGER_POTION':
-          await this.useDangerPotion();
-          break;
-        case 'PANACEA':
-          await this.usePanacea();
-          break;
-        default:
-          logger.error(`PvpUseItemState: 처리되지 않은 아이템 효과 ${itemEffect}`);
-          invalidResponseCode(this.mover.socket);
-          return;
-      }
+      // 아이템 사용
+      await this.mover.inventory.useItem(selectedItemId, this.mover);
+
+      // HP, MP 업데이트
+      await this.sendPlayerHpMp();
+
+      // 배틀로그 메세지 추출
+      const msg = await this.mover.inventory.returnMessage();
+
+      // 배틀로그 패킷 전송
+      await this.makeBattleLog(msg);
 
       // 아이템 수량 업데이트
       await updateItemCountInRedis(this.mover.nickname, selectedItemId, -1);
-      await this.mover.updateItem(this.mover.nickname);
+      await this.mover.inventory.reduceItemCount(selectedItemId);
     } catch (error) {
       logger.error('PvpUseItemState: 아이템 사용 중 오류 발생:', error);
       invalidResponseCode(this.mover.socket);
     }
   }
 
-  async useHpPotion() {
-    const existingHp = this.mover.stat.hp;
-    this.mover.increaseHpMp(100, 0);
-
-    this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerHp, {
-        hp: this.mover.stat.hp,
-      }),
-    );
-    this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, {
-        hp: this.mover.stat.hp,
-      }),
-    );
-
-    const battleLog = {
-      msg: `HP 회복 포션을 사용하여 HP를 ${this.mover.stat.hp - existingHp} 회복했습니다.`,
-      typingAnimation: false,
-      btns: BUTTON_CONFIRM,
-    };
-
-    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
-  }
-
-  async useMpPotion() {
-    const existingMp = this.mover.stat.mp;
-    this.mover.increaseHpMp(0, 60);
-
-    this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerMp, {
-        mp: this.mover.stat.mp,
-      }),
-    );
-
-    const battleLog = {
-      msg: `MP 회복 포션을 사용하여 MP를 ${this.mover.stat.mp - existingMp} 회복했습니다.`,
-      typingAnimation: false,
-      btns: BUTTON_CONFIRM,
-    };
-
-    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
-  }
-
-  async useStimPackPotion() {
-    if (this.mover.stat.hp <= 20 || this.mover.stat.stimPack) {
-      // 아이템 선택 상태로 돌아가기
-      this.changeState(PvpItemChoiceState);
-      return;
-    }
-
-    this.mover.reduceHp(50);
-    this.mover.stat.stimPack = true;
-
-    this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerHp, {
-        hp: this.mover.stat.hp,
-      }),
-    );
-    this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, {
-        hp: this.stopper.stat.hp,
-      }),
-    );
-
-    const battleLog = {
-      msg: `광포화 포션을 사용하여 HP가 50 감소하고, 일시적으로 공격력이 2.5배 증가했습니다.`,
-      typingAnimation: false,
-      btns: BUTTON_CONFIRM,
-    };
-
-    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
-  }
-
-  async useDangerPotion() {
-    const dangerRandomNum = Math.floor(Math.random() * 100);
-    let battleLogMsg = '';
-
-    if (dangerRandomNum < 25) {
-      this.mover.reduceHp(this.mover.stat.hp - 1);
-      battleLogMsg = `위험한 포션의 부작용으로 HP가 1만 남게 되었습니다.`;
-    } else if (dangerRandomNum < 50) {
-      this.mover.increaseHpMp(
-        this.mover.stat.maxHp - this.mover.stat.hp,
-        this.mover.stat.maxMp - this.mover.stat.mp,
-      );
-      battleLogMsg = `위험한 포션을 사용하여 HP와 MP가 최대치로 회복되었습니다.`;
-    } else if (dangerRandomNum < 75) {
-      this.mover.stat.dangerPotion = true;
-      battleLogMsg = `위험한 포션을 사용하여 일시적으로 공격력이 5배 증가했습니다.`;
-    } else {
-      this.mover.stat.protect = true;
-      battleLogMsg = `위험한 포션을 사용하여 일시적으로 무적 상태가 되었습니다.`;
-    }
-
-    // HP, MP 업데이트
-    this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }),
-    );
-    this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
-    );
-    this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }),
-    );
-
-    const battleLog = {
-      msg: battleLogMsg,
-      typingAnimation: false,
-      btns: BUTTON_CONFIRM,
-    };
-
-    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
-  }
-
-  async usePanacea() {
-    // 상태 이상 status 해제
-    this.user.stat.downResist = false;
-
-    const battleLog = {
-      msg: `만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
-      typingAnimation: false,
-      btns: BUTTON_CONFIRM,
-    };
-
-    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
-    this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }),
-    );
-    this.mover.socket.write(
-      createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
-    );
-    this.stopper.socket.write(
-      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }),
-    );
-  }
-
+  // 물약을 마신 후 "확인" 누른 이후
+  // "확인" 버튼은 responseCode 1번으로 옵니다.
   async handleInput(responseCode) {
     if (responseCode === 1) {
+      // 유저 턴이 끝 마친 상태라 상대 공격 상태로 변경
       this.changeState(PvpTurnChangeState);
     } else {
-      // 유효하지 않은 응답 처리
+      // 예외 처리
       invalidResponseCode(this.mover.socket);
     }
+  }
+
+  // mover의 현재 Hp, Mp를 클라이언트에 제공해주는 함수
+  async sendPlayerHpMp() {
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.mover.stat.hp }),
+    );
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
+    );
+    this.stopper.socket.write(
+      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.mover.stat.hp }),
+    );
+  }
+
+  // 배틀로그를 만들어주는 함수
+  async makeBattleLog(msg) {
+    const battleLog = {
+      msg,
+      typingAnimation: false,
+      btns: BUTTON_CONFIRM,
+    };
+
+    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
   }
 }
