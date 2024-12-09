@@ -54,9 +54,9 @@ export const updateDamage = (user, userDamage) => {
     multiplier += 2; // "전투의 함성" 버프가 있으면 데미지 2배 증가
     user.stat.battleCry = false;
   }
-  if (user.stat.berserk) {
+  if (user.stat.stimPack) {
     multiplier += 2.5; // 버서크가 있으면 2.5배 증가
-    user.stat.berserk = false;
+    user.stat.stimPack = false;
   }
   if (user.stat.dangerPotion) {
     multiplier += 5; // 위험한 포션이 있으면 5배 증가

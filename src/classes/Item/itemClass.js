@@ -44,6 +44,7 @@ class Item {
   // 사용할 아이템
   async useItem(itemId, user) {
     const itemEffect = ITEM_TYPES[itemId];
+    console.log('스팀팩 코드 확인 : ', itemId);
     //아이템 사용 로직 분기
     switch (itemEffect) {
       //  HP 회복 포션
@@ -110,7 +111,7 @@ class Item {
       this.msg = `위험한 포션을 사용하여 HP와 MP가 최대치로 회복되었습니다.`;
     } else if (random < 75) {
       user.stat.dangerPotion = true;
-      this.msg = battleLogMsg = `위험한 포션을 사용하여 일시적으로 공격력이 5배 증가했습니다.`;
+      this.msg = `위험한 포션을 사용하여 일시적으로 공격력이 5배 증가했습니다.`;
     } else {
       user.stat.protect = true;
       this.msg = `위험한 포션을 사용하여 일시적으로 무적 상태가 되었습니다.`;
