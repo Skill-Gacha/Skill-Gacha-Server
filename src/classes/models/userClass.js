@@ -66,10 +66,6 @@ class User {
     this.stone += stone;
   }
 
-  async updateItem(nickname) {
-    this.inventory = await getItemsFromRedis(nickname);
-  }
-
   getInventory() {
     return {
       gold: this.gold,
