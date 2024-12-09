@@ -16,7 +16,7 @@ export const cOpenStoreHandler = async ({ socket }) => {
     const products = getProductData();
 
     const productList = products.map((product) => {
-      const userItem = user.items.find((item) => item.itemId === product.id);
+      const userItem = user.inventory.items.find((item) => item.itemId === product.id);
       return {
         reserve: userItem ? userItem.count : 0,
         price: product.price,
