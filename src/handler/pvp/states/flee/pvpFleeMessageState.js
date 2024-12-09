@@ -1,6 +1,5 @@
 ﻿// src/handler/pvp/states/pvpFleeMessageState.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../../constants/battle.js';
@@ -8,6 +7,8 @@ import PvpState from '../base/pvpState.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../../db/redis/ratingService.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import logger from '../../../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const RANK_CHANGE_POINTS = 10;
 
@@ -49,6 +50,7 @@ export default class PvpFleeMessageState extends PvpState {
   }
 
   handleInput(responseCode) {
+    const sessionManager = serviceLocator.get(SessionManager);
     if (responseCode === 0) {
       const leaveResponse = createResponse(PacketType.S_LeaveDungeon, {});
       if (this.pvpRoom) {

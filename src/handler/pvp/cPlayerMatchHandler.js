@@ -1,6 +1,5 @@
 // src/handler/pvp/cPlayerMatchHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,12 +8,15 @@ import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import checkBatchim from '../../utils/korean/checkBatchim.js';
 import { MAX_PLAYER } from '../../constants/pvp.js';
 import logger from '../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const DUNGEON_CODE_BASE = 5000;
 const DUNGEON_CODE_RANGE = 3;
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기', '도망치기'];
 
 export const cPlayerMatchHandler = async ({ socket }) => {
+  const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
 
   if (!user) {
