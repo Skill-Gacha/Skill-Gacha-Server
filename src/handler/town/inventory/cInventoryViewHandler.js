@@ -18,7 +18,7 @@ export const cInventoryViewHandler = async ({ socket }) => {
 
     // 제품 리스트 생성
     const productList = allProducts.map((product) => {
-      const userItem = user.items.find((item) => item.itemId === product.id);
+      const userItem = user.inventory.items.find((item) => item.itemId === product.id);
       return {
         reserve: userItem ? userItem.count : 0,
       };
