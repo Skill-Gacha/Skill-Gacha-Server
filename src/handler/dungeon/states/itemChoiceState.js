@@ -12,8 +12,6 @@ import PlayerUseItemState from './playerUseItemState.js';
 const BUTTON_BACK = '뒤로 가기';
 const BACK_BUTTON_POSITION = 6;
 const BASE_ITEM_ID_OFFSET = 4001;
-const BERSERK_POTION_ID = 4003;
-
 export default class ItemChoiceState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.ITEM_CHOICE;
@@ -21,11 +19,17 @@ export default class ItemChoiceState extends DungeonState {
     const itemsData = getProductData();
     const itemsName = itemsData.map((itemData) => itemData.name);
 
-    // 버튼은 플레이어가 보유한 아이템들로 생성
-    const buttons = this.user.items.map((item) => ({
-      msg: `${itemsName[item.itemId - BASE_ITEM_ID_OFFSET]}(보유 수량: ${item.count})`,
-      enable: this.isItemUsable(item),
-    }));
+    //const buttons = await this.user.inventory.getEnableButton(itemsName, this.user);
+
+    const items = await this.user.inventory.getItemList();
+
+    //버튼은 플레이어가 보유한 아이템들로 생성
+    const buttons = await Promise.all(
+      items.map(async (item) => ({
+        msg: `${itemsName[item.itemId - BASE_ITEM_ID_OFFSET]}(보유 수량: ${item.count})`,
+        enable: await this.user.inventory.isItemUsable(item, this.user),
+      })),
+    );
 
     buttons.push({
       msg: BUTTON_BACK,
@@ -49,7 +53,8 @@ export default class ItemChoiceState extends DungeonState {
       return;
     }
 
-    if (responseCode === BACK_BUTTON_POSITION) { // 뒤로 가기 버튼
+    if (responseCode === BACK_BUTTON_POSITION) {
+      // 뒤로 가기 버튼
       this.changeState(ActionState);
       return;
     }
@@ -58,13 +63,6 @@ export default class ItemChoiceState extends DungeonState {
     this.dungeon.selectedItem = itemIdx;
 
     this.changeState(PlayerUseItemState);
-  }
-
-  isItemUsable(item) {
-    if (item.itemId === BERSERK_POTION_ID) { // 스팀팩(광포화 포션)
-      return !this.user.stat.berserk && item.count > 0;
-    }
-    return item.count > 0;
   }
 
   isValidResponseCode(code) {
