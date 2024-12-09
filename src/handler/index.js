@@ -19,7 +19,7 @@ import { cEnhanceHandler } from './town/enhanceForge/cEnhanceHandler.js';
 import { cEnhanceUiHandler } from './town/enhanceForge/cEnhanceUiHandler.js';
 import { cBossMatchHandler } from './boss/cBossMatchHandler.js';
 import { cBossAcceptResponseHandler } from './boss/cBossAcceptResponseHandler.js';
-import { cPlayerBossResponseHandler } from './boss/cPlayerBossResponseHandler.js';
+import { cBossPlayerResponseHandler } from './boss/cBossPlayerResponseHandler.js';
 
 // 핸들러 매핑
 const handlers = {
@@ -89,7 +89,7 @@ const handlers = {
     protoType: 'C_AcceptResponse',
   },
   [PacketType.C_BossPlayerResponse]: {
-    handler: cPlayerBossResponseHandler,
+    handler: cBossPlayerResponseHandler,
     protoType: 'C_BossPlayerResponse',
   },
 
