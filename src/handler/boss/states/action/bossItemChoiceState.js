@@ -12,7 +12,7 @@ import BossPlayerUseItemState from '../combat/bossPlayerUseItemState.js';
 const BUTTON_BACK = '뒤로 가기';
 const BACK_BUTTON_POSITION = 6;
 const BASE_ITEM_ID_OFFSET = 4001;
-const BERSERK_POTION_ID = 4003;
+const STIMPACK_POTION_ID = 4003;
 
 export default class BossItemChoiceState extends BossRoomState {
   async enter() {
@@ -21,51 +21,47 @@ export default class BossItemChoiceState extends BossRoomState {
     const itemsData = getProductData();
     const itemsName = itemsData.map((itemData) => itemData.name);
 
-    const buttons = this.user.items.map((item) => ({
-      msg: `${itemsName[item.itemId - BASE_ITEM_ID_OFFSET]}(보유 수량: ${item.count})`,
-      enable: this.isItemUsable(item),
-    }));
+    const items = await this.user.inventory.getItemList();
+    // 버튼은 플레이어가 보유한 아이템들로 생성
+    const buttons = await Promise.all(
+      items.map(async (item) => ({
+        msg: `${itemsName[item.itemId - BASE_ITEM_ID_OFFSET]}(보유 수량: ${item.count})`,
+        enable: await this.user.inventory.isItemUsable(item, this.user),
+      })),
+    );
 
     buttons.push({
       msg: BUTTON_BACK,
       enable: true,
     });
 
+    // 아이템 로그 데이터
     const battleLog = {
       msg: '사용하실 아이템을 선택해 주세요',
       typingAnimation: false,
       btns: buttons,
     };
 
-    const choiceItemBattlelogResponse = createResponse(PacketType.S_BossBattleLog, { battleLog });
-    this.user.socket.write(choiceItemBattlelogResponse);
+    const choiceItemBattleLogResponse = createResponse(PacketType.S_BossBattleLog, { battleLog });
+    this.user.socket.write(choiceItemBattleLogResponse);
   }
 
   async handleInput(responseCode) {
-    if (!this.isValidResponseCode(responseCode)) {
+    // responseCode 유효성 검사
+    if (responseCode < 1 || responseCode > MAX_BUTTON_COUNT) {
       invalidResponseCode(this.socket);
-      return;
     }
 
+    // 뒤로 가기 버튼
     if (responseCode === BACK_BUTTON_POSITION) {
       this.changeState(BossActionState);
       return;
     }
-
+    // 선택한 아이템 인덱스 계산
     const itemIdx = responseCode;
     this.bossRoom.selectedItem = itemIdx;
 
+    // 아이템 선택 후 아이템 사용 상태로 전환
     this.changeState(BossPlayerUseItemState);
-  }
-
-  isItemUsable(item) {
-    if (item.itemId === BERSERK_POTION_ID) {
-      return !this.user.stat.berserk && item.count > 0;
-    }
-    return item.count > 0;
-  }
-
-  isValidResponseCode(code) {
-    return code >= 1 && code <= MAX_BUTTON_COUNT;
   }
 }

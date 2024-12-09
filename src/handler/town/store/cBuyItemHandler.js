@@ -25,8 +25,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
     }
 
     // 자원 및 아이템 확인
-    const userItem = user.items.find((item) => item.itemId === product.id);
-
+    const userItem = await user.inventory.findByItemId(product.id);
     if (user.gold < product.price) {
       return sendBuyItemResponse(socket, false);
     }
@@ -41,8 +40,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
 
     if (userItem) {
       userItem.count += 1;
-    } else {
-      user.items.push({ itemId: product.id, count: 1 });
+      await user.inventory.updateItemCount(userItem);
     }
 
     await updateItemCountInRedis(user.nickname, itemId, 1);

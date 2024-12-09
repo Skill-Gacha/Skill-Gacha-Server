@@ -90,10 +90,10 @@ export const onError = (socket) => async (err) => {
     user.isDead = false;
     user.buff = null;
     user.battleCry = false;
-    user.berserk = false;
+    user.stimPack = false;
     user.dangerPotion = false;
     user.protect = false;
-    user.downResist = false;
+    user.reduceResist = false;
     user.completeTurn = false;
 
     // PVP나 보스 매칭큐에서 유저 제거
