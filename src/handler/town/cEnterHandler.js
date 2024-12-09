@@ -13,7 +13,11 @@ import { getSkillsFromRedis, saveSkillsToRedis } from '../../db/redis/skillServi
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
-import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
+import {
+  getItemsFromRedis,
+  initializeItems,
+  saveItemsToRedis,
+} from '../../db/redis/itemService.js';
 import logger from '../../utils/log/logger.js';
 
 const SKILL_OFFSET = 1000;
@@ -95,9 +99,9 @@ const handleExistingUser = async (user, nickname, chosenElement) => {
       if (!itemsFromRedis) {
         const initializedItems = initializeItems();
         await saveItemsToRedis(nickname, initializedItems);
-        user.items = initializedItems;
+        user.inventory.items = initializedItems;
       } else {
-        user.items = itemsFromRedis;
+        user.inventory.items = itemsFromRedis;
       }
     }
   } catch (error) {
@@ -142,14 +146,19 @@ const handleConnectingUser = async (nickname, classId, chosenElement, socket) =>
 
     user.userSkills = loadUserSkills(skills);
 
+    let itemRedisResult = null;
     const itemsFromRedis = await getItemsFromRedis(nickname);
     if (!itemsFromRedis) {
       const initializedItems = initializeItems();
       await saveItemsToRedis(nickname, initializedItems);
-      user.items = initializedItems;
+      itemRedisResult = initializedItems;
     } else {
-      user.items = itemsFromRedis;
+      itemRedisResult = itemsFromRedis;
     }
+
+    // Redis에서 나온 아이템 결과 넣기
+    //[{itemId, itemcount},{itemId, itemcount},{itemId, itemcount},{itemId, itemcount},{itemId, itemcount}]
+    user.initItemCount(itemRedisResult);
 
     return user;
   } catch (error) {
@@ -179,9 +188,7 @@ const createNewUser = async (nickname, classId, chosenElement) => {
     ]);
 
     const initialItems = initializeItems();
-    await Promise.all(
-      initialItems.map(item => saveItemToDB(nickname, item.itemId, item.count)),
-    );
+    await Promise.all(initialItems.map((item) => saveItemToDB(nickname, item.itemId, item.count)));
     await saveItemsToRedis(nickname, initialItems);
 
     return await findUserNickname(nickname);
@@ -201,9 +208,7 @@ const loadUserSkills = (skillsData) => {
 const spawnOtherUsers = async (user) => {
   try {
     const townSession = sessionManager.getTown();
-    const otherUsers = Array.from(townSession.users.values()).filter(
-      (u) => u.id !== user.id,
-    );
+    const otherUsers = Array.from(townSession.users.values()).filter((u) => u.id !== user.id);
 
     if (otherUsers.length > 0) {
       const otherPlayersData = otherUsers.map((otherUser) => playerData(otherUser));
