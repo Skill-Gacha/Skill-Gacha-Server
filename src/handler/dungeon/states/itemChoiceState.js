@@ -48,9 +48,9 @@ export default class ItemChoiceState extends DungeonState {
   }
 
   async handleInput(responseCode) {
-    if (!this.isValidResponseCode(responseCode)) {
+    // responseCode 유효성 검사)
+    if (responseCode < 1 || responseCode > MAX_BUTTON_COUNT) {
       invalidResponseCode(this.socket);
-      return;
     }
 
     if (responseCode === BACK_BUTTON_POSITION) {
@@ -58,14 +58,11 @@ export default class ItemChoiceState extends DungeonState {
       this.changeState(ActionState);
       return;
     }
-
+    // 선택한 아이템 인덱스 계산
     const itemIdx = responseCode;
     this.dungeon.selectedItem = itemIdx;
 
+    // 아이템 선택 후 아이템 사용 상태로 전환
     this.changeState(PlayerUseItemState);
-  }
-
-  isValidResponseCode(code) {
-    return code >= 1 && code <= MAX_BUTTON_COUNT;
   }
 }

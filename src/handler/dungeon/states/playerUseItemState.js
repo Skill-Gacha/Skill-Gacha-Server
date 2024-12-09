@@ -28,20 +28,7 @@ export default class PlayerUseItemState extends DungeonState {
       return;
     }
 
-    // try {
-    //   const [_, hpMpResult, msg] = await Promise.all([
-    //     this.user.inventory.useItem(selectedItemId), // 아이템 사용
-    //     this.sendPlayerHpMp(), // HP, MP 업데이트
-    //     this.user.inventory.returnMessage(), // 배틀로그 메세지 추출
-    //   ]);
-
-    //   // 배틀로그 패킷 전송
-    //   await this.makeBattleLog(msg);
-    // } catch (error) {
-    //   console.error('오류 발생:', error);
-    // }
     // 아이템 사용
-    // TODO: 현재 오류가 나는 부분
     await this.user.inventory.useItem(selectedItemId, this.user);
 
     // HP, MP 업데이트
@@ -70,7 +57,7 @@ export default class PlayerUseItemState extends DungeonState {
       // 유저 턴이 끝 마친 상태라 몬스터 공격 상태로 변경
       this.changeState(EnemyAttackState);
     } else {
-      // 예외 상황
+      // 예외 처리
       invalidResponseCode(this.socket);
     }
   }
