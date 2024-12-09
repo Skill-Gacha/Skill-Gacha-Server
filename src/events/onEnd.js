@@ -51,6 +51,7 @@ export const onEnd = (socket) => async () => {
           typingAnimation: false,
         },
       });
+      console.log('victoryMessage : ', victoryMessage);
       winner.socket.write(victoryMessage); // 승리 메시지 전송
     } catch (error) {
       logger.error('onEnd: PVP 강제종료 처리중 에러:', error);
@@ -133,7 +134,7 @@ export const onEnd = (socket) => async () => {
     user.stimPack = false;
     user.dangerPotion = false;
     user.protect = false;
-    user.reduceResist = false;
+    user.downResist = false;
     user.completeTurn = false;
 
     // PVP나 보스 매칭큐에서 유저 제거
