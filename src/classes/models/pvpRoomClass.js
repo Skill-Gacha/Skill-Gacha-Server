@@ -3,8 +3,8 @@
 import BaseSession from './baseSession.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
-import PvpIncreaseManaState from '../../handler/pvp/states/pvpIncreaseManaState.js';
 import { PVP_TURN_TIMEOUT_LIMIT } from '../../constants/battle.js';
+import PvpIncreaseManaState from '../../handler/pvp/states/turn/pvpIncreaseManaState.js';
 
 const PLAYER_A = 0;
 const PLAYER_B = 1;

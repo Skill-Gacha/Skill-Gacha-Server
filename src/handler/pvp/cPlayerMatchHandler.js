@@ -8,6 +8,7 @@ import { MyStatus, OpponentStatus } from '../../utils/battle/battle.js';
 import { sDespawnHandler } from '../town/sDespawnHandler.js';
 import checkBatchim from '../../utils/korean/checkBatchim.js';
 import { MAX_PLAYER } from '../../constants/pvp.js';
+import logger from '../../utils/log/logger.js';
 
 const DUNGEON_CODE_BASE = 5000;
 const DUNGEON_CODE_RANGE = 3;
@@ -24,7 +25,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
   const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
-
   if (!matchedPlayers) return;
 
   const [playerA, playerB] = matchedPlayers;
@@ -49,7 +49,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   const lastKoreanA = checkBatchim(playerB.nickname) ? '과' : '와';
   const lastKoreanB = checkBatchim(playerA.nickname) ? '과' : '와';
 
-  
   const responseA = createResponse(PacketType.S_PlayerMatchNotification, {
     dungeonCode,
     playerData: MyStatus(playerA),
@@ -89,7 +88,6 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 };
 
 const generateBattleLog = (nickname, suffix, isFirstAttack, turn) => {
-  const attackOrder = isFirstAttack ? '선공입니다.' : '후공입니다.';
   return `${nickname}${suffix} 싸워 이기세요!\n${turn}`;
 };
 
