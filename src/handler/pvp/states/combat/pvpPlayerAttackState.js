@@ -1,19 +1,18 @@
 ﻿// src/handler/pvp/states/pvpPlayerAttackState.js
 
-import PvpState from './pvpState.js';
-import PvpTurnChangeState from './pvpTurnChangeState.js';
+import PvpState from '../base/pvpState.js';
+import PvpTurnChangeState from '../turn/pvpTurnChangeState.js';
 import PvpEnemyDeadState from './pvpEnemyDeadState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { checkStopperResist, skillEnhancement, updateDamage } from '../../../utils/battle/calculate.js';
-import { BUFF_SKILL, DEBUFF } from '../../../constants/battle.js';
-import { buffSkill, pvpUseBuffSkill } from '../../../utils/battle/battle.js';
-import { delay } from '../../../utils/delay.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { checkStopperResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
+import { BUFF_SKILL, DEBUFF } from '../../../../constants/battle.js';
+import { buffSkill, pvpUseBuffSkill } from '../../../../utils/battle/battle.js';
+import { delay } from '../../../../utils/delay.js';
 
 const ACTION_ANIMATION_CODE = 0;
 const AFTER_ATTACK_DELAY_TIME = 1000;
 
-// 플레이어가 공격하는 상태
 export default class PvpPlayerAttackState extends PvpState {
   async enter() {
     const selectedSkill = this.pvpRoom.selectedSkill;
@@ -44,12 +43,11 @@ export default class PvpPlayerAttackState extends PvpState {
     const damage = this.calculateDamage(userSkillInfo);
     let totalDamage = updateDamage(this.mover, damage);
 
-    // 상대가 위험한 포션이나 영혼분쇄로 무적이 됐을 때
     if (this.stopper.stat.protect) {
       totalDamage = 1;
       this.stopper.stat.protect = false;
     }
-    
+
     this.applyDamage(totalDamage, userSkillInfo.mana);
 
     this.sendStatusUpdates();

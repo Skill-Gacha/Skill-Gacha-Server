@@ -1,10 +1,10 @@
 // src/handler/pvp/states/pvpIncreaseManaState.js
 
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { PVP_STATUS, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT } from '../../../constants/battle.js';
-import PvpState from './pvpState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { PVP_STATUS, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT } from '../../../../constants/battle.js';
+import PvpState from '../base/pvpState.js';
 import PvpTurnChangeState from './pvpTurnChangeState.js';
 
 const HP_RECOVERY_MIN = 5;
@@ -60,7 +60,6 @@ export default class PvpIncreaseManaState extends PvpState {
       clearTimeout(this.timeoutId);
       this.changeState(PvpTurnChangeState);
     } else {
-      // 유효하지 않은 응답 처리
       invalidResponseCode(this.mover.socket);
     }
   }

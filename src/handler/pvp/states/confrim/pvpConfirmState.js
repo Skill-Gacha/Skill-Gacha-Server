@@ -1,12 +1,12 @@
 ﻿// src/handler/pvp/states/pvpConfirmState.js
 
-import PvpState from './pvpState.js';
-import PvpFleeMessageState from './pvpFleeMessageState.js';
-import PvpActionState from './pvpActionState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { CONFIRM_TYPE, PVP_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import PvpState from '../base/pvpState.js';
+import PvpFleeMessageState from '../flee/pvpFleeMessageState.js';
+import PvpActionState from '../action/pvpActionState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { CONFIRM_TYPE, PVP_STATUS } from '../../../../constants/battle.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 
 const CONFIRM_BUTTONS = [
   { msg: '예', enable: true },

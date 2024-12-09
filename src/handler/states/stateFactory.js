@@ -11,15 +11,15 @@ class StateFactory {
       
       // PvP
       pvpAction: async () => {
-        const module = await import('../pvp/states/pvpActionState.js');
+        const module = await import('../pvp/states/action/pvpActionState.js');
         return module.default;
       },
       pvpFlee: async () => {
-        const module = await import('../pvp/states/pvpFleeMessageState.js');
+        const module = await import('../pvp/states/flee/pvpFleeMessageState.js');
         return module.default;
       },
       pvpGameOver: async () => {
-        const module = await import('../pvp/states/pvpGameOverState.js');
+        const module = await import('../pvp/states/result/pvpGameOverState.js');
         return module.default;
       },
     };

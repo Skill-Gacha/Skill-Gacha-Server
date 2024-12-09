@@ -1,14 +1,14 @@
 ﻿// src/handler/pvp/states/pvpActionState.js
 
-import PvpConfirmState from './pvpConfirmState.js';
-import { CONFIRM_TYPE, PVP_STATUS } from '../../../constants/battle.js';
-import PvpState from './pvpState.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import { CONFIRM_TYPE, PVP_STATUS } from '../../../../constants/battle.js';
+import PvpState from '../base/pvpState.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import PvpSkillChoiceState from './pvpSkillChoiceState.js';
 import PvpItemChoiceState from './pvpItemChoiceState.js';
-import PvpIncreaseManaState from './pvpIncreaseManaState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
+import PvpIncreaseManaState from '../turn/pvpIncreaseManaState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import PvpConfirmState from '../confrim/pvpConfirmState.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기', '도망치기'];
 
@@ -28,7 +28,6 @@ export default class PvpActionState extends PvpState {
     this.pvpRoom.gameStart = true;
   }
 
-  // switch-case 대신 매핑으로 가독성 개선
   async handleInput(responseCode) {
     const actionMap = {
       1: PvpSkillChoiceState,

@@ -1,10 +1,10 @@
 // src/handler/pvp/states/pvpTurnChangeState.js
 
-import PvpActionState from './pvpActionState.js';
-import PvpState from './pvpState.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { PacketType } from '../../../constants/header.js';
-import { PVP_STATUS } from '../../../constants/battle.js';
+import PvpActionState from '../action/pvpActionState.js';
+import PvpState from '../base/pvpState.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { PacketType } from '../../../../constants/header.js';
+import { PVP_STATUS } from '../../../../constants/battle.js';
 
 const TURN_CHANGE_BUTTONS_MOVER = [
   { msg: '스킬 사용', enable: false },

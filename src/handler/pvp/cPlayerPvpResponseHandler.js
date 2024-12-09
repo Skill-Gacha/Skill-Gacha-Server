@@ -6,8 +6,9 @@ import { PacketType } from '../../constants/header.js';
 import logger from '../../utils/log/logger.js';
 import { STATE_KEYS } from '../../constants/stateKeys.js';
 import stateFactory from '../states/stateFactory.js';
-import PvpFleeMessageState from './states/pvpFleeMessageState.js';
-import PvpGameOverState from './states/pvpGameOverState.js';
+
+import PvpFleeMessageState from './states/flee/pvpFleeMessageState.js';
+import PvpGameOverState from './states/result/pvpGameOverState.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
@@ -54,7 +55,6 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
 
       // 턴 정보 클라이언트에게 전송
       currentPlayer.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: true }));
-
       opponent = currentPlayer === playerA ? playerB : playerA;
       opponent.socket.write(createResponse(PacketType.S_UserTurn, { userTurn: false }));
     }

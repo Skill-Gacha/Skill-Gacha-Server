@@ -1,6 +1,6 @@
 ﻿// src/handler/pvp/states/pvpState.js
 
-import GameState from '../../states/gameState.js';
+import GameState from '../../../states/gameState.js';
 
 export default class PvpState extends GameState {
   constructor(session, mover, stopper) {

@@ -1,15 +1,15 @@
 // src/handler/pvp/states/pvpUseItemState.js
 
-import PvpState from './pvpState.js';
-import PvpTurnChangeState from './pvpTurnChangeState.js';
+import PvpState from '../base/pvpState.js';
+import PvpTurnChangeState from '../turn/pvpTurnChangeState.js';
 import PvpItemChoiceState from './pvpItemChoiceState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { PVP_STATUS } from '../../../constants/battle.js';
-import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { ITEM_TYPES } from '../../../constants/items.js';
-import logger from '../../../utils/log/logger.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { PVP_STATUS } from '../../../../constants/battle.js';
+import { updateItemCountInRedis } from '../../../../db/redis/itemService.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { ITEM_TYPES } from '../../../../constants/items.js';
+import logger from '../../../../utils/log/logger.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 const BASE_ITEM_CODE_OFFSET = 4000;
@@ -200,7 +200,6 @@ export default class PvpUseItemState extends PvpState {
     if (responseCode === 1) {
       this.changeState(PvpTurnChangeState);
     } else {
-      // 유효하지 않은 응답 처리
       invalidResponseCode(this.mover.socket);
     }
   }

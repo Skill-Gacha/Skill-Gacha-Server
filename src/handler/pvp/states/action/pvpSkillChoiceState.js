@@ -1,21 +1,20 @@
 // src/handler/pvp/states/pvpSkillChoiceState.js
 
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import PvpState from './pvpState.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import PvpPlayerAttackState from './pvpPlayerAttackState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import PvpState from '../base/pvpState.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import PvpPlayerAttackState from '../combat/pvpPlayerAttackState.js';
 import PvpActionState from './pvpActionState.js';
-import { PVP_STATUS } from '../../../constants/battle.js';
+import { PVP_STATUS } from '../../../../constants/battle.js';
 
 const BUTTON_BACK = '뒤로 가기';
-const BUTTON_CONFIRM = '확인';
 
 export default class PvpSkillChoiceState extends PvpState {
   enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.SKILL_CHOICE;
 
-    const buttons = this.mover.userSkills.map((skill, index) => ({
+    const buttons = this.mover.userSkills.map((skill) => ({
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
       enable: this.mover.stat.mp >= skill.mana,
     }));
