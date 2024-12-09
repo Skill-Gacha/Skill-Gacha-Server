@@ -1,13 +1,13 @@
-// src/handler/boss/states/bossEnemyAttackState.js
+// src/handler/boss/states/combat/bossEnemyAttackState.js
 
-import { BOSS_STATUS } from '../../../constants/battle.js';
-import BossRoomState from './bossRoomState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import BossIncreaseManaState from './bossIncreaseManaState.js';
+import { BOSS_STATUS } from '../../../../constants/battle.js';
+import BossRoomState from '../base/bossRoomState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
 import BossPlayerDeadState from './bossPlayerDeadState.js';
-import { checkStopperResist } from '../../../utils/battle/calculate.js';
-import { delay } from '../../../utils/delay.js';
+import { checkStopperResist } from '../../../../utils/battle/calculate.js';
+import { delay } from '../../../../utils/delay.js';
 
 const DEATH_ANIMATION_CODE = 1;
 const ATTACK_DELAY = 2500;
@@ -25,20 +25,12 @@ export default class BossEnemyAttackState extends BossRoomState {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ENEMY_ATTACK;
     const boss = this.bossRoom.monsters[BOSS_INDEX];
 
-    // 광역 공격만 가능 속성값도 없음
     if (this.bossRoom.phase === 1) {
       await this.bossAttackPlayers(boss);
-    }
-
-    // 광역기 & 저항력 약화 디버프 & 속성
-    else if (this.bossRoom.phase === 2) {
+    } else if (this.bossRoom.phase === 2) {
       Math.random() < 0.8 ? await this.bossAttackPlayers(boss) : await this.downResist(boss);
-    }
-
-    // 광역기 & 저항력 약화 디버프 & 속성 & 유저 HP, MP 바꾸는 디버프
-    else if (this.bossRoom.phase === 3) {
+    } else if (this.bossRoom.phase === 3) {
       const randomChoice = Math.random();
-
       if (randomChoice < 0.7) {
         await this.bossAttackPlayers(boss);
       } else if (randomChoice < 0.85) {
@@ -50,7 +42,6 @@ export default class BossEnemyAttackState extends BossRoomState {
       }
     }
 
-    // 무적 버프 초기화 및 턴 종료
     await delay(ATTACK_DELAY);
     this.users.forEach((user) => {
       user.stat.protect = false;
@@ -59,7 +50,6 @@ export default class BossEnemyAttackState extends BossRoomState {
   }
 
   async bossAttackPlayers(bossMonster) {
-    // 모든 유저에게 공격
     const aliveUsers = this.users.filter((user) => !user.isDead);
     const monsterAction = this.createMonsterAnimation(
       aliveUsers,
@@ -81,11 +71,11 @@ export default class BossEnemyAttackState extends BossRoomState {
       }
 
       if (user.stat.protect) {
-        damage = 1; // 보호 상태면 피해는 1로 고정
+        damage = 1;
       }
 
       user.reduceHp(damage);
-      user.stat.downResist = false; // 디버프 초기화
+      user.stat.downResist = false;
 
       this.sendBattleLogResponse(
         user,
@@ -105,7 +95,6 @@ export default class BossEnemyAttackState extends BossRoomState {
   }
 
   async downResist(bossMonster) {
-    // 모든 유저에게 디버프 적용
     const aliveUsers = this.users.filter((user) => !user.isDead);
     const monsterAction = this.createMonsterAnimation(
       aliveUsers,
@@ -115,7 +104,6 @@ export default class BossEnemyAttackState extends BossRoomState {
     );
 
     aliveUsers.forEach((user) => {
-      // 디버프 상태로 전환
       user.stat.downResist = true;
       this.sendBattleLogResponse(
         user,
@@ -129,7 +117,6 @@ export default class BossEnemyAttackState extends BossRoomState {
   }
 
   async changeStatus(bossMonster, user) {
-    // HP, MP 바꾸기
     user.changeHpMp();
     const statusResponse = this.createStatusResponse([user]);
     const monsterAction = this.createMonsterAnimation(
@@ -147,7 +134,6 @@ export default class BossEnemyAttackState extends BossRoomState {
     this.sendBattleLogResponse(user, `${bossMonster.monsterName}이 당신의 HP, MP를 바꿨습니다.`);
   }
 
-  // 각 유저의 HP, MP 데이터 만들기
   createStatusResponse(users) {
     return createResponse(PacketType.S_BossPlayerStatusNotification, {
       playerId: users.map((user) => user.id),
@@ -156,7 +142,6 @@ export default class BossEnemyAttackState extends BossRoomState {
     });
   }
 
-  // 유저 사망 함수
   handlePlayerDeath(user) {
     this.users.forEach((u) => {
       u.socket.write(
@@ -172,7 +157,6 @@ export default class BossEnemyAttackState extends BossRoomState {
     this.changeState(BossPlayerDeadState);
   }
 
-  // 몬스터 애니메이션 전송
   createMonsterAnimation(users, monster, animCode, effectCode) {
     return createResponse(PacketType.S_BossMonsterAction, {
       playerIds: users.map((user) => user.id),
@@ -184,7 +168,6 @@ export default class BossEnemyAttackState extends BossRoomState {
     });
   }
 
-  // 배틀로그 전송
   sendBattleLogResponse(user, msg) {
     user.socket.write(
       createResponse(PacketType.S_BossBattleLog, {

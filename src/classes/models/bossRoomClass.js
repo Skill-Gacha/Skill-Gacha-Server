@@ -6,9 +6,9 @@ import {
   PHASE_TWO_TURN_TIMEOUT_LIMIT,
 } from '../../constants/battle.js';
 import { PacketType } from '../../constants/header.js';
-import BossTurnChangeState from '../../handler/boss/states/bossTurnChangeState.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import BaseSession from './baseSession.js';
+import BossTurnChangeState from '../../handler/boss/states/turn/bossTurnChangeState.js';
 // 매칭 큐를 통해 게임이 잡힌 유저 2명의 대한 방
 class BossRoomClass extends BaseSession {
   constructor(bossRoomId) {

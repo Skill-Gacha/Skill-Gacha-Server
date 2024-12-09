@@ -1,14 +1,13 @@
-// src/handler/boss/states/bossActionState.js
+// src/handler/boss/states/action/bossActionState.js
 
-import { BOSS_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import BossRoomState from './bossRoomState.js';
+import BossRoomState from '../base/bossRoomState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { BOSS_STATUS } from '../../../../constants/battle.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
 import BossSkillChoiceState from './bossSkillChoiceState.js';
 import BossItemChoiceState from './bossItemChoiceState.js';
-import BossIncreaseManaState from './bossIncreaseManaState.js';
-import BossTurnChangeState from './bossTurnChangeState.js';
+import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 
@@ -18,7 +17,7 @@ export default class BossActionState extends BossRoomState {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ACTION;
     if (this.bossRoom.gameStart) {
       if (this.user.isDead === true) {
-        this.changeState(BossTurnChangeState);
+        this.changeState(BossIncreaseManaState);
         return;
       }
       const battleLog = {

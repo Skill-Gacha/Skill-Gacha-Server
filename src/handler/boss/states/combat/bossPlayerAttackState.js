@@ -1,22 +1,21 @@
-// src/handler/boss/states/bossPlayerAttackState.js
-import BossRoomState from './bossRoomState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { delay } from '../../../utils/delay.js';
-import { AREASKILL, BUFF_SKILL, DEBUFF, BOSS_STATUS } from '../../../constants/battle.js';
+// src/handler/boss/states/combat/bossPlayerAttackState.js
+
+import BossRoomState from '../base/bossRoomState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { delay } from '../../../../utils/delay.js';
+import { AREASKILL, BUFF_SKILL, DEBUFF, BOSS_STATUS } from '../../../../constants/battle.js';
 import {
   checkEnemyResist,
   skillEnhancement,
   updateDamage,
-} from '../../../utils/battle/calculate.js';
-import { buffSkill, bossBuffOrDebuffSkill } from '../../../utils/battle/battle.js';
-import BossMonsterDeadState from './bossMonsterDeadState.js';
-import BossTurnChangeState from './bossTurnChangeState.js';
-import BossPhaseState from './bossPhaseState.js';
+} from '../../../../utils/battle/calculate.js';
+import { buffSkill, bossBuffOrDebuffSkill } from '../../../../utils/battle/battle.js';
+import BossTurnChangeState from '../turn/bossTurnChangeState.js';
+import BossPhaseState from '../phase/bossPhaseState.js';
+import BossMonsterDeadState from '../result/bossMonsterDeadState.js';
 
 const ACTION_ANIMATION_CODE = 0;
-const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
-const DEBUFF_SKILL_ID = DEBUFF;
 const PLAYER_ACTION_DELAY = 1000;
 const BOSS_INDEX = 0;
 
@@ -29,7 +28,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     const selectedSkillIdx = this.bossRoom.selectedSkill;
     const userSkillInfo = this.user.userSkills[selectedSkillIdx];
 
-    // 공격 시 의도되지 않은 조작 방지 위한 버튼 비활성화
     const disableButtons = this.bossRoom.monsters.map((monster) => ({
       msg: monster.monsterName,
       enable: false,
@@ -40,7 +38,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     } else if (this.isAreaSkill(userSkillInfo)) {
       await this.handleAreaSkill(userSkillInfo, disableButtons, boss);
     } else {
-      // 단일 스킬 처리
       await this.handleSingleSkill(userSkillInfo, disableButtons, boss);
     }
   }
@@ -49,7 +46,7 @@ export default class BossPlayerAttackState extends BossRoomState {
     if (!skillInfo) {
       return false;
     }
-    return skillInfo.id >= DEBUFF_SKILL_ID;
+    return skillInfo.id >= DEBUFF;
   }
 
   isAreaSkill(skillInfo) {
@@ -57,11 +54,9 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   async handleBuffOrDebuffSkill(skillInfo) {
-    // 모든 파티원에게 버프 적용
     this.user.reduceMp(skillInfo.mana);
     this.users.forEach((user) => {
       if (user.stat.hp > 0) {
-        // 살아있는 플레이어에게만 버프 적용
         buffSkill(user, skillInfo.id);
         bossBuffOrDebuffSkill(user, user.socket, this.bossRoom);
       }
@@ -131,11 +126,7 @@ export default class BossPlayerAttackState extends BossRoomState {
       }
       this.bossRoom.shieldActivated = false;
     }
-
-    // 기본 피해 메시지
-    let battleLogMessage = `${this.user.nickname}이(가) ${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
-
-    return battleLogMessage;
+    return `${this.user.nickname}이(가) ${monster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
   }
 
   checkMonsterStates(boss) {
@@ -148,12 +139,9 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   calculateTotalDamage(skillInfo, monster) {
     const skillDamageRate = skillEnhancement(this.user.element, skillInfo.element);
-
     let userDamage = skillInfo.damage * skillDamageRate;
-
     userDamage = updateDamage(this.user, userDamage);
     const monsterResist = checkEnemyResist(skillInfo.element, monster);
-
     return Math.floor(userDamage * ((100 - monsterResist) / 100));
   }
 
@@ -209,11 +197,11 @@ export default class BossPlayerAttackState extends BossRoomState {
 
   updateBossPhase(boss) {
     if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
-      this.bossRoom.phase = 2; // phase를 2로 변경
-      this.changeState(BossPhaseState); // 상태 변경
+      this.bossRoom.phase = 2;
+      this.changeState(BossPhaseState);
     } else if (boss.monsterHp <= 2000 && this.bossRoom.phase === 2) {
-      this.bossRoom.phase = 3; // phase를 3으로 변경
-      this.changeState(BossPhaseState); // 상태 변경
+      this.bossRoom.phase = 3;
+      this.changeState(BossPhaseState);
     }
   }
 
@@ -232,7 +220,5 @@ export default class BossPlayerAttackState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {
-    // 이 상태에서는 플레이어의 추가 입력이 필요하지 않음
-  }
+  async handleInput(responseCode) {}
 }

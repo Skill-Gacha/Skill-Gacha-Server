@@ -1,16 +1,15 @@
-// src/handler/boss/states/bossGameOverWinState.js
+// src/handler/boss/states/result/bossGameOverWinState.js
 
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { BOSS_STATUS } from '../../../constants/battle.js';
-import BossRoomState from './bossRoomState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { BOSS_STATUS } from '../../../../constants/battle.js';
+import BossRoomState from '../base/bossRoomState.js';
 
 export default class BossGameOverWinState extends BossRoomState {
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.GAME_OVER_WIN;
     this.bossRoom.clearTurnTimer();
 
-    // 유저 버프 초기화
     this.users.forEach((user) => {
       user.isDead = false;
       user.buff = null;
@@ -22,7 +21,6 @@ export default class BossGameOverWinState extends BossRoomState {
       user.completeTurn = false;
     });
 
-    // 승리 메시지 모든 유저에게 전송
     const winResponse = createResponse(PacketType.S_ScreenText, {
       screenText: {
         msg: '축하드립니다 Null Dragon을 무찌르는데 성공하셨습니다.',

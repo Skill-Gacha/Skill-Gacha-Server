@@ -1,14 +1,14 @@
-// src/handler/boss/states/bossPlayerUseItemState.js
+// src/handler/boss/states/combat/bossPlayerUseItemState.js
 
-import { BOSS_STATUS } from '../../../constants/battle.js';
-import BossRoomState from './bossRoomState.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
-import { PacketType } from '../../../constants/header.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { ITEM_TYPES } from '../../../constants/items.js';
-import BossTurnChangeState from './bossTurnChangeState.js';
-import BossItemChoiceState from './bossItemChoiceState.js';
+import { BOSS_STATUS } from '../../../../constants/battle.js';
+import BossRoomState from '../base/bossRoomState.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { updateItemCountInRedis } from '../../../../db/redis/itemService.js';
+import { PacketType } from '../../../../constants/header.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { ITEM_TYPES } from '../../../../constants/items.js';
+import BossTurnChangeState from '../turn/bossTurnChangeState.js';
+import BossItemChoiceState from '../action/bossItemChoiceState.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 const BASE_ITEM_CODE_OFFSET = 4000;
@@ -18,7 +18,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
     this.bossRoom.bossStatus = BOSS_STATUS.USE_ITEM;
     this.user.completeTurn = true;
 
-    const selectedItemId = this.bossRoom.selectedItem + BASE_ITEM_CODE_OFFSET; // Assuming item IDs start at 4001
+    const selectedItemId = this.bossRoom.selectedItem + BASE_ITEM_CODE_OFFSET;
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {
@@ -27,7 +27,6 @@ export default class BossPlayerUseItemState extends BossRoomState {
       return;
     }
 
-    // 아이템 사용 로직 분기
     switch (itemEffect) {
       case 'HP_POTION':
         await this.useHpPotion();
@@ -50,7 +49,6 @@ export default class BossPlayerUseItemState extends BossRoomState {
         return;
     }
 
-    // 아이템 수량 업데이트
     await updateItemCountInRedis(this.user.nickname, selectedItemId, -1);
     await this.user.updateItem(this.user.nickname);
 
@@ -78,7 +76,6 @@ export default class BossPlayerUseItemState extends BossRoomState {
 
   async useBerserkPotion() {
     if (this.user.stat.hp <= 20 || this.user.stat.berserk) {
-      // 아이템 선택 상태로 돌아가기
       this.changeState(BossItemChoiceState);
       return;
     }
@@ -112,20 +109,17 @@ export default class BossPlayerUseItemState extends BossRoomState {
       battleLogMsg = `${this.user.nickname}님이 위험한 포션을 사용하여 일시적으로 무적 상태가 되었습니다.`;
     }
 
-    // HP, MP 업데이트
     this.sendStatusUpdate();
     this.sendBattleLogResponse(battleLogMsg);
   }
 
   async usePanacea() {
-    // 상태 이상 status 해제
     this.user.stat.downResist = false;
     this.sendBattleLogResponse(
       `${this.user.nickname}님이 만병통치약을 사용하여 모든 상태 이상을 해제했습니다.`,
     );
   }
 
-  // HP, MP 패킷 전송 함수
   sendStatusUpdate() {
     const statusResponse = createResponse(PacketType.S_BossPlayerStatusNotification, {
       playerId: [this.user.id],
@@ -138,7 +132,6 @@ export default class BossPlayerUseItemState extends BossRoomState {
     });
   }
 
-  // 배틀로그 전송 함수
   sendBattleLogResponse(msg) {
     const battleLog = {
       msg,

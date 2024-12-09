@@ -1,6 +1,6 @@
 // src/handler/boss/states/bossRoomState.js
 
-import GameState from '../../states/gameState.js';
+import GameState from '../../../states/gameState.js';
 
 export default class BossRoomState extends GameState {
   constructor(session, user) {
