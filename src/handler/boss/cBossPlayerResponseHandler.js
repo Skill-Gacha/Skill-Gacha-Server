@@ -1,12 +1,14 @@
 // src/handler/boss/cBossPlayerResponseHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
 export const cBossPlayerResponseHandler = async ({ socket, payload }) => {
+  const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
   const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
   if (!user) {
