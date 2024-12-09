@@ -6,21 +6,21 @@ import {
   MAX_REWARD_BUTTON,
   MAX_SKILL_COUNT,
   STONE,
-} from '../../../constants/battle.js';
-import { PacketType } from '../../../constants/header.js';
-import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
-import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
-import { getSkillById } from '../../../init/loadAssets.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { getRankName } from '../../../utils/skill/getRankName.js';
-import { setConfirmForDuplicateSkill } from '../../../utils/skill/skillDuplication.js';
-import ConfirmState from './confirmState.js';
-import DungeonState from './dungeonState.js';
+} from '../../../../constants/battle.js';
+import { PacketType } from '../../../../constants/header.js';
+import { updateItemCountInRedis } from '../../../../db/redis/itemService.js';
+import { saveRewardSkillsToRedis } from '../../../../db/redis/skillService.js';
+import { getSkillById } from '../../../../init/loadAssets.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { getRankName } from '../../../../utils/skill/getRankName.js';
+import { setConfirmForDuplicateSkill } from '../../../../utils/skill/skillDuplication.js';
+import ConfirmState from '../confirm/confirmState.js';
+import DungeonState from '../base/dungeonState.js';
 import GameOverWinState from './gameOverWinState.js';
 import SkillChangeState from './skillChangeState.js';
-import { updateUserResource } from '../../../db/user/userDb.js';
-import logger from '../../../utils/log/logger.js';
+import { updateUserResource } from '../../../../db/user/userDb.js';
+import logger from '../../../../utils/log/logger.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 

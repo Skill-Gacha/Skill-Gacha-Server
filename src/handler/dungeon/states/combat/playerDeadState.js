@@ -1,12 +1,12 @@
 // src/handler/dungeon/states/playerDeadState.js
 
-import DungeonState from './dungeonState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import GameOverLoseState from './gameOverLoseState.js';
-import { deadResource } from '../../../utils/battle/calculate.js';
+import DungeonState from '../base/dungeonState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
+import GameOverLoseState from '../result/gameOverLoseState.js';
+import { deadResource } from '../../../../utils/battle/calculate.js';
 
 const RESPONSE_CODE = {
   SCREEN_TEXT_DONE: 1,

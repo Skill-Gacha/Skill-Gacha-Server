@@ -1,15 +1,15 @@
 // src/handler/dungeon/states/playerUseItemState.js
 
-import DungeonState from './dungeonState.js';
+import DungeonState from '../base/dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import ItemChoiceState from './itemChoiceState.js';
-import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { ITEM_TYPES } from '../../../constants/items.js';
-import logger from '../../../utils/log/logger.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
+import ItemChoiceState from '../action/itemChoiceState.js';
+import { updateItemCountInRedis } from '../../../../db/redis/itemService.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { ITEM_TYPES } from '../../../../constants/items.js';
+import logger from '../../../../utils/log/logger.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 const BASE_ITEM_CODE_OFFSET = 4000;

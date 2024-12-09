@@ -1,11 +1,11 @@
 ﻿// src/handler/dungeon/states/monsterDeadState.js
 
-import DungeonState from './dungeonState.js';
+import DungeonState from '../base/dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import RewardState from './rewardState.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import RewardState from '../result/rewardState.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 
 const DEATH_ANIMATION_CODE = 4;
 

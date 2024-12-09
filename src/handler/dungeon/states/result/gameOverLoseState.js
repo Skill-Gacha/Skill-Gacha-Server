@@ -1,12 +1,12 @@
 ﻿// src/handler/dungeon/states/gameOverLoseState.js
 
-import DungeonState from './dungeonState.js';
+import DungeonState from '../base/dungeonState.js';
 import sessionManager from '#managers/sessionManager.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { saveItemsToRedis } from '../../../db/redis/itemService.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { saveItemsToRedis } from '../../../../db/redis/itemService.js';
 
 const RESPONSE_CODE = {
   SCREEN_TEXT_DONE: 0,

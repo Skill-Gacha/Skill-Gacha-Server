@@ -1,11 +1,11 @@
 // src/handler/dungeon/states/skillChangeState.js
 
-import DungeonState from './dungeonState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import ConfirmState from './confirmState.js';
-import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import DungeonState from '../base/dungeonState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import ConfirmState from '../confirm/confirmState.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../../constants/battle.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import RewardState from './rewardState.js';
 
 const BUTTON_BACK = '뒤로 가기';

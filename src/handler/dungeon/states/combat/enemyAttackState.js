@@ -1,11 +1,11 @@
 ﻿// src/handler/dungeon/states/enemyAttackState.js
 
-import DungeonState from './dungeonState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { delay } from '../../../utils/delay.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import IncreaseManaState from './increaseManaState.js';
+import DungeonState from '../base/dungeonState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { delay } from '../../../../utils/delay.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
+import IncreaseManaState from '../turn/increaseManaState.js';
 import PlayerDeadState from './playerDeadState.js';
 
 const ATTACK_ANIMATION_CODE = 0;

@@ -1,17 +1,17 @@
 ﻿// src/handler/dungeon/states/confirmState.js
 
-import DungeonState from './dungeonState.js';
-import ActionState from './actionState.js';
-import FleeMessageState from './fleeMessageState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
-import RewardState from './rewardState.js';
-import GameOverWinState from './gameOverWinState.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import FailFleeMessageState from './failFleeMessageState.js';
-import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
-import { updateUserResource } from '../../../db/user/userDb.js';
+import DungeonState from '../base/dungeonState.js';
+import ActionState from '../action/actionState.js';
+import FleeMessageState from '../flee/fleeMessageState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../../constants/battle.js';
+import RewardState from '../result/rewardState.js';
+import GameOverWinState from '../result/gameOverWinState.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import FailFleeMessageState from '../flee/failFleeMessageState.js';
+import { saveRewardSkillsToRedis } from '../../../../db/redis/skillService.js';
+import { updateUserResource } from '../../../../db/user/userDb.js';
 
 const BASE_FLEE_COST = 100;
 

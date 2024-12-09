@@ -1,13 +1,11 @@
 ﻿// src/handler/dungeon/states/targetState.js
 
-import DungeonState from './dungeonState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import PlayerAttackState from './playerAttackState.js';
-
-const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
+import DungeonState from '../base/dungeonState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import PlayerAttackState from '../combat/playerAttackState.js';
 
 export default class TargetState extends DungeonState {
   async enter() {

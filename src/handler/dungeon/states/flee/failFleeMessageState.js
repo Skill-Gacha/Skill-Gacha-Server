@@ -1,11 +1,11 @@
 // src/handler/dungeon/states/failFleeMessageState.js
 
-import DungeonState from './dungeonState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import ActionState from './actionState.js';
+import DungeonState from '../base/dungeonState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import ActionState from '../action/actionState.js';
 
 const CONFIRM_RESPONSES = {
   YES: 1,

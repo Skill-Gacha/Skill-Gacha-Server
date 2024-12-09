@@ -1,18 +1,18 @@
 ﻿// src/handler/dungeon/states/playerAttackState.js
 
-import DungeonState from './dungeonState.js';
+import DungeonState from '../base/dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';
 import MonsterDeadState from './monsterDeadState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { delay } from '../../../utils/delay.js';
-import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS } from '../../../constants/battle.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { delay } from '../../../../utils/delay.js';
+import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS } from '../../../../constants/battle.js';
 import {
   checkEnemyResist,
   skillEnhancement,
   updateDamage,
-} from '../../../utils/battle/calculate.js';
-import { buffSkill, useBuffSkill } from '../../../utils/battle/battle.js';
+} from '../../../../utils/battle/calculate.js';
+import { buffSkill, useBuffSkill } from '../../../../utils/battle/battle.js';
 
 const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;

@@ -1,13 +1,13 @@
 // src/handler/dungeon/states/skillChoiceState.js
 
-import DungeonState from './dungeonState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { AREASKILL, DUNGEON_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import DungeonState from '../base/dungeonState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { AREASKILL, DUNGEON_STATUS } from '../../../../constants/battle.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import ActionState from './actionState.js';
-import TargetState from './targetState.js';
-import PlayerAttackState from './playerAttackState.js';
+import TargetState from '../action/targetState.js';
+import PlayerAttackState from '../combat/playerAttackState.js';
 
 const BUTTON_BACK = '뒤로 가기';
 
@@ -41,7 +41,6 @@ export default class SkillChoiceState extends DungeonState {
     }
 
     if (responseCode === this.user.userSkills.length + 1) {
-      // 뒤로 가기 버튼
       this.changeState(ActionState);
       return;
     }
@@ -61,7 +60,6 @@ export default class SkillChoiceState extends DungeonState {
       return;
     }
 
-    // 타겟 지정 상태로 전환
     this.changeState(TargetState);
   }
 

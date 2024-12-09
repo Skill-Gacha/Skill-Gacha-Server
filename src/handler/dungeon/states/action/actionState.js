@@ -1,13 +1,13 @@
 ﻿// src/handler/dungeon/states/actionState.js
 
-import DungeonState from './dungeonState.js';
-import ConfirmState from './confirmState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../constants/battle.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
+import DungeonState from '../base/dungeonState.js';
+import ConfirmState from '../confirm/confirmState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../../constants/battle.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import ItemChoiceState from './itemChoiceState.js';
-import IncreaseManaState from './increaseManaState.js';
+import IncreaseManaState from '../turn/increaseManaState.js';
 import SkillChoiceState from './skillChoiceState.js';
 
 const ACTION_BUTTONS = [
@@ -40,17 +40,17 @@ export default class ActionState extends DungeonState {
 
   async handleInput(responseCode) {
     switch (responseCode) {
-      case ACTIONS.SKILL: // 스킬
+      case ACTIONS.SKILL:
         this.changeState(SkillChoiceState);
         break;
-      case ACTIONS.ITEM: // 아이템
+      case ACTIONS.ITEM:
         this.changeState(ItemChoiceState);
         break;
-      case ACTIONS.PASS_TURN: // 턴 넘기기
+      case ACTIONS.PASS_TURN:
         this.user.turnOff = true;
         this.changeState(IncreaseManaState);
         break;
-      case ACTIONS.FLEE: // 도망치기
+      case ACTIONS.FLEE:
         this.changeState(ConfirmState);
         await this.dungeon.currentState.setConfirm(
           CONFIRM_TYPE.FLEE,
@@ -58,7 +58,6 @@ export default class ActionState extends DungeonState {
         );
         break;
       default:
-        // 유효하지 않은 응답 처리
         invalidResponseCode(this.socket);
         break;
     }

@@ -1,12 +1,12 @@
 // src/handler/dungeon/states/increaseManaState.js
 
-import DungeonState from './dungeonState.js';
-import { PacketType } from '../../../constants/header.js';
-import { createResponse } from '../../../utils/response/createResponse.js';
-import ActionState from './actionState.js';
-import { invalidResponseCode } from '../../../utils/error/invalidResponseCode.js';
-import { DUNGEON_STATUS } from '../../../constants/battle.js';
-import EnemyAttackState from './enemyAttackState.js';
+import DungeonState from '../base/dungeonState.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
+import ActionState from '../action/actionState.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import { DUNGEON_STATUS } from '../../../../constants/battle.js';
+import EnemyAttackState from '../combat/enemyAttackState.js';
 
 const HP_RECOVERY_MIN = 5;
 const HP_RECOVERY_MAX = 10;

@@ -5,7 +5,7 @@ class StateFactory {
     this.stateMap = {
       // PvE
       message: async () => {
-        const module = await import('../dungeon/states/messageState.js');
+        const module = await import('../dungeon/states/message/messageState.js');
         return module.default;
       },
       
