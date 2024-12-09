@@ -9,7 +9,7 @@ import logger from '../log/logger.js';
 export const MyStatus = (my) => {
   return {
     playerClass: my.element,
-    playerLevel: my.stat.level,
+    playerLevel: 1,
     playerName: my.nickname,
     playerFullHp: my.stat.maxHp,
     playerFullMp: my.stat.maxMp,
@@ -22,7 +22,7 @@ export const MyStatus = (my) => {
 export const OpponentStatus = (opponent) => {
   return {
     playerClass: opponent.element,
-    playerLevel: opponent.stat.level,
+    playerLevel: 1,
     playerName: opponent.nickname,
     playerFullHp: opponent.stat.maxHp,
     playerCurHp: opponent.stat.hp,

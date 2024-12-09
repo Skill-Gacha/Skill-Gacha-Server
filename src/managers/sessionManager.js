@@ -18,13 +18,19 @@ class SessionManager {
       pvpRooms: new Map(),
       bossRooms: new Map(),
     };
-    this.acceptQueue = [];
+
+    // Bull 큐 초기화 (유저 ID만 저장)
     this.pvpMatchingQueue = new Queue('pvpMatchingQueue', {
       redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
     });
     this.bossMatchingQueue = new Queue('bossMatchingQueue', {
       redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
     });
+
+    // 기존 acceptQueue 배열 대신 Bull Queue로 일관성 확보가 필요하다면 여기에 추가 가능.
+    // 여기서는 일단 삭제 또는 주석 처리.
+    // this.acceptQueue = [];
+
     this.users = new Map(); // userId -> user
     this.socketToUser = new Map(); // socket -> user
     this.sessionTimeout = 1800000; // 30분
@@ -37,8 +43,8 @@ class SessionManager {
   addUser(user) {
     logger.info(`유저 ${user.id}가 세션에 추가되었습니다.`);
     this.users.set(user.id, user);
-    this.socketToUser.set(user.socket, user); // 소켓 맵에 추가
-    this.sessions.town.addUser(user); // 기본적으로 마을 세션에 추가
+    this.socketToUser.set(user.socket, user);
+    this.sessions.town.addUser(user);
     user.lastActivity = Date.now();
   }
 
@@ -49,11 +55,10 @@ class SessionManager {
       return;
     }
 
-    // 모든 던전 세션에서 사용자 제거
+    // 모든 던전, PvP, 보스룸에서 사용자 제거
     this.sessions.dungeons.forEach((dungeon) => {
       if (dungeon.removeUser(userId)) {
         logger.info(`던전 세션에서 사용자 ${userId} 제거`);
-        // 던전 세션이 비어있다면 클렌징
         if (dungeon.isEmpty()) {
           logger.info(`던전 세션 ${dungeon.id}이 비어있어 제거합니다.`);
           this.removeDungeon(dungeon.id);
@@ -61,11 +66,9 @@ class SessionManager {
       }
     });
 
-    // PvP 방에서 사용자 제거
     this.sessions.pvpRooms.forEach((pvp) => {
       if (pvp.removeUser(userId)) {
         logger.info(`PvP 방 세션에서 사용자 ${userId} 제거`);
-        // PvP 방이 비어있다면 클렌징
         if (pvp.isEmpty()) {
           logger.info(`PvP 방 세션 ${pvp.id}이 비어있어 제거합니다.`);
           this.removePvpRoom(pvp.id);
@@ -73,11 +76,9 @@ class SessionManager {
       }
     });
 
-    // 보스 방에서 사용자 제거
     this.sessions.bossRooms.forEach((bossRoom) => {
       if (bossRoom.removeUser(userId)) {
         logger.info(`보스 방 세션에서 사용자 ${userId} 제거`);
-        // 보스 방이 비어있다면 클렌징
         if (bossRoom.isEmpty()) {
           logger.info(`보스 방 세션 ${bossRoom.id}이 비어있어 제거합니다.`);
           this.removeBossRoom(bossRoom.id);
@@ -85,12 +86,11 @@ class SessionManager {
       }
     });
 
-    // 마을 세션에서 사용자 제거
     if (this.sessions.town.removeUser(userId)) {
       logger.info(`마을 세션에서 사용자 ${userId} 제거`);
     }
 
-    this.socketToUser.delete(user.socket); // 소켓 맵에서 제거
+    this.socketToUser.delete(user.socket);
     this.users.delete(userId);
 
     logger.info(`사용자 ${userId}가 모든 세션에서 제거되었습니다.`);
@@ -120,7 +120,6 @@ class SessionManager {
     dungeon.lastActivity = Date.now();
     this.sessions.dungeons.set(sessionId, dungeon);
 
-    // 타임아웃 설정
     dungeon.timeout = setTimeout(() => {
       logger.info(`던전 세션 ${sessionId} 타임아웃으로 클렌징`);
       this.removeDungeon(sessionId);
@@ -149,26 +148,22 @@ class SessionManager {
 
   // 사용자 세션 조회
   getSessionByUserId(userId) {
-    // 유저가 Town에 있으면 Town 세션 반환
     if (this.sessions.town.getUser(userId)) {
       return this.sessions.town;
     }
 
-    // 유저가 Dungeon에 있으면 Dungeon 세션 반환
     for (let dungeon of this.sessions.dungeons.values()) {
       if (dungeon.getUser(userId)) {
         return dungeon;
       }
     }
 
-    // 유저가 PvP에 있으면 PvP 세션 반환
     for (let pvp of this.sessions.pvpRooms.values()) {
       if (pvp.getUser(userId)) {
         return pvp;
       }
     }
 
-    // 유저가 BossRoom에 있으면 BossRoom 세션 반환
     for (let bossRoom of this.sessions.bossRooms.values()) {
       if (bossRoom.getUser(userId)) {
         return bossRoom;
@@ -191,10 +186,10 @@ class SessionManager {
     });
   }
 
-  // **매칭 큐 관리**
+  // **매칭 큐 관리 (유저 ID만 저장)**
   async addMatchingQueue(user, maxPlayer = MAX_PLAYER, queueType = 'pvp') {
     const matchingQueue = this.getMatchingQueue(queueType);
-    const waitingJobs = await matchingQueue.getJobs('waiting'); // 대기 중인 모든 작업을 가져옴
+    const waitingJobs = await matchingQueue.getJobs('waiting');
     const existingUser = waitingJobs.find((job) => job.data.id === user.id);
 
     if (existingUser) {
@@ -204,33 +199,23 @@ class SessionManager {
 
     user.matchingAddedAt = Date.now();
 
-    // 유저를 큐에 추가
-    await matchingQueue.add(user);
+    // 유저 ID만 큐에 추가
+    await matchingQueue.add({ id: user.id });
     const updateWaitingJobs = await matchingQueue.getJobs('waiting');
 
-    if (updateWaitingJobs.length >= maxPlayer && queueType === 'boss') {
-      const matchedJobs = updateWaitingJobs.splice(0, maxPlayer);
-      this.acceptQueue.push(...matchedJobs);
-      const matchedUsers = matchedJobs.map((job) => job.data);
-      // 매칭된 유저들을 큐에서 제거
-      await Promise.all(
-        matchedJobs.map(async (job) => {
-          await job.remove();
-        }),
-      );
-      return matchedUsers;
-    }
-
+    // 매칭 조건 충족 시 유저 ID 목록 반환
     if (updateWaitingJobs.length >= maxPlayer) {
       const matchedJobs = updateWaitingJobs.splice(0, maxPlayer);
-      const matchedUsers = matchedJobs.map((job) => job.data);
+      const matchedUserIds = matchedJobs.map((job) => job.data.id);
+
       await Promise.all(
         matchedJobs.map(async (job) => {
           await job.remove();
-        }),
+        })
       );
-      // 매칭된 유저들에 대한 추가 로직 (PvP 방 생성 등)을 여기에 추가할 수 있습니다.
-      return matchedUsers;
+
+      // 여기서는 user 객체를 반환하지 않고, userId 배열을 반환
+      return matchedUserIds.map((userId) => ({ id: userId }));
     }
 
     return null;
@@ -250,18 +235,10 @@ class SessionManager {
     return false;
   }
 
-  async removeAcceptQueueInUser(user) {
-    const waitingJobs = await this.acceptQueue.getJobs('waiting');
-    const userJob = waitingJobs.find((job) => job.data.id === user.id);
-
-    if (userJob) {
-      await userJob.remove();
-      logger.info('AcceptQueue에서 유저를 지웠습니다.');
-      return true;
-    }
-    logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
-    return false;
-  }
+  // 필요하다면 acceptQueue도 Bull 큐로 동일하게 관리
+  // async removeAcceptQueueInUser(user) {
+  //   // 이 부분은 acceptQueue를 Bull로 변경하거나, 필요 없다면 제거
+  // }
 
   getMatchingQueue(queueType) {
     if (queueType === 'boss') {
@@ -274,10 +251,7 @@ class SessionManager {
     }
   }
 
-  getAcceptQueue() {
-    return this.acceptQueue;
-  }
-
+  // PvP, BossRoom 조회 로직은 동일
   getPvpByUser(user) {
     for (let pvp of this.sessions.pvpRooms.values()) {
       if (pvp.getUser(user.id)) {
@@ -301,7 +275,6 @@ class SessionManager {
     pvpRoom.lastActivity = Date.now();
     this.sessions.pvpRooms.set(sessionId, pvpRoom);
 
-    // 타임아웃 설정
     pvpRoom.timeout = setTimeout(() => {
       logger.info(`PvP 방 세션 ${sessionId} 타임아웃으로 클렌징`);
       this.removePvpRoom(sessionId);
@@ -340,7 +313,6 @@ class SessionManager {
     setInterval(async () => {
       const now = Date.now();
 
-      // 던전 세션 클렌징
       this.sessions.dungeons.forEach((dungeon, sessionId) => {
         if (now - dungeon.lastActivity > this.sessionTimeout) {
           logger.info(`던전 세션 ${sessionId} 클렌징`);
@@ -348,7 +320,6 @@ class SessionManager {
         }
       });
 
-      // PvP 방 클렌징
       this.sessions.pvpRooms.forEach((pvp, sessionId) => {
         if (now - pvp.lastActivity > this.sessionTimeout) {
           logger.info(`PvP 방 세션 ${sessionId} 클렌징`);
@@ -356,7 +327,6 @@ class SessionManager {
         }
       });
 
-      // 보스 방 클렌징
       this.sessions.bossRooms.forEach((bossRoom, sessionId) => {
         if (now - bossRoom.lastActivity > this.sessionTimeout) {
           logger.info(`보스 방 세션 ${sessionId} 클렌징`);
@@ -364,7 +334,6 @@ class SessionManager {
         }
       });
 
-      // 사용자 클렌징
       this.users.forEach((user, userId) => {
         if (now - user.lastActivity > this.userTimeout) {
           logger.info(`사용자 ${userId} 클렌징`);
@@ -372,21 +341,22 @@ class SessionManager {
         }
       });
 
-      // 매칭 큐 클렌징
       for (const queueType of ['pvp', 'boss']) {
         const matchingQueue = this.getMatchingQueue(queueType);
-        const waitingJobs = await matchingQueue.getJobs('waiting'); // 대기 중인 작업 가져오기
+        const waitingJobs = await matchingQueue.getJobs('waiting');
 
         const jobsToRemove = waitingJobs.filter((job) => {
-          const user = job.data;
-          if (now - user.matchingAddedAt > this.userTimeout) {
-            logger.info(`매칭 큐에서 사용자 ${user.id} 제거`);
+          const { id: uid } = job.data;
+          const u = this.getUser(uid);
+          if (!u) return true; // 유저가 없으면 제거
+          if (now - u.matchingAddedAt > this.userTimeout) {
+            logger.info(`매칭 큐에서 사용자 ${uid} 제거`);
             return true;
           }
           return false;
         });
 
-        await Promise.all(jobsToRemove.map((job) => job.remove())); // 작업 제거
+        await Promise.all(jobsToRemove.map((job) => job.remove()));
 
         if (jobsToRemove.length > 0) {
           logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 완료`);
@@ -395,7 +365,6 @@ class SessionManager {
     }, this.cleansingInterval);
   }
 
-  // 사용자 활동 시 타이머 갱신
   handleUserActivity(userId) {
     const session = this.getSessionByUserId(userId);
     if (session) {

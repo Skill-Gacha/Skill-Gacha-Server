@@ -30,7 +30,9 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
     if (accept) {
       const matchedPlayers = await sessionManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
-      const [playerA, playerB, playerC] = matchedPlayers;
+      const [playerA, playerB, playerC] = matchedPlayers.map(player => sessionManager.getUser(player.id));
+      const actualMatchedPlayers = [playerA, playerB, playerC];
+
       const monsterData = getGameAssets().MonsterData.data;
       const bossMonster = monsterData[BOSS_NUMBER];
       const bossMonsterInstance = new Monster(
@@ -53,7 +55,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         monsterName: bossMonster.monsterName,
         monsterHp: bossMonster.monsterHp,
       };
-      matchedPlayers.forEach((user) => {
+      actualMatchedPlayers.forEach((user) => {
         sDespawnHandler(user);
         sendBossMatchNotification(
           user,
