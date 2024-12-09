@@ -1,7 +1,6 @@
 // src/events/onError.js
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
-import sessionManager from '#managers/sessionManager.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../db/redis/ratingService.js';
 import { createResponse } from '../utils/response/createResponse.js';
 import { PacketType } from '../constants/header.js';
@@ -9,9 +8,12 @@ import logger from '../utils/log/logger.js';
 import CustomError from '../utils/error/customError.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import { handleError } from '../utils/error/errorHandler.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const onError = (socket) => async (err) => {
   logger.error('onError: 소켓 에러 발생:', err);
+  const sessionManager = serviceLocator.get(SessionManager);
 
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
