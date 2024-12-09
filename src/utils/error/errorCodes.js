@@ -50,6 +50,7 @@ export const ErrorCodes = {
   MIGRATION_FAILED: 70000,
 
   ABSTRACT_CLASS: 90000,
+  INVALID_SERVICE_LOCATOR: 90001,
 
   OUT_OF_RANGE: 500000,
   // 추가적인 에러 코드들
