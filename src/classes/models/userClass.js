@@ -2,7 +2,7 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
-import { getItemsFromRedis } from '../../db/redis/itemService.js';
+import Item from '../Item/itemClass.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {
@@ -13,12 +13,15 @@ class User {
     this.position = new Position(0, 0, 0, 0);
     this.stat = new Stat(maxHp, maxHp, maxMp, maxMp, resists);
     this.userSkills = [];
-    this.items = [];
     this.gold = gold;
     this.stone = stone;
     this.turnOff = false;
     this.isDead = false;
     this.completeTurn = false;
+  }
+
+  initItemCount(items) {
+    this.inventory = new Item(items);
   }
 
   reduceHp(damage) {
@@ -62,15 +65,11 @@ class User {
     this.stone += stone;
   }
 
-  async updateItem(nickname) {
-    this.items = await getItemsFromRedis(nickname);
-  }
-
   getInventory() {
     return {
       gold: this.gold,
       stone: this.stone,
-      productList: this.items.map((item) => ({
+      productList: this.inventory.map((item) => ({
         id: item.itemId,
         count: item.count,
       })),
