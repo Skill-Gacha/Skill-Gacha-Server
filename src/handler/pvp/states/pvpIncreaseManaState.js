@@ -17,8 +17,10 @@ const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 export default class PvpIncreaseManaState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.INCREASE_MANA;
-    const randomHp = Math.floor(Math.random() * (HP_RECOVERY_MAX - HP_RECOVERY_MIN + 1)) + HP_RECOVERY_MIN;
-    const randomMp = Math.floor(Math.random() * (MP_RECOVERY_MAX - MP_RECOVERY_MIN + 1)) + MP_RECOVERY_MIN;
+    const randomHp =
+      Math.floor(Math.random() * (HP_RECOVERY_MAX - HP_RECOVERY_MIN + 1)) + HP_RECOVERY_MIN;
+    const randomMp =
+      Math.floor(Math.random() * (MP_RECOVERY_MAX - MP_RECOVERY_MIN + 1)) + MP_RECOVERY_MIN;
 
     const existingHp = this.mover.stat.hp;
     const existingMp = this.mover.stat.mp;

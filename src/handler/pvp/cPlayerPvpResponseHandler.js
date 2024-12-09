@@ -34,14 +34,16 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     );
 
     if (!isConfirmOrGameOver && responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
-      pvpRoom.users.forEach((user) => user.socket.write(createResponse(PacketType.S_LeaveDungeon, {})));
+      pvpRoom.users.forEach((user) =>
+        user.socket.write(createResponse(PacketType.S_LeaveDungeon, {})),
+      );
       sessionManager.removePvpRoom(pvpRoom.sessionId);
       return;
     }
 
     let currentPlayer;
     let opponent;
-    
+
     // isConfirmOrGameOver가 false인 경우에만 턴 검사 수행
     if (!isConfirmOrGameOver) {
       const [playerA, playerB] = Array.from(pvpRoom.users.values());
@@ -60,7 +62,12 @@ export const cPlayerPvpResponseHandler = async ({ socket, payload }) => {
     }
 
     if (!pvpRoom.currentState) {
-      const newState = await stateFactory.createState(STATE_KEYS.PVP_ACTION, pvpRoom, currentPlayer, opponent);
+      const newState = await stateFactory.createState(
+        STATE_KEYS.PVP_ACTION,
+        pvpRoom,
+        currentPlayer,
+        opponent,
+      );
       pvpRoom.currentState = newState;
       await pvpRoom.currentState.enter();
     }
