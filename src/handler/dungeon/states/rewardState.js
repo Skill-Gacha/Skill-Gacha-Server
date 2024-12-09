@@ -27,7 +27,7 @@ const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 export default class RewardState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.REWARD;
-    const { gold, stone, rewardSkills, item } = this.dungeon.reward;
+    const { gold, stone, rewardSkills, itemId } = this.dungeon.reward;
 
     try {
       // 골드 및 강화석 증가
@@ -43,13 +43,13 @@ export default class RewardState extends DungeonState {
     // 필요한 걸 붙이는 식으로 진행
     let msg = `Gold가 ${gold}원 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬 중 1개의 스킬을 선택하여 스킬을 획득하세요.`;
 
-    if (item !== null) {
-      const userHasItem = this.user.items.find((i) => i.itemId === item);
-      if (userHasItem && userHasItem.count !== 1 && userHasItem.count === 0) {
+    if (itemId !== null) {
+      const userHasItem = this.user.inventory.items.find((item) => item.itemId === itemId);
+      if (userHasItem.count === 0) {
         msg += `\n일정 확률로 아이템을 획득하였습니다!`;
         try {
-          await updateItemCountInRedis(this.user.nickname, item, 1);
-          userHasItem.count += 1;
+          await updateItemCountInRedis(this.user.nickname, itemId, 1);
+          this.user.inventory.items.updateItemCount(userHasItem);
         } catch (error) {
           logger.error('RewardState: 아이템 업데이트 중 오류 발생:', error);
           invalidResponseCode(this.socket);
