@@ -1,12 +1,14 @@
 ﻿// src/handler/town/cMoveHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import logger from '../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cMoveHandler = async ({ socket, payload }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const { transform } = payload;
 
     if (!validateTransform(transform)) {

@@ -1,15 +1,17 @@
 // src/handler/town/enhanceForge/cEnhanceHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { getNextRankAndSameElement, getSkillById } from '../../../init/loadAssets.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 import { cEnhanceUiHandler } from './cEnhanceUiHandler.js';
 import logger from '../../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cEnhanceHandler = async ({ socket, payload }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
       logger.error('cEnhanceHandler: 사용자를 찾을 수 없습니다.');
