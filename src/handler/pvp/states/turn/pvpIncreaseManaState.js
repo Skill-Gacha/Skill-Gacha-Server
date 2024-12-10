@@ -6,6 +6,8 @@ import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode
 import { PVP_STATUS, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT } from '../../../../constants/battle.js';
 import PvpState from '../base/pvpState.js';
 import PvpTurnChangeState from './pvpTurnChangeState.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import TimerManager from '#managers/timerManager.js'; // 중앙 타이머 서비스 임포트
 
 const HP_RECOVERY_MIN = 5;
 const HP_RECOVERY_MAX = 10;
@@ -15,6 +17,12 @@ const MP_RECOVERY_MAX = 10;
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 
 export default class PvpIncreaseManaState extends PvpState {
+  constructor(...args) {
+    super(...args);
+    this.timeoutId = null; // 타이머 식별자 초기화
+    this.timerMgr = serviceLocator.get(TimerManager);
+  }
+
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.INCREASE_MANA;
     const randomHp = Math.floor(Math.random() * (HP_RECOVERY_MAX - HP_RECOVERY_MIN + 1)) + HP_RECOVERY_MIN;
@@ -49,15 +57,18 @@ export default class PvpIncreaseManaState extends PvpState {
 
     this.mover.socket.write(increaseManaBattleLogResponse);
 
-    // 5초 후에 handleInput(1)을 자동으로 호출하는 타이머 설정
-    this.timeoutId = setTimeout(() => {
+    // 타이머 매니저를 통해 타이머 설정
+    this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
       this.handleInput(1);
-    }, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT); // ms
+    });
   }
 
   async handleInput(responseCode) {
     if (responseCode === 1) {
-      clearTimeout(this.timeoutId);
+      if (this.timeoutId) {
+        this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
+        this.timeoutId = null;
+      }
       this.changeState(PvpTurnChangeState);
     } else {
       invalidResponseCode(this.mover.socket);
