@@ -6,7 +6,6 @@ import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
 import SessionManager from './sessionManager.js';
 import serviceLocator from '#locator/serviceLocator.js';
 
-// 싱글톤 클래스
 class QueueManager {
   constructor() {
     logger.info(`큐 관리자 생성`);
