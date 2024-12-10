@@ -23,7 +23,7 @@ class QueueManager {
 
     this.queueTimeout = 1800000; // 30분
     this.userTimeout = 1800000; // 30분
-    this.cleansingInterval = 60000; // 1분
+    this.cleansingInterval = 180000; // 3분
     this.startCleansingInterval();
   }
 
@@ -144,6 +144,7 @@ class QueueManager {
   // **큐 클렌징 로직**
   async startCleansingInterval() {
     setInterval(async () => {
+      logger.info('큐 클렌징 동작 시작');
       const now = Date.now();
       const sessionManager = serviceLocator.get(SessionManager);
 
@@ -166,6 +167,9 @@ class QueueManager {
 
         if (jobsToRemove.length > 0) {
           logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 `);
+        }
+        else {
+          logger.info(`${queueType.toUpperCase()}큐가 비어있거나 타임아웃인 유저가 존재하지 않아 클렌징이 수행되지 않았습니다.`)
         }
       }
     }, this.cleansingInterval);
