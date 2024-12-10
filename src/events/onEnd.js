@@ -141,8 +141,9 @@ export const onEnd = (socket) => async () => {
     user.completeTurn = false;
 
     // PVP나 보스 매칭큐에서 유저 제거
-    queueManager.removeMatchingQueue(user);
+    queueManager.removeMatchingQueue(user, 'pvp');
     queueManager.removeMatchingQueue(user, 'boss');
+    queueManager.removeAcceptQueueInUser(user);
 
     logger.info(`유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {

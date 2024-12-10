@@ -99,8 +99,9 @@ export const onError = (socket) => async (err) => {
     user.completeTurn = false;
 
     // PVP나 보스 매칭큐에서 유저 제거
-    queueManager.removeMatchingQueue(user);
+    queueManager.removeMatchingQueue(user, 'pvp');
     queueManager.removeMatchingQueue(user, 'boss');
+    queueManager.removeAcceptQueueInUser(user);
 
     logger.info(`onError: 유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {
