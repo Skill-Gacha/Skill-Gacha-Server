@@ -13,6 +13,7 @@ import { handleError } from '../../utils/error/errorHandler.js';
 import logger from '../../utils/log/logger.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
+import QueueManager from '#managers/queueManager.js';
 
 const MONSTERS_PER_DUNGEON_DELIMITER = 7;
 const MIN_MONSTERS = 1;
@@ -21,7 +22,9 @@ const MAX_MONSTERS = 3;
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const sessionManager = serviceLocator.get(SessionManager);
+  const queueManager = serviceLocator.get(QueueManager);
   const user = sessionManager.getUserBySocket(socket);
+  queueManager.removeMatchingQueue(user, 'boss');
 
   if (!user) {
     logger.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
