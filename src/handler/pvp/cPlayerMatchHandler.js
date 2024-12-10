@@ -26,12 +26,20 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
   socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
-  const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
-  if (!matchedPlayers) return;
+  // matchedPlayers는 [{id: userId}, {id: userId}] 형태
+  const matchedPlayers = await sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
+  if (!matchedPlayers) {
+    logger.info('매칭 대기 중입니다.');
+    return;
+  }
 
-  const [playerA, playerB] = matchedPlayers;
+  // 실제 유저 객체 가져오기
+  const matchedUsers = matchedPlayers.map(({ id }) => sessionManager.getUser(id));
+  const [playerA, playerB] = matchedUsers;
+  console.log('A:', playerA);
+  console.log('B:', playerB);
+
   const pvpRoom = sessionManager.createPvpRoom(uuidv4());
-
   pvpRoom.addUser(playerA);
   pvpRoom.addUser(playerB);
 
@@ -60,10 +68,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         playerB.nickname,
         lastKoreanA,
         isPlayerAFirstAttack,
-        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.',
+        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.'
       ),
       isPlayerAFirstAttack,
-      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false],
+      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false]
     ),
   });
 
@@ -76,10 +84,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         playerA.nickname,
         lastKoreanB,
         isPlayerBFirstAttack,
-        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.',
+        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.'
       ),
       isPlayerBFirstAttack,
-      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false],
+      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false]
     ),
   });
 

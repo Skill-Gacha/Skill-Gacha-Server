@@ -21,6 +21,7 @@
     "prettier": "^3.3.3"
   },
   "dependencies": {
+    "bull": "^4.16.4",
     "dotenv": "^16.4.5",
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
