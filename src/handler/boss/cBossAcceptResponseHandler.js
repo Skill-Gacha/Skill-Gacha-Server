@@ -40,7 +40,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       for (const user of actualMatchedPlayers) {
         await queueManager.removeAcceptQueueInUser(user);
       }
-      
+
       const monsterData = getGameAssets().MonsterData.data;
       const bossMonster = monsterData[BOSS_NUMBER];
       const bossMonsterInstance = new Monster(
@@ -89,9 +89,6 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         playerIds: [],
         partyList: [],
       });
-
-      queueManager.removeAcceptQueueInUser(user);
-      user.socket.write(failResponse);
 
       // 먼저 수락한 유저도 매칭큐에서 제거 및 입장 실패 패킷 전송
       const acceptQueue = queueManager.getAcceptQueue();
