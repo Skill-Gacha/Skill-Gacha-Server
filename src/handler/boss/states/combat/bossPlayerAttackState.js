@@ -62,7 +62,7 @@ export default class BossPlayerAttackState extends BossRoomState {
         bossBuffOrDebuffSkill(user, user.socket, this.bossRoom);
       }
     });
-
+    this.sendPlayerStatus(this.user);
     this.sendPlayerAction([], skillInfo.effectCode);
 
     await delay(PLAYER_ACTION_DELAY);
