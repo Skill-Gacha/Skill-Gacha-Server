@@ -5,8 +5,6 @@ import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import logger from '../utils/log/logger.js';
 import BossRoomClass from '../classes/models/bossRoomClass.js';
-import Queue from 'bull';
-import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
 
 class SessionManager {
   constructor() {
