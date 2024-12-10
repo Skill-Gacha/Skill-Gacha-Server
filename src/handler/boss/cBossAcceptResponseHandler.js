@@ -11,6 +11,7 @@ import Monster from '../../classes/models/monsterClass.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
 import QueueManager from '#managers/queueManager.js';
+import logger from '../../utils/log/logger.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 const BOSS_NUMBER = 28;
@@ -23,7 +24,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
   const { accept } = payload;
 
   if (!user) {
-    console.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
+    logger.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
     return;
   }
 
@@ -106,7 +107,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       );
     }
   } catch (error) {
-    console.error('cBossAcceptResponseHandler: 오류입니다.', error);
+    logger.error('cBossAcceptResponseHandler: 오류입니다.', error);
   }
 };
 

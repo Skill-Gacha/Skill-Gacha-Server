@@ -5,6 +5,7 @@ import { delay } from '../../../../utils/delay.js';
 import BossActionState from '../action/bossActionState.js';
 import BossRoomState from '../base/bossRoomState.js';
 import BossEnemyAttackState from '../combat/bossEnemyAttackState.js';
+import logger from '../../../../utils/log/logger.js';
 
 export default class BossTurnChangeState extends BossRoomState {
   async enter() {
@@ -13,7 +14,7 @@ export default class BossTurnChangeState extends BossRoomState {
     let currentIdx = this.users.findIndex((user) => user.id === this.user.id);
 
     if (currentIdx === -1) {
-      console.error('존재하지 않는 유저입니다.');
+      logger.error('bossTurnChangeState: 존재하지 않는 유저입니다.');
       return;
     }
 
