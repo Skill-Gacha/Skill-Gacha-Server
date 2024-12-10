@@ -20,6 +20,7 @@ import {
 } from '../../db/redis/itemService.js';
 import logger from '../../utils/log/logger.js';
 import SessionManager from '#managers/sessionManager.js';
+import Position from '../../classes/models/positionClass.js';
 
 const SKILL_OFFSET = 1000;
 
@@ -106,6 +107,8 @@ const handleExistingUser = async (user, nickname, chosenElement) => {
       } else {
         user.items = itemsFromRedis;
       }
+
+      user.position = new Position(0, 0, 0, 0);
     }
   } catch (error) {
     logger.error(`cEnterHandler: handleExistingUser 에러; 유저 ID: ${user.id}:`, error);
