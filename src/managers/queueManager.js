@@ -30,8 +30,7 @@ class QueueManager {
   // **매칭 큐 관리 (유저 ID만 저장)**
   async addMatchingQueue(user, maxPlayer, queueType) {
     const matchingQueue = this.getMatchingQueue(queueType);
-    const matchingQueueJobs = await matchingQueue.getJobs('waiting');
-    const existingUser = matchingQueueJobs.find((job) => job.data.id === user.id);
+    const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
 
     if (existingUser) {
       logger.info('이미 매칭중인 유저입니다.');
@@ -45,9 +44,18 @@ class QueueManager {
     logger.info('매칭큐에 유저를 추가합니다.');
     const updateWaitingJobs = await matchingQueue.getJobs('waiting');
 
-    // 매칭 조건 충족 시 유저 ID 목록 반환(보스)
-    if (updateWaitingJobs.length >= maxPlayer && queueType === 'boss') {
-      const matchedJobs = updateWaitingJobs.splice(0, maxPlayer);
+    // 매칭 조건 충족 시 유저 ID 목록 반환
+    if (queueType === 'boss') {
+      return this.handleBossMatching(updateWaitingJobs, maxPlayer);
+    } else if (queueType === 'pvp') {
+      return this.handlePvpMatching(updateWaitingJobs, maxPlayer);
+    }
+  }
+
+  // BOSS 매칭
+  async handleBossMatching(waitingJobs, maxPlayer) {
+    if (waitingJobs.length >= maxPlayer) {
+      const matchedJobs = waitingJobs.splice(0, maxPlayer);
       const matchedUserIds = matchedJobs.map((job) => job.data.id);
 
       await Promise.all(
@@ -65,12 +73,15 @@ class QueueManager {
         }),
       );
 
-      // 여기서는 user 객체를 반환하지 않고, userId 배열을 반환
       return matchedUserIds.map((userId) => ({ id: userId }));
     }
-    // PVP
-    if (updateWaitingJobs.length >= maxPlayer) {
-      const matchedJobs = updateWaitingJobs.splice(0, maxPlayer);
+    return null;
+  }
+
+  // PVP 매칭
+  async handlePvpMatching(waitingJobs, maxPlayer) {
+    if (waitingJobs.length >= maxPlayer) {
+      const matchedJobs = waitingJobs.splice(0, maxPlayer);
       const matchedUserIds = matchedJobs.map((job) => job.data.id);
 
       await Promise.all(
@@ -81,17 +92,20 @@ class QueueManager {
 
       return matchedUserIds.map((userId) => ({ id: userId }));
     }
-
     return null;
   }
 
-  async removeMatchingQueue(user, queueType = 'pvp') {
-    const matchingQueue = this.getMatchingQueue(queueType);
-    const matchingQueueJobs = await matchingQueue.getJobs('waiting');
-    const userJob = matchingQueueJobs.find((job) => job.data.id === user.id);
+  async isUserAlreadyInQueue(queue, userId) {
+    const matchingQueueJobs = await queue.getJobs('waiting');
+    return matchingQueueJobs.find((job) => job.data.id === userId);
+  }
 
-    if (userJob) {
-      await userJob.remove();
+  async removeMatchingQueue(user, queueType) {
+    const matchingQueue = this.getMatchingQueue(queueType);
+    const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
+
+    if (existingUser) {
+      await existingUser.remove();
       logger.info('매칭큐에서 유저를 지웠습니다.');
       return true;
     }
@@ -151,7 +165,7 @@ class QueueManager {
         await Promise.all(jobsToRemove.map((job) => job.remove()));
 
         if (jobsToRemove.length > 0) {
-          logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 완료`);
+          logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 `);
         }
       }
     }, this.cleansingInterval);
