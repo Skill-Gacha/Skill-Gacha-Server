@@ -5,8 +5,13 @@ import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { delay } from '../../../../utils/delay.js';
 import { AREASKILL, BOSS_STATUS, DEBUFF } from '../../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
-import { bossBuffOrDebuffSkill, buffSkill } from '../../../../utils/battle/battle.js';
+import {
+  checkEnemyResist,
+  skillEnhancement,
+  updateDamage,
+} from '../../../../utils/battle/calculate.js';
+import { buffSkill } from '../../../../utils/battle/battle.js';
+import { bossBuffOrDebuffSkill } from '../../bossUtils/bossBuffs.js';
 import BossTurnChangeState from '../turn/bossTurnChangeState.js';
 import BossPhaseState from '../phase/bossPhaseState.js';
 import BossMonsterDeadState from '../result/bossMonsterDeadState.js';
@@ -216,6 +221,5 @@ export default class BossPlayerAttackState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }
