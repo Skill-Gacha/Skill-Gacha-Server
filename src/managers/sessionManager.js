@@ -3,11 +3,8 @@
 import Town from '../classes/models/townClass.js';
 import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
-import { MAX_PLAYER } from '../constants/pvp.js';
 import logger from '../utils/log/logger.js';
 import BossRoomClass from '../classes/models/bossRoomClass.js';
-import Queue from 'bull';
-import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
 
 class SessionManager {
   constructor() {
@@ -18,18 +15,6 @@ class SessionManager {
       pvpRooms: new Map(),
       bossRooms: new Map(),
     };
-
-    // Bull 큐 초기화 (유저 ID만 저장)
-    this.pvpMatchingQueue = new Queue('pvpMatchingQueue', {
-      redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
-    });
-    this.bossMatchingQueue = new Queue('bossMatchingQueue', {
-      redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
-    });
-
-    // 기존 acceptQueue 배열 대신 Bull Queue로 일관성 확보가 필요하다면 여기에 추가 가능.
-    // 여기서는 일단 삭제 또는 주석 처리.
-    // this.acceptQueue = [];
 
     this.users = new Map(); // userId -> user
     this.socketToUser = new Map(); // socket -> user
@@ -186,71 +171,6 @@ class SessionManager {
     });
   }
 
-  // **매칭 큐 관리 (유저 ID만 저장)**
-  async addMatchingQueue(user, maxPlayer = MAX_PLAYER, queueType = 'pvp') {
-    const matchingQueue = this.getMatchingQueue(queueType);
-    const waitingJobs = await matchingQueue.getJobs('waiting');
-    const existingUser = waitingJobs.find((job) => job.data.id === user.id);
-
-    if (existingUser) {
-      logger.info('이미 매칭중인 유저입니다.');
-      return null;
-    }
-
-    user.matchingAddedAt = Date.now();
-
-    // 유저 ID만 큐에 추가
-    await matchingQueue.add({ id: user.id });
-    const updateWaitingJobs = await matchingQueue.getJobs('waiting');
-
-    // 매칭 조건 충족 시 유저 ID 목록 반환
-    if (updateWaitingJobs.length >= maxPlayer) {
-      const matchedJobs = updateWaitingJobs.splice(0, maxPlayer);
-      const matchedUserIds = matchedJobs.map((job) => job.data.id);
-
-      await Promise.all(
-        matchedJobs.map(async (job) => {
-          await job.remove();
-        })
-      );
-
-      // 여기서는 user 객체를 반환하지 않고, userId 배열을 반환
-      return matchedUserIds.map((userId) => ({ id: userId }));
-    }
-
-    return null;
-  }
-
-  async removeMatchingQueue(user, queueType = 'pvp') {
-    const matchingQueue = this.getMatchingQueue(queueType);
-    const waitingJobs = await matchingQueue.getJobs('waiting');
-    const userJob = waitingJobs.find((job) => job.data.id === user.id);
-
-    if (userJob) {
-      await userJob.remove();
-      logger.info('매칭큐에서 유저를 지웠습니다.');
-      return true;
-    }
-    logger.info('매칭큐에 유저가 존재하지 않습니다.');
-    return false;
-  }
-
-  // 필요하다면 acceptQueue도 Bull 큐로 동일하게 관리
-  // async removeAcceptQueueInUser(user) {
-  //   // 이 부분은 acceptQueue를 Bull로 변경하거나, 필요 없다면 제거
-  // }
-
-  getMatchingQueue(queueType) {
-    if (queueType === 'boss') {
-      return this.bossMatchingQueue;
-    } else if (queueType === 'pvp') {
-      return this.pvpMatchingQueue;
-    } else {
-      logger.error(`유효하지 않은 큐 타입: ${queueType}`);
-      return [];
-    }
-  }
-
   // PvP, BossRoom 조회 로직은 동일
   getPvpByUser(user) {
     for (let pvp of this.sessions.pvpRooms.values()) {
@@ -340,28 +260,6 @@ class SessionManager {
           this.removeUser(userId);
         }
       });
-
-      for (const queueType of ['pvp', 'boss']) {
-        const matchingQueue = this.getMatchingQueue(queueType);
-        const waitingJobs = await matchingQueue.getJobs('waiting');
-
-        const jobsToRemove = waitingJobs.filter((job) => {
-          const { id: uid } = job.data;
-          const u = this.getUser(uid);
-          if (!u) return true; // 유저가 없으면 제거
-          if (now - u.matchingAddedAt > this.userTimeout) {
-            logger.info(`매칭 큐에서 사용자 ${uid} 제거`);
-            return true;
-          }
-          return false;
-        });
-
-        await Promise.all(jobsToRemove.map((job) => job.remove()));
-
-        if (jobsToRemove.length > 0) {
-          logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 완료`);
-        }
-      }
     }, this.cleansingInterval);
   }
 

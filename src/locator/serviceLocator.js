@@ -18,7 +18,10 @@ class ServiceLocator {
 
   get(ClassConstructor) {
     if (!this.services.has(ClassConstructor)) {
-      throw new CustomError(ErrorCodes.INVALID_SERVICE_LOCATOR, `"${ClassConstructor.name}"는 Locator에 등록돼있지 않습니다.`);
+      throw new CustomError(
+        ErrorCodes.INVALID_SERVICE_LOCATOR,
+        `"${ClassConstructor.name}"는 Locator에 등록돼있지 않습니다.`,
+      );
     }
     return this.services.get(ClassConstructor);
   }
