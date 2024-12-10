@@ -10,6 +10,7 @@ import { getGameAssets } from '../../init/loadAssets.js';
 import Monster from '../../classes/models/monsterClass.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
+import QueueManager from '#managers/queueManager.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 const BOSS_NUMBER = 28;
@@ -17,6 +18,7 @@ const BOSS_IDX = 0;
 
 export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
   const sessionManager = serviceLocator.get(SessionManager);
+  const queueManager = serviceLocator.get(QueueManager);
   const user = sessionManager.getUserBySocket(socket);
   const { accept } = payload;
 
@@ -28,9 +30,17 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
   try {
     // 수락했을 때 처리
     if (accept) {
-      const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
+      const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
-      const [playerA, playerB, playerC] = matchedPlayers;
+      const [playerA, playerB, playerC] = matchedPlayers.map((player) =>
+        sessionManager.getUser(player.id),
+      );
+      const actualMatchedPlayers = [playerA, playerB, playerC];
+
+      for (const user of actualMatchedPlayers) {
+        await queueManager.removeAcceptQueueInUser(user);
+      }
+
       const monsterData = getGameAssets().MonsterData.data;
       const bossMonster = monsterData[BOSS_NUMBER];
       const bossMonsterInstance = new Monster(
@@ -53,7 +63,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         monsterName: bossMonster.monsterName,
         monsterHp: bossMonster.monsterHp,
       };
-      matchedPlayers.forEach((user) => {
+      actualMatchedPlayers.forEach((user) => {
         sDespawnHandler(user);
         sendBossMatchNotification(
           user,
@@ -80,18 +90,23 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         partyList: [],
       });
 
-      sessionManager.removeAcceptQueueInUser(user);
+      queueManager.removeAcceptQueueInUser(user);
       user.socket.write(failResponse);
 
       // 먼저 수락한 유저도 매칭큐에서 제거 및 입장 실패 패킷 전송
-      const acceptQueue = sessionManager.getAcceptQueue();
-      for (let i = 0; i < acceptQueue.length; i++) {
-        const user = acceptQueue[i];
-        user.socket.write(failResponse);
-        sessionManager.removeMatchingQueue(user, 'boss');
-        sessionManager.removeAcceptQueueInUser(user);
-        i--;
-      }
+      const acceptQueue = queueManager.getAcceptQueue();
+      const waitingJobs = await acceptQueue.getJobs('waiting');
+
+      await Promise.all(
+        waitingJobs.map(async (job) => {
+          const userId = job.data.id;
+          const user = sessionManager.getUser(userId);
+          user.socket.write(failResponse); // 사용자에게 실패 응답 전송
+
+          await queueManager.removeMatchingQueue(user, 'boss');
+          await queueManager.removeAcceptQueueInUser(user);
+        }),
+      );
     }
   } catch (error) {
     console.error('cBossAcceptResponseHandler: 오류입니다.', error);

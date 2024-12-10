@@ -10,6 +10,7 @@ import { MAX_PLAYER } from '../../constants/pvp.js';
 import logger from '../../utils/log/logger.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
+import QueueManager from '#managers/queueManager.js';
 
 const DUNGEON_CODE_BASE = 5000;
 const DUNGEON_CODE_RANGE = 3;
@@ -17,6 +18,7 @@ const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기', '�
 
 export const cPlayerMatchHandler = async ({ socket }) => {
   const sessionManager = serviceLocator.get(SessionManager);
+  const queueManager = serviceLocator.get(QueueManager);
   const user = sessionManager.getUserBySocket(socket);
 
   if (!user) {
@@ -26,12 +28,18 @@ export const cPlayerMatchHandler = async ({ socket }) => {
 
   socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
 
-  const matchedPlayers = sessionManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
-  if (!matchedPlayers) return;
+  // matchedPlayers는 [{id: userId}, {id: userId}] 형태
+  const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
+  if (!matchedPlayers) {
+    logger.info('매칭 대기 중입니다.');
+    return;
+  }
 
-  const [playerA, playerB] = matchedPlayers;
+  // 실제 유저 객체 가져오기
+  const matchedUsers = matchedPlayers.map(({ id }) => sessionManager.getUser(id));
+  const [playerA, playerB] = matchedUsers;
+
   const pvpRoom = sessionManager.createPvpRoom(uuidv4());
-
   pvpRoom.addUser(playerA);
   pvpRoom.addUser(playerB);
 
