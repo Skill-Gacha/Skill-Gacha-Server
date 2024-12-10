@@ -20,6 +20,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   const sessionManager = serviceLocator.get(SessionManager);
   const queueManager = serviceLocator.get(QueueManager);
   const user = sessionManager.getUserBySocket(socket);
+  queueManager.removeMatchingQueue(user, 'boss');
 
   if (!user) {
     logger.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
@@ -69,10 +70,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         playerB.nickname,
         lastKoreanA,
         isPlayerAFirstAttack,
-        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.'
+        isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.',
       ),
       isPlayerAFirstAttack,
-      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false]
+      isPlayerAFirstAttack ? [true, true, true, true] : [false, false, false, false],
     ),
   });
 
@@ -85,10 +86,10 @@ export const cPlayerMatchHandler = async ({ socket }) => {
         playerA.nickname,
         lastKoreanB,
         isPlayerBFirstAttack,
-        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.'
+        isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.',
       ),
       isPlayerBFirstAttack,
-      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false]
+      isPlayerBFirstAttack ? [true, true, true, true] : [false, false, false, false],
     ),
   });
 
