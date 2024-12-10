@@ -2,8 +2,8 @@
 
 import {
   PHASE_ONE_TURN_TIMEOUT_LIMIT,
-  PHASE_TWO_TURN_TIMEOUT_LIMIT,
   PHASE_THREE_TURN_TIMEOUT_LIMIT,
+  PHASE_TWO_TURN_TIMEOUT_LIMIT,
 } from '../../constants/battle.js';
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
@@ -11,7 +11,7 @@ import BaseSession from './baseSession.js';
 import BossTurnChangeState from '../../handler/boss/states/turn/bossTurnChangeState.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import TimerManager from '#managers/timerManager.js';
- 
+
 class BossRoomClass extends BaseSession {
   constructor(bossRoomId) {
     super(bossRoomId);

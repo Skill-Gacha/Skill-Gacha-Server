@@ -11,11 +11,11 @@ export const initLocator = async () => {
     // 세션 매니저
     const sessionManagerInstance = new SessionManager();
     serviceLocator.register(SessionManager, sessionManagerInstance);
-    
+
     // 큐 매니저
     const queueManagerInstance = new QueueManager();
     serviceLocator.register(QueueManager, queueManagerInstance);
-    
+
     // 타이머 매니저
     const timerManagerInstance = new TimerManager();
     serviceLocator.register(TimerManager, timerManagerInstance);

@@ -1,8 +1,8 @@
 import { ITEM_TYPES } from '../../constants/items.js';
-import logger from '../../utils/log/logger.js';
 
 const BASE_ITEM_ID_OFFSET = 4001;
 const STIMPACK_POTION_ID = 4003;
+
 // CRUD
 class Item {
   // itemId에 따른 효과와 개수를 컨트롤 하기 위해 만든 클래스

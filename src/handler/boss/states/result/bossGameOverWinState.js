@@ -33,5 +33,6 @@ export default class BossGameOverWinState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

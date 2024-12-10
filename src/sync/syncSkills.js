@@ -31,7 +31,7 @@ export const syncSkillsToDB = async () => {
           };
           await saveSkillsToDB(nickname, parsedSkills);
         }
-      })
+      }),
     );
 
     // 모든 제한된 비동기 작업 완료 대기

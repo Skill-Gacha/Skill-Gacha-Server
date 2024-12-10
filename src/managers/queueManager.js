@@ -166,9 +166,8 @@ class QueueManager {
 
         if (jobsToRemove.length > 0) {
           logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 `);
-        }
-        else {
-          logger.info(`${queueType.toUpperCase()}큐가 비어있거나 타임아웃인 유저가 존재하지 않아 클렌징이 수행되지 않았습니다.`)
+        } else {
+          logger.info(`${queueType.toUpperCase()}큐가 비어있거나 타임아웃인 유저가 존재하지 않아 클렌징이 수행되지 않았습니다.`);
         }
       }
     }, this.cleansingInterval);

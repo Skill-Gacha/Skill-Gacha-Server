@@ -13,11 +13,7 @@ import { getSkillsFromRedis, saveSkillsToRedis } from '../../db/redis/skillServi
 import { saveRatingToDB } from '../../db/rating/ratingDb.js';
 import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
-import {
-  getItemsFromRedis,
-  initializeItems,
-  saveItemsToRedis,
-} from '../../db/redis/itemService.js';
+import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
 import logger from '../../utils/log/logger.js';
 import SessionManager from '#managers/sessionManager.js';
 import Position from '../../classes/models/positionClass.js';
@@ -107,7 +103,7 @@ const handleExistingUser = async (user, nickname, chosenElement) => {
       } else {
         user.items = itemsFromRedis;
       }
-      
+
       user.position = new Position(0, 0, 0, 0);
     }
   } catch (error) {
