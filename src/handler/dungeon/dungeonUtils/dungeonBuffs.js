@@ -72,16 +72,6 @@ export const useBuffSkill = (user, socket, dungeon) => {
     case 4:
       user.stat.protect = true;
       try {
-        users.forEach((u) => {
-          u.socket.write(
-            createResponse(PacketType.S_BossPlayerStatusNotification, {
-              playerId: playerIds,
-              hp: hps,
-              mp: mps,
-            }),
-          );
-        });
-
         socket.write(
           createResponse(PacketType.S_BattleLog, {
             battleLog: {
