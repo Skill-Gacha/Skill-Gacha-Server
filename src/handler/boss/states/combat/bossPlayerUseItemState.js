@@ -21,7 +21,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {
-      console.error(`PvpUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
+      console.error(`bossPlayerUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
       invalidResponseCode(this.user.socket);
       return;
     }

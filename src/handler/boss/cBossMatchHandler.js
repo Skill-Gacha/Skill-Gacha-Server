@@ -8,6 +8,7 @@ import SessionManager from '#managers/sessionManager.js';
 import logger from '../../utils/log/logger.js';
 import QueueManager from '#managers/queueManager.js';
 
+
 export const cBossMatchHandler = async ({ socket, payload }) => {
   const sessionManager = serviceLocator.get(SessionManager);
   const queueManager = serviceLocator.get(QueueManager);

@@ -40,7 +40,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
       for (const user of actualMatchedPlayers) {
         await queueManager.removeAcceptQueueInUser(user);
       }
-
+      
       const monsterData = getGameAssets().MonsterData.data;
       const bossMonster = monsterData[BOSS_NUMBER];
       const bossMonsterInstance = new Monster(
