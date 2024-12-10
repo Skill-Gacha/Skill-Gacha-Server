@@ -113,6 +113,7 @@ class BossRoomClass extends BaseSession {
     // 시간 초과 메시지 전송
     const timeoutMessage = createResponse(PacketType.S_BossBattleLog, { battleLog });
     currentPlayer.socket.write(timeoutMessage);
+    currentPlayer.completeTurn = true;
 
     // `BossTurnChangeState`로 상태 전환하여 턴을 넘김
     this.currentState = new BossTurnChangeState(this, currentPlayer);
