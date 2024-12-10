@@ -8,6 +8,7 @@ import { PacketType } from '../../../../constants/header.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import { ITEM_TYPES } from '../../../../constants/items.js';
 import BossTurnChangeState from '../turn/bossTurnChangeState.js';
+import logger from '../../../../utils/log/logger.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 const BASE_ITEM_CODE_OFFSET = 4000;
@@ -21,7 +22,7 @@ export default class BossPlayerUseItemState extends BossRoomState {
     const itemEffect = ITEM_TYPES[selectedItemId];
 
     if (!itemEffect) {
-      console.error(`bossPlayerUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
+      logger.error(`bossPlayerUseItemState: 존재하지 않는 아이템 ID ${selectedItemId}`);
       invalidResponseCode(this.user.socket);
       return;
     }

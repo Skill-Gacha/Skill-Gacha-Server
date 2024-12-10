@@ -5,11 +5,12 @@ import { createResponse } from '../../utils/response/createResponse.js';
 import { PacketType } from '../../constants/header.js';
 import { PVP_TURN_TIMEOUT_LIMIT } from '../../constants/battle.js';
 import PvpIncreaseManaState from '../../handler/pvp/states/turn/pvpIncreaseManaState.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import TimerManager from '#managers/timerManager.js'; // 위에서 만든 timerService import
 
 const PLAYER_A = 0;
 const PLAYER_B = 1;
 
-// 매칭 큐를 통해 게임이 잡힌 유저 2명의 대한 방
 class PvpRoomClass extends BaseSession {
   constructor(pvpId) {
     super(pvpId);
@@ -20,8 +21,8 @@ class PvpRoomClass extends BaseSession {
     this.selectedItem = null;
     this.gameStart = false;
 
-    // 전역 턴 타이머 추가
-    this.turnTimer = null;
+    this.timerMgr = serviceLocator.get(TimerManager);
+    this.turnTimerId = null; // 타이머 식별자
   }
 
   initializeTurn() {
@@ -39,16 +40,16 @@ class PvpRoomClass extends BaseSession {
   // 턴 타이머 시작
   startTurnTimer() {
     this.clearTurnTimer(); // 기존 타이머가 있으면 취소
-    this.turnTimer = setTimeout(() => {
+    this.turnTimerId = this.timerMgr.requestTimer(PVP_TURN_TIMEOUT_LIMIT, () => {
       this.onTurnTimeout();
-    }, PVP_TURN_TIMEOUT_LIMIT);
+    });
   }
 
   // 턴 타이머 취소
   clearTurnTimer() {
-    if (this.turnTimer) {
-      clearTimeout(this.turnTimer);
-      this.turnTimer = null;
+    if (this.turnTimerId) {
+      this.timerMgr.cancelTimer(this.turnTimerId);
+      this.turnTimerId = null;
     }
   }
 

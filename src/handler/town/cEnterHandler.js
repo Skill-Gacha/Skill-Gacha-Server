@@ -107,7 +107,7 @@ const handleExistingUser = async (user, nickname, chosenElement) => {
       } else {
         user.items = itemsFromRedis;
       }
-
+      
       user.position = new Position(0, 0, 0, 0);
     }
   } catch (error) {

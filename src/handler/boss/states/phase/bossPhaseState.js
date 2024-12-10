@@ -6,6 +6,7 @@ import { createResponse } from '../../../../utils/response/createResponse.js';
 import BossRoomState from '../base/bossRoomState.js';
 import { getElementById } from '../../../../init/loadAssets.js';
 import { elementResist } from '../../../../utils/packet/playerPacket.js';
+import logger from '../../../../utils/log/logger.js';
 
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
 const BOSS_MONSTER_MODEL = 2029;
@@ -44,7 +45,7 @@ export default class BossPhaseState extends BossRoomState {
   setBossResistances(boss, randomElement, phase) {
     const chosenElement = getElementById(randomElement);
     if (!chosenElement) {
-      console.error('bossPhaseState: 존재하지 않는 속성 ID입니다.');
+      logger.error('bossPhaseState: 존재하지 않는 속성 ID입니다.');
       return;
     }
 
@@ -73,7 +74,7 @@ export default class BossPhaseState extends BossRoomState {
 
   sendBattleLog(message, socket = null) {
     if (typeof message !== 'string') {
-      console.error('전송할 메시지가 문자열이 아닙니다:', message);
+      logger.error('전송할 메시지가 문자열이 아닙니다:', message);
       return;
     }
 
