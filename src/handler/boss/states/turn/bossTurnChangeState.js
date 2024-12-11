@@ -23,7 +23,7 @@ export default class BossTurnChangeState extends BossRoomState {
     } while (this.user.isDead);
 
     const aliveUsers = this.users.filter((user) => !user.isDead);
-    if (aliveUsers.length !== 0) return;
+    if (aliveUsers.length === 0) return;
     const allComplete = aliveUsers.every((user) => user.completeTurn);
     this.bossRoom.userTurn = this.user;
 
