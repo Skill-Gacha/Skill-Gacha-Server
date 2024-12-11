@@ -233,7 +233,7 @@
       "element": 1004,
       "skillName": "영혼 분쇄",
       "damage": 0,
-      "mana": 80,
+      "mana": 150,
       "effectCode": 3028
     },
     {
@@ -260,7 +260,7 @@
       "element": 1004,
       "skillName": "구원의 손길",
       "damage": 0,
-      "mana": 0,
+      "mana": 100,
       "effectCode": 3031
     }
   ]
