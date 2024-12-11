@@ -9,7 +9,6 @@ import MonsterDeadState from './monsterDeadState.js';
 
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
-import { delay } from '../../../../utils/delay.js';
 import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS, DUNGEON_TURN_OVER_LIMIT } from '../../../../constants/battle.js';
 import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
@@ -18,7 +17,6 @@ import { useBuffSkill } from '../../dungeonUtils/dungeonBuffs.js';
 const ACTION_ANIMATION_CODE = 0;
 const BUFF_SKILL_THRESHOLD = BUFF_SKILL;
 const DEBUFF_SKILL_ID = DEBUFF;
-const PLAYER_ACTION_DELAY = 1000;
 
 export default class PlayerAttackState extends DungeonState {
   constructor(...args) {
@@ -99,7 +97,6 @@ export default class PlayerAttackState extends DungeonState {
 
     this.user.reduceMp(skillInfo.mana);
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
-    await delay(PLAYER_ACTION_DELAY);
 
     // 타이머 매니저를 통해 타이머 설정
     this.timeoutId = this.timerMgr.requestTimer(DUNGEON_TURN_OVER_LIMIT, () => {
