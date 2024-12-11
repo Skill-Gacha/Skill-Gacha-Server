@@ -7,11 +7,12 @@ import { createResponse } from '../../../../utils/response/createResponse.js';
 import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
 import BossPlayerDeadState from './bossPlayerDeadState.js';
 import { checkStopperResist } from '../../../../utils/battle/calculate.js';
-import { delay } from '../../../../utils/delay.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import TimerManager from '#managers/timerManager.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 
 const DEATH_ANIMATION_CODE = 1;
-const ATTACK_DELAY = 2500;
-const DISABLE_BUTTONS = [{ msg: '몬스터가 공격 중', enable: false }];
+const ATTACK_DELAY = 5000;
 const BOSS_INDEX = 0;
 const BOSS_SINGLE_ATTAK = 1;
 const BOSS_AREA_ATTAK = 0;
@@ -19,8 +20,15 @@ const BOSS_CHANGE_STATUS_EFFECT = 3032;
 const BOSS_ATTAK_EFFECT = 3033;
 const BOSS_DOWN_RESIST_EFFECT = 3034;
 const BOSS_BASIC_DAMAGE = 0.5;
+const BUTTON_CONFIRM_ENABLE = [{ msg: '확인', enable: true }];
+const BUTTON_CONFIRM_DISABLE = [{ msg: '확인', enable: false }];
 
 export default class BossEnemyAttackState extends BossRoomState {
+  constructor(...args) {
+    super(...args);
+    this.timeoutId = null;
+    this.timerMgr = serviceLocator.get(TimerManager);
+  }
   async enter() {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ENEMY_ATTACK;
     const boss = this.bossRoom.monsters[BOSS_INDEX];
@@ -42,11 +50,13 @@ export default class BossEnemyAttackState extends BossRoomState {
       }
     }
 
-    await delay(ATTACK_DELAY);
     this.users.forEach((user) => {
       user.stat.protect = false;
     });
-    this.changeState(BossIncreaseManaState);
+
+    this.timeoutId = this.timerMgr.requestTimer(ATTACK_DELAY, () => {
+      this.handleInput(1);
+    });
   }
 
   async bossAttackPlayers(bossMonster) {
@@ -174,12 +184,21 @@ export default class BossEnemyAttackState extends BossRoomState {
         battleLog: {
           msg,
           typingAnimation: false,
-          btns: DISABLE_BUTTONS,
+          btns: this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
         },
       }),
     );
   }
 
   async handleInput(responseCode) {
+    if (responseCode === 1) {
+      if (this.timeoutId) {
+        this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
+        this.timeoutId = null;
+      }
+      this.changeState(BossIncreaseManaState);
+    } else {
+      invalidResponseCode(this.user.socket);
+    }
   }
 }
