@@ -82,7 +82,7 @@ class Item {
   async useHpPotion(user) {
     const existingHp = user.stat.hp;
     user.increaseHpMp(100, 0);
-    this.msg = `MP 회복 포션을 사용하여 MP를 ${user.stat.hp - existingHp} 회복했습니다.`;
+    this.msg = `HP 회복 포션을 사용하여 HP를 ${user.stat.hp - existingHp} 회복했습니다.`;
   }
 
   // Mp 포션 사용 함수
