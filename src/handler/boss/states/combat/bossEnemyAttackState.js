@@ -54,8 +54,9 @@ export default class BossEnemyAttackState extends BossRoomState {
       user.stat.protect = false;
     });
 
+    const updateAliveUsers = this.users.filter((user) => user.stat.hp > 0);
     this.timeoutId = this.timerMgr.requestTimer(ATTACK_DELAY, () => {
-      this.handleInput(1);
+      if (updateAliveUsers.length !== 0) this.handleInput(1);
     });
   }
 
@@ -191,13 +192,12 @@ export default class BossEnemyAttackState extends BossRoomState {
   }
 
   async handleInput(responseCode) {
-    const updateAliveUsers = this.users.filter((user) => user.stat.hp > 0);
     if (responseCode === 1) {
       if (this.timeoutId) {
         this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
         this.timeoutId = null;
       }
-      if (updateAliveUsers.length !== 0) this.changeState(BossIncreaseManaState);
+      this.changeState(BossIncreaseManaState);
     } else {
       invalidResponseCode(this.user.socket);
     }
