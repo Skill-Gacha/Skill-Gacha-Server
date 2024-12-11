@@ -1,7 +1,6 @@
 // src/handler/boss/states/turn/bossTurnChangeState.js
 
 import { BOSS_STATUS } from '../../../../constants/battle.js';
-import { delay } from '../../../../utils/delay.js';
 import BossActionState from '../action/bossActionState.js';
 import BossRoomState from '../base/bossRoomState.js';
 import BossEnemyAttackState from '../combat/bossEnemyAttackState.js';
@@ -30,7 +29,6 @@ export default class BossTurnChangeState extends BossRoomState {
     if (allComplete) {
       this.users.forEach((user) => (user.completeTurn = false));
       this.bossRoom.clearTurnTimer();
-      await delay(1000);
       this.changeState(BossEnemyAttackState);
       return;
     }
@@ -40,6 +38,5 @@ export default class BossTurnChangeState extends BossRoomState {
     this.changeState(BossActionState);
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }

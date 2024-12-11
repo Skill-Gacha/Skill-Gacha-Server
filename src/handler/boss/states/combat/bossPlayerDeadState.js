@@ -4,10 +4,8 @@ import { BOSS_STATUS } from '../../../../constants/battle.js';
 import BossRoomState from '../base/bossRoomState.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
-import { delay } from '../../../../utils/delay.js';
-import BossGameOverLoseState from '../result/bossGameOverLoseState.js';
+import BossPartyFailState from './bossPartyFailState.js';
 
-const GAMEOVER_DELAY = 4000;
 const BOSS_USER_COUNT = 3;
 
 export default class BossPlayerDeadState extends BossRoomState {
@@ -18,9 +16,7 @@ export default class BossPlayerDeadState extends BossRoomState {
       battleLog: {
         msg: `체력이 0이 되어 사망하였습니다. \n팀원들을 믿고 기다리세요`,
         typingAnimation: false,
-        btns: [
-          { msg: '화이팅', enable: false },
-        ],
+        btns: [{ msg: '화이팅', enable: false }],
       },
     });
 
@@ -32,11 +28,10 @@ export default class BossPlayerDeadState extends BossRoomState {
     });
 
     if (deadUsers.length === BOSS_USER_COUNT) {
-      await delay(GAMEOVER_DELAY);
-      this.changeState(BossGameOverLoseState);
+      this.bossRoom.clearTurnTimer();
+      this.changeState(BossPartyFailState);
     }
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }

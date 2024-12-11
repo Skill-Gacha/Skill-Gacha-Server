@@ -23,7 +23,7 @@ export default class BossGameOverWinState extends BossRoomState {
 
     const winResponse = createResponse(PacketType.S_ScreenText, {
       screenText: {
-        msg: '축하드립니다 Null Dragon을 무찌르는데 성공하셨습니다.',
+        msg: '축하합니다. Null Dragon을 무찌르는데 성공하셨습니다.',
         typingAnimation: false,
       },
     });
@@ -33,6 +33,5 @@ export default class BossGameOverWinState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }
