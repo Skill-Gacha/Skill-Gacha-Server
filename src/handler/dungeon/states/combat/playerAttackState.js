@@ -1,12 +1,16 @@
 ﻿// src/handler/dungeon/states/playerAttackState.js
 
+import serviceLocator from '#locator/serviceLocator.js';
+import TimerManager from '#managers/timerManager.js'; // 중앙 타이머 서비스 임포트
+
 import DungeonState from '../base/dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';
 import MonsterDeadState from './monsterDeadState.js';
+
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { delay } from '../../../../utils/delay.js';
-import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS } from '../../../../constants/battle.js';
+import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS, DUNGEON_TURN_OVER_LIMIT } from '../../../../constants/battle.js';
 import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { useBuffSkill } from '../../dungeonUtils/dungeonBuffs.js';
@@ -17,6 +21,12 @@ const DEBUFF_SKILL_ID = DEBUFF;
 const PLAYER_ACTION_DELAY = 1000;
 
 export default class PlayerAttackState extends DungeonState {
+  constructor(...args) {
+    super(...args);
+    this.timerMgr = serviceLocator.get(TimerManager); // 타이머 매니저 인스턴스 가져오기
+    this.timeoutId = null; // 타이머 식별자 초기화
+  }
+
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.PLAYER_ATTACK;
 
@@ -59,8 +69,11 @@ export default class PlayerAttackState extends DungeonState {
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     this.sendPlayerAction([], skillInfo.effectCode);
-    await delay(PLAYER_ACTION_DELAY);
-    this.changeState(EnemyAttackState);
+
+    // 타이머 매니저를 통해 타이머 설정
+    this.timeoutId = this.timerMgr.requestTimer(DUNGEON_TURN_OVER_LIMIT, () => {
+      this.changeState(EnemyAttackState);
+    });
   }
 
   async handleAreaSkill(skillInfo, disableButtons) {
@@ -88,16 +101,19 @@ export default class PlayerAttackState extends DungeonState {
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
     await delay(PLAYER_ACTION_DELAY);
 
-    if (skillInfo.id !== DEBUFF_SKILL_ID) {
-      this.user.stat.buff = null;
-    }
+    // 타이머 매니저를 통해 타이머 설정
+    this.timeoutId = this.timerMgr.requestTimer(DUNGEON_TURN_OVER_LIMIT, () => {
+      if (skillInfo.id !== DEBUFF_SKILL_ID) {
+        this.user.stat.buff = null;
+      }
 
-    const allMonstersDead = this.checkAllMonstersDead();
-    if (allMonstersDead) {
-      this.changeState(MonsterDeadState);
-    } else {
-      this.changeState(EnemyAttackState);
-    }
+      const allMonstersDead = this.checkAllMonstersDead();
+      if (allMonstersDead) {
+        this.changeState(MonsterDeadState);
+      } else {
+        this.changeState(EnemyAttackState);
+      }
+    });
   }
 
   async handleSingleSkill(skillInfo, disableButtons) {
@@ -125,16 +141,18 @@ export default class PlayerAttackState extends DungeonState {
         : `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`;
 
     this.sendBattleLog(battleLogMsg, disableButtons);
-    await delay(PLAYER_ACTION_DELAY);
 
-    this.user.stat.buff = null;
+    // 타이머 매니저를 통해 타이머 설정
+    this.timeoutId = this.timerMgr.requestTimer(DUNGEON_TURN_OVER_LIMIT, () => {
+      this.user.stat.buff = null;
 
-    if (targetMonster.monsterHp <= 0) {
-      targetMonster.isDead = true;
-      this.changeState(MonsterDeadState);
-    } else {
-      this.changeState(EnemyAttackState);
-    }
+      if (targetMonster.monsterHp <= 0) {
+        targetMonster.isDead = true;
+        this.changeState(MonsterDeadState);
+      } else {
+        this.changeState(EnemyAttackState);
+      }
+    });
   }
 
   getAliveMonsters() {
