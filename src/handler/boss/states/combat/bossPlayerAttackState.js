@@ -20,6 +20,8 @@ import serviceLocator from '#locator/serviceLocator.js';
 const BOSS_TURN_OVER_LIMIT = 2000;
 const ACTION_ANIMATION_CODE = 0;
 const BOSS_INDEX = 0;
+const BOSS_PHASE_TWO_HP = 3000;
+const BOSS_PHASE_THREE_HP = 1500;
 
 export default class BossPlayerAttackState extends BossRoomState {
   constructor(...args) {
@@ -204,10 +206,10 @@ export default class BossPlayerAttackState extends BossRoomState {
   }
 
   updateBossPhase(boss) {
-    if (boss.monsterHp <= 4000 && this.bossRoom.phase === 1) {
+    if (boss.monsterHp <= BOSS_PHASE_TWO_HP && this.bossRoom.phase === 1) {
       this.bossRoom.phase = 2;
       this.changeState(BossPhaseState);
-    } else if (boss.monsterHp <= 2000 && this.bossRoom.phase === 2) {
+    } else if (boss.monsterHp <= BOSS_PHASE_THREE_HP && this.bossRoom.phase === 2) {
       this.bossRoom.phase = 3;
       this.changeState(BossPhaseState);
     }
