@@ -2,7 +2,7 @@
 
 import Position from './positionClass.js';
 import Stat from './statClass.js';
-import Item from '../Item/itemClass.js';
+import Item from '../item/itemClass.js';
 
 class User {
   constructor(socket, id, element, nickname, maxHp, maxMp, gold, stone, resists) {

@@ -1,6 +1,4 @@
-﻿version: '3.8'
-
-services:
+﻿services:
   nodejs:
     build: .
     ports:
@@ -12,12 +10,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      mysqld_exporter:
-        condition: service_healthy
-      redis_exporter:
-        condition: service_healthy
-      node_exporter:
-        condition: service_healthy
+#      mysqld_exporter:
+#        condition: service_healthy
+#      redis_exporter:
+#        condition: service_healthy
+#      node_exporter:
+#        condition: service_healthy
     restart: on-failure
     networks:
       - app-network

@@ -44,7 +44,8 @@ export default class RewardState extends DungeonState {
     let msg = `Gold가 ${gold}원 증가하였습니다.\n강화석 ${stone}개를 얻었습니다.\n아래 스킬 중 1개의 스킬을 선택하여 스킬을 획득하세요.`;
 
     if (item !== null) {
-      const userHasItem = this.user.items.find((i) => i.itemId === item);
+      const userInven = this.user.inventory;
+      const userHasItem = userInven.items.find((i) => i.itemId === item);
       if (userHasItem && userHasItem.count !== 1 && userHasItem.count === 0) {
         msg += `\n일정 확률로 아이템을 획득하였습니다!`;
         try {
