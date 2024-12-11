@@ -144,7 +144,6 @@ export default class PlayerAttackState extends DungeonState {
       this.user.stat.buff = null;
 
       if (targetMonster.monsterHp <= 0) {
-        targetMonster.isDead = true;
         this.changeState(MonsterDeadState);
       } else {
         this.changeState(EnemyAttackState);
