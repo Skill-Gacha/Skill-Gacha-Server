@@ -11,6 +11,7 @@ import BaseSession from './baseSession.js';
 import BossTurnChangeState from '../../handler/boss/states/turn/bossTurnChangeState.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import TimerManager from '#managers/timerManager.js';
+import logger from '../../utils/log/logger.js';
 
 class BossRoomClass extends BaseSession {
   constructor(bossRoomId) {
@@ -67,7 +68,7 @@ class BossRoomClass extends BaseSession {
         timeoutLimit = PHASE_THREE_TURN_TIMEOUT_LIMIT;
         break;
       default:
-        console.error(`${this.phase} : 현재 페이즈 값을 찾지 못합니다.`);
+        logger.error(`${this.phase} : 현재 페이즈 값을 찾지 못합니다.`);
         timeoutLimit = PHASE_ONE_TURN_TIMEOUT_LIMIT; // 기본값 설정
     }
 
