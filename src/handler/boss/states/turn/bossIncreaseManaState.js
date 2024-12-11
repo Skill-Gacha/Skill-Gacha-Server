@@ -84,23 +84,13 @@ export default class BossIncreaseManaState extends BossRoomState {
   }
 
   createBattleLogResponse(msg, user) {
-    if (this.user === user) {
-      return createResponse(PacketType.S_BossBattleLog, {
-        battleLog: {
-          msg,
-          typingAnimation: false,
-          btns: BUTTON_CONFIRM,
-        },
-      });
-    } else {
-      return createResponse(PacketType.S_BossBattleLog, {
-        battleLog: {
-          msg,
-          typingAnimation: false,
-          btns: [],
-        },
-      });
-    }
+    return createResponse(PacketType.S_BossBattleLog, {
+      battleLog: {
+        msg,
+        typingAnimation: false,
+        btns: this.user === user ? BUTTON_CONFIRM : [],
+      },
+    });
   }
 
   async handleInput(responseCode) {
