@@ -13,7 +13,8 @@ const HP_RECOVERY_MIN = 5;
 const HP_RECOVERY_MAX = 10;
 const MP_RECOVERY_MIN = 5;
 const MP_RECOVERY_MAX = 10;
-const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
+const BUTTON_CONFIRM_ENABLE = [{ msg: '확인', enable: true }];
+const BUTTON_CONFIRM_DISABLE = [{ msg: '확인', enable: false }];
 
 export default class BossIncreaseManaState extends BossRoomState {
   constructor(...args) {
@@ -88,7 +89,7 @@ export default class BossIncreaseManaState extends BossRoomState {
       battleLog: {
         msg,
         typingAnimation: false,
-        btns: this.user === user ? BUTTON_CONFIRM : [],
+        btns: this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
       },
     });
   }
@@ -108,7 +109,7 @@ export default class BossIncreaseManaState extends BossRoomState {
             battleLog: {
               msg: '다음차례로 넘어갑니다.',
               typingAnimation: false,
-              btns: [{ msg: '확인', enable: false }],
+              btns: BUTTON_CONFIRM_DISABLE,
             },
           }),
         );
