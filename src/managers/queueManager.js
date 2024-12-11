@@ -28,26 +28,30 @@ class QueueManager {
 
   // **매칭 큐 관리 (유저 ID만 저장)**
   async addMatchingQueue(user, maxPlayer, queueType) {
-    const matchingQueue = this.getMatchingQueue(queueType);
-    const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
+    try {
+      const matchingQueue = this.getMatchingQueue(queueType);
+      const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
 
-    if (existingUser) {
-      logger.info('이미 매칭중인 유저입니다.');
-      return null;
-    }
+      if (existingUser) {
+        logger.info('이미 매칭중인 유저입니다.');
+        return null;
+      }
 
-    user.matchingAddedAt = Date.now();
+      user.matchingAddedAt = Date.now();
 
-    // 유저 ID만 큐에 추가
-    await matchingQueue.add({ id: user.id });
-    logger.info('매칭큐에 유저를 추가합니다.');
-    const updateWaitingJobs = await matchingQueue.getJobs('waiting');
+      // 유저 ID만 큐에 추가
+      await matchingQueue.add({ id: user.id });
+      logger.info('매칭큐에 유저를 추가합니다.');
+      const updateWaitingJobs = await matchingQueue.getJobs('waiting');
 
-    // 매칭 조건 충족 시 유저 ID 목록 반환
-    if (queueType === 'boss') {
-      return this.handleBossMatching(updateWaitingJobs, maxPlayer);
-    } else if (queueType === 'pvp') {
-      return this.handlePvpMatching(updateWaitingJobs, maxPlayer);
+      // 매칭 조건 충족 시 유저 ID 목록 반환
+      if (queueType === 'boss') {
+        return this.handleBossMatching(updateWaitingJobs, maxPlayer);
+      } else if (queueType === 'pvp') {
+        return this.handlePvpMatching(updateWaitingJobs, maxPlayer);
+      }
+    } catch (error) {
+      logger.error('매칭큐 추가 중 오류 발생:', error);
     }
   }
 
@@ -100,16 +104,20 @@ class QueueManager {
   }
 
   async removeMatchingQueue(user, queueType) {
-    const matchingQueue = this.getMatchingQueue(queueType);
-    const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
+    try {
+      const matchingQueue = this.getMatchingQueue(queueType);
+      const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
 
-    if (existingUser) {
-      await existingUser.remove();
-      logger.info('매칭큐에서 유저를 지웠습니다.');
-      return true;
+      if (existingUser) {
+        await existingUser.remove();
+        logger.info('매칭큐에서 유저를 지웠습니다.');
+        return true;
+      }
+      logger.info('매칭큐에 유저가 존재하지 않습니다.');
+      return false;
+    } catch (error) {
+      logger.error('매칭큐 추가 중 오류 발생:', error);
     }
-    logger.info('매칭큐에 유저가 존재하지 않습니다.');
-    return false;
   }
 
   getAcceptQueue() {
@@ -167,7 +175,9 @@ class QueueManager {
         if (jobsToRemove.length > 0) {
           logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 `);
         } else {
-          logger.info(`${queueType.toUpperCase()}큐가 비어있거나 타임아웃인 유저가 존재하지 않아 클렌징이 수행되지 않았습니다.`);
+          logger.info(
+            `${queueType.toUpperCase()}큐가 비어있거나 타임아웃인 유저가 존재하지 않아 클렌징이 수행되지 않았습니다.`,
+          );
         }
       }
     }, this.cleansingInterval);

@@ -3,20 +3,31 @@
 import BossRoomState from '../base/bossRoomState.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
-import { delay } from '../../../../utils/delay.js';
 import { AREASKILL, BOSS_STATUS, DEBUFF } from '../../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
+import {
+  checkEnemyResist,
+  skillEnhancement,
+  updateDamage,
+} from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { bossBuffOrDebuffSkill } from '../../bossUtils/bossBuffs.js';
 import BossTurnChangeState from '../turn/bossTurnChangeState.js';
 import BossPhaseState from '../phase/bossPhaseState.js';
 import BossMonsterDeadState from '../result/bossMonsterDeadState.js';
+import TimerManager from '#managers/timerManager.js';
+import serviceLocator from '#locator/serviceLocator.js';
 
+const BOSS_TURN_OVER_LIMIT = 2000;
 const ACTION_ANIMATION_CODE = 0;
-const PLAYER_ACTION_DELAY = 1000;
 const BOSS_INDEX = 0;
 
 export default class BossPlayerAttackState extends BossRoomState {
+  constructor(...args) {
+    super(...args);
+    this.timerMgr = serviceLocator.get(TimerManager); // 타이머 매니저 인스턴스 가져오기
+    this.timeoutId = null; // 타이머 식별자 초기화
+  }
+
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.PLAYER_ATTACK;
     this.user.completeTurn = true;
@@ -37,6 +48,12 @@ export default class BossPlayerAttackState extends BossRoomState {
     } else {
       await this.handleSingleSkill(userSkillInfo, disableButtons, boss);
     }
+    // 타이머 매니저를 통해 타이머 설정
+    this.timeoutId = this.timerMgr.requestTimer(BOSS_TURN_OVER_LIMIT, () => {
+      this.changeState(BossTurnChangeState);
+    });
+    this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
+    this.timeoutId = null;
   }
 
   isBuffOrDebuffSkill(skillInfo) {
@@ -61,8 +78,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     this.sendPlayerStatus(this.user);
     this.sendPlayerAction([], skillInfo.effectCode);
 
-    await delay(PLAYER_ACTION_DELAY);
-
     this.changeState(BossTurnChangeState);
   }
 
@@ -74,8 +89,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     this.sendBattleLog(this.getBattleLogMessage(boss, totalDamage), disableButtons);
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
-
-    await delay(PLAYER_ACTION_DELAY);
 
     this.updateBossPhase(boss);
     this.checkMonsterStates(boss);
@@ -99,8 +112,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     this.sendBattleLog(this.getBattleLogMessage(boss, totalDamage), disableButtons);
     this.user.reduceMp(skillInfo.mana);
     this.sendPlayerStatus(this.user);
-
-    await delay(PLAYER_ACTION_DELAY);
 
     this.updateBossPhase(boss);
     this.checkMonsterStates(boss);
@@ -217,6 +228,5 @@ export default class BossPlayerAttackState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }
