@@ -5,7 +5,7 @@
     {
       "monsterModel": 2001,
       "monsterName": "버섯",
-      "monsterHp": 100,
+      "monsterHp": 30,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -17,7 +17,7 @@
     {
       "monsterModel": 2002,
       "monsterName": "슬라임",
-      "monsterHp": 100,
+      "monsterHp": 30,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -29,7 +29,7 @@
     {
       "monsterModel": 2003,
       "monsterName": "고슴도치",
-      "monsterHp": 100,
+      "monsterHp": 30,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -41,7 +41,7 @@
     {
       "monsterModel": 2004,
       "monsterName": "물고기",
-      "monsterHp": 100,
+      "monsterHp": 30,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -53,7 +53,7 @@
     {
       "monsterModel": 2005,
       "monsterName": "악어",
-      "monsterHp": 100,
+      "monsterHp": 30,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -65,7 +65,7 @@
     {
       "monsterModel": 2006,
       "monsterName": "네펜데스",
-      "monsterHp": 100,
+      "monsterHp": 30,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -77,7 +77,7 @@
     {
       "monsterModel": 2007,
       "monsterName": "해골 기사",
-      "monsterHp": 100,
+      "monsterHp": 30,
       "monsterAtk": 10,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -89,7 +89,7 @@
     {
       "monsterModel": 2008,
       "monsterName": "시궁쥐",
-      "monsterHp": 200,
+      "monsterHp": 50,
       "monsterAtk": 20,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -101,7 +101,7 @@
     {
       "monsterModel": 2009,
       "monsterName": "사이클롭스",
-      "monsterHp": 200,
+      "monsterHp": 50,
       "monsterAtk": 20,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -113,7 +113,7 @@
     {
       "monsterModel": 2010,
       "monsterName": "미믹",
-      "monsterHp": 200,
+      "monsterHp": 50,
       "monsterAtk": 20,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -125,7 +125,7 @@
     {
       "monsterModel": 2011,
       "monsterName": "베이비 드래곤",
-      "monsterHp": 200,
+      "monsterHp": 50,
       "monsterAtk": 20,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -137,7 +137,7 @@
     {
       "monsterModel": 2012,
       "monsterName": "해적 게",
-      "monsterHp": 200,
+      "monsterHp": 50,
       "monsterAtk": 20,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -149,7 +149,7 @@
     {
       "monsterModel": 2013,
       "monsterName": "샐레맨더",
-      "monsterHp": 200,
+      "monsterHp": 50,
       "monsterAtk": 20,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -161,7 +161,7 @@
     {
       "monsterModel": 2014,
       "monsterName": "베이비 선인장",
-      "monsterHp": 200,
+      "monsterHp": 50,
       "monsterAtk": 20,
       "monsterEffectCode": 3001,
       "electricResist": 0,
@@ -173,7 +173,7 @@
     {
       "monsterModel": 2015,
       "monsterName": "트롤",
-      "monsterHp": 300,
+      "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -185,7 +185,7 @@
     {
       "monsterModel": 2016,
       "monsterName": "메이지",
-      "monsterHp": 300,
+      "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -197,7 +197,7 @@
     {
       "monsterModel": 2017,
       "monsterName": "플라잉 드래곤",
-      "monsterHp": 300,
+      "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -209,7 +209,7 @@
     {
       "monsterModel": 2018,
       "monsterName": "리치",
-      "monsterHp": 300,
+      "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -221,7 +221,7 @@
     {
       "monsterModel": 2019,
       "monsterName": "바이러스",
-      "monsterHp": 300,
+      "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -233,7 +233,7 @@
     {
       "monsterModel": 2020,
       "monsterName": "호넷",
-      "monsterHp": 300,
+      "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -245,7 +245,7 @@
     {
       "monsterModel": 2021,
       "monsterName": "데스 레이",
-      "monsterHp": 300,
+      "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -257,7 +257,7 @@
     {
       "monsterModel": 2022,
       "monsterName": "박쥐",
-      "monsterHp": 500,
+      "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 20,
@@ -269,7 +269,7 @@
     {
       "monsterModel": 2023,
       "monsterName": "가고일",
-      "monsterHp": 500,
+      "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 20,
@@ -281,7 +281,7 @@
     {
       "monsterModel": 2024,
       "monsterName": "웨어 울프",
-      "monsterHp": 500,
+      "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 20,
@@ -293,7 +293,7 @@
     {
       "monsterModel": 2025,
       "monsterName": "녹스",
-      "monsterHp": 500,
+      "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 25,
@@ -305,7 +305,7 @@
     {
       "monsterModel": 2026,
       "monsterName": "골렘",
-      "monsterHp": 500,
+      "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 30,
@@ -317,7 +317,7 @@
     {
       "monsterModel": 2027,
       "monsterName": "쁘띠 바론",
-      "monsterHp": 500,
+      "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 10,
@@ -329,7 +329,7 @@
     {
       "monsterModel": 2028,
       "monsterName": "데스 나이트",
-      "monsterHp": 500,
+      "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 30,
