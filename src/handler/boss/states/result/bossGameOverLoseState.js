@@ -23,7 +23,7 @@ export default class BossGameOverLoseState extends BossRoomState {
 
     const loseResponse = createResponse(PacketType.S_ScreenText, {
       screenText: {
-        msg: '모든 유저가 사망하여 마을로 복귀힙니다...',
+        msg: '모든 유저가 사망하여 마을로 복귀합니다...',
         typingAnimation: false,
       },
     });
@@ -33,6 +33,5 @@ export default class BossGameOverLoseState extends BossRoomState {
     });
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }
