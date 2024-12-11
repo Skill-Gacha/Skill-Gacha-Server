@@ -191,12 +191,13 @@ export default class BossEnemyAttackState extends BossRoomState {
   }
 
   async handleInput(responseCode) {
+    const updateAliveUsers = this.users.filter((user) => user.stat.hp > 0);
     if (responseCode === 1) {
       if (this.timeoutId) {
         this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
         this.timeoutId = null;
       }
-      this.changeState(BossIncreaseManaState);
+      if (updateAliveUsers.length !== 0) this.changeState(BossIncreaseManaState);
     } else {
       invalidResponseCode(this.user.socket);
     }
