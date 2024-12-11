@@ -1,8 +1,9 @@
 // src/handler/boss/states/turn/bossIncreaseManaState.js
 
-import { BOSS_STATUS } from '../../../../constants/battle.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import TimerManager from '#managers/timerManager.js';
+import { BOSS_STATUS, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT } from '../../../../constants/battle.js';
 import { PacketType } from '../../../../constants/header.js';
-import { delay } from '../../../../utils/delay.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import BossActionState from '../action/bossActionState.js';
 import BossRoomState from '../base/bossRoomState.js';
@@ -12,24 +13,29 @@ const HP_RECOVERY_MIN = 5;
 const HP_RECOVERY_MAX = 10;
 const MP_RECOVERY_MIN = 5;
 const MP_RECOVERY_MAX = 10;
-
-const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
+const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 
 export default class BossIncreaseManaState extends BossRoomState {
+  constructor(...args) {
+    super(...args);
+    this.timeoutId = null; // 타이머 식별자 초기화
+    this.timerMgr = serviceLocator.get(TimerManager);
+  }
+
   async enter() {
     this.bossRoom.bossStatus = BOSS_STATUS.INCREASE_MANA;
 
     if (this.user.turnOff === true) {
       this.user.completeTurn = true;
       this.updateUsersStatus([this.user]);
-      await delay(2000);
-      this.user.turnOff = false;
-      this.changeState(BossTurnChangeState);
     } else {
       this.updateUsersStatus(this.users);
-      await delay(2000);
-      this.changeState(BossActionState);
     }
+
+    // 타이머 매니저를 통해 타이머 설정
+    this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
+      this.handleInput(1);
+    });
   }
 
   updateUsersStatus(users) {
@@ -45,15 +51,17 @@ export default class BossIncreaseManaState extends BossRoomState {
 
       if (users.length === 1) {
         const battleLogMsg = `턴을 넘기셔서 체력이 ${user.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${user.stat.mp - existingMp}만큼 회복하였습니다.`;
-        const battleLogResponse = this.createBattleLogResponse(battleLogMsg);
+        const battleLogResponse = this.createBattleLogResponse(battleLogMsg, user);
         user.socket.write(battleLogResponse);
       }
     });
 
     if (users.length > 1) {
       const battleLogMsg = `모든 유저가 체력과 마나를 회복했습니다.`;
-      const battleLogResponse = this.createBattleLogResponse(battleLogMsg);
-      aliveUsers.forEach((user) => user.socket.write(battleLogResponse));
+      aliveUsers.forEach((user) => {
+        const battleLogResponse = this.createBattleLogResponse(battleLogMsg, user);
+        user.socket.write(battleLogResponse);
+      });
     }
 
     const statusResponse = this.createStatusResponse(users);
@@ -75,16 +83,40 @@ export default class BossIncreaseManaState extends BossRoomState {
     });
   }
 
-  createBattleLogResponse(msg) {
+  createBattleLogResponse(msg, user) {
     return createResponse(PacketType.S_BossBattleLog, {
       battleLog: {
         msg,
         typingAnimation: false,
-        btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: false })),
+        btns: this.user === user ? BUTTON_CONFIRM : [],
       },
     });
   }
 
   async handleInput(responseCode) {
+    if (responseCode === 1) {
+      if (this.timeoutId) {
+        this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
+        this.timeoutId = null;
+      }
+
+      if (this.user.turnOff === false) {
+        this.changeState(BossActionState);
+      } else if (this.user.turnOff === true) {
+        this.user.socket.write(
+          createResponse(PacketType.S_BossBattleLog, {
+            battleLog: {
+              msg: '다음차례로 넘어갑니다.',
+              typingAnimation: false,
+              btns: [{ msg: '확인', enable: false }],
+            },
+          }),
+        );
+        this.user.turnOff = false;
+        this.changeState(BossTurnChangeState);
+      }
+    } else {
+      invalidResponseCode(this.user.socket);
+    }
   }
 }

@@ -20,6 +20,7 @@ export default class BossActionState extends BossRoomState {
         this.changeState(BossIncreaseManaState);
         return;
       }
+
       const battleLog = {
         msg: '당신의 차례입니다, 행동을 선택해주세요.',
         typingAnimation: false,
