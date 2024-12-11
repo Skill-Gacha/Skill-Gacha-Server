@@ -76,6 +76,8 @@ class MinHeap {
   }
 }
 
+const TIMER_CHECK_INTERVAL = 10;
+
 class TimerManager {
   constructor() {
     this.heap = new MinHeap();
@@ -93,7 +95,7 @@ class TimerManager {
         }
         top = this.heap.peek();
       }
-    }, 100); // 100ms마다 체크
+    }, TIMER_CHECK_INTERVAL);
   }
 
   requestTimer(delay, callback) {
