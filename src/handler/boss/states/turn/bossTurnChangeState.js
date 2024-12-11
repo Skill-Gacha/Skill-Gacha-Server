@@ -35,7 +35,7 @@ export default class BossTurnChangeState extends BossRoomState {
 
     this.bossRoom.lastActivity = Date.now();
 
-    this.changeState(BossActionState);
+    if (aliveUsers.length !== 0) this.changeState(BossActionState);
   }
 
   async handleInput(responseCode) {}
