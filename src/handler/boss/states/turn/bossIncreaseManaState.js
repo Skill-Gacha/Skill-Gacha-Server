@@ -13,6 +13,7 @@ const HP_RECOVERY_MIN = 5;
 const HP_RECOVERY_MAX = 10;
 const MP_RECOVERY_MIN = 5;
 const MP_RECOVERY_MAX = 10;
+const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 
 export default class BossIncreaseManaState extends BossRoomState {
   constructor(...args) {
@@ -83,13 +84,23 @@ export default class BossIncreaseManaState extends BossRoomState {
   }
 
   createBattleLogResponse(msg, user) {
-    return createResponse(PacketType.S_BossBattleLog, {
-      battleLog: {
-        msg,
-        typingAnimation: false,
-        btns: [{ msg: '확인', enable: this.user === user }],
-      },
-    });
+    if (this.user === user) {
+      return createResponse(PacketType.S_BossBattleLog, {
+        battleLog: {
+          msg,
+          typingAnimation: false,
+          btns: BUTTON_CONFIRM,
+        },
+      });
+    } else {
+      return createResponse(PacketType.S_BossBattleLog, {
+        battleLog: {
+          msg,
+          typingAnimation: false,
+          btns: [],
+        },
+      });
+    }
   }
 
   async handleInput(responseCode) {
