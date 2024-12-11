@@ -7,6 +7,8 @@ import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode
 import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 import GameOverLoseState from '../result/gameOverLoseState.js';
 import { deadResource } from '../../../../utils/battle/calculate.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import TimerManager from '#managers/timerManager.js';
 
 const RESPONSE_CODE = {
   SCREEN_TEXT_DONE: 1,
@@ -15,6 +17,11 @@ const RESPONSE_CODE = {
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 
 export default class PlayerDeadState extends DungeonState {
+  constructor(...args) {
+    super(...args);
+    this.timeoutId = null; // 타이머 식별자 초기화
+    this.timerMgr = serviceLocator.get(TimerManager);
+  }
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.PLAYER_DEAD;
     const gold = this.user.gold;
@@ -35,6 +42,11 @@ export default class PlayerDeadState extends DungeonState {
       },
     });
     this.socket.write(playerDeadBattleLogResponse);
+
+    // 타이머 매니저를 통해 타이머 설정
+    this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
+      this.handleInput(1);
+    });
   }
 
   async handleInput(responseCode) {
