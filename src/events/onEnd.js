@@ -32,30 +32,32 @@ export const onEnd = (socket) => async () => {
 
   if (pvpRoom) {
     try {
-      // 강제 종료한 유저가 패배
-      const loser = user;
-      const winner = [...pvpRoom.users.values()].find((user) => user.id !== loser.id);
+      if ([...pvpRoom.users.values()].length !== 1) {
+        // 강제 종료한 유저가 패배
+        const loser = user;
+        const winner = [...pvpRoom.users.values()].find((user) => user.id !== loser.id);
 
-      // 타이머 종료
-      pvpRoom.clearTurnTimer();
+        // 타이머 종료
+        pvpRoom.clearTurnTimer();
 
-      const [winnerRating, loserRating] = await Promise.all([
-        getPlayerRatingFromRedis(winner.nickname),
-        getPlayerRatingFromRedis(loser.nickname),
-      ]);
+        const [winnerRating, loserRating] = await Promise.all([
+          getPlayerRatingFromRedis(winner.nickname),
+          getPlayerRatingFromRedis(loser.nickname),
+        ]);
 
-      await Promise.all([
-        updatePlayerRating(winner.nickname, winnerRating + 10),
-        updatePlayerRating(loser.nickname, loserRating - 10),
-      ]);
+        await Promise.all([
+          updatePlayerRating(winner.nickname, winnerRating + 10),
+          updatePlayerRating(loser.nickname, loserRating - 10),
+        ]);
 
-      const victoryMessage = createResponse(PacketType.S_ScreenText, {
-        screenText: {
-          msg: '게임에서 승리하여 랭크점수 10점 획득하였습니다.',
-          typingAnimation: false,
-        },
-      });
-      winner.socket.write(victoryMessage); // 승리 메시지 전송
+        const victoryMessage = createResponse(PacketType.S_ScreenText, {
+          screenText: {
+            msg: '게임에서 승리하여 랭크점수 10점 획득하였습니다.',
+            typingAnimation: false,
+          },
+        });
+        winner.socket.write(victoryMessage); // 승리 메시지 전송
+      }
     } catch (error) {
       logger.error('onEnd: PVP 강제종료 처리중 에러:', error);
     }
