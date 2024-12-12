@@ -6,6 +6,8 @@ import BossSkillChoiceState from './bossSkillChoiceState.js';
 import BossItemChoiceState from './bossItemChoiceState.js';
 import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import BossTurnChangeState from '../turn/bossTurnChangeState.js';
+import { sendBossBattleLog } from '../../../../utils/battle/bossHelpers.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 

@@ -59,14 +59,14 @@ export default class BossEnemyAttackState extends BossRoomState {
       user.stat.protect = false;
     });
 
-    const updateAliveUsers = this.users.filter((user) => user.stat.hp > 0);
+    const updateAliveUsers = this.users.filter((user) => user.stat.hp > 0 && !user.isDead);
     this.timeoutId = this.timerMgr.requestTimer(ATTACK_DELAY, () => {
       if (updateAliveUsers.length !== 0) this.handleInput(1);
     });
   }
 
   async bossAttackPlayers(bossMonster) {
-    const aliveUsers = this.users.filter((user) => !user.isDead);
+    const aliveUsers = this.users.filter((user) => user.stat.hp > 0 && !user.isDead);
 
     sendBossMonsterAction(this.users, bossMonster.monsterIdx, BOSS_AREA_ATTACK, BOSS_ATTACK_EFFECT);
 

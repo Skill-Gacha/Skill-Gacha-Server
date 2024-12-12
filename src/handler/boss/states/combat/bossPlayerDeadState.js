@@ -5,6 +5,9 @@ import BossRoomState from '../base/bossRoomState.js';
 import BossGameOverLoseState from '../result/bossGameOverLoseState.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import TimerManager from '#managers/timerManager.js';
+import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
+import { sendBossBattleLog } from '../../../../utils/battle/bossHelpers.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 
 const BOSS_USER_COUNT = 3;
 const RESPONSE_CODE = {
@@ -34,13 +37,11 @@ export default class BossPlayerDeadState extends BossRoomState {
       deadUsers.forEach((user) => {
         sendBossBattleLog(user, `모든 유저가 사망하였습니다.`, BUTTON_CONFIRM);
       });
-      this.user.socket.write(allDeadBattleLogResponse);
-    }
 
-    // 타이머 매니저를 통해 타이머 설정
-    this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
-      this.handleInput(1);
-    });
+      this.timeoutId = this.timerMgr.requestTimer(BOSS_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
+        this.handleInput(1);
+      });
+    }
   }
 
   async handleInput(responseCode) {
