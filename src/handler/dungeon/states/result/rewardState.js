@@ -21,6 +21,8 @@ import { updateUserResource } from '../../../../db/user/userDb.js';
 import logger from '../../../../utils/log/logger.js';
 import { sendBattleLog } from '../../../../utils/battle/dungeonHelpers.js';
 
+const MAX_ITEM_COUNT = 5;
+
 export default class RewardState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.REWARD;
@@ -40,7 +42,7 @@ export default class RewardState extends DungeonState {
     if (item !== null) {
       const userInven = this.user.inventory;
       const userHasItem = userInven.items.find((i) => i.itemId === item);
-      if (userHasItem && userHasItem.count !== 1 && userHasItem.count === 0) {
+      if (userHasItem && userHasItem.count < MAX_ITEM_COUNT) {
         msg += `\n일정 확률로 아이템을 획득하였습니다!`;
         try {
           await updateItemCountInRedis(this.user.nickname, item, 1);
