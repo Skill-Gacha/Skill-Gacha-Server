@@ -68,7 +68,7 @@ export default class BossEnemyAttackState extends BossRoomState {
   async bossAttackPlayers(bossMonster) {
     const aliveUsers = this.users.filter((user) => user.stat.hp > 0 && !user.isDead);
 
-    sendBossMonsterAction(this.users, bossMonster.monsterIdx, BOSS_AREA_ATTACK, BOSS_ATTACK_EFFECT);
+    sendBossMonsterAction(aliveUsers, bossMonster.monsterIdx, BOSS_AREA_ATTACK, BOSS_ATTACK_EFFECT);
 
     aliveUsers.forEach((user) => {
       let damage = bossMonster.monsterAtk * BOSS_BASIC_DAMAGE;
@@ -106,7 +106,12 @@ export default class BossEnemyAttackState extends BossRoomState {
   async downResist(bossMonster) {
     const aliveUsers = this.users.filter((user) => !user.isDead);
 
-    sendBossMonsterAction(this.users, bossMonster.monsterIdx, BOSS_AREA_ATTACK, BOSS_DOWN_RESIST_EFFECT);
+    sendBossMonsterAction(
+      this.users,
+      bossMonster.monsterIdx,
+      BOSS_AREA_ATTACK,
+      BOSS_DOWN_RESIST_EFFECT,
+    );
 
     aliveUsers.forEach((user) => {
       user.stat.downResist = true;
@@ -118,19 +123,19 @@ export default class BossEnemyAttackState extends BossRoomState {
     user.changeHpMp();
     sendBossPlayerStatusOfUsers(this.users, [user]);
 
-    sendBossMonsterAction([user], bossMonster.monsterIdx, BOSS_SINGLE_ATTACK, BOSS_CHANGE_STATUS_EFFECT, [user.id]);
+    sendBossMonsterAction(
+      [user],
+      bossMonster.monsterIdx,
+      BOSS_SINGLE_ATTACK,
+      BOSS_CHANGE_STATUS_EFFECT,
+      [user.id],
+    );
 
     sendBossBattleLog(user, `${bossMonster.monsterName}이 당신의 HP, MP를 바꿨습니다.`);
   }
 
   handlePlayerDeath(user) {
-    sendBossPlayerActionNotification(
-      this.users,
-      user.id,
-      [],
-      DEATH_ANIMATION_CODE,
-      null,
-    );
+    sendBossPlayerActionNotification(this.users, user.id, [], DEATH_ANIMATION_CODE, null);
     this.changeState(BossPlayerDeadState);
   }
 
