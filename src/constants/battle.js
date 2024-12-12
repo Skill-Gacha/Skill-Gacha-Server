@@ -117,10 +117,10 @@ export const DAMAGE_RATE_MAP = {
 };
 
 export const DUNGEON_RESOURCES = {
-  1: { gold: 200, stone: 0 },
-  2: { gold: 400, stone: 1 },
-  3: { gold: 800, stone: 2 },
-  4: { gold: 1600, stone: 4 },
+  1: { gold: 2000, stone: 0 },
+  2: { gold: 4000, stone: 1 },
+  3: { gold: 8000, stone: 2 },
+  4: { gold: 16000, stone: 4 },
 };
 
 export const DUNGEON_DEAD_RESOURCES = {
