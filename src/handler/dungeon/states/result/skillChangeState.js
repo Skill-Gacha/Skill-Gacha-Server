@@ -6,6 +6,7 @@ import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode
 import RewardState from './rewardState.js';
 import ConfirmState from '../confirm/confirmState.js';
 import { sendBattleLog } from '../../../../utils/battle/dungeonHelpers.js';
+import { getRankName } from '../../../../utils/skill/getRankName.js';
 
 const BUTTON_BACK = '뒤로 가기';
 
@@ -14,7 +15,7 @@ export default class SkillChangeState extends DungeonState {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.SKILL_CHANGE;
 
     const buttons = this.user.userSkills.map((skill) => ({
-      msg: skill.skillName,
+      msg: `${skill.skillName}[${getRankName(skill.rank)}]`,
       enable: true,
     }));
     buttons.push({ msg: BUTTON_BACK, enable: true });
