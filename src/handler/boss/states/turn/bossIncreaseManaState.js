@@ -77,6 +77,24 @@ export default class BossIncreaseManaState extends BossRoomState {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
+  createStatusResponse(users) {
+    return createResponse(PacketType.S_BossPlayerStatusNotification, {
+      playerId: users.map((user) => user.id),
+      hp: users.map((user) => user.stat.hp),
+      mp: users.map((user) => user.stat.mp),
+    });
+  }
+
+  createBattleLogResponse(msg, user) {
+    return createResponse(PacketType.S_BossBattleLog, {
+      battleLog: {
+        msg,
+        typingAnimation: false,
+        btns: this.user === user ? BUTTON_CONFIRM : [],
+      },
+    });
+  }
+
   async handleInput(responseCode) {
     const aliveUsers = this.users.filter((user) => !user.isDead);
     if (responseCode === 1) {
@@ -88,10 +106,14 @@ export default class BossIncreaseManaState extends BossRoomState {
       if (this.user.turnOff === false && aliveUsers.length !== 0) {
         this.changeState(BossActionState);
       } else if (this.user.turnOff === true) {
-        sendBossBattleLog(
-          this.user,
-          '다음차례로 넘어갑니다.',
-          BUTTON_CONFIRM_DISABLE,
+        this.user.socket.write(
+          createResponse(PacketType.S_BossBattleLog, {
+            battleLog: {
+              msg: '다음차례로 넘어갑니다.',
+              typingAnimation: false,
+              btns: [{ msg: '확인', enable: false }],
+            },
+          }),
         );
         this.user.turnOff = false;
         this.changeState(BossTurnChangeState);

@@ -25,9 +25,10 @@ export const bossBuffOrDebuffSkill = (user, socket, bossRoom) => {
       break;
 
     case 3:
-      user.increaseHpMp(0, user.stat.maxMp * 0.3);
-      sendBossPlayerStatus(users);
-      sendBossBattleLog(user, `구원의 손길! \n시전자를 제외한 유저의 마나가 90 회복되었습니다!`, disableButtons);
+      const existMp = user.stat.mp;
+      user.increaseHpMp(0, user.stat.maxMp * 0.3); // 최대 마나의 30% 회복
+      notificationPlayers();
+      sendBattleLog(`구원의 손길! \n마나가 ${user.stat.mp - existMp}만큼 회복되었습니다!`);
       break;
 
     case 4:
