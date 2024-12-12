@@ -24,7 +24,7 @@ export default class BossActionState extends BossRoomState {
       sendBossBattleLog(
         this.user,
         '당신의 차례입니다, 행동을 선택해주세요.',
-        BUTTON_OPTIONS.map((msg) => ({ msg, enable: true }))
+        BUTTON_OPTIONS.map((msg) => ({ msg, enable: true })),
       );
     }
     this.bossRoom.gameStart = true;

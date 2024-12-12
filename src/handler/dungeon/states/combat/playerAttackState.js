@@ -5,15 +5,17 @@ import TimerManager from '#managers/timerManager.js';
 import DungeonState from '../base/dungeonState.js';
 import EnemyAttackState from './enemyAttackState.js';
 import MonsterDeadState from './monsterDeadState.js';
-import { AREASKILL, BUFF_SKILL, DEBUFF, DUNGEON_STATUS, DUNGEON_TURN_OVER_LIMIT } from '../../../../constants/battle.js';
+import {
+  AREASKILL,
+  BUFF_SKILL,
+  DEBUFF,
+  DUNGEON_STATUS,
+  DUNGEON_TURN_OVER_LIMIT,
+} from '../../../../constants/battle.js';
 import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { useBuffSkill } from '../../dungeonUtils/dungeonBuffs.js';
-import {
-  sendBattleLog,
-  sendMonsterHpUpdate,
-  sendPlayerAction,
-} from '../../../../utils/battle/dungeonHelpers.js';
+import { sendBattleLog, sendMonsterHpUpdate, sendPlayerAction } from '../../../../utils/battle/dungeonHelpers.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { PacketType } from '../../../../constants/header.js';
 
@@ -86,7 +88,7 @@ export default class PlayerAttackState extends DungeonState {
       this.socket,
       aliveMonsters.map((m) => m.monsterIdx),
       ACTION_ANIMATION_CODE,
-      skillInfo.effectCode
+      skillInfo.effectCode,
     );
 
     for (const monster of aliveMonsters) {

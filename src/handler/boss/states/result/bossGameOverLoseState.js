@@ -23,5 +23,6 @@ export default class BossGameOverLoseState extends BossRoomState {
     sendBossScreenText(this.users, '모든 유저가 사망하여 마을로 복귀합니다...');
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

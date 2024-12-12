@@ -5,7 +5,7 @@ import BossRoomState from '../base/bossRoomState.js';
 import { getElementById } from '../../../../init/loadAssets.js';
 import { elementResist } from '../../../../utils/packet/playerPacket.js';
 import logger from '../../../../utils/log/logger.js';
-import { sendBossPhase, sendBossBattleLog } from '../../../../utils/battle/bossHelpers.js';
+import { sendBossBattleLog, sendBossPhase } from '../../../../utils/battle/bossHelpers.js';
 
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
 const BOSS_MONSTER_MODEL = 2029;
@@ -63,5 +63,6 @@ export default class BossPhaseState extends BossRoomState {
     sendBossBattleLog(this.users, message, DISABLE_BUTTONS);
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

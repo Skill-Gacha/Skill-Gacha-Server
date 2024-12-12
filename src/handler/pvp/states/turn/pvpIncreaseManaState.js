@@ -8,12 +8,7 @@ import PvpState from '../base/pvpState.js';
 import PvpTurnChangeState from './pvpTurnChangeState.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import TimerManager from '#managers/timerManager.js';
-import {
-  HP_RECOVERY_MIN,
-  HP_RECOVERY_MAX,
-  MP_RECOVERY_MIN,
-  MP_RECOVERY_MAX
-} from '../../../../constants/pvp.js';
+import { HP_RECOVERY_MAX, HP_RECOVERY_MIN, MP_RECOVERY_MAX, MP_RECOVERY_MIN } from '../../../../constants/pvp.js';
 
 const BUTTON_CONFIRM = [{ msg: '확인', enable: true }];
 
@@ -47,8 +42,8 @@ export default class PvpIncreaseManaState extends PvpState {
 
     this.mover.socket.write(
       createResponse(PacketType.S_PvpBattleLog, {
-        battleLog: { msg: battleLogMsg, typingAnimation: false, btns: BUTTON_CONFIRM }
-      })
+        battleLog: { msg: battleLogMsg, typingAnimation: false, btns: BUTTON_CONFIRM },
+      }),
     );
 
     this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {

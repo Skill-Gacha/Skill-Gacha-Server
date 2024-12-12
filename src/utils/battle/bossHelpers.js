@@ -35,7 +35,10 @@ export function sendBossPlayerStatusOfUsers(users, targetUsers) {
 
 // 몬스터 HP 업데이트 패킷 전송
 export function sendBossMonsterHpUpdate(users, monster) {
-  const response = createResponse(PacketType.S_BossSetMonsterHp, { monsterIdx: monster.monsterIdx, hp: monster.monsterHp });
+  const response = createResponse(PacketType.S_BossSetMonsterHp, {
+    monsterIdx: monster.monsterIdx,
+    hp: monster.monsterHp,
+  });
   users.forEach(u => u.socket.write(response));
 }
 

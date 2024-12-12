@@ -24,8 +24,8 @@ export default class PvpItemChoiceState extends PvpState {
     const buttons = await Promise.all(
       items.map(async (item) => ({
         msg: `${itemsName[item.itemId - BASE_ITEM_ID_OFFSET]}(보유 수량: ${item.count})`,
-        enable: await this.mover.inventory.isItemUsable(item, this.mover)
-      }))
+        enable: await this.mover.inventory.isItemUsable(item, this.mover),
+      })),
     );
 
     buttons.push({ msg: BUTTON_BACK, enable: true });
@@ -33,7 +33,7 @@ export default class PvpItemChoiceState extends PvpState {
     const battleLog = {
       msg: '사용하실 아이템을 선택해 주세요',
       typingAnimation: false,
-      btns: buttons
+      btns: buttons,
     };
 
     this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));

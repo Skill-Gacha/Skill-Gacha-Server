@@ -33,6 +33,7 @@ export default class BossEnemyAttackState extends BossRoomState {
     this.timeoutId = null;
     this.timerMgr = serviceLocator.get(TimerManager);
   }
+
   async enter() {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ENEMY_ATTACK;
     const boss = this.bossRoom.monsters[BOSS_INDEX];
@@ -91,7 +92,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       sendBossBattleLog(
         user,
         `${bossMonster.monsterName}이 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
-        this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE
+        this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
       );
 
       if (user.stat.hp <= 0) {
@@ -128,7 +129,7 @@ export default class BossEnemyAttackState extends BossRoomState {
       user.id,
       [],
       DEATH_ANIMATION_CODE,
-      null
+      null,
     );
     this.changeState(BossPlayerDeadState);
   }

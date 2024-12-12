@@ -10,7 +10,7 @@ import PvpGameOverState from '../result/pvpGameOverState.js';
 
 const CONFIRM_BUTTONS = [
   { msg: '예', enable: true },
-  { msg: '아니오', enable: true }
+  { msg: '아니오', enable: true },
 ];
 
 // PvP 확인(Confirm) 상태
@@ -27,7 +27,7 @@ export default class PvpConfirmState extends PvpState {
     const battleLog = {
       msg: this.message,
       typingAnimation: false,
-      btns: CONFIRM_BUTTONS
+      btns: CONFIRM_BUTTONS,
     };
 
     this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));

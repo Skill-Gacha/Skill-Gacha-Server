@@ -98,4 +98,4 @@ const generateRandomMonsters = (dungeonMonsters) => {
     monsters.push(monsterInstance);
   }
   return monsters;
-}
+};

@@ -23,5 +23,6 @@ export default class BossGameOverWinState extends BossRoomState {
     sendBossScreenText(this.users, '축하합니다. Null Dragon을 무찌르는데 성공하셨습니다.');
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

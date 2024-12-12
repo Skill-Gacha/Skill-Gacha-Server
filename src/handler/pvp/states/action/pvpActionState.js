@@ -19,7 +19,7 @@ export default class PvpActionState extends PvpState {
       const battleLog = {
         msg: '행동을 선택해주세요.',
         typingAnimation: false,
-        btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: true }))
+        btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: true })),
       };
 
       this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
@@ -33,7 +33,7 @@ export default class PvpActionState extends PvpState {
       1: PvpSkillChoiceState,
       2: PvpItemChoiceState,
       3: PvpIncreaseManaState,
-      4: PvpConfirmState
+      4: PvpConfirmState,
     };
 
     const SelectedState = actionMap[responseCode];

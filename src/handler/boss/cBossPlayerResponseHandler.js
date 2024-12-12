@@ -1,7 +1,5 @@
 // src/handler/boss/cBossPlayerResponseHandler.js
 
-import { createResponse } from '../../utils/response/createResponse.js';
-import { PacketType } from '../../constants/header.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
 import QueueManager from '#managers/queueManager.js';

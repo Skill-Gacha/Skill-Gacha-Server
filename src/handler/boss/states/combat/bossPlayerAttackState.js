@@ -2,11 +2,7 @@
 
 import BossRoomState from '../base/bossRoomState.js';
 import { AREASKILL, BOSS_STATUS, DEBUFF } from '../../../../constants/battle.js';
-import {
-  checkEnemyResist,
-  skillEnhancement,
-  updateDamage,
-} from '../../../../utils/battle/calculate.js';
+import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { bossBuffOrDebuffSkill } from '../../bossUtils/bossBuffs.js';
 import BossTurnChangeState from '../turn/bossTurnChangeState.js';
@@ -15,10 +11,10 @@ import BossMonsterDeadState from '../result/bossMonsterDeadState.js';
 import TimerManager from '#managers/timerManager.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import {
+  sendBossBarrierCount,
   sendBossBattleLog,
   sendBossMonsterHpUpdate,
   sendBossPlayerActionNotification,
-  sendBossBarrierCount,
   sendBossPlayerStatus,
 } from '../../../../utils/battle/bossHelpers.js';
 
@@ -169,5 +165,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     }
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

@@ -15,9 +15,9 @@ export const pvpUseBuffSkill = (user, stopper) => {
           battleLog: {
             msg,
             typingAnimation: false,
-            btns: disableButtons
-          }
-        })
+            btns: disableButtons,
+          },
+        }),
       );
     } catch (error) {
       logger.error('소켓 쓰기 중 오류 발생:', error);
@@ -30,8 +30,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
       sendBattleLog('전투의 함성! 공격력이 두 배로 증가했습니다!');
       break;
 
-    case 2:
-    {
+    case 2: {
       const originalHp = user.stat.hp;
       user.increaseHpMp(user.stat.maxHp * 0.3, 0);
       try {
@@ -44,8 +43,7 @@ export const pvpUseBuffSkill = (user, stopper) => {
     }
       break;
 
-    case 3:
-    {
+    case 3: {
       const originalMp = user.stat.mp;
       user.increaseHpMp(0, user.stat.maxMp * 0.6);
       try {

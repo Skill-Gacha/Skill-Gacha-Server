@@ -38,5 +38,6 @@ export default class BossTurnChangeState extends BossRoomState {
     this.changeState(BossActionState);
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

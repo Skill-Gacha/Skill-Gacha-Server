@@ -1,9 +1,6 @@
 // src/handler/boss/states/combat/bossPlayerDeadState.js
 
-import {
-  BOSS_STATUS,
-  BOSS_TURN_OVER_CONFIRM_TIMEOUT_LIMIT,
-} from '../../../../constants/battle.js';
+import { BOSS_STATUS, BOSS_TURN_OVER_CONFIRM_TIMEOUT_LIMIT } from '../../../../constants/battle.js';
 import BossRoomState from '../base/bossRoomState.js';
 import BossGameOverLoseState from '../result/bossGameOverLoseState.js';
 import serviceLocator from '#locator/serviceLocator.js';
@@ -31,7 +28,7 @@ export default class BossPlayerDeadState extends BossRoomState {
     const deadUsers = this.users.filter((u) => u.stat.hp <= 0);
 
     deadUsers.forEach((user) => {
-      sendBossBattleLog(user, `체력이 0이 되어 사망하였습니다. \n팀원들을 믿고 기다리세요`, [{msg:'화이팅',enable:false}]);
+      sendBossBattleLog(user, `체력이 0이 되어 사망하였습니다. \n팀원들을 믿고 기다리세요`, [{ msg: '화이팅', enable: false }]);
       user.isDead = true;
     });
 

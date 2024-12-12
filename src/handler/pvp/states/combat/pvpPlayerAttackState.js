@@ -5,11 +5,7 @@ import PvpTurnChangeState from '../turn/pvpTurnChangeState.js';
 import PvpEnemyDeadState from './pvpEnemyDeadState.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
-import {
-  checkStopperResist,
-  skillEnhancement,
-  updateDamage
-} from '../../../../utils/battle/calculate.js';
+import { checkStopperResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { BUFF_SKILL, DEBUFF } from '../../../../constants/battle.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { pvpUseBuffSkill } from '../../pvpUtils/pvpBuffs.js';
@@ -83,14 +79,14 @@ export default class PvpPlayerAttackState extends PvpState {
     const battleLogForMover = {
       msg: `${this.stopper.nickname}에게 ${damage}의 피해를 입혔습니다.`,
       typingAnimation: false,
-      btns: [{ msg: this.stopper.nickname, enable: false }]
+      btns: [{ msg: this.stopper.nickname, enable: false }],
     };
     this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog: battleLogForMover }));
 
     const stopperLog = {
       msg: `${this.mover.nickname}에게 ${damage}의 피해를 입었습니다.`,
       typingAnimation: false,
-      btns: [{ msg: this.stopper.nickname, enable: false }]
+      btns: [{ msg: this.stopper.nickname, enable: false }],
     };
     this.stopper.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog: stopperLog }));
   }

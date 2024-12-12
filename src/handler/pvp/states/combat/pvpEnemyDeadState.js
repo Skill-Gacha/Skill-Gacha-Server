@@ -25,7 +25,7 @@ export default class PvpEnemyDeadState extends PvpState {
     this.pvpRoom.pvpStatus = PVP_STATUS.ENEMY_DEAD;
 
     const deathAnimation = {
-      actionSet: { animCode: DEATH_ANIMATION_CODE, effectCode: null }
+      actionSet: { animCode: DEATH_ANIMATION_CODE, effectCode: null },
     };
 
     // 상대 사망 애니메이션 전송
@@ -35,8 +35,8 @@ export default class PvpEnemyDeadState extends PvpState {
     const battleLogMsg = '상대방을 쓰러트렸습니다.';
     this.mover.socket.write(
       createResponse(PacketType.S_PvpBattleLog, {
-        battleLog: { msg: battleLogMsg, typingAnimation: false, btns: BUTTON_CONFIRM }
-      })
+        battleLog: { msg: battleLogMsg, typingAnimation: false, btns: BUTTON_CONFIRM },
+      }),
     );
 
     // 일정 시간 후 자동 진행 위해 타이머 설정

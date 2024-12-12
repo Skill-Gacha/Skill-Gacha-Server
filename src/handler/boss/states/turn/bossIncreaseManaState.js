@@ -54,7 +54,7 @@ export default class BossIncreaseManaState extends BossRoomState {
         sendBossBattleLog(
           user,
           battleLogMsg,
-          this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE
+          this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
         );
       }
     });
@@ -65,7 +65,7 @@ export default class BossIncreaseManaState extends BossRoomState {
         sendBossBattleLog(
           user,
           battleLogMsg,
-          this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE
+          this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
         );
       });
     }
@@ -91,7 +91,7 @@ export default class BossIncreaseManaState extends BossRoomState {
         sendBossBattleLog(
           this.user,
           '다음차례로 넘어갑니다.',
-          BUTTON_CONFIRM_DISABLE
+          BUTTON_CONFIRM_DISABLE,
         );
         this.user.turnOff = false;
         this.changeState(BossTurnChangeState);

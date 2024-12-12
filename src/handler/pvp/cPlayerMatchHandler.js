@@ -10,12 +10,8 @@ import logger from '../../utils/log/logger.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
 import QueueManager from '#managers/queueManager.js';
-import {
-  MAX_PLAYER,
-  DUNGEON_CODE_BASE,
-  DUNGEON_CODE_RANGE
-} from '../../constants/pvp.js';
-import { generateBattleLog, createBattleLogResponse } from '../../utils/battle/pvpHelpers.js';
+import { DUNGEON_CODE_BASE, DUNGEON_CODE_RANGE, MAX_PLAYER } from '../../constants/pvp.js';
+import { createBattleLogResponse, generateBattleLog } from '../../utils/battle/pvpHelpers.js';
 
 export const cPlayerMatchHandler = async ({ socket }) => {
   const sessionManager = serviceLocator.get(SessionManager);
@@ -64,14 +60,14 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     playerTwo.nickname,
     lastKoreanA,
     isPlayerAFirstAttack,
-    isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.'
+    isPlayerAFirstAttack ? '선공입니다.' : '후공입니다.',
   );
 
   const battleLogB = generateBattleLog(
     playerOne.nickname,
     lastKoreanB,
     isPlayerBFirstAttack,
-    isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.'
+    isPlayerBFirstAttack ? '선공입니다.' : '후공입니다.',
   );
 
   playerOne.socket.write(
@@ -79,8 +75,8 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       dungeonCode,
       playerData: MyStatus(playerOne),
       opponentData: OpponentStatus(playerTwo),
-      battleLog: createBattleLogResponse(battleLogA, isPlayerAFirstAttack)
-    })
+      battleLog: createBattleLogResponse(battleLogA, isPlayerAFirstAttack),
+    }),
   );
 
   playerTwo.socket.write(
@@ -88,8 +84,8 @@ export const cPlayerMatchHandler = async ({ socket }) => {
       dungeonCode,
       playerData: MyStatus(playerTwo),
       opponentData: OpponentStatus(playerOne),
-      battleLog: createBattleLogResponse(battleLogB, isPlayerBFirstAttack)
-    })
+      battleLog: createBattleLogResponse(battleLogB, isPlayerBFirstAttack),
+    }),
   );
 
   pvpRoom.startTurnTimer();

@@ -5,7 +5,7 @@ import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
-import { sendScreenText, sendLeaveDungeon } from '../../../../utils/battle/dungeonHelpers.js';
+import { sendLeaveDungeon, sendScreenText } from '../../../../utils/battle/dungeonHelpers.js';
 
 const RESPONSE_CODE = { SCREEN_TEXT_DONE: 0 };
 

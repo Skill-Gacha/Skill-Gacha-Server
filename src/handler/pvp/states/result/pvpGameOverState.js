@@ -21,12 +21,12 @@ export default class PvpGameOverState extends PvpState {
     try {
       const [winnerRating, loserRating] = await Promise.all([
         getPlayerRatingFromRedis(this.mover.nickname),
-        getPlayerRatingFromRedis(this.stopper.nickname)
+        getPlayerRatingFromRedis(this.stopper.nickname),
       ]);
 
       await Promise.all([
         updatePlayerRating(this.mover.nickname, winnerRating + RANK_CHANGE_POINTS),
-        updatePlayerRating(this.stopper.nickname, loserRating - RANK_CHANGE_POINTS)
+        updatePlayerRating(this.stopper.nickname, loserRating - RANK_CHANGE_POINTS),
       ]);
     } catch (error) {
       logger.error('pvpGameOverState: 랭크 점수 업데이트 중 오류 발생:', error);
@@ -38,18 +38,18 @@ export default class PvpGameOverState extends PvpState {
       createResponse(PacketType.S_ScreenText, {
         screenText: {
           msg: '게임에서 승리하여 랭크점수 10점 획득하였습니다.',
-          typingAnimation: false
-        }
-      })
+          typingAnimation: false,
+        },
+      }),
     );
 
     this.stopper.socket.write(
       createResponse(PacketType.S_ScreenText, {
         screenText: {
           msg: '게임에서 패배하여 랭크점수 10점 감소하였습니다.',
-          typingAnimation: false
-        }
-      })
+          typingAnimation: false,
+        },
+      }),
     );
   }
 
