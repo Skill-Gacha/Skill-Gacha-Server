@@ -16,7 +16,7 @@ import {
 } from '../../../../utils/battle/bossHelpers.js';
 
 const DEATH_ANIMATION_CODE = 1;
-const ATTACK_DELAY = 5000;
+const ATTACK_DELAY = 2500;
 const BOSS_INDEX = 0;
 const BOSS_SINGLE_ATTACK = 1;
 const BOSS_AREA_ATTACK = 0;
