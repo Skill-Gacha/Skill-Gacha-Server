@@ -95,13 +95,14 @@ export default class BossIncreaseManaState extends BossRoomState {
   }
 
   async handleInput(responseCode) {
+    const aliveUsers = this.users.filter((user) => !user.isDead);
     if (responseCode === 1) {
       if (this.timeoutId) {
         this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
         this.timeoutId = null;
       }
 
-      if (this.user.turnOff === false) {
+      if (this.user.turnOff === false && aliveUsers.length !== 0) {
         this.changeState(BossActionState);
       } else if (this.user.turnOff === true) {
         this.user.socket.write(

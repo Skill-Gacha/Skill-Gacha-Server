@@ -7,6 +7,7 @@ import { createResponse } from '../../../../utils/response/createResponse.js';
 import BossGameOverLoseState from '../result/bossGameOverLoseState.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import TimerManager from '#managers/timerManager.js';
+import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
 
 const BOSS_USER_COUNT = 3;
 const RESPONSE_CODE = {
@@ -50,19 +51,22 @@ export default class BossPlayerDeadState extends BossRoomState {
         },
       });
       this.user.socket.write(allDeadBattleLogResponse);
-    }
 
-    // 타이머 매니저를 통해 타이머 설정
-    this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
-      this.handleInput(1);
-    });
+      // 타이머 매니저를 통해 타이머 설정
+      this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
+        this.handleInput(1);
+      });
+    }
   }
 
   async handleInput(responseCode) {
-    if (responseCode === RESPONSE_CODE.SCREEN_TEXT_DONE) {
+    const deadUsers = this.users.filter((u) => u.stat.hp <= 0);
+    if (responseCode === RESPONSE_CODE.SCREEN_TEXT_DONE && deadUsers.length === BOSS_USER_COUNT) {
       this.changeState(BossGameOverLoseState);
+    } else if (responseCode === RESPONSE_CODE.SCREEN_TEXT_DONE) {
+      this.changeState(BossIncreaseManaState);
     } else {
-      invalidResponseCode(this.socket);
+      invalidResponseCode(this.user.socket);
     }
   }
 }

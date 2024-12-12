@@ -8,6 +8,7 @@ import BossSkillChoiceState from './bossSkillChoiceState.js';
 import BossItemChoiceState from './bossItemChoiceState.js';
 import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
+import BossTurnChangeState from '../turn/bossTurnChangeState.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 
@@ -17,7 +18,7 @@ export default class BossActionState extends BossRoomState {
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ACTION;
     if (this.bossRoom.gameStart) {
       if (this.user.isDead === true) {
-        this.changeState(BossIncreaseManaState);
+        this.changeState(BossTurnChangeState);
         return;
       }
 

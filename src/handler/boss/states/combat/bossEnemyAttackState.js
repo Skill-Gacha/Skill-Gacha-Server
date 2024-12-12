@@ -197,7 +197,8 @@ export default class BossEnemyAttackState extends BossRoomState {
         this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
         this.timeoutId = null;
       }
-      this.changeState(BossIncreaseManaState);
+      if (this.bossRoom.bossRoomStatus === BOSS_STATUS.ENEMY_ATTACK)
+        this.changeState(BossIncreaseManaState);
     } else {
       invalidResponseCode(this.user.socket);
     }
