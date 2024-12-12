@@ -1,12 +1,11 @@
-// src/handler/dungeon/states/skillChangeState.js
+// src/handler/dungeon/states/result/skillChangeState.js
 
 import DungeonState from '../base/dungeonState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
-import ConfirmState from '../confirm/confirmState.js';
 import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../../constants/battle.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import RewardState from './rewardState.js';
+import ConfirmState from '../confirm/confirmState.js';
+import { sendBattleLog } from '../../../../utils/battle/dungeonHelpers.js';
 
 const BUTTON_BACK = '뒤로 가기';
 
@@ -18,21 +17,9 @@ export default class SkillChangeState extends DungeonState {
       msg: skill.skillName,
       enable: true,
     }));
+    buttons.push({ msg: BUTTON_BACK, enable: true });
 
-    buttons.push({
-      msg: BUTTON_BACK,
-      enable: true,
-    });
-
-    const battleLog = {
-      msg: '선택된 스킬은 삭제되며 새로운 스킬이 추가됩니다.',
-      typingAnimation: false,
-      btns: buttons,
-    };
-
-    this.socket.write(
-      createResponse(PacketType.S_BattleLog, { battleLog }),
-    );
+    sendBattleLog(this.socket, '선택된 스킬은 삭제되며 새로운 스킬이 추가됩니다.', buttons);
   }
 
   async handleInput(responseCode) {
@@ -41,7 +28,7 @@ export default class SkillChangeState extends DungeonState {
       return;
     }
 
-    if (responseCode === this.user.userSkills.length + 1) { // 뒤로 가기 버튼
+    if (responseCode === this.user.userSkills.length + 1) {
       this.changeState(RewardState);
       return;
     }

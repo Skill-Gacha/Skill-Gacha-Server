@@ -13,7 +13,6 @@ import { handleError } from '../../utils/error/errorHandler.js';
 import logger from '../../utils/log/logger.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
-import QueueManager from '#managers/queueManager.js';
 
 const MONSTERS_PER_DUNGEON_DELIMITER = 7;
 const MIN_MONSTERS = 1;
@@ -22,9 +21,7 @@ const MAX_MONSTERS = 3;
 export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const { dungeonCode } = payload;
   const sessionManager = serviceLocator.get(SessionManager);
-  const queueManager = serviceLocator.get(QueueManager);
   const user = sessionManager.getUserBySocket(socket);
-  queueManager.removeMatchingQueue(user, 'boss');
 
   if (!user) {
     logger.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
@@ -36,10 +33,8 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
     const dungeon = sessionManager.createDungeon(dungeonId, dungeonCode);
     dungeon.addUser(user);
 
-    // 타운 세션에서 사용자 제거 및 디스폰 처리
     await sDespawnHandler(user);
 
-    // 몬스터 데이터 로드
     const monsterData = getGameAssets().MonsterData.data;
     const dungeonMonsters = selectDungeonMonsters(dungeonCode, monsterData);
     const monsters = generateRandomMonsters(dungeonMonsters);
@@ -48,7 +43,6 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
 
     const actualDungeonCode = dungeonCode + DUNGEON_CODE;
 
-    // 던전 입장 패킷 생성 및 전송
     const enterDungeonPayload = createResponse(PacketType.S_EnterDungeon, {
       dungeonInfo: {
         dungeonCode: actualDungeonCode,
@@ -104,4 +98,4 @@ const generateRandomMonsters = (dungeonMonsters) => {
     monsters.push(monsterInstance);
   }
   return monsters;
-};
+}

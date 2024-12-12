@@ -1,12 +1,17 @@
-﻿// src/handler/dungeon/states/enemyAttackState.js
+﻿// src/handler/dungeon/states/combat/enemyAttackState.js
 
 import DungeonState from '../base/dungeonState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { delay } from '../../../../utils/delay.js';
 import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 import IncreaseManaState from '../turn/increaseManaState.js';
 import PlayerDeadState from './playerDeadState.js';
+import {
+  sendBattleLog,
+  sendMonsterAction,
+  sendPlayerHpMp,
+} from '../../../../utils/battle/dungeonHelpers.js';
+import { PacketType } from '../../../../constants/header.js';
+import { createResponse } from '../../../../utils/response/createResponse.js';
 
 const ATTACK_ANIMATION_CODE = 0;
 const DEATH_ANIMATION_CODE = 1;
@@ -24,9 +29,7 @@ export default class EnemyAttackState extends DungeonState {
       if (this.user.stat.hp <= 0) {
         this.socket.write(
           createResponse(PacketType.S_PlayerAction, {
-            actionSet: {
-              animCode: DEATH_ANIMATION_CODE,
-            },
+            actionSet: { animCode: DEATH_ANIMATION_CODE },
           }),
         );
         this.changeState(PlayerDeadState);
@@ -36,50 +39,25 @@ export default class EnemyAttackState extends DungeonState {
       await delay(ATTACK_DELAY);
     }
 
-    // 무적 버프 초기화
     this.user.stat.protect = false;
-
-    // 다음 상태로 전환
     this.changeState(IncreaseManaState);
   }
 
   async monsterAttackPlayer(monster) {
     let damage = monster.monsterAtk;
-
     if (this.user.stat.protect) {
       damage = 1;
     }
 
     this.user.reduceHp(damage);
+    sendPlayerHpMp(this.socket, this.user);
 
-    // 플레이어 HP 업데이트
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerHp, {
-        hp: this.user.stat.hp,
-      }),
-    );
+    sendMonsterAction(this.socket, monster.monsterIdx, {
+      animCode: ATTACK_ANIMATION_CODE,
+      effectCode: monster.effectCode,
+    });
 
-    // 몬스터 공격 애니메이션 전송
-    this.socket.write(
-      createResponse(PacketType.S_MonsterAction, {
-        actionMonsterIdx: monster.monsterIdx,
-        actionSet: {
-          animCode: ATTACK_ANIMATION_CODE,
-          effectCode: monster.effectCode,
-        },
-      }),
-    );
-
-    // 공격 결과 메시지 전송
-    this.socket.write(
-      createResponse(PacketType.S_BattleLog, {
-        battleLog: {
-          msg: `${monster.monsterName}이(가) 당신을 공격하여 ${damage}의 피해를 입었습니다.`,
-          typingAnimation: false,
-          btns: DISABLE_BUTTONS,
-        },
-      }),
-    );
+    sendBattleLog(this.socket, `${monster.monsterName}이(가) 당신을 공격하여 ${damage}의 피해를 입었습니다.`, DISABLE_BUTTONS);
   }
 
   async handleInput(responseCode) {

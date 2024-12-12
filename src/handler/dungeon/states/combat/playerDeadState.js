@@ -1,12 +1,11 @@
-// src/handler/dungeon/states/playerDeadState.js
+// src/handler/dungeon/states/combat/playerDeadState.js
 
 import DungeonState from '../base/dungeonState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 import GameOverLoseState from '../result/gameOverLoseState.js';
 import { deadResource } from '../../../../utils/battle/calculate.js';
+import { sendBattleLog } from '../../../../utils/battle/dungeonHelpers.js';
 
 const RESPONSE_CODE = {
   SCREEN_TEXT_DONE: 1,
@@ -20,21 +19,13 @@ export default class PlayerDeadState extends DungeonState {
     const gold = this.user.gold;
     const stone = this.user.stone;
 
-    // 단계 별 골드 및 강화석 감소
     deadResource(this.user, this.dungeon.dungeonCode);
 
     const goldLost = gold - this.user.gold;
     const stoneLost = stone - this.user.stone;
 
-    // 플레이어 사망 로직 전달
-    const playerDeadBattleLogResponse = createResponse(PacketType.S_BattleLog, {
-      battleLog: {
-        msg: `체력이 0이 되어 사망하였습니다.\n골드를 ${goldLost}원 잃었습니다.\n강화석 ${stoneLost}개 잃었습니다.`,
-        typingAnimation: false,
-        btns: BUTTON_CONFIRM,
-      },
-    });
-    this.socket.write(playerDeadBattleLogResponse);
+    const msg = `체력이 0이 되어 사망하였습니다.\n골드를 ${goldLost}원 잃었습니다.\n강화석 ${stoneLost}개 잃었습니다.`;
+    sendBattleLog(this.socket, msg, BUTTON_CONFIRM);
   }
 
   async handleInput(responseCode) {
