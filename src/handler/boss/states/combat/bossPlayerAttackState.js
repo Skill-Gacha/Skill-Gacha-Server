@@ -1,8 +1,6 @@
 // src/handler/boss/states/combat/bossPlayerAttackState.js
 
 import BossRoomState from '../base/bossRoomState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { AREASKILL, BOSS_STATUS, DEBUFF } from '../../../../constants/battle.js';
 import {
   checkEnemyResist,
@@ -16,6 +14,13 @@ import BossPhaseState from '../phase/bossPhaseState.js';
 import BossMonsterDeadState from '../result/bossMonsterDeadState.js';
 import TimerManager from '#managers/timerManager.js';
 import serviceLocator from '#locator/serviceLocator.js';
+import {
+  sendBossBattleLog,
+  sendBossMonsterHpUpdate,
+  sendBossPlayerActionNotification,
+  sendBossBarrierCount,
+  sendBossPlayerStatus,
+} from '../../../../utils/battle/bossHelpers.js';
 
 const BOSS_TURN_OVER_LIMIT = 2000;
 const ACTION_ANIMATION_CODE = 0;
@@ -26,8 +31,8 @@ const BOSS_PHASE_THREE_HP = 1500;
 export default class BossPlayerAttackState extends BossRoomState {
   constructor(...args) {
     super(...args);
-    this.timerMgr = serviceLocator.get(TimerManager); // 타이머 매니저 인스턴스 가져오기
-    this.timeoutId = null; // 타이머 식별자 초기화
+    this.timerMgr = serviceLocator.get(TimerManager);
+    this.timeoutId = null;
   }
 
   async enter() {
@@ -50,11 +55,11 @@ export default class BossPlayerAttackState extends BossRoomState {
     } else {
       await this.handleSingleSkill(userSkillInfo, disableButtons, boss);
     }
-    // 타이머 매니저를 통해 타이머 설정
+
     this.timeoutId = this.timerMgr.requestTimer(BOSS_TURN_OVER_LIMIT, () => {
       this.changeState(BossTurnChangeState);
     });
-    this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
+    this.timerMgr.cancelTimer(this.timeoutId);
     this.timeoutId = null;
   }
 
@@ -77,20 +82,19 @@ export default class BossPlayerAttackState extends BossRoomState {
         bossBuffOrDebuffSkill(user, user.socket, this.bossRoom);
       }
     });
-    this.sendPlayerStatus(this.user);
-    this.sendPlayerAction([], skillInfo.effectCode);
-
+    sendBossPlayerStatus(this.users);
+    sendBossPlayerActionNotification(this.users, this.user.id, [], ACTION_ANIMATION_CODE, skillInfo.effectCode);
     this.changeState(BossTurnChangeState);
   }
 
   async handleAreaSkill(skillInfo, disableButtons, boss) {
-    this.sendPlayerAction([boss.monsterIdx], skillInfo.effectCode);
+    sendBossPlayerActionNotification(this.users, this.user.id, [boss.monsterIdx], ACTION_ANIMATION_CODE, skillInfo.effectCode);
     const totalDamage = this.calculateTotalDamage(skillInfo, boss);
 
     this.handleDamage(boss, totalDamage);
-    this.sendBattleLog(this.getBattleLogMessage(boss, totalDamage), disableButtons);
+    sendBossBattleLog(this.users, this.getBattleLogMessage(boss, totalDamage), disableButtons);
     this.user.reduceMp(skillInfo.mana);
-    this.sendPlayerStatus(this.user);
+    sendBossPlayerStatus(this.users);
 
     this.updateBossPhase(boss);
     this.checkMonsterStates(boss);
@@ -105,15 +109,15 @@ export default class BossPlayerAttackState extends BossRoomState {
       skillInfo.damage * skillEnhancement(playerElement, skillElement),
     );
 
-    this.sendPlayerAction([boss.monsterIdx], skillInfo.effectCode);
+    sendBossPlayerActionNotification(this.users, this.user.id, [boss.monsterIdx], ACTION_ANIMATION_CODE, skillInfo.effectCode);
 
     const monsterResist = checkEnemyResist(skillElement, boss);
     const totalDamage = Math.floor(userDamage * ((100 - monsterResist) / 100));
 
     this.handleDamage(boss, totalDamage);
-    this.sendBattleLog(this.getBattleLogMessage(boss, totalDamage), disableButtons);
+    sendBossBattleLog(this.users, this.getBattleLogMessage(boss, totalDamage), disableButtons);
     this.user.reduceMp(skillInfo.mana);
-    this.sendPlayerStatus(this.user);
+    sendBossPlayerStatus(this.users);
 
     this.updateBossPhase(boss);
     this.checkMonsterStates(boss);
@@ -122,10 +126,10 @@ export default class BossPlayerAttackState extends BossRoomState {
   handleDamage(monster, totalDamage) {
     if (this.bossRoom.shieldActivated && this.bossRoom.shieldCount > 0 && totalDamage !== 0) {
       this.bossRoom.shieldCount -= 1;
-      this.sendBarrierCount(this.bossRoom.shieldCount);
+      sendBossBarrierCount(this.users, this.bossRoom.shieldCount);
     } else {
       monster.reduceHp(totalDamage);
-      this.sendMonsterHpUpdate(monster);
+      sendBossMonsterHpUpdate(this.users, monster);
     }
   }
 
@@ -155,56 +159,6 @@ export default class BossPlayerAttackState extends BossRoomState {
     return Math.floor(userDamage * ((100 - monsterResist) / 100));
   }
 
-  sendMonsterHpUpdate(monster) {
-    this.users.forEach((user) => {
-      user.socket.write(
-        createResponse(PacketType.S_BossSetMonsterHp, {
-          monsterIdx: monster.monsterIdx,
-          hp: monster.monsterHp,
-        }),
-      );
-    });
-  }
-
-  sendBarrierCount(barrierCount) {
-    this.users.forEach((user) => {
-      user.socket.write(
-        createResponse(PacketType.S_BossBarrierCount, {
-          barrierCount,
-        }),
-      );
-    });
-  }
-
-  sendPlayerAction(targetMonsterIdxs, effectCode) {
-    this.users.forEach((user) => {
-      user.socket.write(
-        createResponse(PacketType.S_BossPlayerActionNotification, {
-          playerId: this.user.id,
-          targetMonsterIdx: targetMonsterIdxs,
-          actionSet: {
-            animCode: ACTION_ANIMATION_CODE,
-            effectCode: effectCode,
-          },
-        }),
-      );
-    });
-  }
-
-  sendBattleLog(message, buttons) {
-    this.users.forEach((user) => {
-      user.socket.write(
-        createResponse(PacketType.S_BossBattleLog, {
-          battleLog: {
-            msg: message,
-            typingAnimation: false,
-            btns: buttons,
-          },
-        }),
-      );
-    });
-  }
-
   updateBossPhase(boss) {
     if (boss.monsterHp <= BOSS_PHASE_TWO_HP && this.bossRoom.phase === 1) {
       this.bossRoom.phase = 2;
@@ -213,21 +167,6 @@ export default class BossPlayerAttackState extends BossRoomState {
       this.bossRoom.phase = 3;
       this.changeState(BossPhaseState);
     }
-  }
-
-  sendPlayerStatus() {
-    const playerIds = this.users.map((u) => u.id);
-    const hps = this.users.map((u) => u.stat.hp);
-    const mps = this.users.map((u) => u.stat.mp);
-    this.users.forEach((u) => {
-      u.socket.write(
-        createResponse(PacketType.S_BossPlayerStatusNotification, {
-          playerId: playerIds,
-          hp: hps,
-          mp: mps,
-        }),
-      );
-    });
   }
 
   async handleInput(responseCode) {}

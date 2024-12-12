@@ -6,6 +6,7 @@ import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
 import QueueManager from '#managers/queueManager.js';
 import logger from '../../utils/log/logger.js';
+import { sendBossLeaveDungeon } from '../../utils/battle/bossHelpers.js';
 
 const LEAVE_DUNGEON_RESPONSE_CODE = 0;
 
@@ -14,6 +15,7 @@ export const cBossPlayerResponseHandler = async ({ socket, payload }) => {
   const queueManager = serviceLocator.get(QueueManager);
   const user = sessionManager.getUserBySocket(socket);
   const responseCode = payload.responseCode || LEAVE_DUNGEON_RESPONSE_CODE;
+
   if (!user) {
     logger.error('cBossPlayerResponseHandler: 유저를 찾을 수 없습니다.');
     return;
@@ -26,7 +28,7 @@ export const cBossPlayerResponseHandler = async ({ socket, payload }) => {
   }
 
   if (responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
-    socket.write(createResponse(PacketType.S_LeaveDungeon, {}));
+    sendBossLeaveDungeon(user);
     bossRoom.removeUser(user);
     const remainingUsers = bossRoom.getUsers();
     if (remainingUsers.length === 0) sessionManager.removeBossRoom(bossRoom.sessionId);

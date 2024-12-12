@@ -35,7 +35,6 @@ export default class BossTurnChangeState extends BossRoomState {
     }
 
     this.bossRoom.lastActivity = Date.now();
-
     this.changeState(BossActionState);
   }
 

@@ -1,9 +1,8 @@
 // src/handler/boss/states/result/bossGameOverLoseState.js
 
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { BOSS_STATUS } from '../../../../constants/battle.js';
 import BossRoomState from '../base/bossRoomState.js';
+import { sendBossScreenText } from '../../../../utils/battle/bossHelpers.js';
 
 export default class BossGameOverLoseState extends BossRoomState {
   async enter() {
@@ -21,16 +20,7 @@ export default class BossGameOverLoseState extends BossRoomState {
       user.completeTurn = false;
     });
 
-    const loseResponse = createResponse(PacketType.S_ScreenText, {
-      screenText: {
-        msg: '모든 유저가 사망하여 마을로 복귀합니다...',
-        typingAnimation: false,
-      },
-    });
-
-    this.users.forEach((user) => {
-      user.socket.write(loseResponse);
-    });
+    sendBossScreenText(this.users, '모든 유저가 사망하여 마을로 복귀합니다...');
   }
 
   async handleInput(responseCode) {}
