@@ -47,7 +47,7 @@ export const useBuffSkill = (user, socket, dungeon) => {
 
     case 3: {
       const existMp = user.stat.mp;
-      user.increaseHpMp(0, user.stat.maxMp * 0.3); // 최대 마나의 30% 회복
+      user.increaseHpMp(0, user.stat.maxMp * 0.6);
       try {
         socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: user.stat.mp }));
       } catch (error) {
