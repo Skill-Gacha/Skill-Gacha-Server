@@ -75,7 +75,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
               actualMatchedPlayers.map(async (u) => {
                 await queueManager.removeAcceptQueueInUser(u);
                 u.setMatched(false);
-              })
+              }),
             );
             return;
           }
@@ -85,10 +85,21 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
             actualMatchedPlayers.map(async (u) => {
               await queueManager.removeAcceptQueueInUser(u);
               u.setMatched(false);
-            })
+            }),
           );
 
+          // 유저 버프 초기화
           const [playerA, playerB, playerC] = actualMatchedPlayers;
+          actualMatchedPlayers.forEach((user) => {
+            user.isDead = false;
+            user.buff = null;
+            user.battleCry = false;
+            user.berserk = false;
+            user.dangerPotion = false;
+            user.protect = false;
+            user.downResist = false;
+            user.completeTurn = false;
+          });
           const monsterData = getGameAssets().MonsterData.data;
           const bossMonster = monsterData[BOSS_NUMBER];
           const bossMonsterInstance = new Monster(
@@ -98,7 +109,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
             bossMonster.monsterHp,
             bossMonster.monsterAtk,
             bossMonster.monsterEffectCode,
-            bossMonster
+            bossMonster,
           );
           const bossRoom = sessionManager.createBossRoom(uuidv4());
           bossRoom.setUsers(playerA, playerB, playerC);
@@ -118,7 +129,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
               playerIds,
               partyList,
               boss,
-              u.id === playerA.id // 첫 번째 플레이어에게만 버튼 활성화
+              u.id === playerA.id, // 첫 번째 플레이어에게만 버튼 활성화
             );
           });
 
@@ -149,7 +160,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
               await queueManager.removeAcceptQueueInUser(u);
               u.setMatched(false);
             }
-          })
+          }),
         );
 
         queueManager.pendingGroups.delete(userGroupId);
@@ -176,7 +187,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
             await queueManager.removeAcceptQueueInUser(u);
             u.setMatched(false);
           }
-        })
+        }),
       );
       queueManager.pendingGroups.delete(userGroupId);
     }
