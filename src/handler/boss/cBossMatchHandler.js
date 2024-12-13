@@ -5,8 +5,8 @@ import { createResponse } from '../../utils/response/createResponse.js';
 import { MAX_PLAYER } from '../../constants/boss.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
-import logger from '../../utils/log/logger.js';
 import QueueManager from '#managers/queueManager.js';
+import logger from '../../utils/log/logger.js';
 
 export const cBossMatchHandler = async ({ socket, payload }) => {
   const sessionManager = serviceLocator.get(SessionManager);
@@ -24,12 +24,15 @@ export const cBossMatchHandler = async ({ socket, payload }) => {
       const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
 
-      const matchedUsers = matchedPlayers.map(({ id }) => sessionManager.getUser(id));
-      matchedUsers.forEach((u) => {
+      const actualMatchedPlayers = matchedPlayers.map((player) =>
+        sessionManager.getUser(player.id),
+      );
+
+      actualMatchedPlayers.forEach((u) => {
         u.socket.write(createResponse(PacketType.S_AcceptRequest, {}));
       });
     } else {
-      queueManager.removeMatchingQueue(user, 'boss');
+      await queueManager.removeMatchingQueue(user, 'boss');
     }
   } catch (error) {
     logger.error('cBossMatchHandler: 잘못된 payload 값입니다.', error);
