@@ -12,10 +12,18 @@ import {
   DUNGEON_STATUS,
   DUNGEON_TURN_OVER_LIMIT,
 } from '../../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
+import {
+  checkEnemyResist,
+  skillEnhancement,
+  updateDamage,
+} from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { useBuffSkill } from '../../dungeonUtils/dungeonBuffs.js';
-import { sendBattleLog, sendMonsterHpUpdate, sendPlayerAction } from '../../../../utils/battle/dungeonHelpers.js';
+import {
+  sendBattleLog,
+  sendMonsterHpUpdate,
+  sendPlayerAction,
+} from '../../../../utils/battle/dungeonHelpers.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { PacketType } from '../../../../constants/header.js';
 
@@ -97,7 +105,11 @@ export default class PlayerAttackState extends DungeonState {
       sendMonsterHpUpdate(this.socket, monster);
     }
 
-    sendBattleLog(this.socket, '광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.', disableButtons);
+    sendBattleLog(
+      this.socket,
+      '광역 스킬을 사용하여 모든 몬스터에게 피해를 입혔습니다.',
+      disableButtons,
+    );
 
     this.user.reduceMp(skillInfo.mana);
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
@@ -107,8 +119,8 @@ export default class PlayerAttackState extends DungeonState {
         this.user.stat.buff = null;
       }
 
-      const allMonstersDead = this.checkAllMonstersDead();
-      if (allMonstersDead) {
+      const monstersDead = this.checkMonsterDead();
+      if (monstersDead) {
         this.changeState(MonsterDeadState);
       } else {
         this.changeState(EnemyAttackState);
@@ -125,9 +137,18 @@ export default class PlayerAttackState extends DungeonState {
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     sendMonsterHpUpdate(this.socket, targetMonster);
-    sendPlayerAction(this.socket, [targetMonster.monsterIdx], ACTION_ANIMATION_CODE, skillInfo.effectCode);
+    sendPlayerAction(
+      this.socket,
+      [targetMonster.monsterIdx],
+      ACTION_ANIMATION_CODE,
+      skillInfo.effectCode,
+    );
 
-    sendBattleLog(this.socket, `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`, disableButtons);
+    sendBattleLog(
+      this.socket,
+      `${targetMonster.monsterName}에게 ${totalDamage}의 피해를 입혔습니다.`,
+      disableButtons,
+    );
 
     this.timeoutId = this.timerMgr.requestTimer(DUNGEON_TURN_OVER_LIMIT, () => {
       this.user.stat.buff = null;
@@ -143,8 +164,8 @@ export default class PlayerAttackState extends DungeonState {
     return this.dungeon.monsters.filter((m) => m.monsterHp > 0);
   }
 
-  checkAllMonstersDead() {
-    return this.dungeon.monsters.every((monster) => monster.monsterHp <= 0);
+  checkMonsterDead() {
+    return this.dungeon.monsters.some((monster) => monster.monsterHp <= 0 && !monster.isDead);
   }
 
   calculateTotalDamage(skillInfo, monster) {
