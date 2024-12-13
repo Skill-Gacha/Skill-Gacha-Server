@@ -6,7 +6,6 @@ import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import AsyncLock from 'async-lock';
 import { SESSION_TIMEOUT, USER_TIMEOUT, CLEANSING_INTERVAL } from '../constants/timeouts.js';
-import SessionManager from '#managers/sessionManager.js';
 
 class QueueManager {
   constructor() {
@@ -80,8 +79,6 @@ class QueueManager {
 
         logger.info('매칭큐에 유저를 추가합니다.');
 
-        user.setMatched(true); // 매칭 상태 업데이트
-
         const waitingJobs = await matchingQueue.getJobs(['waiting']);
 
         // 매칭 조건 충족 시 유저 ID 목록 반환
@@ -126,7 +123,14 @@ class QueueManager {
         })
       );
 
-      return matchedUserIds.map((userId) => ({ id: userId }));
+      // 모든 유저가 acceptQueue에 추가되었는지 확인
+      const totalAcceptJobs = await this.acceptQueue.getJobs(['waiting']);
+      if (totalAcceptJobs.length === maxPlayer) {
+        // 모든 유저가 수락했으므로 매칭 완료
+        return matchedUserIds.map((userId) => ({ id: userId }));
+      }
+
+      return null;
     }
     return null;
   }

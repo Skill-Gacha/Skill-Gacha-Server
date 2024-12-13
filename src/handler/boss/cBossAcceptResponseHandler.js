@@ -28,13 +28,20 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
     return;
   }
 
+  // `actualMatchedPlayers` 변수를 `try` 블록 외부에 선언
+  let actualMatchedPlayers = [];
+
   try {
     if (accept) {
       const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
-      if (!matchedPlayers) return;
+
+      if (!matchedPlayers) {
+        logger.info('매칭 대기 중입니다.');
+        return;
+      }
 
       // 매칭된 사용자들 중 유효한 사용자만 필터링
-      const actualMatchedPlayers = matchedPlayers
+      actualMatchedPlayers = matchedPlayers
         .map((player) => sessionManager.getUser(player.id))
         .filter((u) => u !== undefined && u !== null);
 
@@ -53,7 +60,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         return;
       }
 
-      // 매칭된 사용자들 큐에서 제거 및 매칭 상태 해제
+      // 모든 사용자가 수락했으므로 매칭 완료
       await Promise.all(
         actualMatchedPlayers.map(async (u) => {
           await queueManager.removeAcceptQueueInUser(u);
@@ -91,7 +98,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
           playerIds,
           partyList,
           boss,
-          u.id === playerA.id
+          u.id === playerA.id // 첫 번째 플레이어에게만 버튼 활성화
         );
       });
 
@@ -99,6 +106,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         const BossActionState = (await import('./states/action/bossActionState.js')).default;
         bossRoom.currentState = new BossActionState(bossRoom, bossRoom.userTurn);
         await bossRoom.currentState.enter();
+        logger.info(`BossActionState가 성공적으로 초기화되었습니다.`);
       }
     } else {
       const failResponse = createResponse(PacketType.S_BossMatchNotification, {
@@ -126,9 +134,9 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
   } catch (error) {
     logger.error('cBossAcceptResponseHandler: 오류입니다.', error);
     // 예외 발생 시 큐에서 사용자 제거 및 매칭 상태 해제
-    if (matchedPlayers) {
+    if (actualMatchedPlayers && actualMatchedPlayers.length > 0) {
       await Promise.all(
-        matchedPlayers.map(async (player) => {
+        actualMatchedPlayers.map(async (player) => {
           const u = sessionManager.getUser(player.id);
           if (u) {
             await queueManager.removeAcceptQueueInUser(u);
