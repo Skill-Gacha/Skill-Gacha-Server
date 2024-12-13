@@ -5,6 +5,7 @@ import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import logger from '../utils/log/logger.js';
 import BossRoomClass from '../classes/models/bossRoomClass.js';
+import { SESSION_TIMEOUT, USER_TIMEOUT, CLEANSING_INTERVAL } from '../constants/timeouts.js';
 
 class SessionManager {
   constructor() {
@@ -18,9 +19,9 @@ class SessionManager {
 
     this.users = new Map(); // userId -> user
     this.socketToUser = new Map(); // socket -> user
-    this.sessionTimeout = 1800000; // 30분
-    this.userTimeout = 1800000; // 30분
-    this.cleansingInterval = 60000; // 1분
+    this.sessionTimeout = SESSION_TIMEOUT;
+    this.userTimeout = USER_TIMEOUT;
+    this.cleansingInterval = CLEANSING_INTERVAL;
     this.startCleansingInterval();
   }
 
@@ -216,6 +217,12 @@ class SessionManager {
     const bossRoom = new BossRoomClass(sessionId);
     bossRoom.lastActivity = Date.now();
     this.sessions.bossRooms.set(sessionId, bossRoom);
+
+    bossRoom.timeout = setTimeout(() => {
+      logger.info(`보스 방 세션 ${sessionId} 타임아웃으로 클렌징`);
+      this.removeBossRoom(sessionId);
+    }, this.sessionTimeout);
+
     return bossRoom;
   }
 
@@ -233,6 +240,7 @@ class SessionManager {
     setInterval(async () => {
       const now = Date.now();
 
+      // 던전 세션 클렌징
       this.sessions.dungeons.forEach((dungeon, sessionId) => {
         if (now - dungeon.lastActivity > this.sessionTimeout) {
           logger.info(`던전 세션 ${sessionId} 클렌징`);
@@ -240,6 +248,7 @@ class SessionManager {
         }
       });
 
+      // PvP 방 클렌징
       this.sessions.pvpRooms.forEach((pvp, sessionId) => {
         if (now - pvp.lastActivity > this.sessionTimeout) {
           logger.info(`PvP 방 세션 ${sessionId} 클렌징`);
@@ -247,6 +256,7 @@ class SessionManager {
         }
       });
 
+      // 보스 방 클렌징
       this.sessions.bossRooms.forEach((bossRoom, sessionId) => {
         if (now - bossRoom.lastActivity > this.sessionTimeout) {
           logger.info(`보스 방 세션 ${sessionId} 클렌징`);
@@ -254,6 +264,7 @@ class SessionManager {
         }
       });
 
+      // 사용자 클렌징
       this.users.forEach((user, userId) => {
         if (now - user.lastActivity > this.userTimeout) {
           logger.info(`사용자 ${userId} 클렌징`);

@@ -28,6 +28,7 @@ export const cBossPlayerResponseHandler = async ({ socket, payload }) => {
   if (responseCode === LEAVE_DUNGEON_RESPONSE_CODE) {
     sendBossLeaveDungeon(user);
     bossRoom.removeUser(user);
+    user.setMatched(false); // 매칭 상태 해제
     const remainingUsers = bossRoom.getUsers();
     if (remainingUsers.length === 0) sessionManager.removeBossRoom(bossRoom.sessionId);
     return;
