@@ -9,20 +9,8 @@ export default class BossGameOverWinState extends BossRoomState {
     this.bossRoom.bossStatus = BOSS_STATUS.GAME_OVER_WIN;
     this.bossRoom.clearTurnTimer();
 
-    this.users.forEach((user) => {
-      user.isDead = false;
-      user.buff = null;
-      user.battleCry = false;
-      user.stimPack = false;
-      user.dangerPotion = false;
-      user.protect = false;
-      user.downResist = false;
-      user.completeTurn = false;
-    });
-
     sendBossScreenText(this.users, '축하합니다. Null Dragon을 무찌르는데 성공하셨습니다.');
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }

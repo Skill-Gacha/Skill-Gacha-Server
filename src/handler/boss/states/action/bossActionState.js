@@ -14,6 +14,18 @@ const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 export default class BossActionState extends BossRoomState {
   enter() {
     this.bossRoom.startTurnTimer();
+    // 유저 버프 초기화
+    this.users.forEach((user) => {
+      user.isDead = false;
+      user.buff = null;
+      user.battleCry = false;
+      user.berserk = false;
+      user.dangerPotion = false;
+      user.protect = false;
+      user.downResist = false;
+      user.completeTurn = false;
+    });
+
     this.bossRoom.bossRoomStatus = BOSS_STATUS.ACTION;
     if (this.bossRoom.gameStart) {
       if (this.user.isDead === true) {
