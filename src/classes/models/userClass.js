@@ -18,6 +18,7 @@ class User {
     this.turnOff = false;
     this.isDead = false;
     this.completeTurn = false;
+    this.isMatched = false;
   }
 
   initItemCount(items) {
@@ -64,20 +65,9 @@ class User {
     this.gold += gold;
     this.stone += stone;
   }
-
-  getInventory() {
-    return {
-      gold: this.gold,
-      stone: this.stone,
-      productList: this.inventory.map((item) => ({
-        id: item.itemId,
-        count: item.count,
-      })),
-    };
-  }
-
-  getAddMsg() {
-    return this.turnOff ? '턴을 넘기셔서' : '턴이 돌아와서';
+  
+  setMatched(status) {
+    this.isMatched = status;
   }
 }
 
