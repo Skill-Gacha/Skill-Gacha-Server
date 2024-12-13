@@ -88,16 +88,6 @@ export const onError = (socket) => async (err) => {
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
 
-    // 유저 버프 초기화
-    user.isDead = false;
-    user.buff = null;
-    user.battleCry = false;
-    user.stat.stimpack = false;
-    user.dangerPotion = false;
-    user.protect = false;
-    user.downResist = false;
-    user.completeTurn = false;
-
     // PVP나 보스 매칭큐에서 유저 제거
     queueManager.removeMatchingQueue(user, 'pvp');
     queueManager.removeMatchingQueue(user, 'boss');

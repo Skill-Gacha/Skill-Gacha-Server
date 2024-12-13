@@ -35,6 +35,18 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   const matchedUsers = matchedPlayers.map(({ id }) => sessionManager.getUser(id));
   const [playerOne, playerTwo] = matchedUsers;
 
+  // 유저 버프 초기화
+  matchedUsers.forEach((user) => {
+    user.isDead = false;
+    user.stat.buff = null;
+    user.stat.battleCry = false;
+    user.stat.stimPack = false;
+    user.stat.dangerPotion = false;
+    user.stat.protect = false;
+    user.stat.downResist = false;
+    user.completeTurn = false;
+  });
+
   const pvpRoom = sessionManager.createPvpRoom(uuidv4());
   pvpRoom.addUser(playerOne);
   pvpRoom.addUser(playerTwo);
@@ -50,7 +62,7 @@ export const cPlayerMatchHandler = async ({ socket }) => {
   const dungeonCode = Math.floor(Math.random() * DUNGEON_CODE_RANGE + 1) + DUNGEON_CODE_BASE;
   pvpRoom.initializeTurn();
 
-  const isPlayerAFirstAttack = (pvpRoom.getUserTurn() === 0);
+  const isPlayerAFirstAttack = pvpRoom.getUserTurn() === 0;
   const isPlayerBFirstAttack = !isPlayerAFirstAttack;
 
   const lastKoreanA = checkBatchim(playerTwo.nickname) ? '과' : '와';

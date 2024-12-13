@@ -92,12 +92,12 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
           const [playerA, playerB, playerC] = actualMatchedPlayers;
           actualMatchedPlayers.forEach((user) => {
             user.isDead = false;
-            user.buff = null;
-            user.battleCry = false;
-            user.stat.stimpack = false;
-            user.dangerPotion = false;
-            user.protect = false;
-            user.downResist = false;
+            user.stat.buff = null;
+            user.stat.battleCry = false;
+            user.stat.stimPack = false;
+            user.stat.dangerPotion = false;
+            user.stat.protect = false;
+            user.stat.downResist = false;
             user.completeTurn = false;
           });
           const monsterData = getGameAssets().MonsterData.data;

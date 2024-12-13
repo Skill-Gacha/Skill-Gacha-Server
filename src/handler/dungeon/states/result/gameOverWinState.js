@@ -13,7 +13,6 @@ const RESPONSE_CODE = { SCREEN_TEXT_DONE: 0 };
 export default class GameOverWinState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.GAME_OVER_WIN;
-    this.resetUserBuffs();
     await saveItemsToRedis(this.user.nickname, this.user.inventory.items);
     sendScreenText(this.socket, '던전 클리어!');
   }
@@ -24,15 +23,6 @@ export default class GameOverWinState extends DungeonState {
     } else {
       invalidResponseCode(this.socket);
     }
-  }
-
-  resetUserBuffs() {
-    this.user.buff = null;
-    this.user.battleCry = false;
-    this.user.stimPack = false;
-    this.user.dangerPotion = false;
-    this.user.protect = false;
-    this.user.downResist = false;
   }
 
   endDungeonSession() {
