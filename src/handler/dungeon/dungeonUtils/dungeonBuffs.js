@@ -48,11 +48,6 @@ export const useBuffSkill = (user, socket, dungeon) => {
     case 3: {
       const existMp = user.stat.mp;
       user.increaseHpMp(0, user.stat.maxMp * 0.6);
-      try {
-        socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: user.stat.mp }));
-      } catch (error) {
-        logger.error('MP 설정 중 오류 발생:', error);
-      }
       sendBattleLog(`구원의 손길! 마나가 ${user.stat.mp - existMp}만큼 회복되었습니다!`);
       break;
     }
