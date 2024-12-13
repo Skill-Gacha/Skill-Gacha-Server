@@ -24,7 +24,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
   const { accept } = payload;
 
   if (!user) {
-    logger.error('cBossAcceptResponseHandler: 유저가 존재하지 않습니다.');
+    logger.error('cPlayerMatchHandler: 유저가 존재하지 않습니다.');
     return;
   }
 
@@ -32,15 +32,14 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
     if (accept) {
       const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
-
-      const actualMatchedPlayers = matchedPlayers.map((player) =>
+      const [playerA, playerB, playerC] = matchedPlayers.map((player) =>
         sessionManager.getUser(player.id),
       );
+      const actualMatchedPlayers = [playerA, playerB, playerC];
 
-      // 모든 매칭된 유저의 acceptQueue에서 제거
-      await Promise.all(
-        actualMatchedPlayers.map((u) => queueManager.removeAcceptQueueInUser(u)),
-      );
+      for (const user of actualMatchedPlayers) {
+        await queueManager.removeAcceptQueueInUser(user);
+      }
 
       const monsterData = getGameAssets().MonsterData.data;
       const bossMonster = monsterData[BOSS_NUMBER];
@@ -54,18 +53,16 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         bossMonster,
       );
       const bossRoom = sessionManager.createBossRoom(uuidv4());
-      bossRoom.setUsers(...actualMatchedPlayers);
+      bossRoom.setUsers(playerA, playerB, playerC);
       bossRoom.addMonster(bossMonsterInstance);
-
-      const playerIds = actualMatchedPlayers.map((player) => player.id);
-      const partyList = actualMatchedPlayers.map((player) => MyStatus(player));
+      const playerIds = [playerA.id, playerB.id, playerC.id];
+      const partyList = [MyStatus(playerA), MyStatus(playerB), MyStatus(playerC)];
       const boss = {
         monsterIdx: BOSS_IDX,
         monsterModel: bossMonster.monsterModel,
         monsterName: bossMonster.monsterName,
         monsterHp: bossMonster.monsterHp,
       };
-
       actualMatchedPlayers.forEach((user) => {
         sDespawnHandler(user);
         sendBossMatchNotification(
@@ -73,17 +70,35 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
           playerIds,
           partyList,
           boss,
-          user.id === actualMatchedPlayers[0].id, // 첫 번째 유저가 리더라고 가정
+          user.id === playerA.id ? true : false,
         );
       });
 
       if (!bossRoom.currentState) {
-        const { default: BossActionState } = await import('./states/action/bossActionState.js');
+        const BossActionState = (await import('./states/action/bossActionState.js')).default;
         bossRoom.currentState = new BossActionState(bossRoom, bossRoom.userTurn);
         await bossRoom.currentState.enter();
       }
     } else {
-      await handleBossMatchDecline(queueManager, sessionManager);
+      const failResponse = createResponse(PacketType.S_BossMatchNotification, {
+        success: false,
+        playerIds: [],
+        partyList: [],
+      });
+
+      const acceptQueue = queueManager.getAcceptQueue();
+      const waitingJobs = await acceptQueue.getJobs('waiting');
+
+      await Promise.all(
+        waitingJobs.map(async (job) => {
+          const userId = job.data.id;
+          const user = sessionManager.getUser(userId);
+          user.socket.write(failResponse);
+
+          await queueManager.removeMatchingQueue(user, 'boss');
+          await queueManager.removeAcceptQueueInUser(user);
+        }),
+      );
     }
   } catch (error) {
     logger.error('cBossAcceptResponseHandler: 오류입니다.', error);
@@ -99,7 +114,7 @@ const createBattleLogResponse = (enable) => ({
   })),
 });
 
-// 헬퍼 함수는 별도의 파일로 분리하지 않고 그대로 유지
+// 여기서 헬퍼 파일을 만들지 않고 그대로 유지
 const sendBossMatchNotification = (player, playerIds, partyList, monsterStatus, enable) => {
   const response = createResponse(PacketType.S_BossMatchNotification, {
     success: true,
@@ -109,28 +124,4 @@ const sendBossMatchNotification = (player, playerIds, partyList, monsterStatus, 
     monsterStatus,
   });
   player.socket.write(response);
-};
-
-// 보스 매칭 거절 시 처리
-const handleBossMatchDecline = async (queueManager, sessionManager) => {
-  const failResponse = createResponse(PacketType.S_BossMatchNotification, {
-    success: false,
-    playerIds: [],
-    partyList: [],
-  });
-
-  const acceptQueue = queueManager.getAcceptQueue();
-  const waitingJobs = await acceptQueue.getWaiting();
-
-  await Promise.all(
-    waitingJobs.map(async (job) => {
-      const userId = job.data.id;
-      const user = sessionManager.getUser(userId);
-      if (user) {
-        user.socket.write(failResponse);
-        await queueManager.removeMatchingQueue(user, 'boss');
-        await queueManager.removeAcceptQueueInUser(user);
-      }
-    }),
-  );
 };
