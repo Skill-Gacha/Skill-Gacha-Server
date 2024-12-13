@@ -6,10 +6,11 @@ import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import AsyncLock from 'async-lock';
 import { SESSION_TIMEOUT, USER_TIMEOUT, CLEANSING_INTERVAL } from '../constants/timeouts.js';
+import { v4 as uuidv4 } from 'uuid';
 
 class QueueManager {
   constructor() {
-    logger.info(`큐 관리자 생성`);
+    logger.info('큐 관리자 생성');
     // Bull 큐 초기화 (유저 ID만 저장)
     this.pvpMatchingQueue = new Queue('pvpMatchingQueue', {
       redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
@@ -26,6 +27,9 @@ class QueueManager {
     this.cleansingInterval = CLEANSING_INTERVAL; // 1분
 
     this.lock = new AsyncLock();
+    this.acceptQueueLock = new AsyncLock(); // acceptQueue를 위한 별도의 락 추가
+
+    this.pendingGroups = new Map(); // groupId -> { userIds: Set, acceptedIds: Set }
 
     // Job 이벤트 리스닝
     this.setupJobListeners();
@@ -57,6 +61,11 @@ class QueueManager {
         }
 
         const matchingQueue = this.getMatchingQueue(queueType);
+        if (!matchingQueue) {
+          logger.error(`유효하지 않은 큐 타입: ${queueType}`);
+          return null;
+        }
+
         const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
 
         if (existingUser) {
@@ -81,11 +90,11 @@ class QueueManager {
 
         const waitingJobs = await matchingQueue.getJobs(['waiting']);
 
-        // 매칭 조건 충족 시 유저 ID 목록 반환
+        // 매칭 조건 충족 시 매칭 그룹 생성
         if (queueType === 'boss') {
-          return this.handleBossMatching(waitingJobs, maxPlayer);
+          return this.handleBossMatching(waitingJobs, maxPlayer, matchingQueue);
         } else if (queueType === 'pvp') {
-          return this.handlePvpMatching(waitingJobs, maxPlayer);
+          return this.handlePvpMatching(waitingJobs, maxPlayer, matchingQueue);
         }
       } catch (error) {
         logger.error('매칭큐 추가 중 오류 발생:', error);
@@ -95,48 +104,34 @@ class QueueManager {
   }
 
   // BOSS 매칭
-  async handleBossMatching(waitingJobs, maxPlayer) {
+  async handleBossMatching(waitingJobs, maxPlayer, matchingQueue) {
     if (waitingJobs.length >= maxPlayer) {
       const matchedJobs = waitingJobs.splice(0, maxPlayer);
       const matchedUserIds = matchedJobs.map((job) => job.data.id);
 
+      // 새로운 그룹 ID 생성
+      const groupId = uuidv4();
+      this.pendingGroups.set(groupId, {
+        userIds: new Set(matchedUserIds),
+        acceptedIds: new Set(),
+      });
+
+      // 매칭된 유저들을 매칭 큐에서 제거
       await Promise.all(
         matchedJobs.map(async (job) => {
-          const acceptQueue = this.acceptQueue;
-          const acceptQueueJobs = await acceptQueue.getJobs(['waiting']);
-          const existingJob = acceptQueueJobs.find((queueJob) => queueJob.data.id === job.data.id);
-          if (!existingJob) {
-            await acceptQueue.add(
-              { id: job.data.id },
-              {
-                removeOnComplete: true,
-                removeOnFail: true,
-                attempts: 3,
-                backoff: 5000,
-              }
-            );
-            logger.info('acceptQueue에 유저를 추가합니다.');
-          } else {
-            logger.info('유저가 이미 acceptQueue에 존재합니다.');
-          }
           await job.remove();
+          logger.info(`매칭 큐에서 유저 ${job.data.id}를 제거했습니다.`);
         })
       );
 
-      // 모든 유저가 acceptQueue에 추가되었는지 확인
-      const totalAcceptJobs = await this.acceptQueue.getJobs(['waiting']);
-      if (totalAcceptJobs.length === maxPlayer) {
-        // 모든 유저가 수락했으므로 매칭 완료
-        return matchedUserIds.map((userId) => ({ id: userId }));
-      }
-
-      return null;
+      // 그룹 ID와 유저 ID 반환
+      return { groupId, userIds: matchedUserIds };
     }
     return null;
   }
 
   // PVP 매칭
-  async handlePvpMatching(waitingJobs, maxPlayer) {
+  async handlePvpMatching(waitingJobs, maxPlayer, matchingQueue) {
     if (waitingJobs.length >= maxPlayer) {
       const matchedJobs = waitingJobs.splice(0, maxPlayer);
       const matchedUserIds = matchedJobs.map((job) => job.data.id);
@@ -144,6 +139,7 @@ class QueueManager {
       await Promise.all(
         matchedJobs.map(async (job) => {
           await job.remove();
+          logger.info(`매칭 큐에서 유저 ${job.data.id}를 제거했습니다.`);
         })
       );
 
@@ -160,6 +156,11 @@ class QueueManager {
   async removeMatchingQueue(user, queueType) {
     try {
       const matchingQueue = this.getMatchingQueue(queueType);
+      if (!matchingQueue) {
+        logger.error(`유효하지 않은 큐 타입: ${queueType}`);
+        return false;
+      }
+
       const existingUser = await this.isUserAlreadyInQueue(matchingQueue, user.id);
 
       if (existingUser) {
@@ -182,17 +183,19 @@ class QueueManager {
 
   async removeAcceptQueueInUser(user) {
     try {
-      const acceptQueueJobs = await this.acceptQueue.getJobs(['waiting']);
-      const userJob = acceptQueueJobs.find((job) => job.data.id === user.id);
+      return await this.acceptQueueLock.acquire('acceptQueue', async () => {
+        const acceptQueueJobs = await this.acceptQueue.getJobs(['waiting']);
+        const userJob = acceptQueueJobs.find((job) => job.data.id === user.id);
 
-      if (userJob) {
-        await userJob.remove();
-        logger.info('AcceptQueue에서 유저를 지웠습니다.');
-        user.setMatched(false); // 매칭 상태 해제
-        return true;
-      }
-      logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
-      return false;
+        if (userJob) {
+          await userJob.remove();
+          logger.info('AcceptQueue에서 유저를 지웠습니다.');
+          user.setMatched(false); // 매칭 상태 해제
+          return true;
+        }
+        logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
+        return false;
+      });
     } catch (error) {
       logger.error('AcceptQueue에서 유저 제거 중 오류 발생:', error);
       return false;
@@ -246,6 +249,15 @@ class QueueManager {
           }
         } catch (error) {
           logger.error(`${queueType.toUpperCase()} 매칭 큐 클렌징 중 오류 발생:`, error);
+        }
+      }
+
+      // Pending Groups 클렌징
+      for (const [groupId, group] of this.pendingGroups.entries()) {
+        const allUsersExist = Array.from(group.userIds).every((uid) => sessionManager.getUser(uid));
+        if (!allUsersExist) {
+          logger.info(`그룹 ${groupId}의 일부 유저가 존재하지 않아 그룹 제거`);
+          this.pendingGroups.delete(groupId);
         }
       }
     }, this.cleansingInterval);
