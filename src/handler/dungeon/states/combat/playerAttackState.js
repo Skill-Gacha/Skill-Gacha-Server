@@ -72,9 +72,10 @@ export default class PlayerAttackState extends DungeonState {
 
   async handleBuffSkill(skillInfo) {
     buffSkill(this.user, skillInfo.id);
-    useBuffSkill(this.user, this.socket, this.dungeon);
 
     this.user.reduceMp(skillInfo.mana);
+    useBuffSkill(this.user, this.socket, this.dungeon);
+
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     sendPlayerAction(this.socket, [], ACTION_ANIMATION_CODE, skillInfo.effectCode);
