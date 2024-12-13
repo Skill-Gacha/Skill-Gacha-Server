@@ -7,6 +7,7 @@ import serviceLocator from '#locator/serviceLocator.js';
 import AsyncLock from 'async-lock';
 import { SESSION_TIMEOUT, USER_TIMEOUT, CLEANSING_INTERVAL } from '../constants/timeouts.js';
 import { v4 as uuidv4 } from 'uuid';
+import SessionManager from '#managers/sessionManager.js';
 
 class QueueManager {
   constructor() {
