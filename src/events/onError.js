@@ -92,7 +92,7 @@ export const onError = (socket) => async (err) => {
     user.isDead = false;
     user.buff = null;
     user.battleCry = false;
-    user.berserk = false;
+    user.stat.stimpack = false;
     user.dangerPotion = false;
     user.protect = false;
     user.downResist = false;
