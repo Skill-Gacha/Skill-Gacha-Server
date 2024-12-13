@@ -68,7 +68,7 @@ export default class BossEnemyAttackState extends BossRoomState {
   async bossAttackPlayers(bossMonster) {
     const aliveUsers = this.users.filter((user) => user.stat.hp > 0 && !user.isDead);
 
-    sendBossMonsterAction(aliveUsers, bossMonster.monsterIdx, BOSS_AREA_ATTACK, BOSS_ATTACK_EFFECT);
+    sendBossMonsterAction(this.users, bossMonster.monsterIdx, BOSS_AREA_ATTACK, BOSS_ATTACK_EFFECT);
 
     aliveUsers.forEach((user) => {
       let damage = bossMonster.monsterAtk * BOSS_BASIC_DAMAGE;
