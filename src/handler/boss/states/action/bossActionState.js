@@ -1,14 +1,13 @@
 // src/handler/boss/states/action/bossActionState.js
 
 import BossRoomState from '../base/bossRoomState.js';
-import { PacketType } from '../../../../constants/header.js';
 import { BOSS_STATUS } from '../../../../constants/battle.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import BossSkillChoiceState from './bossSkillChoiceState.js';
 import BossItemChoiceState from './bossItemChoiceState.js';
 import BossIncreaseManaState from '../turn/bossIncreaseManaState.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import BossTurnChangeState from '../turn/bossTurnChangeState.js';
+import { sendBossBattleLog } from '../../../../utils/battle/bossHelpers.js';
 
 const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기'];
 
@@ -22,14 +21,11 @@ export default class BossActionState extends BossRoomState {
         return;
       }
 
-      const battleLog = {
-        msg: '당신의 차례입니다, 행동을 선택해주세요.',
-        typingAnimation: false,
-        btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: true })),
-      };
-
-      const response = createResponse(PacketType.S_BossBattleLog, { battleLog });
-      this.user.socket.write(response);
+      sendBossBattleLog(
+        this.user,
+        '당신의 차례입니다, 행동을 선택해주세요.',
+        BUTTON_OPTIONS.map((msg) => ({ msg, enable: true })),
+      );
     }
     this.bossRoom.gameStart = true;
   }

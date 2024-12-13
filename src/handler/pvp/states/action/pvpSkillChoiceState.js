@@ -1,4 +1,4 @@
-// src/handler/pvp/states/pvpSkillChoiceState.js
+// src/handler/pvp/states/action/pvpSkillChoiceState.js
 
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
@@ -16,7 +16,7 @@ export default class PvpSkillChoiceState extends PvpState {
 
     const buttons = this.mover.userSkills.map((skill) => ({
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
-      enable: this.mover.stat.mp >= skill.mana,
+      enable: this.mover.stat.mp >= skill.mana
     }));
 
     buttons.push({ msg: BUTTON_BACK, enable: true });
@@ -24,16 +24,13 @@ export default class PvpSkillChoiceState extends PvpState {
     const battleLog = {
       msg: '스킬을 선택하여 상대방을 공격하세요',
       typingAnimation: false,
-      btns: buttons,
+      btns: buttons
     };
 
-    const response = createResponse(PacketType.S_PvpBattleLog, { battleLog });
-    this.mover.socket.write(response);
+    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
   }
 
   async handleInput(responseCode) {
-    // responseCode 유효성 검사
-    // 스킬이 무조건 최대 개수만큼 있다는 보장은 없음
     if (responseCode < 1 || responseCode > this.mover.userSkills.length + 1) {
       invalidResponseCode(this.mover.socket);
       return;

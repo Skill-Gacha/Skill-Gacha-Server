@@ -3,7 +3,6 @@
 import dbPool from '../db/database.js';
 import redisClient from './redis.js';
 import { USER_QUERIES } from '../db/user/userQueries.js';
-import { SKILL_QUERIES } from '../db/skill/skillQueries.js';
 import { RATING_QUERIES } from '../db/rating/ratingQueries.js';
 import logger from '../utils/log/logger.js';
 import pLimit from 'p-limit';

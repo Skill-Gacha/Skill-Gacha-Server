@@ -8,7 +8,6 @@ import SessionManager from '#managers/sessionManager.js';
 import logger from '../../utils/log/logger.js';
 import QueueManager from '#managers/queueManager.js';
 
-
 export const cBossMatchHandler = async ({ socket, payload }) => {
   const sessionManager = serviceLocator.get(SessionManager);
   const queueManager = serviceLocator.get(QueueManager);
@@ -22,12 +21,10 @@ export const cBossMatchHandler = async ({ socket, payload }) => {
 
   try {
     if (isIn) {
-      // matchedPlayers는 [{id: userId}, ...] 형태
       const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
 
       const matchedUsers = matchedPlayers.map(({ id }) => sessionManager.getUser(id));
-
       matchedUsers.forEach((u) => {
         u.socket.write(createResponse(PacketType.S_AcceptRequest, {}));
       });

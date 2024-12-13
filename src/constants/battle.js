@@ -117,10 +117,10 @@ export const DAMAGE_RATE_MAP = {
 };
 
 export const DUNGEON_RESOURCES = {
-  1: { gold: 200, stone: 0 },
-  2: { gold: 400, stone: 1 },
-  3: { gold: 800, stone: 2 },
-  4: { gold: 1600, stone: 4 },
+  1: { gold: 2000, stone: 0 },
+  2: { gold: 4000, stone: 1 },
+  3: { gold: 8000, stone: 2 },
+  4: { gold: 16000, stone: 4 },
 };
 
 export const DUNGEON_DEAD_RESOURCES = {
@@ -156,10 +156,11 @@ export const DEBUFF = 26;
 export const PVP_TURN_TIMEOUT_LIMIT = 30000;
 export const PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT = 5000;
 export const BOSS_GAME_OVER_CONFIRM_TIMEOUT_LIMIT = 5000;
+export const BOSS_TURN_OVER_CONFIRM_TIMEOUT_LIMIT = 2500;
 
 export const DUNGEON_TURN_TIMEOUT_LIMIT = 30000;
 export const DUNGEON_TURN_OVER_CONFIRM_TIMEOUT_LIMIT = 5000;
-export const DUNGEON_TURN_OVER_LIMIT = 2000;
+export const DUNGEON_TURN_OVER_LIMIT = 1000;
 
 export const PHASE_ONE_TURN_TIMEOUT_LIMIT = 30000;
 export const PHASE_TWO_TURN_TIMEOUT_LIMIT = 20000;

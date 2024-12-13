@@ -1,14 +1,13 @@
-﻿// src/handler/dungeon/states/actionState.js
+﻿// src/handler/dungeon/states/action/actionState.js
 
 import DungeonState from '../base/dungeonState.js';
 import ConfirmState from '../confirm/confirmState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../../constants/battle.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import ItemChoiceState from './itemChoiceState.js';
 import IncreaseManaState from '../turn/increaseManaState.js';
 import SkillChoiceState from './skillChoiceState.js';
+import { sendBattleLog } from '../../../../utils/battle/dungeonHelpers.js';
 
 const ACTION_BUTTONS = [
   { msg: '스킬 사용', enable: true },
@@ -27,15 +26,7 @@ const ACTIONS = {
 export default class ActionState extends DungeonState {
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.ACTION;
-
-    const battleLog = {
-      msg: '행동을 선택해주세요.',
-      typingAnimation: false,
-      btns: ACTION_BUTTONS,
-    };
-
-    const response = createResponse(PacketType.S_BattleLog, { battleLog });
-    this.socket.write(response);
+    sendBattleLog(this.socket, '행동을 선택해주세요.', ACTION_BUTTONS);
   }
 
   async handleInput(responseCode) {

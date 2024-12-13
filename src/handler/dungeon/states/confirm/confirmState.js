@@ -1,10 +1,8 @@
-﻿// src/handler/dungeon/states/confirmState.js
+﻿// src/handler/dungeon/states/confirm/confirmState.js
 
 import DungeonState from '../base/dungeonState.js';
 import ActionState from '../action/actionState.js';
 import FleeMessageState from '../flee/fleeMessageState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { CONFIRM_TYPE, DUNGEON_STATUS } from '../../../../constants/battle.js';
 import RewardState from '../result/rewardState.js';
 import GameOverWinState from '../result/gameOverWinState.js';
@@ -12,9 +10,9 @@ import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode
 import FailFleeMessageState from '../flee/failFleeMessageState.js';
 import { saveRewardSkillsToRedis } from '../../../../db/redis/skillService.js';
 import { updateUserResource } from '../../../../db/user/userDb.js';
+import { sendBattleLog } from '../../../../utils/battle/dungeonHelpers.js';
 
 const BASE_FLEE_COST = 100;
-
 const CONFIRM_BUTTONS = [
   { msg: '예', enable: true },
   { msg: '아니오', enable: true },
@@ -47,15 +45,7 @@ export default class ConfirmState extends DungeonState {
 
   async enter() {
     this.dungeon.dungeonStatus = DUNGEON_STATUS.CONFIRM;
-
-    const battleLog = {
-      msg: this.message,
-      typingAnimation: false,
-      btns: CONFIRM_BUTTONS,
-    };
-
-    const confirmBattlelogResponse = createResponse(PacketType.S_BattleLog, { battleLog });
-    this.socket.write(confirmBattlelogResponse);
+    sendBattleLog(this.socket, this.message, CONFIRM_BUTTONS);
   }
 
   async handleInput(responseCode) {
@@ -81,7 +71,7 @@ export default class ConfirmState extends DungeonState {
   async handleFleeResponse(responseCode) {
     if (responseCode === CONFIRM_RESPONSES.YES) {
       const fleeCost = this.dungeon.dungeonCode * BASE_FLEE_COST;
-      if (this.user.gold < this.dungeon.dungeonCode * fleeCost) {
+      if (this.user.gold < fleeCost) {
         this.changeState(FailFleeMessageState);
       } else {
         this.user.reduceResource(fleeCost, 0);
@@ -110,11 +100,7 @@ export default class ConfirmState extends DungeonState {
   async handleSkillChangeResponse(responseCode) {
     if (responseCode === CONFIRM_RESPONSES.YES) {
       try {
-        await saveRewardSkillsToRedis(
-          this.user.nickname,
-          this.dungeon.newSkill.id,
-          this.deleteSkillIdx + 1,
-        );
+        await saveRewardSkillsToRedis(this.user.nickname, this.dungeon.newSkill.id, this.deleteSkillIdx + 1);
         this.changeState(GameOverWinState);
       } catch (error) {
         console.error('스킬 교환 중 오류 발생:', error.message);

@@ -1,11 +1,10 @@
-﻿// src/handler/dungeon/states/targetState.js
+﻿// src/handler/dungeon/states/action/targetState.js
 
 import DungeonState from '../base/dungeonState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import PlayerAttackState from '../combat/playerAttackState.js';
+import { sendBattleLog } from '../../../../utils/battle/dungeonHelpers.js';
 
 export default class TargetState extends DungeonState {
   async enter() {
@@ -15,13 +14,7 @@ export default class TargetState extends DungeonState {
       enable: monster.monsterHp > 0,
     }));
 
-    const battleLog = {
-      msg: '공격할 대상을 선택해주세요.',
-      typingAnimation: false,
-      btns: buttons,
-    };
-
-    this.socket.write(createResponse(PacketType.S_BattleLog, { battleLog }));
+    sendBattleLog(this.socket, '공격할 대상을 선택해주세요.', buttons);
   }
 
   async handleInput(responseCode) {

@@ -1,4 +1,4 @@
-﻿// src/handler/pvp/states/pvpActionState.js
+﻿// src/handler/pvp/states/action/pvpActionState.js
 
 import { CONFIRM_TYPE, PVP_STATUS } from '../../../../constants/battle.js';
 import PvpState from '../base/pvpState.js';
@@ -8,13 +8,13 @@ import PvpItemChoiceState from './pvpItemChoiceState.js';
 import PvpIncreaseManaState from '../turn/pvpIncreaseManaState.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
-import PvpConfirmState from '../confrim/pvpConfirmState.js';
-
-const BUTTON_OPTIONS = ['스킬 사용', '아이템 사용', '턴 넘기기', '도망치기'];
+import { BUTTON_OPTIONS } from '../../../../constants/pvp.js';
+import PvpConfirmState from '../confirm/pvpConfirmState.js';
 
 export default class PvpActionState extends PvpState {
   enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.ACTION;
+
     if (this.pvpRoom.gameStart) {
       const battleLog = {
         msg: '행동을 선택해주세요.',
@@ -22,9 +22,9 @@ export default class PvpActionState extends PvpState {
         btns: BUTTON_OPTIONS.map((msg) => ({ msg, enable: true })),
       };
 
-      const response = createResponse(PacketType.S_PvpBattleLog, { battleLog });
-      this.mover.socket.write(response);
+      this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
     }
+
     this.pvpRoom.gameStart = true;
   }
 

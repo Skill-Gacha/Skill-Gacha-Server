@@ -3,11 +3,11 @@
 import serviceLocator from '#locator/serviceLocator.js';
 import TimerManager from '#managers/timerManager.js';
 import { BOSS_STATUS, PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT } from '../../../../constants/battle.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import BossActionState from '../action/bossActionState.js';
 import BossRoomState from '../base/bossRoomState.js';
 import BossTurnChangeState from './bossTurnChangeState.js';
+import { sendBossBattleLog, sendBossPlayerStatusOfUsers } from '../../../../utils/battle/bossHelpers.js';
+import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 
 const HP_RECOVERY_MIN = 5;
 const HP_RECOVERY_MAX = 10;
@@ -19,7 +19,7 @@ const BUTTON_CONFIRM_DISABLE = [{ msg: '확인', enable: false }];
 export default class BossIncreaseManaState extends BossRoomState {
   constructor(...args) {
     super(...args);
-    this.timeoutId = null; // 타이머 식별자 초기화
+    this.timeoutId = null;
     this.timerMgr = serviceLocator.get(TimerManager);
   }
 
@@ -33,7 +33,6 @@ export default class BossIncreaseManaState extends BossRoomState {
       this.updateUsersStatus(this.users);
     }
 
-    // 타이머 매니저를 통해 타이머 설정
     this.timeoutId = this.timerMgr.requestTimer(PVP_TURN_OVER_CONFIRM_TIMEOUT_LIMIT, () => {
       this.handleInput(1);
     });
@@ -52,67 +51,47 @@ export default class BossIncreaseManaState extends BossRoomState {
 
       if (users.length === 1) {
         const battleLogMsg = `턴을 넘기셔서 체력이 ${user.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${user.stat.mp - existingMp}만큼 회복하였습니다.`;
-        const battleLogResponse = this.createBattleLogResponse(battleLogMsg, user);
-        user.socket.write(battleLogResponse);
+        sendBossBattleLog(
+          user,
+          battleLogMsg,
+          this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
+        );
       }
     });
 
-    if (users.length > 1) {
+    if (users.length > 1 && aliveUsers.length > 0) {
       const battleLogMsg = `모든 유저가 체력과 마나를 회복했습니다.`;
       aliveUsers.forEach((user) => {
-        const battleLogResponse = this.createBattleLogResponse(battleLogMsg, user);
-        user.socket.write(battleLogResponse);
+        sendBossBattleLog(
+          user,
+          battleLogMsg,
+          this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
+        );
       });
     }
 
-    const statusResponse = this.createStatusResponse(users);
-
-    this.users.forEach((user) => {
-      user.socket.write(statusResponse);
-    });
+    sendBossPlayerStatusOfUsers(this.users, users);
   }
 
   getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  createStatusResponse(users) {
-    return createResponse(PacketType.S_BossPlayerStatusNotification, {
-      playerId: users.map((user) => user.id),
-      hp: users.map((user) => user.stat.hp),
-      mp: users.map((user) => user.stat.mp),
-    });
-  }
-
-  createBattleLogResponse(msg, user) {
-    return createResponse(PacketType.S_BossBattleLog, {
-      battleLog: {
-        msg,
-        typingAnimation: false,
-        btns: this.user === user ? BUTTON_CONFIRM_ENABLE : BUTTON_CONFIRM_DISABLE,
-      },
-    });
-  }
-
   async handleInput(responseCode) {
     const aliveUsers = this.users.filter((user) => !user.isDead);
     if (responseCode === 1) {
       if (this.timeoutId) {
-        this.timerMgr.cancelTimer(this.timeoutId); // 타이머 취소
+        this.timerMgr.cancelTimer(this.timeoutId);
         this.timeoutId = null;
       }
 
       if (this.user.turnOff === false && aliveUsers.length !== 0) {
         this.changeState(BossActionState);
       } else if (this.user.turnOff === true) {
-        this.user.socket.write(
-          createResponse(PacketType.S_BossBattleLog, {
-            battleLog: {
-              msg: '다음차례로 넘어갑니다.',
-              typingAnimation: false,
-              btns: BUTTON_CONFIRM_DISABLE,
-            },
-          }),
+        sendBossBattleLog(
+          this.user,
+          '다음차례로 넘어갑니다.',
+          BUTTON_CONFIRM_DISABLE,
         );
         this.user.turnOff = false;
         this.changeState(BossTurnChangeState);

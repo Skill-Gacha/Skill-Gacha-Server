@@ -3,7 +3,7 @@
 import { buffs } from '../../constants/battle.js';
 import logger from '../log/logger.js';
 
-// 자신
+// 내 상태를 반환
 export const MyStatus = (my) => {
   return {
     playerClass: my.element,
@@ -16,7 +16,7 @@ export const MyStatus = (my) => {
   };
 };
 
-// 상대
+// 상대 상태 반환
 export const OpponentStatus = (opponent) => {
   return {
     playerClass: opponent.element,
@@ -27,11 +27,11 @@ export const OpponentStatus = (opponent) => {
   };
 };
 
-//버프
+// 버프 스킬 적용
 export const buffSkill = (user, skillId) => {
   if (buffs[skillId]) {
     user.stat.buff = buffs[skillId];
   } else {
-    logger.error(`알 수 없는 ID: ${skillId}`);
+    logger.error(`buffSkill: 알 수 없는 스킬 ID: ${skillId}`);
   }
 };

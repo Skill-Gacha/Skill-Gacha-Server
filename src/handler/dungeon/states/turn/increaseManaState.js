@@ -1,12 +1,11 @@
-// src/handler/dungeon/states/increaseManaState.js
+// src/handler/dungeon/states/turn/increaseManaState.js
 
 import DungeonState from '../base/dungeonState.js';
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import ActionState from '../action/actionState.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import { DUNGEON_STATUS } from '../../../../constants/battle.js';
 import EnemyAttackState from '../combat/enemyAttackState.js';
+import { sendBattleLog, sendPlayerHpMp } from '../../../../utils/battle/dungeonHelpers.js';
 
 const HP_RECOVERY_MIN = 5;
 const HP_RECOVERY_MAX = 10;
@@ -25,28 +24,11 @@ export default class IncreaseManaState extends DungeonState {
 
     this.user.increaseHpMp(randomHp, randomMp);
 
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerHp, {
-        hp: this.user.stat.hp,
-      }),
-    );
-    this.socket.write(
-      createResponse(PacketType.S_SetPlayerMp, {
-        mp: this.user.stat.mp,
-      }),
-    );
+    sendPlayerHpMp(this.socket, this.user);
 
-    // 마나 회복 로직 전달
-    const increaseManaBattleLogResponse = createResponse(PacketType.S_BattleLog, {
-      battleLog: {
-        msg: `${this.user.getAddMsg()} 체력이 ${this.user.stat.hp - existingHp}만큼 회복하였습니다. \n마나가 ${this.user.stat.mp - existingMp}만큼 회복하였습니다.`,
-        typingAnimation: false,
-        btns: BUTTON_CONFIRM,
-      },
-    });
-
+    const battleLogMsg = `체력이 ${this.user.stat.hp - existingHp}만큼 회복하였습니다.\n마나가 ${this.user.stat.mp - existingMp}만큼 회복하였습니다.`;
     this.dungeon.lastActivity = Date.now();
-    this.socket.write(increaseManaBattleLogResponse);
+    sendBattleLog(this.socket, battleLogMsg, BUTTON_CONFIRM);
   }
 
   async handleInput(responseCode) {

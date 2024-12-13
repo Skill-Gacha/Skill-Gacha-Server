@@ -29,7 +29,6 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
   }
 
   try {
-    // 수락했을 때 처리
     if (accept) {
       const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'boss');
       if (!matchedPlayers) return;
@@ -80,18 +79,13 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         bossRoom.currentState = new BossActionState(bossRoom, bossRoom.userTurn);
         await bossRoom.currentState.enter();
       }
-    }
-
-    // 거절했을 때 처리
-    else {
-      // 입장 실패 패킷
+    } else {
       const failResponse = createResponse(PacketType.S_BossMatchNotification, {
         success: false,
         playerIds: [],
         partyList: [],
       });
 
-      // 먼저 수락한 유저도 매칭큐에서 제거 및 입장 실패 패킷 전송
       const acceptQueue = queueManager.getAcceptQueue();
       const waitingJobs = await acceptQueue.getJobs('waiting');
 
@@ -99,7 +93,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         waitingJobs.map(async (job) => {
           const userId = job.data.id;
           const user = sessionManager.getUser(userId);
-          user.socket.write(failResponse); // 사용자에게 실패 응답 전송
+          user.socket.write(failResponse);
 
           await queueManager.removeMatchingQueue(user, 'boss');
           await queueManager.removeAcceptQueueInUser(user);
@@ -120,13 +114,13 @@ const createBattleLogResponse = (enable) => ({
   })),
 });
 
+// 여기서 헬퍼 파일을 만들지 않고 그대로 유지
 const sendBossMatchNotification = (player, playerIds, partyList, monsterStatus, enable) => {
-  const battleLog = createBattleLogResponse(enable);
   const response = createResponse(PacketType.S_BossMatchNotification, {
     success: true,
     playerIds,
     partyList,
-    battleLog,
+    battleLog: createBattleLogResponse(enable),
     monsterStatus,
   });
   player.socket.write(response);

@@ -5,6 +5,7 @@ import logger from '../log/logger.js';
 import CustomError from '../error/customError.js';
 import { ErrorCodes } from '../error/errorCodes.js';
 
+// DB 테스트 커넥션
 const testConnection = async () => {
   try {
     const [rows] = await dbPool.query(`SELECT 1 + 1 AS solution`);

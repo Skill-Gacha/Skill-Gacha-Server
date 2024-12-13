@@ -1,9 +1,8 @@
 // src/handler/boss/states/result/bossGameOverWinState.js
 
-import { PacketType } from '../../../../constants/header.js';
-import { createResponse } from '../../../../utils/response/createResponse.js';
 import { BOSS_STATUS } from '../../../../constants/battle.js';
 import BossRoomState from '../base/bossRoomState.js';
+import { sendBossScreenText } from '../../../../utils/battle/bossHelpers.js';
 
 export default class BossGameOverWinState extends BossRoomState {
   async enter() {
@@ -21,17 +20,9 @@ export default class BossGameOverWinState extends BossRoomState {
       user.completeTurn = false;
     });
 
-    const winResponse = createResponse(PacketType.S_ScreenText, {
-      screenText: {
-        msg: '축하합니다. Null Dragon을 무찌르는데 성공하셨습니다.',
-        typingAnimation: false,
-      },
-    });
-
-    this.users.forEach((user) => {
-      user.socket.write(winResponse);
-    });
+    sendBossScreenText(this.users, '축하합니다. Null Dragon을 무찌르는데 성공하셨습니다.');
   }
 
-  async handleInput(responseCode) {}
+  async handleInput(responseCode) {
+  }
 }

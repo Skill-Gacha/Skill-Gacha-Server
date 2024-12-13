@@ -30,7 +30,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
       return sendBuyItemResponse(socket, false);
     }
 
-    if (userItem && userItem.count >= 3) {
+    if (userItem && userItem.count >= 30) {
       return sendBuyItemResponse(socket, false);
     }
 

@@ -4,15 +4,15 @@ import { PACKET_ID_LENGTH, PACKET_SIZE_LENGTH } from '../../constants/constants.
 import { getProtoMessagesById } from '../../init/loadProto.js';
 import logger from '../log/logger.js';
 
+// 응답 패킷 생성
 export const createResponse = (packetId, data = null) => {
-  // 패킷 ID로 메시지 타입 가져오기
   const messageType = getProtoMessagesById(packetId);
 
   if (!messageType) {
     logger.error(`지원되지 않는 PacketId입니다: ${packetId}`);
+    return Buffer.alloc(0); // 빈 버퍼 반환
   }
 
-  // PacketData 인코딩
   let packetData;
   try {
     packetData = messageType.encode(data).finish();
@@ -21,19 +21,12 @@ export const createResponse = (packetId, data = null) => {
     throw error;
   }
 
-  // PacketSize 계산 (PacketId 포함)
-  const packetSize = PACKET_SIZE_LENGTH + PACKET_ID_LENGTH + packetData.length; // PacketSize(4 byte) + PacketId(1 byte) + PacketData
-
-  // PacketSize를 빅 엔디안으로 씀
+  const packetSize = PACKET_SIZE_LENGTH + PACKET_ID_LENGTH + packetData.length;
   const packetSizeBuffer = Buffer.alloc(PACKET_SIZE_LENGTH);
-  packetSizeBuffer.writeUInt32BE(packetSize, 0); // 빅 엔디안
+  packetSizeBuffer.writeUInt32BE(packetSize, 0);
 
-  // PacketId 씀
   const packetIdBuffer = Buffer.alloc(PACKET_ID_LENGTH);
   packetIdBuffer.writeUInt8(packetId, 0);
 
-  // 패킷 조립
-  const responseBuffer = Buffer.concat([packetSizeBuffer, packetIdBuffer, packetData]);
-
-  return responseBuffer;
+  return Buffer.concat([packetSizeBuffer, packetIdBuffer, packetData]);
 };
