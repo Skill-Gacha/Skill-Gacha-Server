@@ -1,5 +1,3 @@
-// src/managers/queueManager.js
-
 import logger from '../utils/log/logger.js';
 import Queue from 'bull';
 import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
@@ -12,7 +10,6 @@ import SessionManager from '#managers/sessionManager.js';
 class QueueManager {
   constructor() {
     logger.info('큐 관리자 생성');
-    // Bull 큐 초기화 (유저 ID만 저장)
     this.pvpMatchingQueue = new Queue('pvpMatchingQueue', {
       redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
     });
@@ -23,18 +20,18 @@ class QueueManager {
       redis: { host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD },
     });
 
-    this.queueTimeout = SESSION_TIMEOUT; // 30분
-    this.userTimeout = USER_TIMEOUT; // 30분
-    this.cleansingInterval = CLEANSING_INTERVAL; // 1분
+    this.queueTimeout = SESSION_TIMEOUT;
+    this.userTimeout = USER_TIMEOUT;
+    this.cleansingInterval = CLEANSING_INTERVAL;
 
     this.lock = new AsyncLock();
-    this.acceptQueueLock = new AsyncLock(); // acceptQueue를 위한 별도의 락 추가
+    // this.acceptQueueLock = new AsyncLock(); // 제거 - 개별 락 대신 pendingGroups 전용 락으로 통합  // 변경 사항
+    // pendingGroups 접근을 보호하기 위한 전용 락 사용
+    this.pendingGroupsLock = new AsyncLock(); // 변경 사항
 
-    this.pendingGroups = new Map(); // groupId -> { userIds: Set, acceptedIds: Set }
+    this.pendingGroups = new Map();
 
-    // Job 이벤트 리스닝
     this.setupJobListeners();
-
     this.startCleansingInterval();
   }
 
@@ -47,12 +44,16 @@ class QueueManager {
 
       queue.on('failed', (job, err) => {
         logger.error(`${queue.name} Job 실패: ${job.id}`, err);
-        // 필요 시 재시도 로직 또는 알림 추가
       });
     });
   }
 
-  // **매칭 큐 관리 (유저 ID만 저장)**
+  // pendingGroups 접근을 안전하게 하기 위한 헬퍼 메서드
+  async withPendingGroupsLock(fn) { // 변경 사항
+    return this.pendingGroupsLock.acquire('pendingGroups', fn);
+  }
+
+  // **매칭 큐 관리**
   async addMatchingQueue(user, maxPlayer, queueType) {
     return this.lock.acquire(`matchingQueue_${queueType}`, async () => {
       try {
@@ -76,14 +77,13 @@ class QueueManager {
 
         user.matchingAddedAt = Date.now();
 
-        // 유저 ID만 큐에 원자적으로 추가
         await matchingQueue.add(
           { id: user.id },
           {
             removeOnComplete: true,
             removeOnFail: true,
-            attempts: 3, // 최대 3회 재시도
-            backoff: 5000, // 5초 간격으로 재시도
+            attempts: 3,
+            backoff: 5000,
           },
         );
 
@@ -91,7 +91,6 @@ class QueueManager {
 
         const waitingJobs = await matchingQueue.getJobs(['waiting']);
 
-        // 매칭 조건 충족 시 매칭 그룹 생성
         if (queueType === 'boss') {
           return this.handleBossMatching(waitingJobs, maxPlayer, matchingQueue);
         } else if (queueType === 'pvp') {
@@ -104,20 +103,21 @@ class QueueManager {
     });
   }
 
-  // BOSS 매칭
   async handleBossMatching(waitingJobs, maxPlayer, matchingQueue) {
     if (waitingJobs.length >= maxPlayer) {
       const matchedJobs = waitingJobs.splice(0, maxPlayer);
       const matchedUserIds = matchedJobs.map((job) => job.data.id);
 
-      // 새로운 그룹 ID 생성
       const groupId = uuidv4();
-      this.pendingGroups.set(groupId, {
-        userIds: new Set(matchedUserIds),
-        acceptedIds: new Set(),
+
+      // pendingGroups 업데이트도 락으로 보호
+      await this.withPendingGroupsLock(async () => { // 변경 사항
+        this.pendingGroups.set(groupId, {
+          userIds: new Set(matchedUserIds),
+          acceptedIds: new Set(),
+        });
       });
 
-      // 매칭된 유저들을 매칭 큐에서 제거
       await Promise.all(
         matchedJobs.map(async (job) => {
           await job.remove();
@@ -125,13 +125,11 @@ class QueueManager {
         }),
       );
 
-      // 그룹 ID와 유저 ID 반환
       return { groupId, userIds: matchedUserIds };
     }
     return null;
   }
 
-  // PVP 매칭
   async handlePvpMatching(waitingJobs, maxPlayer, matchingQueue) {
     if (waitingJobs.length >= maxPlayer) {
       const matchedJobs = waitingJobs.splice(0, maxPlayer);
@@ -167,38 +165,13 @@ class QueueManager {
       if (existingUser) {
         await existingUser.remove();
         logger.info('매칭큐에서 유저를 지웠습니다.');
-        user.setMatched(false); // 매칭 상태 해제
+        user.setMatched(false);
         return true;
       }
       logger.info('매칭큐에 유저가 존재하지 않습니다.');
       return false;
     } catch (error) {
       logger.error('매칭큐 제거 중 오류 발생:', error);
-      return false;
-    }
-  }
-
-  getAcceptQueue() {
-    return this.acceptQueue;
-  }
-
-  async removeAcceptQueueInUser(user) {
-    try {
-      return await this.acceptQueueLock.acquire('acceptQueue', async () => {
-        const acceptQueueJobs = await this.acceptQueue.getJobs(['waiting']);
-        const userJob = acceptQueueJobs.find((job) => job.data.id === user.id);
-
-        if (userJob) {
-          await userJob.remove();
-          logger.info('AcceptQueue에서 유저를 지웠습니다.');
-          user.setMatched(false); // 매칭 상태 해제
-          return true;
-        }
-        logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
-        return false;
-      });
-    } catch (error) {
-      logger.error('AcceptQueue에서 유저 제거 중 오류 발생:', error);
       return false;
     }
   }
@@ -214,6 +187,94 @@ class QueueManager {
     }
   }
 
+  // 수락 큐 제거 로직 역시 pendingGroupsLock 사용(원자적 처리를 위해)
+  async removeAcceptQueueInUser(user) {
+    // 여기서는 락을 걸지 않는다.
+    // 만약 락이 필요한 경우는 이 함수를 호출하는 상위 로직(예: acceptUserInGroup)에서 걸어준다.
+    const acceptQueueJobs = await this.acceptQueue.getJobs(['waiting']);
+    const userJob = acceptQueueJobs.find((job) => job.data.id === user.id);
+
+    if (userJob) {
+      await userJob.remove();
+      logger.info('AcceptQueue에서 유저를 지웠습니다.');
+      user.setMatched(false);
+      return true;
+    }
+    logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
+    return false;
+  }
+
+  async rejectGroup(groupId) { // 매칭 거절 시 그룹 해제 로직을 한곳에 모음  // 변경 사항
+    const sessionManager = serviceLocator.get(SessionManager);
+    const group = this.pendingGroups.get(groupId);
+    if (!group) return;
+
+    const failResponse = Buffer.from(JSON.stringify({
+      header: { type: 'S_BossMatchNotification' },
+      payload: {
+        success: false,
+        playerIds: [],
+        partyList: [],
+      },
+    }));
+
+    for (const uid of group.userIds) {
+      const u = sessionManager.getUser(uid);
+      if (u) {
+        try {
+          u.socket.write(failResponse);
+        } catch(e) {
+          logger.error('응답 전송 중 오류:', e);
+        }
+        await this.removeMatchingQueue(u, 'boss');
+        await this.removeAcceptQueueInUser(u);
+        u.setMatched(false);
+      }
+    }
+
+    this.pendingGroups.delete(groupId);
+  }
+
+  async acceptUserInGroup(user, groupId) {
+    // 이미 withPendingGroupsLock 내부에서 이 함수가 호출되고 있다고 가정
+    const group = this.pendingGroups.get(groupId);
+    if (!group) return false;
+    group.acceptedIds.add(user.id);
+    logger.info(`유저 ${user.id}가 매칭을 수락했습니다.`);
+
+    if (group.acceptedIds.size === group.userIds.size) {
+      // 모든 유저 수락 완료
+      const sessionManager = serviceLocator.get(SessionManager);
+
+      const actualMatchedPlayers = Array.from(group.userIds)
+        .map((uid) => sessionManager.getUser(uid))
+        .filter((u) => u !== undefined && u !== null);
+
+      if (actualMatchedPlayers.length < group.userIds.size) {
+        logger.warn('매칭된 사용자 중 일부가 유효하지 않습니다.');
+        for (const p of actualMatchedPlayers) {
+          // 여기서 removeAcceptQueueInUser 호출
+          await this.removeAcceptQueueInUser(p);
+          p.setMatched(false);
+        }
+        this.pendingGroups.delete(groupId);
+        return false;
+      }
+
+      // 유효한 플레이어 모두 수락 처리
+      for (const p of actualMatchedPlayers) {
+        // 이미 withPendingGroupsLock 내이므로 문제가 없음
+        await this.removeAcceptQueueInUser(p);
+        p.setMatched(false);
+      }
+
+      this.pendingGroups.delete(groupId);
+      return actualMatchedPlayers;
+    }
+
+    return null;
+  }
+
   // **큐 클렌징 로직**
   async startCleansingInterval() {
     setInterval(async () => {
@@ -227,11 +288,10 @@ class QueueManager {
 
         try {
           const waitingJobs = await matchingQueue.getJobs(['waiting']);
-
           const jobsToRemove = waitingJobs.filter((job) => {
             const { id: uid } = job.data;
             const u = sessionManager.getUser(uid);
-            if (!u) return true; // 유저가 없으면 제거
+            if (!u) return true;
             if (now - u.matchingAddedAt > this.userTimeout) {
               logger.info(`매칭 큐에서 사용자 ${uid} 제거`);
               return true;
@@ -253,14 +313,15 @@ class QueueManager {
         }
       }
 
-      // Pending Groups 클렌징
-      for (const [groupId, group] of this.pendingGroups.entries()) {
-        const allUsersExist = Array.from(group.userIds).every((uid) => sessionManager.getUser(uid));
-        if (!allUsersExist) {
-          logger.info(`그룹 ${groupId}의 일부 유저가 존재하지 않아 그룹 제거`);
-          this.pendingGroups.delete(groupId);
+      await this.withPendingGroupsLock(async () => { // 변경 사항
+        for (const [groupId, group] of this.pendingGroups.entries()) {
+          const allUsersExist = Array.from(group.userIds).every((uid) => sessionManager.getUser(uid));
+          if (!allUsersExist) {
+            logger.info(`그룹 ${groupId}의 일부 유저가 존재하지 않아 그룹 제거`);
+            this.pendingGroups.delete(groupId);
+          }
         }
-      }
+      });
     }, this.cleansingInterval);
   }
 }
