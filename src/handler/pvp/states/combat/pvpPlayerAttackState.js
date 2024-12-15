@@ -19,10 +19,14 @@ export default class PvpPlayerAttackState extends PvpState {
 
     if (userSkillInfo.id >= BUFF_SKILL || userSkillInfo.id === DEBUFF) {
       buffSkill(this.mover, userSkillInfo.id);
-      pvpUseBuffSkill(this.mover, this.stopper);
 
       this.mover.reduceMp(userSkillInfo.mana);
-      this.mover.socket.write(createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }));
+
+      pvpUseBuffSkill(this.mover, this.stopper);
+
+      this.mover.socket.write(
+        createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
+      );
 
       this.sendActionAnimations(userSkillInfo.effectCode);
       this.changeState(PvpTurnChangeState);
@@ -64,9 +68,15 @@ export default class PvpPlayerAttackState extends PvpState {
   }
 
   sendStatusUpdates() {
-    this.mover.socket.write(createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }));
-    this.mover.socket.write(createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }));
-    this.stopper.socket.write(createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.stopper.stat.hp }));
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerMp, { mp: this.mover.stat.mp }),
+    );
+    this.mover.socket.write(
+      createResponse(PacketType.S_SetPvpEnemyHp, { hp: this.stopper.stat.hp }),
+    );
+    this.stopper.socket.write(
+      createResponse(PacketType.S_SetPvpPlayerHp, { hp: this.stopper.stat.hp }),
+    );
   }
 
   sendActionAnimations(effectCode) {
@@ -81,7 +91,9 @@ export default class PvpPlayerAttackState extends PvpState {
       typingAnimation: false,
       btns: [{ msg: this.stopper.nickname, enable: false }],
     };
-    this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog: battleLogForMover }));
+    this.mover.socket.write(
+      createResponse(PacketType.S_PvpBattleLog, { battleLog: battleLogForMover }),
+    );
 
     const stopperLog = {
       msg: `${this.mover.nickname}에게 ${damage}의 피해를 입었습니다.`,

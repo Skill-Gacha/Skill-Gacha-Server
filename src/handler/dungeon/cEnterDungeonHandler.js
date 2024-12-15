@@ -23,6 +23,16 @@ export const cEnterDungeonHandler = async ({ socket, payload }) => {
   const sessionManager = serviceLocator.get(SessionManager);
   const user = sessionManager.getUserBySocket(socket);
 
+  // 유저 버프 초기화
+  user.isDead = false;
+  user.stat.buff = null;
+  user.stat.battleCry = false;
+  user.stat.stimPack = false;
+  user.stat.dangerPotion = false;
+  user.stat.protect = false;
+  user.stat.downResist = false;
+  user.completeTurn = false;
+
   if (!user) {
     logger.error('cEnterDungeonHandler: 유저를 찾을 수 없습니다.');
     return;

@@ -9,20 +9,8 @@ export default class BossGameOverLoseState extends BossRoomState {
     this.bossRoom.bossStatus = BOSS_STATUS.GAME_OVER_LOSE;
     this.bossRoom.clearTurnTimer();
 
-    this.users.forEach((user) => {
-      user.isDead = false;
-      user.buff = null;
-      user.battleCry = false;
-      user.stimPack = false;
-      user.dangerPotion = false;
-      user.protect = false;
-      user.downResist = false;
-      user.completeTurn = false;
-    });
-
     sendBossScreenText(this.users, '모든 유저가 사망하여 마을로 복귀합니다...');
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }

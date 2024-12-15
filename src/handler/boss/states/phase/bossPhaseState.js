@@ -10,7 +10,7 @@ import { sendBossBattleLog, sendBossPhase } from '../../../../utils/battle/bossH
 const DISABLE_BUTTONS = [{ msg: '보스가 공격 중', enable: false }];
 const BOSS_MONSTER_MODEL = 2029;
 const MIN_ELEMENT_CODE_OFFSET = 1001;
-const MAX_ELEMENT_CODE_OFFSET = 1005;
+const MAX_ELEMENT_CODE_OFFSET = 1006;
 
 export default class BossPhaseState extends BossRoomState {
   async enter() {
@@ -63,6 +63,5 @@ export default class BossPhaseState extends BossRoomState {
     sendBossBattleLog(this.users, message, DISABLE_BUTTONS);
   }
 
-  async handleInput(responseCode) {
-  }
+  async handleInput(responseCode) {}
 }

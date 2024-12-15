@@ -15,9 +15,6 @@ export default class PvpGameOverState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.GAME_OVER;
 
-    this.resetUserBuffs(this.mover);
-    this.resetUserBuffs(this.stopper);
-
     try {
       const [winnerRating, loserRating] = await Promise.all([
         getPlayerRatingFromRedis(this.mover.nickname),
@@ -66,14 +63,5 @@ export default class PvpGameOverState extends PvpState {
     } else {
       invalidResponseCode(this.mover.socket);
     }
-  }
-
-  resetUserBuffs(user) {
-    user.buff = null;
-    user.battleCry = false;
-    user.stimPack = false;
-    user.dangerPotion = false;
-    user.protect = false;
-    user.downResist = false;
   }
 }

@@ -12,18 +12,10 @@ import {
   DUNGEON_STATUS,
   DUNGEON_TURN_OVER_LIMIT,
 } from '../../../../constants/battle.js';
-import {
-  checkEnemyResist,
-  skillEnhancement,
-  updateDamage,
-} from '../../../../utils/battle/calculate.js';
+import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { useBuffSkill } from '../../dungeonUtils/dungeonBuffs.js';
-import {
-  sendBattleLog,
-  sendMonsterHpUpdate,
-  sendPlayerAction,
-} from '../../../../utils/battle/dungeonHelpers.js';
+import { sendBattleLog, sendMonsterHpUpdate, sendPlayerAction } from '../../../../utils/battle/dungeonHelpers.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { PacketType } from '../../../../constants/header.js';
 
@@ -72,9 +64,10 @@ export default class PlayerAttackState extends DungeonState {
 
   async handleBuffSkill(skillInfo) {
     buffSkill(this.user, skillInfo.id);
-    useBuffSkill(this.user, this.socket, this.dungeon);
 
     this.user.reduceMp(skillInfo.mana);
+    useBuffSkill(this.user, this.socket, this.dungeon);
+
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
     sendPlayerAction(this.socket, [], ACTION_ANIMATION_CODE, skillInfo.effectCode);

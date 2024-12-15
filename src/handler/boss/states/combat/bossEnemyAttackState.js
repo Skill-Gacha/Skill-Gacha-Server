@@ -124,7 +124,7 @@ export default class BossEnemyAttackState extends BossRoomState {
     sendBossPlayerStatusOfUsers(this.users, [user]);
 
     sendBossMonsterAction(
-      [user],
+      this.users,
       bossMonster.monsterIdx,
       BOSS_SINGLE_ATTACK,
       BOSS_CHANGE_STATUS_EFFECT,
