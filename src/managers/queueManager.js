@@ -5,7 +5,7 @@ import Queue from 'bull';
 import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from '../constants/env.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import AsyncLock from 'async-lock';
-import { SESSION_TIMEOUT, USER_TIMEOUT, CLEANSING_INTERVAL } from '../constants/timeouts.js';
+import { CLEANSING_INTERVAL, SESSION_TIMEOUT, USER_TIMEOUT } from '../constants/timeouts.js';
 import { v4 as uuidv4 } from 'uuid';
 import SessionManager from '#managers/sessionManager.js';
 
@@ -84,7 +84,7 @@ class QueueManager {
             removeOnFail: true,
             attempts: 3, // 최대 3회 재시도
             backoff: 5000, // 5초 간격으로 재시도
-          }
+          },
         );
 
         logger.info('매칭큐에 유저를 추가합니다.');
@@ -122,7 +122,7 @@ class QueueManager {
         matchedJobs.map(async (job) => {
           await job.remove();
           logger.info(`매칭 큐에서 유저 ${job.data.id}를 제거했습니다.`);
-        })
+        }),
       );
 
       // 그룹 ID와 유저 ID 반환
@@ -141,7 +141,7 @@ class QueueManager {
         matchedJobs.map(async (job) => {
           await job.remove();
           logger.info(`매칭 큐에서 유저 ${job.data.id}를 제거했습니다.`);
-        })
+        }),
       );
 
       return matchedUserIds.map((userId) => ({ id: userId }));
@@ -245,7 +245,7 @@ class QueueManager {
             logger.info(`${queueType.toUpperCase()} 매칭 큐 클렌징 완료`);
           } else {
             logger.info(
-              `${queueType.toUpperCase()} 큐가 비어있거나 타임아웃인 유저가 존재하지 않아 클렌징이 수행되지 않았습니다.`
+              `${queueType.toUpperCase()} 큐가 비어있거나 타임아웃인 유저가 존재하지 않아 클렌징이 수행되지 않았습니다.`,
             );
           }
         } catch (error) {

@@ -5,11 +5,7 @@ import PvpTurnChangeState from '../turn/pvpTurnChangeState.js';
 import PvpEnemyDeadState from './pvpEnemyDeadState.js';
 import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
-import {
-  checkStopperResist,
-  skillEnhancement,
-  updateDamage,
-} from '../../../../utils/battle/calculate.js';
+import { checkStopperResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
 import { BUFF_SKILL, DEBUFF } from '../../../../constants/battle.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { pvpUseBuffSkill } from '../../pvpUtils/pvpBuffs.js';

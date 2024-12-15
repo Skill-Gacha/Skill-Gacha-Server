@@ -23,7 +23,7 @@ const initializeRedis = async () => {
     const promises = users.map((user) =>
       limit(async () => {
         const nickname = user.nickname;
-        
+
         try {
           // 스킬 정보 가져오기
           // const [skillsRows] = await dbPool.query(SKILL_QUERIES.GET_SKILLS_BY_NICKNAME, [nickname]);
