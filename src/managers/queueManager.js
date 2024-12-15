@@ -188,20 +188,20 @@ class QueueManager {
   }
 
   // 수락 큐 제거 로직 역시 pendingGroupsLock 사용(원자적 처리를 위해)
-  async removeAcceptQueueInUser(user) { // 변경 사항
-    return this.withPendingGroupsLock(async () => {
-      const acceptQueueJobs = await this.acceptQueue.getJobs(['waiting']);
-      const userJob = acceptQueueJobs.find((job) => job.data.id === user.id);
+  async removeAcceptQueueInUser(user) {
+    // 여기서는 락을 걸지 않는다.
+    // 만약 락이 필요한 경우는 이 함수를 호출하는 상위 로직(예: acceptUserInGroup)에서 걸어준다.
+    const acceptQueueJobs = await this.acceptQueue.getJobs(['waiting']);
+    const userJob = acceptQueueJobs.find((job) => job.data.id === user.id);
 
-      if (userJob) {
-        await userJob.remove();
-        logger.info('AcceptQueue에서 유저를 지웠습니다.');
-        user.setMatched(false);
-        return true;
-      }
-      logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
-      return false;
-    });
+    if (userJob) {
+      await userJob.remove();
+      logger.info('AcceptQueue에서 유저를 지웠습니다.');
+      user.setMatched(false);
+      return true;
+    }
+    logger.info('AcceptQueue에 유저가 존재하지 않습니다.');
+    return false;
   }
 
   async rejectGroup(groupId) { // 매칭 거절 시 그룹 해제 로직을 한곳에 모음  // 변경 사항
@@ -235,15 +235,15 @@ class QueueManager {
     this.pendingGroups.delete(groupId);
   }
 
-  async acceptUserInGroup(user, groupId) { // 유저 매칭 수락 로직 정리  // 변경 사항
+  async acceptUserInGroup(user, groupId) {
+    // 이미 withPendingGroupsLock 내부에서 이 함수가 호출되고 있다고 가정
     const group = this.pendingGroups.get(groupId);
     if (!group) return false;
     group.acceptedIds.add(user.id);
     logger.info(`유저 ${user.id}가 매칭을 수락했습니다.`);
 
-    // 모든 유저가 수락했는지 확인
     if (group.acceptedIds.size === group.userIds.size) {
-      // 매칭 완료 로직 처리
+      // 모든 유저 수락 완료
       const sessionManager = serviceLocator.get(SessionManager);
 
       const actualMatchedPlayers = Array.from(group.userIds)
@@ -253,6 +253,7 @@ class QueueManager {
       if (actualMatchedPlayers.length < group.userIds.size) {
         logger.warn('매칭된 사용자 중 일부가 유효하지 않습니다.');
         for (const p of actualMatchedPlayers) {
+          // 여기서 removeAcceptQueueInUser 호출
           await this.removeAcceptQueueInUser(p);
           p.setMatched(false);
         }
@@ -260,8 +261,9 @@ class QueueManager {
         return false;
       }
 
-      // 모든 사용자 수락 처리 완료
+      // 유효한 플레이어 모두 수락 처리
       for (const p of actualMatchedPlayers) {
+        // 이미 withPendingGroupsLock 내이므로 문제가 없음
         await this.removeAcceptQueueInUser(p);
         p.setMatched(false);
       }
