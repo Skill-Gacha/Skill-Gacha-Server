@@ -1,27 +1,33 @@
-﻿name: Deploy to EC2
+﻿name: ssh for dev deploy # workflow의 이름을 지정해준다.
 
-on:
-  push:
-    branches:
-      - dev
+on: # 작동 트리거로 설정할 부분을 작성하는 곳이다.
+  push: # 이 스크립트는 개발서버용 이므로 dev 브렌치에 push될 때 작동하도록 해두었다.
+    branches: [ dev ]
 
+# jobs에선 action의 단계(step)를 설정할 수 있다. 
+# 여러 개의 job을 사용할 수 있고, job끼리 서로 정보를 교환할 수도 있다.
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    name: ec2-deploy # job의 이름을 지정해 준다.
+    runs-on: ubuntu-latest # job을 실행할 환경을 정해준다.
 
-      - name: Deploy to EC2
-        env:
-          PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER}@${HOST} '
-            cd Skill-Gacha-Server/ &&
-            git pull origin dev &&
-            docker-compose down &&
+    steps:
+      # Github Actions는 해당 프로젝트를 리눅스 환경에 checkout하고 나서 실행한다.
+      # 꼭 필요한 과정!
+      # 누가 만들어 놓은 Action을 사용할 때에는 uses 키워드를 사용한다.
+      - uses: actions/checkout@v2
+      
+      # step의 이름을 지정해준다.
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          timeout: 40s
+          script: |
+            cd Skill-Gacha-Server/
+            git pull origin dev
+            docker-compose down
             docker-compose up -d --build
-          '
