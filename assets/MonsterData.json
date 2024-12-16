@@ -176,11 +176,11 @@
       "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
-      "earthResist": 10,
-      "grassResist": 10,
-      "fireResist": 10,
-      "waterResist": 10
+      "electricResist": 0,
+      "earthResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2016,
@@ -188,11 +188,11 @@
       "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
-      "earthResist": 10,
-      "grassResist": 10,
-      "fireResist": 10,
-      "waterResist": 10
+      "electricResist": 0,
+      "earthResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2017,
@@ -200,11 +200,11 @@
       "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
-      "earthResist": 10,
-      "grassResist": 10,
-      "fireResist": 10,
-      "waterResist": 10
+      "electricResist": 0,
+      "earthResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2018,
@@ -212,11 +212,11 @@
       "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
-      "earthResist": 10,
-      "grassResist": 10,
-      "fireResist": 10,
-      "waterResist": 10
+      "electricResist": 0,
+      "earthResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2019,
@@ -225,10 +225,10 @@
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
       "electricResist": 10,
-      "earthResist": 10,
-      "grassResist": 10,
-      "fireResist": 10,
-      "waterResist": 10
+      "earthResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2020,
@@ -236,11 +236,11 @@
       "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
-      "earthResist": 10,
-      "grassResist": 10,
-      "fireResist": 10,
-      "waterResist": 10
+      "electricResist": 0,
+      "earthResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2021,
@@ -248,11 +248,11 @@
       "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
-      "earthResist": 10,
-      "grassResist": 10,
-      "fireResist": 10,
-      "waterResist": 10
+      "electricResist": 0,
+      "earthResist": 0,
+      "grassResist": 0,
+      "fireResist": 0,
+      "waterResist": 0
     },
     {
       "monsterModel": 2022,
@@ -262,9 +262,9 @@
       "monsterEffectCode": 3001,
       "electricResist": 20,
       "earthResist": 20,
-      "grassResist": 20,
-      "fireResist": 20,
-      "waterResist": 20
+      "grassResist": 50,
+      "fireResist": 30,
+      "waterResist": 0
     },
     {
       "monsterModel": 2023,
@@ -273,10 +273,10 @@
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
       "electricResist": 20,
-      "earthResist": 20,
+      "earthResist": 50,
       "grassResist": 30,
-      "fireResist": 25,
-      "waterResist": 10
+      "fireResist": 0,
+      "waterResist": 20
     },
     {
       "monsterModel": 2024,
@@ -284,11 +284,11 @@
       "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
-      "electricResist": 20,
-      "earthResist": 30,
-      "grassResist": 25,
-      "fireResist": 10,
-      "waterResist": 20
+      "electricResist": 0,
+      "earthResist": 20,
+      "grassResist": 20,
+      "fireResist": 50,
+      "waterResist": 30
     },
     {
       "monsterModel": 2025,
@@ -296,11 +296,11 @@
       "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
-      "electricResist": 25,
-      "earthResist": 10,
+      "electricResist": 30,
+      "earthResist": 0,
       "grassResist": 20,
       "fireResist": 20,
-      "waterResist": 30
+      "waterResist": 50
     },
     {
       "monsterModel": 2026,
@@ -308,9 +308,9 @@
       "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
-      "electricResist": 30,
-      "earthResist": 25,
-      "grassResist": 10,
+      "electricResist": 50,
+      "earthResist": 30,
+      "grassResist": 0,
       "fireResist": 20,
       "waterResist": 20
     },
@@ -320,11 +320,11 @@
       "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
+      "electricResist": 20,
       "earthResist": 20,
-      "grassResist": 20,
+      "grassResist": 50,
       "fireResist": 30,
-      "waterResist": 25
+      "waterResist": 0
     },
     {
       "monsterModel": 2028,
@@ -332,11 +332,11 @@
       "monsterHp": 200,
       "monsterAtk": 50,
       "monsterEffectCode": 3001,
-      "electricResist": 30,
+      "electricResist": 50,
       "earthResist": 30,
-      "grassResist": 30,
-      "fireResist": 30,
-      "waterResist": 30
+      "grassResist": 0,
+      "fireResist": 20,
+      "waterResist": 20
     },
     {
       "monsterModel": 2029,
