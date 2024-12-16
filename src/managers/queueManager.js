@@ -6,6 +6,8 @@ import AsyncLock from 'async-lock';
 import { CLEANSING_INTERVAL, SESSION_TIMEOUT, USER_TIMEOUT } from '../constants/timeouts.js';
 import { v4 as uuidv4 } from 'uuid';
 import SessionManager from '#managers/sessionManager.js';
+import { createResponse } from '../utils/response/createResponse.js';
+import { PacketType } from '../constants/header.js';
 
 class QueueManager {
   constructor() {
@@ -209,14 +211,11 @@ class QueueManager {
     const group = this.pendingGroups.get(groupId);
     if (!group) return;
 
-    const failResponse = Buffer.from(JSON.stringify({
-      header: { type: 'S_BossMatchNotification' },
-      payload: {
-        success: false,
+    const failResponse = createResponse(PacketType.S_BossMatchNotification, {
+      success: false,
         playerIds: [],
         partyList: [],
-      },
-    }));
+      });
 
     for (const uid of group.userIds) {
       const u = sessionManager.getUser(uid);
