@@ -41,18 +41,16 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
     // 성공이든 실패든 자원은 차감한다
     if (isSuccess) {
       await handleSkillUpgrade(user, currentSkill, skillCode, socket);
-      
-      // 자원 차감
-      await user.reduceResource(requiredGold, requiredStone);
     } else if (isDowngrade) {
       await handleSkillDowngrade(user, currentSkill, skillCode, socket);
-
-      // 자원 차감
-      await user.reduceResource(requiredGold, requiredStone);
     } else {
       await cEnhanceUiHandler({ socket });
       return sendEnhanceResponse(socket, false);
     }
+
+    // 자원 차감
+    // 여기까지 왔다는 것은 예외 없이 정상적으로 실행됐다는 뜻이 된다
+    await user.reduceResource(requiredGold, requiredStone);
   } catch (error) {
     logger.error(`cEnhanceHandler 에러 발생: ${error.message}`);
     return sendEnhanceResponse(socket, false);
