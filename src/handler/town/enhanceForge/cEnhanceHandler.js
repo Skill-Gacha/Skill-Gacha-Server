@@ -71,7 +71,7 @@ const getEnhanceRequirements = (rank) => {
     case 103:
       return { requiredStone: 50, requiredGold: 10000, successRate: 0.05, downgradeRate: 0.05 };
     case 104:
-      throw new Error('cEnhanceHandler: 레전더리 스킬은 더 이상 업그레이드할 수 없습니다.');
+      break;
     default:
       throw new Error('cEnhanceHandler: 잘못된 스킬 랭크입니다.');
   }
