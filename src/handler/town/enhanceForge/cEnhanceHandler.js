@@ -45,6 +45,9 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
       await handleSkillDowngrade(user, currentSkill, skillCode, socket);
     } else {
       await cEnhanceUiHandler({ socket });
+
+      // 자원 차감
+      await user.reduceResource(requiredGold, requiredStone);
       return sendEnhanceResponse(socket, false);
     }
 
