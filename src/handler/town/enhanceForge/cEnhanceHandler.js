@@ -34,17 +34,21 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
       return sendEnhanceResponse(socket, false);
     }
 
-    // 자원 차감
-    await user.reduceResource(requiredGold, requiredStone);
-
     // 강화 결과 결정
     const isSuccess = Math.random() < successRate;
     const isDowngrade = !isSuccess && Math.random() < downgradeRate;
 
+    // 성공이든 실패든 자원은 차감한다
     if (isSuccess) {
       await handleSkillUpgrade(user, currentSkill, skillCode, socket);
+      
+      // 자원 차감
+      await user.reduceResource(requiredGold, requiredStone);
     } else if (isDowngrade) {
       await handleSkillDowngrade(user, currentSkill, skillCode, socket);
+
+      // 자원 차감
+      await user.reduceResource(requiredGold, requiredStone);
     } else {
       await cEnhanceUiHandler({ socket });
       return sendEnhanceResponse(socket, false);
