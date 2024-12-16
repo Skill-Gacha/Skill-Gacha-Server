@@ -21,14 +21,14 @@ import Position from '../../classes/models/positionClass.js';
 const SKILL_OFFSET = 1000;
 
 export const cEnterHandler = async ({ socket, payload }) => {
-  const { nickname, class: elementId } = payload;
+  const { nickname: originNickname, class: elementId } = payload;
   const sessionManager = serviceLocator.get(SessionManager);
 
   try {
     // 입력값 검증
     const validation = validatePayload(payload);
     if (!validation) {
-      logger.error(`cEnterHandler: 잘못된 입력값입니다. 닉네임: ${nickname}, 속성ID: ${elementId}`);
+      logger.error(`cEnterHandler: 잘못된 입력값입니다. 닉네임: ${originNickname}, 속성ID: ${elementId}`);
       return;
     }
 
@@ -38,6 +38,8 @@ export const cEnterHandler = async ({ socket, payload }) => {
       logger.error('cEnterHandler: 존재하지 않는 속성 ID입니다.');
       return;
     }
+    
+    const nickname = originNickname.toLowerCase();
 
     let user = sessionManager.getUserBySocket(socket);
     if (user) {
