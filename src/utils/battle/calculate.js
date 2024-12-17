@@ -61,11 +61,11 @@ export const updateDamage = (user, userDamage, dungeonArea = false) => {
   }
   if (user.stat.stimPack) {
     multiplier += 2.5;
-    if (!dungeonArea) user.stat.battleCry = false;
+    if (!dungeonArea) user.stat.stimPack = false;
   }
   if (user.stat.dangerPotion) {
     multiplier += 5;
-    if (!dungeonArea) user.stat.battleCry = false;
+    if (!dungeonArea) user.stat.dangerPotion = false;
   }
 
   return multiplier === 0 ? userDamage : userDamage * multiplier;
