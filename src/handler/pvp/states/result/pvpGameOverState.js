@@ -4,7 +4,10 @@ import { PacketType } from '../../../../constants/header.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { PVP_STATUS } from '../../../../constants/battle.js';
 import PvpState from '../base/pvpState.js';
-import { getPlayerRatingFromRedis, updatePlayerRating } from '../../../../db/redis/ratingService.js';
+import {
+  getPlayerRatingFromRedis,
+  updatePlayerRating,
+} from '../../../../db/redis/ratingService.js';
 import { invalidResponseCode } from '../../../../utils/error/invalidResponseCode.js';
 import logger from '../../../../utils/log/logger.js';
 import serviceLocator from '#locator/serviceLocator.js';
@@ -14,6 +17,8 @@ import { RANK_CHANGE_POINTS } from '../../../../constants/pvp.js';
 export default class PvpGameOverState extends PvpState {
   async enter() {
     this.pvpRoom.pvpStatus = PVP_STATUS.GAME_OVER;
+
+    this.pvpRoom.clearTurnTimer();
 
     try {
       const [winnerRating, loserRating] = await Promise.all([
