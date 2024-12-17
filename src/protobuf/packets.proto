@@ -76,6 +76,8 @@ enum MsgId {
   S_BOSS_PHASE = 66;
   S_BOSS_USER_TURN = 67;
   S_BOSS_BARRIER_COUNT = 68;
+  C_PVP_PLAYER_MATCH_CANCEL_REQUEST = 69;
+  S_PVP_PLAYER_MATCH_CANCEL_RESPONSE = 70;
 }
 
 // 패킷 정의 목록
@@ -335,7 +337,7 @@ message S_AcceptRequest {
 message C_AcceptResponse {
   bool accept = 1;
 }
-
+    
 // ids          [1, 2, 3]
 // partyList    [1의 정보, 2의 정보, 3의 정보]
 message S_BossMatchNotification {
@@ -388,6 +390,14 @@ message S_BossUserTurn {
 
 message S_BossBarrierCount {
   int32 barrierCount = 1;
+}
+
+message C_PvpPlayerMatchCancelRequest {
+
+}
+
+message S_PvpPlayerMatchCancelResponse {
+  bool success = 1;
 }
 
 // 커스텀 메세지
