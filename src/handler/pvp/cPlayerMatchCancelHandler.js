@@ -7,6 +7,7 @@ import { PacketType } from '../../constants/header.js';
 import CustomError from '../../utils/error/customError.js';
 import { ErrorCodes } from '../../utils/error/errorCodes.js';
 import { createResponse } from '../../utils/response/createResponse.js';
+import logger from '../../utils/log/logger.js';
 
 export const cPlayerMatchCancelHandler = async ({ socket }) => {
   const sessionManager = serviceLocator.get(SessionManager);
@@ -19,12 +20,12 @@ export const cPlayerMatchCancelHandler = async ({ socket }) => {
   }
 
   try {
-    queueManager.removeMatchingQueue(user, 'pvp');
+    await queueManager.removeMatchingQueue(user, 'pvp');
     user.socket.write(createResponse(PacketType.S_PvpPlayerMatchCancelResponse, { success: true }));
   } catch (error) {
     user.socket.write(
       createResponse(PacketType.S_PvpPlayerMatchCancelResponse, { success: false }),
     );
-    throw new CustomError(ErrorCodes.FETCH_ITEM_DATA_FROM_DB_FAILED, error);
+    throw new CustomError(ErrorCodes.PVP_MATCH_CANCEL_FAILED, error);
   }
 };
