@@ -41,18 +41,19 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
     // 성공이든 실패든 자원은 차감한다
     if (isSuccess) {
       await handleSkillUpgrade(user, currentSkill, skillCode, socket);
-      
-      // 자원 차감
-      await user.reduceResource(requiredGold, requiredStone);
     } else if (isDowngrade) {
       await handleSkillDowngrade(user, currentSkill, skillCode, socket);
+    } else {
+      await cEnhanceUiHandler({ socket });
 
       // 자원 차감
       await user.reduceResource(requiredGold, requiredStone);
-    } else {
-      await cEnhanceUiHandler({ socket });
       return sendEnhanceResponse(socket, false);
     }
+
+    // 자원 차감
+    // 여기까지 왔다는 것은 예외 없이 정상적으로 실행됐다는 뜻이 된다
+    await user.reduceResource(requiredGold, requiredStone);
   } catch (error) {
     logger.error(`cEnhanceHandler 에러 발생: ${error.message}`);
     return sendEnhanceResponse(socket, false);
@@ -70,7 +71,7 @@ const getEnhanceRequirements = (rank) => {
     case 103:
       return { requiredStone: 50, requiredGold: 10000, successRate: 0.05, downgradeRate: 0.05 };
     case 104:
-      throw new Error('cEnhanceHandler: 레전더리 스킬은 더 이상 업그레이드할 수 없습니다.');
+      break;
     default:
       throw new Error('cEnhanceHandler: 잘못된 스킬 랭크입니다.');
   }

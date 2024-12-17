@@ -12,10 +12,18 @@ import {
   DUNGEON_STATUS,
   DUNGEON_TURN_OVER_LIMIT,
 } from '../../../../constants/battle.js';
-import { checkEnemyResist, skillEnhancement, updateDamage } from '../../../../utils/battle/calculate.js';
+import {
+  checkEnemyResist,
+  skillEnhancement,
+  updateDamage,
+} from '../../../../utils/battle/calculate.js';
 import { buffSkill } from '../../../../utils/battle/battle.js';
 import { useBuffSkill } from '../../dungeonUtils/dungeonBuffs.js';
-import { sendBattleLog, sendMonsterHpUpdate, sendPlayerAction } from '../../../../utils/battle/dungeonHelpers.js';
+import {
+  sendBattleLog,
+  sendMonsterHpUpdate,
+  sendPlayerAction,
+} from '../../../../utils/battle/dungeonHelpers.js';
 import { createResponse } from '../../../../utils/response/createResponse.js';
 import { PacketType } from '../../../../constants/header.js';
 
@@ -107,6 +115,10 @@ export default class PlayerAttackState extends DungeonState {
     this.user.reduceMp(skillInfo.mana);
     this.socket.write(createResponse(PacketType.S_SetPlayerMp, { mp: this.user.stat.mp }));
 
+    this.user.stat.battleCry = false;
+    this.user.stat.stimPack = false;
+    this.user.stat.dangerPotion = false;
+
     this.timeoutId = this.timerMgr.requestTimer(DUNGEON_TURN_OVER_LIMIT, () => {
       if (skillInfo.id !== DEBUFF_SKILL_ID) {
         this.user.stat.buff = null;
@@ -164,7 +176,7 @@ export default class PlayerAttackState extends DungeonState {
   calculateTotalDamage(skillInfo, monster) {
     const skillDamageRate = skillEnhancement(this.user.element, skillInfo.element);
     let userDamage = skillInfo.damage * skillDamageRate;
-    userDamage = updateDamage(this.user, userDamage);
+    userDamage = updateDamage(this.user, userDamage, true);
     const monsterResist = checkEnemyResist(skillInfo.element, monster);
     return Math.floor(userDamage * ((100 - monsterResist) / 100));
   }

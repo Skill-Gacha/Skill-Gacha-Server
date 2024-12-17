@@ -20,6 +20,7 @@ import { cEnhanceUiHandler } from './town/enhanceForge/cEnhanceUiHandler.js';
 import { cBossMatchHandler } from './boss/cBossMatchHandler.js';
 import { cBossAcceptResponseHandler } from './boss/cBossAcceptResponseHandler.js';
 import { cBossPlayerResponseHandler } from './boss/cBossPlayerResponseHandler.js';
+import { cPlayerMatchCancelHandler } from './pvp/cPlayerMatchCancelHandler.js';
 
 // 핸들러 매핑
 const handlers = {
@@ -91,6 +92,10 @@ const handlers = {
   [PacketType.C_BossPlayerResponse]: {
     handler: cBossPlayerResponseHandler,
     protoType: 'C_BossPlayerResponse',
+  },
+  [PacketType.C_PvpPlayerMatchCancelRequest]: {
+    handler: cPlayerMatchCancelHandler,
+    protoType: 'C_PvpPlayerMatchCancelRequest',
   },
 
   // 다른 패킷 정의 추가...

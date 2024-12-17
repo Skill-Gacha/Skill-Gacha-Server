@@ -53,19 +53,19 @@ export const checkStopperResist = (skillElement, target) => {
 };
 
 // 스팀팩, 위험한 포션 효과 등 데미지 업데이트
-export const updateDamage = (user, userDamage) => {
+export const updateDamage = (user, userDamage, dungeonArea = false) => {
   let multiplier = 0;
   if (user.stat.battleCry) {
     multiplier += 2;
-    user.stat.battleCry = false;
+    if (!dungeonArea) user.stat.battleCry = false;
   }
   if (user.stat.stimPack) {
     multiplier += 2.5;
-    user.stat.stimPack = false;
+    if (!dungeonArea) user.stat.stimPack = false;
   }
   if (user.stat.dangerPotion) {
     multiplier += 5;
-    user.stat.dangerPotion = false;
+    if (!dungeonArea) user.stat.dangerPotion = false;
   }
 
   return multiplier === 0 ? userDamage : userDamage * multiplier;
