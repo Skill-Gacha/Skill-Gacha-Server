@@ -208,6 +208,7 @@ class SessionManager {
     const pvpRoom = this.sessions.pvpRooms.get(sessionId);
     if (pvpRoom) {
       clearTimeout(pvpRoom.timeout);
+      pvpRoom.clearTurnTimer();
       this.sessions.pvpRooms.delete(sessionId);
       logger.info(`PvP 방 세션 ${sessionId}이 제거되었습니다.`);
     }
