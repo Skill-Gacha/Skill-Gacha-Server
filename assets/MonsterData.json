@@ -224,7 +224,7 @@
       "monsterHp": 100,
       "monsterAtk": 30,
       "monsterEffectCode": 3001,
-      "electricResist": 10,
+      "electricResist": 0,
       "earthResist": 0,
       "grassResist": 0,
       "fireResist": 0,
