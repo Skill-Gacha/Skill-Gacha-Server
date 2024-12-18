@@ -24,6 +24,7 @@ export const ErrorCodes = {
   DB_TEST_QUERY_FAILED: 10020,
   REDIS_INIT_FAILED: 10021,
   PVP_MATCH_CANCEL_FAILED: 10022,
+  PVP_MATCH_FAILED: 10023,
 
   // DB
   FETCH_ITEM_DATA_FROM_DB_FAILED: 20000,
@@ -56,7 +57,6 @@ export const ErrorCodes = {
   OUT_OF_RANGE: 500000,
   // 추가적인 에러 코드들
 };
-
 
 export const ErrorNames = Object.fromEntries(
   Object.entries(ErrorCodes).map(([key, value]) => [value, key]),
