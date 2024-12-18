@@ -12,6 +12,8 @@ import SessionManager from '#managers/sessionManager.js';
 import QueueManager from '#managers/queueManager.js';
 import { DUNGEON_CODE_BASE, DUNGEON_CODE_RANGE, MAX_PLAYER } from '../../constants/pvp.js';
 import { createBattleLogResponse, generateBattleLog } from '../../utils/battle/pvpHelpers.js';
+import CustomError from '../../utils/error/customError.js';
+import { ErrorCodes } from '../../utils/error/errorCodes.js';
 
 export const cPlayerMatchHandler = async ({ socket }) => {
   const sessionManager = serviceLocator.get(SessionManager);
@@ -23,8 +25,13 @@ export const cPlayerMatchHandler = async ({ socket }) => {
     return;
   }
 
-  queueManager.removeMatchingQueue(user, 'boss');
-  socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
+  try {
+    queueManager.removeMatchingQueue(user, 'boss');
+    socket.write(createResponse(PacketType.S_PlayerMatch, { check: true }));
+  } catch (error) {
+    socket.write(createResponse(PacketType.S_PlayerMatch, { check: false }));
+    throw new CustomError(ErrorCodes.PVP_MATCH_FAILED, error);
+  }
 
   const matchedPlayers = await queueManager.addMatchingQueue(user, MAX_PLAYER, 'pvp');
   if (!matchedPlayers) {
