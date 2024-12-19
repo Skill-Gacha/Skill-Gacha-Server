@@ -18,7 +18,8 @@
 
 ## 서비스 아키텍쳐
 
-![아키텍쳐2 JPG](https://github.com/user-attachments/assets/93d53174-565b-4159-994a-8cf2eabcf389)
+![image (6)](https://github.com/user-attachments/assets/07abb8c5-01d1-4f47-8c47-85d9f5950321)
+
 
 - 이벤트 루프를 통한 비동기 I/O 처리
 - Protobuf를 활용한 역/직렬화
