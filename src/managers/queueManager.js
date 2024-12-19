@@ -213,16 +213,16 @@ class QueueManager {
 
     const failResponse = createResponse(PacketType.S_BossMatchNotification, {
       success: false,
-        playerIds: [],
-        partyList: [],
-      });
+      playerIds: [],
+      partyList: [],
+    });
 
     for (const uid of group.userIds) {
       const u = sessionManager.getUser(uid);
       if (u) {
         try {
           u.socket.write(failResponse);
-        } catch(e) {
+        } catch (e) {
           logger.error('응답 전송 중 오류:', e);
         }
         await this.removeMatchingQueue(u, 'boss');

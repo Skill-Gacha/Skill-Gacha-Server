@@ -38,7 +38,7 @@ export const cEnterHandler = async ({ socket, payload }) => {
       logger.error('cEnterHandler: 존재하지 않는 속성 ID입니다.');
       return;
     }
-    
+
     const nickname = originNickname.toLowerCase();
 
     let user = sessionManager.getUserBySocket(socket);

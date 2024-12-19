@@ -44,7 +44,7 @@ export const cBossMatchHandler = async ({ socket, payload }) => {
           if (u) {
             u.socket.write(response);
           }
-        })
+        }),
       );
     } else {
       await queueManager.removeMatchingQueue(user, 'boss');

@@ -11,18 +11,18 @@ import { PVP_STATUS } from '../../../../constants/battle.js';
 const TURN_CHANGE_BUTTONS_MOVER = [
   { msg: '스킬 사용', enable: false },
   { msg: '아이템 사용', enable: false },
-  { msg: '도망치기', enable: false }
+  { msg: '도망치기', enable: false },
 ];
 
 const TURN_CHANGE_BUTTONS_STOPPER = [
   { msg: '스킬 사용', enable: true },
   { msg: '아이템 사용', enable: true },
-  { msg: '도망치기', enable: true }
+  { msg: '도망치기', enable: true },
 ];
 
 const TURN_CHANGE_MESSAGES = {
   mover: '이제 님이 맞을 차례예요',
-  stopper: '이제 님이 때릴 차례예요'
+  stopper: '이제 님이 때릴 차례예요',
 };
 
 export default class PvpTurnChangeState extends PvpState {
@@ -40,13 +40,13 @@ export default class PvpTurnChangeState extends PvpState {
     const moverBattleLog = {
       msg: TURN_CHANGE_MESSAGES.mover,
       typingAnimation: false,
-      btns: TURN_CHANGE_BUTTONS_MOVER
+      btns: TURN_CHANGE_BUTTONS_MOVER,
     };
 
     const stopperBattleLog = {
       msg: TURN_CHANGE_MESSAGES.stopper,
       typingAnimation: false,
-      btns: TURN_CHANGE_BUTTONS_STOPPER
+      btns: TURN_CHANGE_BUTTONS_STOPPER,
     };
 
     this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog: moverBattleLog }));

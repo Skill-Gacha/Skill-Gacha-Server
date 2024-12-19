@@ -56,7 +56,7 @@ export const cBossAcceptResponseHandler = async ({ socket, payload }) => {
         const result = await queueManager.acceptUserInGroup(user, userGroupId); // 변경 사항: accept 로직 encapsulate
         if (result === false) {
           // 실패 처리 (유효하지 않은 유저 존재)
-          return;
+          
         } else if (Array.isArray(result)) {
           // 모든 유저 수락 완료
           const actualMatchedPlayers = result;

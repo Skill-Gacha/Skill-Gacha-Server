@@ -16,7 +16,7 @@ export default class PvpSkillChoiceState extends PvpState {
 
     const buttons = this.mover.userSkills.map((skill) => ({
       msg: `${skill.skillName}(데미지 ${skill.damage} / 마나 ${skill.mana})`,
-      enable: this.mover.stat.mp >= skill.mana
+      enable: this.mover.stat.mp >= skill.mana,
     }));
 
     buttons.push({ msg: BUTTON_BACK, enable: true });
@@ -24,7 +24,7 @@ export default class PvpSkillChoiceState extends PvpState {
     const battleLog = {
       msg: '스킬을 선택하여 상대방을 공격하세요',
       typingAnimation: false,
-      btns: buttons
+      btns: buttons,
     };
 
     this.mover.socket.write(createResponse(PacketType.S_PvpBattleLog, { battleLog }));
