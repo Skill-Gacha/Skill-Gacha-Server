@@ -5,7 +5,7 @@ import Dungeon from '../classes/models/dungeonClass.js';
 import PvpRoomClass from '../classes/models/pvpRoomClass.js';
 import logger from '../utils/log/logger.js';
 import BossRoomClass from '../classes/models/bossRoomClass.js';
-import { SESSION_TIMEOUT, USER_TIMEOUT, CLEANSING_INTERVAL } from '../constants/timeouts.js';
+import { CLEANSING_INTERVAL, SESSION_TIMEOUT, USER_TIMEOUT } from '../constants/timeouts.js';
 
 class SessionManager {
   constructor() {

@@ -30,26 +30,24 @@ export const pvpUseBuffSkill = (user, stopper) => {
       sendBattleLog('전투의 함성! 공격력이 두 배로 증가했습니다!');
       break;
 
-    case 2:
-      {
-        const originalHp = user.stat.hp;
-        user.increaseHpMp(user.stat.maxHp * 0.3, 0);
-        try {
-          user.socket.write(createResponse(PacketType.S_SetPvpPlayerHp, { hp: user.stat.hp }));
-          stopper.socket.write(createResponse(PacketType.S_SetPvpEnemyHp, { hp: user.stat.hp }));
-        } catch (error) {
-          logger.error('HP 설정 중 오류 발생:', error);
-        }
-        sendBattleLog(`치유의 손길! 체력이 ${user.stat.hp - originalHp}만큼 회복되었습니다!`);
+    case 2: {
+      const originalHp = user.stat.hp;
+      user.increaseHpMp(user.stat.maxHp * 0.3, 0);
+      try {
+        user.socket.write(createResponse(PacketType.S_SetPvpPlayerHp, { hp: user.stat.hp }));
+        stopper.socket.write(createResponse(PacketType.S_SetPvpEnemyHp, { hp: user.stat.hp }));
+      } catch (error) {
+        logger.error('HP 설정 중 오류 발생:', error);
       }
+      sendBattleLog(`치유의 손길! 체력이 ${user.stat.hp - originalHp}만큼 회복되었습니다!`);
+    }
       break;
 
-    case 3:
-      {
-        const originalMp = user.stat.mp;
-        user.increaseHpMp(0, user.stat.maxMp * 0.6);
-        sendBattleLog(`구원의 손길! 마나가 ${user.stat.mp - originalMp}만큼 회복되었습니다!`);
-      }
+    case 3: {
+      const originalMp = user.stat.mp;
+      user.increaseHpMp(0, user.stat.maxMp * 0.6);
+      sendBattleLog(`구원의 손길! 마나가 ${user.stat.mp - originalMp}만큼 회복되었습니다!`);
+    }
       break;
 
     case 4:

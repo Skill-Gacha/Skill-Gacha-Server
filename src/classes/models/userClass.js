@@ -65,7 +65,7 @@ class User {
     this.gold += gold;
     this.stone += stone;
   }
-  
+
   setMatched(status) {
     this.isMatched = status;
   }
