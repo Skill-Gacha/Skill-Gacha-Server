@@ -147,6 +147,9 @@
 
 위와 같은 기술적 도전 과제를 통해, 현재 모놀리식 구조의 한계를 극복하고 장기적으로는 유연한 확장성과 유지보수 용이성을 갖춘 분산 아키텍처를 구현하는 것을 계획하고 있습니다.
 
+## 클라이언트 저장소
+[Skill-Gacha-Client](https://github.com/Skill-Gacha/Skill-Gacha-Client)
+
 ## 상세 팀 문서
 
 [팀 브로셔](https://teamsparta.notion.site/1342dc3ef51481a0aa2ad2d440f5dc50)
