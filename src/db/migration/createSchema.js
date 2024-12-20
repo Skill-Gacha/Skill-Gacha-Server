@@ -29,8 +29,8 @@ const createSchemas = async () => {
     logger.info('createSchema: 마이그레이션이 완료되었습니다.');
   } catch (error) {
     logger.error('createSchema: 데이터베이스 마이그레이션 에러:');
-    const error = new CustomError(ErrorCodes.MIGRATION_FAILED, '마이그레이션 진행 중 오류');
-    handleError(error);
+    const errorCodes = new CustomError(ErrorCodes.MIGRATION_FAILED, '마이그레이션 진행 중 오류');
+    handleError(errorCodes);
   }
 };
 
