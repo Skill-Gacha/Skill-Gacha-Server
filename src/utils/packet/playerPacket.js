@@ -6,10 +6,10 @@ export const playerData = (user) => {
     nickname: user.nickname,
     class: user.element,
     transform: {
-      posX: 0,
-      posY: 0,
-      posZ: 0,
-      rot: 0,
+      posX: user.position.posX,
+      posY: user.position.posY,
+      posZ: user.position.posZ,
+      rot: user.position.rotation,
     },
     statInfo: {
       level: 0,

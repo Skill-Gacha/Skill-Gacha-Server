@@ -1,15 +1,17 @@
 // src/handler/town/store/cBuyItemHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { updateItemCountInRedis } from '../../../db/redis/itemService.js';
 import { getProductById } from '../../../init/loadAssets.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { updateUserResource } from '../../../db/user/userDb.js';
 import logger from '../../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cBuyItemHandler = async ({ socket, payload }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const { itemId } = payload;
 
     const user = sessionManager.getUserBySocket(socket);
@@ -23,13 +25,12 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
     }
 
     // 자원 및 아이템 확인
-    const userItem = user.items.find((item) => item.itemId === product.id);
-
+    const userItem = await user.inventory.findByItemId(product.id);
     if (user.gold < product.price) {
       return sendBuyItemResponse(socket, false);
     }
 
-    if (userItem && userItem.count >= 3) {
+    if (userItem && userItem.count >= 30) {
       return sendBuyItemResponse(socket, false);
     }
 
@@ -39,8 +40,7 @@ export const cBuyItemHandler = async ({ socket, payload }) => {
 
     if (userItem) {
       userItem.count += 1;
-    } else {
-      user.items.push({ itemId: product.id, count: 1 });
+      await user.inventory.updateItemCount(userItem);
     }
 
     await updateItemCountInRedis(user.nickname, itemId, 1);

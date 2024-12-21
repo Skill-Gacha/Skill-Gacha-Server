@@ -1,7 +1,7 @@
 // src/events/onEnd.js
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
-import sessionManager from '#managers/sessionManager.js';
+import SessionManager from '#managers/sessionManager.js';
 import { saveSkillsToDB } from '../db/skill/skillDb.js';
 import { saveRatingToDB } from '../db/rating/ratingDb.js';
 import { deleteSkillsFromRedis, getSkillsFromRedis } from '../db/redis/skillService.js';
@@ -14,9 +14,13 @@ import logger from '../utils/log/logger.js';
 import CustomError from '../utils/error/customError.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import { handleError } from '../utils/error/errorHandler.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import QueueManager from '#managers/queueManager.js';
 
 export const onEnd = (socket) => async () => {
   logger.info('클라이언트 연결이 종료되었습니다.');
+  const sessionManager = serviceLocator.get(SessionManager);
+  const queueManager = serviceLocator.get(QueueManager);
 
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
@@ -28,30 +32,32 @@ export const onEnd = (socket) => async () => {
 
   if (pvpRoom) {
     try {
-      // 강제 종료한 유저가 패배
-      const loser = user;
-      const winner = [...pvpRoom.users.values()].find((user) => user.id !== loser.id);
+      if ([...pvpRoom.users.values()].length !== 1) {
+        // 강제 종료한 유저가 패배
+        const loser = user;
+        const winner = [...pvpRoom.users.values()].find((user) => user.id !== loser.id);
 
-      // 타이머 종료
-      pvpRoom.clearTurnTimer();
+        // 타이머 종료
+        pvpRoom.clearTurnTimer();
 
-      const [winnerRating, loserRating] = await Promise.all([
-        getPlayerRatingFromRedis(winner.nickname),
-        getPlayerRatingFromRedis(loser.nickname),
-      ]);
+        const [winnerRating, loserRating] = await Promise.all([
+          getPlayerRatingFromRedis(winner.nickname),
+          getPlayerRatingFromRedis(loser.nickname),
+        ]);
 
-      await Promise.all([
-        updatePlayerRating(winner.nickname, winnerRating + 10),
-        updatePlayerRating(loser.nickname, loserRating - 10),
-      ]);
+        await Promise.all([
+          updatePlayerRating(winner.nickname, winnerRating + 10),
+          updatePlayerRating(loser.nickname, loserRating - 10),
+        ]);
 
-      const victoryMessage = createResponse(PacketType.S_ScreenText, {
-        screenText: {
-          msg: '게임에서 승리하여 랭크점수 10점 획득하였습니다.',
-          typingAnimation: false,
-        },
-      });
-      winner.socket.write(victoryMessage); // 승리 메시지 전송
+        const victoryMessage = createResponse(PacketType.S_ScreenText, {
+          screenText: {
+            msg: '게임에서 승리하여 랭크점수 10점 획득하였습니다.',
+            typingAnimation: false,
+          },
+        });
+        winner.socket.write(victoryMessage); // 승리 메시지 전송
+      }
     } catch (error) {
       logger.error('onEnd: PVP 강제종료 처리중 에러:', error);
     }
@@ -126,19 +132,10 @@ export const onEnd = (socket) => async () => {
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
 
-    // 유저 버프 초기화
-    user.isDead = false;
-    user.buff = null;
-    user.battleCry = false;
-    user.berserk = false;
-    user.dangerPotion = false;
-    user.protect = false;
-    user.downResist = false;
-    user.completeTurn = false;
-
     // PVP나 보스 매칭큐에서 유저 제거
-    sessionManager.removeMatchingQueue(user);
-    sessionManager.removeMatchingQueue(user, 'boss');
+    queueManager.removeMatchingQueue(user, 'pvp');
+    queueManager.removeMatchingQueue(user, 'boss');
+    queueManager.removeAcceptQueueInUser(user);
 
     logger.info(`유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {

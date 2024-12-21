@@ -19,6 +19,7 @@ export const ELEMENT_KEYS = {
   1005: 'water',
 };
 
+// 스킬 강화율 계산
 export const skillEnhancement = (playerElement, skillElement) => {
   try {
     if (DAMAGE_RATE_MAP[playerElement] && DAMAGE_RATE_MAP[playerElement][skillElement]) {
@@ -31,50 +32,51 @@ export const skillEnhancement = (playerElement, skillElement) => {
   }
 };
 
+// 적 저항력 체크
 export const checkEnemyResist = (skillElement, target) => {
   const resistKey = RESISTANCE_KEYS[skillElement];
   if (!resistKey) {
-    logger.error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
+    logger.error(`calculate: 존재하지 않는 속성 코드: ${skillElement}`);
+    return 0;
   }
   return target.resistances[resistKey] || 0;
 };
 
+// 스토퍼 저항 체크
 export const checkStopperResist = (skillElement, target) => {
   const resistKey = RESISTANCE_KEYS[skillElement];
   if (!resistKey) {
-    logger.error(`calculate: 존재하지 않는 속성 코드 확인: ${skillElement}`);
+    logger.error(`calculate: 존재하지 않는 속성 코드: ${skillElement}`);
+    return 0;
   }
   return target.stat.resistances[resistKey] || 0;
 };
 
-// 스팀팩 효과 및 위험한 포션
-export const updateDamage = (user, userDamage) => {
-  let multiplier = 0; // 초기 배율 값
+// 스팀팩, 위험한 포션 효과 등 데미지 업데이트
+export const updateDamage = (user, userDamage, dungeonArea = false) => {
+  let multiplier = 0;
   if (user.stat.battleCry) {
-    multiplier += 2; // "전투의 함성" 버프가 있으면 데미지 2배 증가
-    user.stat.battleCry = false;
+    multiplier += 2;
+    if (!dungeonArea) user.stat.battleCry = false;
   }
-  if (user.stat.berserk) {
-    multiplier += 2.5; // 버서크가 있으면 2.5배 증가
-    user.stat.berserk = false;
+  if (user.stat.stimPack) {
+    multiplier += 2.5;
+    if (!dungeonArea) user.stat.stimPack = false;
   }
   if (user.stat.dangerPotion) {
-    multiplier += 5; // 위험한 포션이 있으면 5배 증가
-    user.stat.dangerPotion = false;
+    multiplier += 5;
+    if (!dungeonArea) user.stat.dangerPotion = false;
   }
-  // 최종 데미지 계산
-  if (multiplier === 0) {
-    return userDamage;
-  }
-  return (userDamage *= multiplier);
+
+  return multiplier === 0 ? userDamage : userDamage * multiplier;
 };
 
-// 사망 보상 계산 함수
+// 사망 리소스 계산
 export const deadResource = (user, dungeonCode) => {
   const resource = DUNGEON_DEAD_RESOURCES[dungeonCode];
 
   if (!resource) {
-    logger.error(`던전코드가 이상합니다.: ${dungeonCode}`);
+    logger.error(`deadResource: 알 수 없는 던전 코드 ${dungeonCode}`);
     return;
   }
 

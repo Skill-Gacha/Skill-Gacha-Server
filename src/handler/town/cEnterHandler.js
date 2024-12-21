@@ -1,6 +1,6 @@
 // src/handler/town/cEnterHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
+import serviceLocator from '#locator/serviceLocator.js';
 import { PacketType } from '../../constants/header.js';
 import { createUser, findUserNickname } from '../../db/user/userDb.js';
 import { getElementById, getSkillById } from '../../init/loadAssets.js';
@@ -15,17 +15,20 @@ import { saveRatingToRedis } from '../../db/redis/ratingService.js';
 import { getItemsFromDB, saveItemToDB } from '../../db/item/itemDb.js';
 import { getItemsFromRedis, initializeItems, saveItemsToRedis } from '../../db/redis/itemService.js';
 import logger from '../../utils/log/logger.js';
+import SessionManager from '#managers/sessionManager.js';
+import Position from '../../classes/models/positionClass.js';
 
 const SKILL_OFFSET = 1000;
 
 export const cEnterHandler = async ({ socket, payload }) => {
-  const { nickname, class: elementId } = payload;
+  const { nickname: originNickname, class: elementId } = payload;
+  const sessionManager = serviceLocator.get(SessionManager);
 
   try {
     // 입력값 검증
     const validation = validatePayload(payload);
     if (!validation) {
-      logger.error(`cEnterHandler: 잘못된 입력값입니다. 닉네임: ${nickname}, 속성ID: ${elementId}`);
+      logger.error(`cEnterHandler: 잘못된 입력값입니다. 닉네임: ${originNickname}, 속성ID: ${elementId}`);
       return;
     }
 
@@ -35,6 +38,8 @@ export const cEnterHandler = async ({ socket, payload }) => {
       logger.error('cEnterHandler: 존재하지 않는 속성 ID입니다.');
       return;
     }
+
+    const nickname = originNickname.toLowerCase();
 
     let user = sessionManager.getUserBySocket(socket);
     if (user) {
@@ -76,6 +81,7 @@ const validatePayload = (payload) => {
 
 const handleExistingUser = async (user, nickname, chosenElement) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     user.resetHpMp();
     logger.info(`cEnterHandler: 유저 ${user.id}가 이미 세션에 존재합니다.`);
 
@@ -99,6 +105,8 @@ const handleExistingUser = async (user, nickname, chosenElement) => {
       } else {
         user.items = itemsFromRedis;
       }
+
+      user.position = new Position(0, 0, 0, 0);
     }
   } catch (error) {
     logger.error(`cEnterHandler: handleExistingUser 에러; 유저 ID: ${user.id}:`, error);
@@ -143,13 +151,20 @@ const handleConnectingUser = async (nickname, classId, chosenElement, socket) =>
     user.userSkills = loadUserSkills(skills);
 
     const itemsFromRedis = await getItemsFromRedis(nickname);
+
+    let itemRedisResult = null;
+
     if (!itemsFromRedis) {
       const initializedItems = initializeItems();
       await saveItemsToRedis(nickname, initializedItems);
-      user.items = initializedItems;
+      itemRedisResult = initializedItems;
     } else {
-      user.items = itemsFromRedis;
+      itemRedisResult = itemsFromRedis;
     }
+
+    // Redis에서 나온 아이템 결과 넣기
+    //[{itemId, itemcount},{itemId, itemcount},{itemId, itemcount},{itemId, itemcount},{itemId, itemcount}]
+    user.initItemCount(itemRedisResult);
 
     return user;
   } catch (error) {
@@ -179,9 +194,7 @@ const createNewUser = async (nickname, classId, chosenElement) => {
     ]);
 
     const initialItems = initializeItems();
-    await Promise.all(
-      initialItems.map(item => saveItemToDB(nickname, item.itemId, item.count)),
-    );
+    await Promise.all(initialItems.map((item) => saveItemToDB(nickname, item.itemId, item.count)));
     await saveItemsToRedis(nickname, initialItems);
 
     return await findUserNickname(nickname);
@@ -200,10 +213,9 @@ const loadUserSkills = (skillsData) => {
 
 const spawnOtherUsers = async (user) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const townSession = sessionManager.getTown();
-    const otherUsers = Array.from(townSession.users.values()).filter(
-      (u) => u.id !== user.id,
-    );
+    const otherUsers = Array.from(townSession.users.values()).filter((u) => u.id !== user.id);
 
     if (otherUsers.length > 0) {
       const otherPlayersData = otherUsers.map((otherUser) => playerData(otherUser));

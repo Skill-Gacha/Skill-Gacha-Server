@@ -19,6 +19,7 @@ export const PacketType = {
   C_BossMatch: 56,
   C_AcceptResponse: 58,
   C_BossPlayerResponse: 60,
+  C_PvpPlayerMatchCancelRequest: 69,
 
   // 서버 → 클라이언트 패킷
   S_Enter: 1,
@@ -69,4 +70,5 @@ export const PacketType = {
   S_BossPhase: 66,
   S_BossUserTurn: 67,
   S_BossBarrierCount: 68,
+  S_PvpPlayerMatchCancelResponse: 70,
 };

@@ -2,10 +2,12 @@
 
 import { PacketType } from '../../constants/header.js';
 import { createResponse } from '../../utils/response/createResponse.js';
-import sessionManager from '#managers/sessionManager.js';
 import logger from '../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const sDespawnHandler = async (user) => {
+  const sessionManager = serviceLocator.get(SessionManager);
   try {
     if (!user) {
       logger.error('sDespawnHandler: 유효한 유저가 아닙니다.');

@@ -1,7 +1,6 @@
 // src/events/onError.js
 
 import { sDespawnHandler } from '../handler/town/sDespawnHandler.js';
-import sessionManager from '#managers/sessionManager.js';
 import { getPlayerRatingFromRedis, updatePlayerRating } from '../db/redis/ratingService.js';
 import { createResponse } from '../utils/response/createResponse.js';
 import { PacketType } from '../constants/header.js';
@@ -9,9 +8,14 @@ import logger from '../utils/log/logger.js';
 import CustomError from '../utils/error/customError.js';
 import { ErrorCodes } from '../utils/error/errorCodes.js';
 import { handleError } from '../utils/error/errorHandler.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
+import QueueManager from '#managers/queueManager.js';
 
 export const onError = (socket) => async (err) => {
   logger.error('onError: 소켓 에러 발생:', err);
+  const sessionManager = serviceLocator.get(SessionManager);
+  const queueManager = serviceLocator.get(QueueManager);
 
   const user = sessionManager.getUserBySocket(socket);
   if (!user) {
@@ -84,19 +88,10 @@ export const onError = (socket) => async (err) => {
     // 모든 세션에서 사용자 제거
     sessionManager.removeUser(user.id);
 
-    // 유저 버프 초기화
-    user.isDead = false;
-    user.buff = null;
-    user.battleCry = false;
-    user.berserk = false;
-    user.dangerPotion = false;
-    user.protect = false;
-    user.downResist = false;
-    user.completeTurn = false;
-
     // PVP나 보스 매칭큐에서 유저 제거
-    sessionManager.removeMatchingQueue(user);
-    sessionManager.removeMatchingQueue(user, 'boss');
+    queueManager.removeMatchingQueue(user, 'pvp');
+    queueManager.removeMatchingQueue(user, 'boss');
+    queueManager.removeAcceptQueueInUser(user);
 
     logger.info(`onError: 유저 ${user.id}가 세션에서 제거되었습니다.`);
   } catch (error) {

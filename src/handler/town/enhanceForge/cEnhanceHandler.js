@@ -1,15 +1,17 @@
 // src/handler/town/enhanceForge/cEnhanceHandler.js
 
-import sessionManager from '#managers/sessionManager.js';
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
 import { getNextRankAndSameElement, getSkillById } from '../../../init/loadAssets.js';
 import { saveRewardSkillsToRedis } from '../../../db/redis/skillService.js';
 import { cEnhanceUiHandler } from './cEnhanceUiHandler.js';
 import logger from '../../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cEnhanceHandler = async ({ socket, payload }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
       logger.error('cEnhanceHandler: 사용자를 찾을 수 없습니다.');
@@ -32,21 +34,26 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
       return sendEnhanceResponse(socket, false);
     }
 
-    // 자원 차감
-    await user.reduceResource(requiredGold, requiredStone);
-
     // 강화 결과 결정
     const isSuccess = Math.random() < successRate;
     const isDowngrade = !isSuccess && Math.random() < downgradeRate;
 
+    // 성공이든 실패든 자원은 차감한다
     if (isSuccess) {
       await handleSkillUpgrade(user, currentSkill, skillCode, socket);
     } else if (isDowngrade) {
       await handleSkillDowngrade(user, currentSkill, skillCode, socket);
     } else {
       await cEnhanceUiHandler({ socket });
+
+      // 자원 차감
+      await user.reduceResource(requiredGold, requiredStone);
       return sendEnhanceResponse(socket, false);
     }
+
+    // 자원 차감
+    // 여기까지 왔다는 것은 예외 없이 정상적으로 실행됐다는 뜻이 된다
+    await user.reduceResource(requiredGold, requiredStone);
   } catch (error) {
     logger.error(`cEnhanceHandler 에러 발생: ${error.message}`);
     return sendEnhanceResponse(socket, false);
@@ -64,7 +71,7 @@ const getEnhanceRequirements = (rank) => {
     case 103:
       return { requiredStone: 50, requiredGold: 10000, successRate: 0.05, downgradeRate: 0.05 };
     case 104:
-      throw new Error('cEnhanceHandler: 레전더리 스킬은 더 이상 업그레이드할 수 없습니다.');
+      break;
     default:
       throw new Error('cEnhanceHandler: 잘못된 스킬 랭크입니다.');
   }

@@ -6,10 +6,12 @@ import {
   PHASE_TWO_TURN_TIMEOUT_LIMIT,
 } from '../../constants/battle.js';
 import { PacketType } from '../../constants/header.js';
-import BossTurnChangeState from '../../handler/boss/states/bossTurnChangeState.js';
 import { createResponse } from '../../utils/response/createResponse.js';
 import BaseSession from './baseSession.js';
-// 매칭 큐를 통해 게임이 잡힌 유저 2명의 대한 방
+import BossTurnChangeState from '../../handler/boss/states/turn/bossTurnChangeState.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import TimerManager from '#managers/timerManager.js';
+
 class BossRoomClass extends BaseSession {
   constructor(bossRoomId) {
     super(bossRoomId);
@@ -26,16 +28,14 @@ class BossRoomClass extends BaseSession {
 
     this.shieldActivated = false; // 쉴드가 생성되었는지 여부를 추적하는 플래그 추가
 
-    // 전역 턴 타이머 추가
-    this.turnTimer = null;
+    this.timerMgr = serviceLocator.get(TimerManager);
+    this.turnTimerId = null; // 타이머 식별자
   }
 
   setUsers(playerA, playerB, playerC) {
     this.addUser(playerA);
     this.addUser(playerB);
     this.addUser(playerC);
-
-    // 첫번째 유저가 첫번째 순서
     this.userTurn = playerA;
   }
 
@@ -71,16 +71,17 @@ class BossRoomClass extends BaseSession {
         timeoutLimit = PHASE_ONE_TURN_TIMEOUT_LIMIT; // 기본값 설정
     }
 
-    this.turnTimer = setTimeout(() => {
+    // 타이머 매니저를 통해 타이머 설정
+    this.turnTimerId = this.timerMgr.requestTimer(timeoutLimit, () => {
       this.onTurnTimeout();
-    }, timeoutLimit);
+    });
   }
 
   // 턴 타이머 취소
   clearTurnTimer() {
-    if (this.turnTimer) {
-      clearTimeout(this.turnTimer);
-      this.turnTimer = null;
+    if (this.turnTimerId) {
+      this.timerMgr.cancelTimer(this.turnTimerId);
+      this.turnTimerId = null;
     }
   }
 
@@ -112,12 +113,13 @@ class BossRoomClass extends BaseSession {
     // 시간 초과 메시지 전송
     const timeoutMessage = createResponse(PacketType.S_BossBattleLog, { battleLog });
     currentPlayer.socket.write(timeoutMessage);
+    currentPlayer.completeTurn = true;
 
     // `BossTurnChangeState`로 상태 전환하여 턴을 넘김
     this.currentState = new BossTurnChangeState(this, currentPlayer);
     this.currentState.enter();
 
-    // 새로운 턴 타이머는 `BossActionState`에서 처리됨
+    // 새로운 턴 타이머는 `BossTurnChangeState` 및 `BossTurnChangeState`에서 처리됨
   }
 }
 

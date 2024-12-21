@@ -4,6 +4,7 @@ import dbPool from '../database.js';
 import { RATING_QUERIES } from './ratingQueries.js';
 import CustomError from '../../utils/error/customError.js';
 import { ErrorCodes } from '../../utils/error/errorCodes.js';
+import logger from '../../utils/log/logger.js';
 
 export const saveRatingToDB = async (nickname, rating) => {
   try {

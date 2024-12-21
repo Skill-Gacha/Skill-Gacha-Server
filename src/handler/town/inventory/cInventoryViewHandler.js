@@ -2,12 +2,14 @@
 
 import { PacketType } from '../../../constants/header.js';
 import { createResponse } from '../../../utils/response/createResponse.js';
-import sessionManager from '#managers/sessionManager.js';
 import { getProductData } from '../../../init/loadAssets.js';
 import logger from '../../../utils/log/logger.js';
+import serviceLocator from '#locator/serviceLocator.js';
+import SessionManager from '#managers/sessionManager.js';
 
 export const cInventoryViewHandler = async ({ socket }) => {
   try {
+    const sessionManager = serviceLocator.get(SessionManager);
     const user = sessionManager.getUserBySocket(socket);
     if (!user) {
       logger.error('cInventoryViewHandler: 사용자를 찾을 수 없습니다.');
@@ -18,7 +20,7 @@ export const cInventoryViewHandler = async ({ socket }) => {
 
     // 제품 리스트 생성
     const productList = allProducts.map((product) => {
-      const userItem = user.items.find((item) => item.itemId === product.id);
+      const userItem = user.inventory.items.find((item) => item.itemId === product.id);
       return {
         reserve: userItem ? userItem.count : 0,
       };

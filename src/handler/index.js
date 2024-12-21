@@ -13,13 +13,14 @@ import { cPlayerMatchHandler } from './pvp/cPlayerMatchHandler.js';
 import { cPlayerPvpResponseHandler } from './pvp/cPlayerPvpResponseHandler.js';
 import { cOpenStoreHandler } from './town/store/cOpenStoreHandler.js';
 import { cBuyItemHandler } from './town/store/cBuyItemHandler.js';
-import { cViewRankPointHandler } from './town/cViewRankPointHandler.js';
+import { cViewRankPointHandler } from './town/rank/cViewRankPointHandler.js';
 import { cInventoryViewHandler } from './town/inventory/cInventoryViewHandler.js';
 import { cEnhanceHandler } from './town/enhanceForge/cEnhanceHandler.js';
 import { cEnhanceUiHandler } from './town/enhanceForge/cEnhanceUiHandler.js';
 import { cBossMatchHandler } from './boss/cBossMatchHandler.js';
 import { cBossAcceptResponseHandler } from './boss/cBossAcceptResponseHandler.js';
-import { cPlayerBossResponseHandler } from './boss/cPlayerBossResponseHandler.js';
+import { cBossPlayerResponseHandler } from './boss/cBossPlayerResponseHandler.js';
+import { cPlayerMatchCancelHandler } from './pvp/cPlayerMatchCancelHandler.js';
 
 // 핸들러 매핑
 const handlers = {
@@ -89,8 +90,12 @@ const handlers = {
     protoType: 'C_AcceptResponse',
   },
   [PacketType.C_BossPlayerResponse]: {
-    handler: cPlayerBossResponseHandler,
+    handler: cBossPlayerResponseHandler,
     protoType: 'C_BossPlayerResponse',
+  },
+  [PacketType.C_PvpPlayerMatchCancelRequest]: {
+    handler: cPlayerMatchCancelHandler,
+    protoType: 'C_PvpPlayerMatchCancelRequest',
   },
 
   // 다른 패킷 정의 추가...
