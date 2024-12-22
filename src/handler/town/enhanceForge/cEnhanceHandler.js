@@ -9,6 +9,8 @@ import logger from '../../../utils/log/logger.js';
 import serviceLocator from '#locator/serviceLocator.js';
 import SessionManager from '#managers/sessionManager.js';
 
+const MAX_RANK_CODE = 104;
+
 export const cEnhanceHandler = async ({ socket, payload }) => {
   try {
     const sessionManager = serviceLocator.get(SessionManager);
@@ -23,10 +25,20 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
     if (!currentSkill) {
       logger.error('cEnhanceHandler: 잘못된 스킬 코드입니다.');
     }
+    
+    if (currentSkill.rank >= MAX_RANK_CODE) {
+      logger.info('cEnhanceHandler: 최대치로 강화가 완료된 스킬입니다.');
+      return;
+    }
 
-    const { requiredStone, requiredGold, successRate, downgradeRate } = getEnhanceRequirements(
-      currentSkill.rank,
-    );
+    const requirements = getEnhanceRequirements(currentSkill.rank);    
+
+    if (!requirements) {
+      logger.error(`cEnhanceHandler: 랭크(${currentSkill.rank})에 대한 강화 정보가 존재하지 않습니다.`);
+      return sendEnhanceResponse(socket, false);
+    }
+
+    const { requiredStone, requiredGold, successRate, downgradeRate } = requirements;
 
     // 자원 확인
     if (!hasSufficientResources(user, requiredStone, requiredGold)) {
@@ -70,7 +82,7 @@ const getEnhanceRequirements = (rank) => {
       return { requiredStone: 30, requiredGold: 5000, successRate: 0.1, downgradeRate: 0.1 };
     case 103:
       return { requiredStone: 50, requiredGold: 10000, successRate: 0.05, downgradeRate: 0.05 };
-    case 104:
+    case rank >= 104:
       break;
     default:
       throw new Error('cEnhanceHandler: 잘못된 스킬 랭크입니다.');
