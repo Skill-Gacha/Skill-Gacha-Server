@@ -50,14 +50,13 @@ export const cEnhanceHandler = async ({ socket, payload }) => {
     const isSuccess = Math.random() < successRate;
     const isDowngrade = !isSuccess && Math.random() < downgradeRate;
     
-    // 성공이든 실패든 자원은 차감한다    
+    // 성공이든 실패든 자원은 차감한다
+    // 자원 차감
+    await user.reduceResource(requiredGold, requiredStone);
+    
     if (isSuccess) {
-      // 자원 차감
-      await user.reduceResource(requiredGold, requiredStone);
       await handleSkillUpgrade(user, currentSkill, skillCode, socket);
     } else if (isDowngrade) {
-      // 자원 차감
-      await user.reduceResource(requiredGold, requiredStone);
       await handleSkillDowngrade(user, currentSkill, skillCode, socket);
     } else {
       await cEnhanceUiHandler({ socket });
