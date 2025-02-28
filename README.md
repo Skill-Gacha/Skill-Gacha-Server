@@ -174,6 +174,10 @@
 
 [팀 노션](https://teamsparta.notion.site/6337e0fd984d41999e28bd57065c6b36)
 
+## 수상
+![image](https://github.com/user-attachments/assets/57138701-a979-4dce-8b7a-ea821d10bce8)
+
+
 ## 팀원 소개
 
 | 이름   | 역할   | 블로그 주소                           | GitHub 주소                   |
